@@ -1,0 +1,25 @@
+.event-area {
+  margin-bottom: 5px;
+  border-radius: 15px;
+}
+
+.attendInfo-area {
+  width: 60%;
+  display: flex;
+  flex-direction: column;
+}
+.option-area {
+  margin-left: 20px;
+}
+
+.optionChange-area {
+  margin-left: 5%;
+  display: flex;
+  flex-wrap: nowrap;
+}
+
+.button-area {
+  display: flex;
+  width: 40%;
+  justify-content: center;
+}

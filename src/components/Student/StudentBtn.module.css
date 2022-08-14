@@ -1,0 +1,14 @@
+.button-student {
+  width: 25%;
+  margin: 5px 10px;
+  font-size: 1.2em;
+  border-radius: 20px;
+  border-width: 0;
+  letter-spacing: 1px;
+  padding: 2vh;
+  background-color: #fff6f0;
+  display: flex;
+  justify-content: center;
+  white-space: nowrap;
+  font-family: "GowunDodum";
+}

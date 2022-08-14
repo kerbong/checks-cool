@@ -1,0 +1,79 @@
+.attend-option {
+  background-color: #b5dcc0b8;
+  padding: 20px;
+  font-size: 1.3em;
+  margin: 10px;
+  width: 100px;
+  height: 50px;
+  border-radius: 15px;
+  align-items: center;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  font-family: "GowunDodum";
+}
+
+.attend-option-select {
+  background-color: #8fcca0;
+  padding: 20px;
+  font-size: 1.3em;
+  margin: 10px;
+  width: 100px;
+  height: 50px;
+  border-radius: 15px;
+  align-items: center;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+}
+
+.ul {
+  flex-flow: row wrap;
+  list-style: none;
+  display: flex;
+  justify-content: space-evenly;
+  padding: 0;
+  margin: 3px;
+}
+
+.btn {
+  padding: 20px;
+  background-color: #85bd82;
+  font-size: 1.2em;
+  margin: 10px;
+  border-radius: 15px;
+  border-width: 0;
+  font-family: "GowunDodum";
+}
+
+.form {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.student {
+  font-family: "GowunDodum";
+}
+
+.form-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.input {
+  margin-left: 3%;
+  width: 60%;
+  height: 30px;
+  padding: 10px;
+  font-size: 1em;
+  font-family: "GowunDodum";
+}
+
+.date {
+  text-align: center;
+  font-size: 1.2em;
+  font-family: "GowunDodum";
+  word-spacing: 10px;
+  letter-spacing: 1px;
+}

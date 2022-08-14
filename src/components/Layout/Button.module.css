@@ -1,0 +1,31 @@
+.button {
+  width: 180px;
+  height: 150px;
+  margin: 15px;
+  font-size: 1.7em;
+  border-radius: 30px;
+  border-width: 5px;
+  border-color: #703e29;
+  letter-spacing: 5px;
+  font-family: "GowunDodum";
+}
+
+.button-student {
+  width: 25%;
+  margin: 5px 10px;
+  font-size: 1.2em;
+  border-radius: 10px;
+  border-width: 0;
+  letter-spacing: 1px;
+  padding: 2vh;
+  background-color: #ffbec7;
+  font-family: "GowunDodum";
+}
+
+.button:nth-child(even) {
+  background-color: #f79089;
+}
+
+.button:nth-child(odd) {
+  background-color: #ffbec7;
+}

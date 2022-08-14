@@ -1,0 +1,76 @@
+.react-datepicker {
+  font-size: 1.3em;
+  width: 95vw;
+  height: 75vh;
+  margin-left: 2vw;
+  margin-top: 5px;
+  font-family: "GowunDodum";
+}
+.react-datepicker__header {
+  padding-top: 0.8em;
+  width: 95vw;
+  height: 10vh;
+  background-color: aliceblue;
+}
+.react-datepicker__current-month {
+  margin-bottom: 3px;
+  margin-top: 0px;
+}
+.react-datepicker__day-names {
+  text-align: center;
+  width: 93vw;
+
+  /* margin-bottom: 3px; */
+}
+.react-datepicker__month {
+  margin: 0;
+  width: 95vw;
+}
+.react-datepicker__week {
+  height: 13vh;
+  margin-left: 2%;
+  display: flex;
+  width: 90vw;
+  justify-content: space-between;
+}
+.react-datepicker__day-name,
+.react-datepicker__day {
+  width: 14%;
+  line-height: 1.9em;
+  margin: 0.1em;
+}
+.react-datepicker__current-month {
+  font-size: 1em;
+}
+.react-datepicker__navigation {
+  top: 1em;
+  line-height: 1.7em;
+}
+.react-datepicker__navigation--previous {
+  border-right-color: #ccc;
+  left: 1em;
+}
+.react-datepicker__navigation--next {
+  border-left-color: #ccc;
+  right: 1em;
+}
+
+#switch-btn {
+  width: 25%;
+  margin: 5px 10px;
+  font-size: 1.2em;
+  border-radius: 10px;
+  border-width: 0;
+  letter-spacing: 1px;
+  padding: 2vh;
+  background-color: #f5d254;
+  font-family: "GowunDodum";
+}
+
+.react-datepicker__day--disabled {
+  width: 15px;
+}
+
+.custom-input {
+  height: 20px;
+}

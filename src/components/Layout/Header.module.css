@@ -1,0 +1,19 @@
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  height: 70px;
+  background-color: #f04617f0;
+}
+
+.h2 {
+  margin-left: 10px;
+  color: #ffe8c2;
+  width: auto;
+}
+
+.ul {
+  margin-left: 5px;
+  display: inline-flex;
+  padding: 0;
+}
