@@ -310,6 +310,7 @@ const AttendCtxCalendar = (props) => {
     )[0];
 
     console.log(new_eventOnDay);
+    //이부분 프롭스로 넘겨받으면 함수에서 문제가 생길 수 있음.
     setEventByDays(new_eventByDays);
     setEventOnDay(new_eventOnDay);
 
