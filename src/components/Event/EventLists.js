@@ -1,12 +1,16 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 
-import classes from "./EventLists.module.css";
-import Button from "../Layout/Button";
-import EventList from "./EventList";
+import EventItem from "./EventItem";
 import Swal from "sweetalert2";
+import EventInput from "./EventInput";
+import classes from "./EventLists.module.css";
+
+import attendanceOption from "../../attendanceOption";
 
 const EventLists = (props) => {
   const [eventOnDay, setEventOnDay] = useState(props.eventOnDay);
+  const [addEvent, setAddEvent] = useState(false);
+
   // let eventOnDay = props.eventOnDay;
   let fixIsShown = props.fixIsShown;
 
@@ -38,16 +42,30 @@ const EventLists = (props) => {
       }
     });
     document.querySelectorAll(`button[id='${data.id}']`)[0].remove();
-
-    //만약 해당날짜에 모든 출결정보가 사라지면 이벤트 리스너 제거하기
-    // let noEventOnDay = document.querySelectorAll(
-    //   `div[aria-label="${data["eventDate"]}"]`
-    // )[0];
-    // if (noEventOnDay.childNodes.length === 1) {
-    //   noEventOnDay.removeEventListener("click", showEvents);
-    // }
   }; //달력에서 자료 삭제 함수 끝
 
+  //이미 있던 이벤트 수정할 때 화면 수정하는 함수
+  const updateEventOnScreen = (data) => {
+    let option = document.querySelector(`#option-area${data.student_num}`);
+    option.innerText = `${data.option.split("*d")[0]} | ${
+      data.option.split("*d")[1]
+    }`;
+  };
+
+  //없던 이벤트 새로 추가할 떄 화면 수정하는 함수
+  const newEventOnScreen = (item) => {
+    let new_eventOnDay = JSON.parse(JSON.stringify(eventOnDay));
+    if (new_eventOnDay[0].id === undefined) {
+      new_eventOnDay[0] = item;
+    } else {
+      new_eventOnDay.push(item);
+    }
+
+    //강제로 리 렌더링ㅜㅜ...해서 추가한 자료 보여줌
+    setEventOnDay([...new_eventOnDay]);
+  };
+
+  //새로운/ 수정된 자료 저장함수
   const saveFixedData = (item) => {
     //출결 옵션 선택값
     const optionValue = document.querySelector(
@@ -68,139 +86,88 @@ const EventLists = (props) => {
       option: optionValue.slice(1) + "*d" + noteValue + "*d" + eventDay,
     };
 
-    //modal에 보이는 출결 옵션부분 자료만 잠깐 수정해주기
-    let option = document.querySelector(`#option-area${item.student_num}`);
-    option.innerText = `${optionValue.slice(1)} | ${noteValue}`;
+    // console.log(fixed_data);
 
+    //attendCtx와 eventByDays eventOnDay 를 수정하는 함수
     props.fixedEventHandler(fixed_data, item.eventDate);
-    // console.log(eventOnDay);
-    // console.log(props.eventOnDay);
 
-    setEventOnDay(props.eventOnDay);
+    // setEventOnDay(eventOnDay.concat());
+
+    Swal.fire({
+      icon: "success",
+      title: "자료가 저장되었어요.",
+      text: "5초 후에 창이 사라집니다.",
+      confirmButtonText: "확인",
+      confirmButtonColor: "#85bd82",
+      timer: 5000,
+    });
+
+    let return_data = { ...fixed_data, eventDate: item.eventDate };
+
+    //기존 데이터 수정할 떄 필요한 텍스트
+    return return_data;
+  };
+
+  const closeHandler = () => {
+    setAddEvent(false);
   };
 
   return (
-    <div>
+    <div className="eventOnDayList">
       <h1 className={eventOnDay[0].eventDate}>
         {`${eventOnDay[0].eventDate.slice(
           6,
           -4
         )} (${eventOnDay[0].eventDate.slice(-3, -2)})`}
       </h1>
-      {eventOnDay[0].id === undefined ? (
-        <>
-          <div>등록된 이벤트가 없어요!</div>
-        </>
-      ) : (
-        <>
-          <EventList
-            eventOnDay={eventOnDay}
-            fixIsShown={props.fixIsShown}
-            saveFixedData={saveFixedData}
-            removeCheckSwal={removeCheckSwal}
+      {/* //addEvent false 상황이면 추가하기 버튼 */}
+      <div className={classes["add-event-div"]}>
+        <button
+          className={classes["add-event-button"]}
+          onClick={() => {
+            setAddEvent(true);
+          }}
+        >
+          추가하기
+        </button>
+      </div>
+      <div className="event-input-div">
+        {addEvent && (
+          //addEvent 상황이면 인풋창 보여주고
+          <EventInput
+            closeHandler={closeHandler}
+            selectOptions={attendanceOption}
+            placeholder="비고를 입력하세요."
+            saveNewData={(item) => {
+              let data = saveFixedData(item);
+              newEventOnScreen(data);
+              setAddEvent(false);
+            }}
           />
-          {eventOnDay.map((item) => (
-            <li
-              key={item.id}
-              id={item.id}
-              className={classes["event-area"]}
-              style={{
-                backgroundColor: fixIsShown === item.student_num && "bisque",
-              }}
-            >
-              <div
-                id={`attendInfo-area${item.student_num}`}
-                className={classes["attendInfo-area"]}
-              >
-                <h2 id={"name" + item.student_num}>{item.student_name}</h2>
-                <span
-                  id={`option-area${item.student_num}`}
-                  className={classes["option-area"]}
-                  style={{
-                    display: fixIsShown === item.student_num && "none",
-                  }}
-                >
-                  {item.option.split("*d")[0]} |{" "}
-                  {item.option.split("*d")[1] && item.option.split("*d")[1]}
-                  {}
-                </span>
-                <form
-                  id={`optionChange-area${item.student_num}`}
-                  className={classes["optionChange-area"]}
-                  style={{
-                    display: fixIsShown !== item.student_num && "none",
-                  }}
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    saveFixedData(item);
-                  }}
-                >
-                  <select
-                    name="attend-option"
-                    id={`option-select${item.student_num}`}
-                    required
-                  >
-                    <option value="">--출 결--</option>
-                    <option value="1현장체험">현장체험</option>
-                    <option value="2질병결석">질병결석</option>
-                    <option value="3가정학습">가정학습</option>
-                    <option value="4경조사">경조사</option>
-                    <option value="5기타결석">기타결석</option>
-                    <option value="6미인정">미인정</option>
-                  </select>
-                  <input
-                    type="text"
-                    placeholder="비고를 입력하세요."
-                    id={`option-note${item.student_num}`}
-                  />
-                </form>
-              </div>
-              <div className={classes["button-area"]}>
-                <Button
-                  small="true"
-                  name={fixIsShown !== item.student_num ? "수정" : "저장"}
-                  id={
-                    fixIsShown !== item.student_num
-                      ? `fix-btn${item.student_num}`
-                      : `save-btn${item.student_num}`
-                  }
-                  style={{ width: "30%", fontSize: "1.1em" }}
-                  onclick={
-                    fixIsShown !== item.student_num
-                      ? () => {
-                          props.setFixIsShown(item.student_num);
-                        }
-                      : () => {
-                          //수정한 것 저장하는 함수
-                          saveFixedData(item);
-                        }
-                  }
-                />
-                <Button
-                  small="true"
-                  name={fixIsShown !== item.student_num ? "삭제" : "취소"}
-                  id={
-                    fixIsShown !== item.student_num
-                      ? `delete-btn${item.student_num}`
-                      : `cancle-btn${item.student_num}`
-                  }
-                  style={{ width: "30%", fontSize: "1.1em" }}
-                  onclick={
-                    fixIsShown !== item.student_num
-                      ? function () {
-                          removeCheckSwal(item);
-                        }
-                      : function () {
-                          props.setFixIsShown("0");
-                        }
-                  }
-                />
-              </div>
-            </li>
-          ))}
-        </>
+        )}
+      </div>
+
+      {eventOnDay[0].id === undefined ? (
+        <div className={classes["no-events-div"]}>
+          😕 등록된 이벤트가 없어요
+        </div>
+      ) : (
+        eventOnDay.map((item) => (
+          <EventItem
+            key={item.id}
+            item={item}
+            selectOptions={attendanceOption}
+            fixIsShown={fixIsShown}
+            saveFixedData={(item) => {
+              let data = saveFixedData(item);
+              updateEventOnScreen(data);
+            }}
+            removeCheckSwal={removeCheckSwal}
+            setFixIsShown={props.setFixIsShown}
+          />
+        ))
       )}
-    </div>
+    </div> //리스트 전체를 감싸는 div 태그 끝
   );
 };
 

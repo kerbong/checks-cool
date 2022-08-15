@@ -281,10 +281,10 @@ const AttendCtxCalendar = (props) => {
             event = { ...data, eventDate: eventDate };
             new_eventByDays[index1][index2] = event;
             //   console.log(new_eventByDays[index1][index2]);
-            console.log("이벤트바이데이즈에서 일치하는 자료 찾아서 수정함!");
+            // console.log("이벤트바이데이즈에서 일치하는 자료 찾아서 수정함!");
           } else if (fixOrDel === "del") {
             new_eventByDays[index1].splice(index2, 1);
-            console.log("이벤트바이데이즈에서 일치하는 자료 찾아서 제거함!");
+            // console.log("이벤트바이데이즈에서 일치하는 자료 찾아서 제거함!");
 
             //해당날짜에 이벤트가 하나도 없을 경우 날짜 자체를 없애기
             if (new_eventByDays[index1].length === 0) {
@@ -309,7 +309,7 @@ const AttendCtxCalendar = (props) => {
       (day) => day[0]["eventDate"] === eventDate
     )[0];
 
-    console.log(new_eventOnDay);
+    // console.log(new_eventOnDay);
     //이부분 프롭스로 넘겨받으면 함수에서 문제가 생길 수 있음.
     setEventByDays(new_eventByDays);
     setEventOnDay(new_eventOnDay);

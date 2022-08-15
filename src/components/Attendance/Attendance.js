@@ -6,14 +6,7 @@ import AttendCalendar from "../Attendance/AttendCalendar";
 import Input from "../Layout/Input";
 import Swal from "sweetalert2";
 
-const ATTENDANCE_OPTION = [
-  { class: "현장체험", id: "1" },
-  { class: "질병결석", id: "2" },
-  { class: "가정학습", id: "3" },
-  { class: "경조사", id: "4" },
-  { class: "기타결석", id: "5" },
-  { class: "미인정", id: "6" },
-];
+import attendanceOption from "../../attendanceOption";
 
 const Attendance = (props) => {
   const attendCtx = useContext(AttendContext);
@@ -104,8 +97,8 @@ const Attendance = (props) => {
         <AttendCalendar getDateValue={getDateHandler} />
       </div>
       <ul className={classes["ul"]}>
-        {ATTENDANCE_OPTION &&
-          ATTENDANCE_OPTION.map((option) => (
+        {attendanceOption &&
+          attendanceOption.map((option) => (
             <li
               className={
                 option.class === attendOption.slice(1)

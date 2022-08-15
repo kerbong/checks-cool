@@ -1,6 +1,5 @@
 import { Routes, Route } from "react-router-dom";
 import "./App.css";
-import { useMemo } from "react";
 
 import MainPage from "./components/page/MainPage";
 import AttendancePage from "./components/page/AttendancePage";
