@@ -28,9 +28,7 @@ const EventItem = (props) => {
               display: props.fixIsShown === item.student_num && "none",
             }}
           >
-            {item.option.split("*d")[0]} |{" "}
-            {item.option.split("*d")[1] && item.option.split("*d")[1]}
-            {}
+            {item.option.slice(1)} | {item.note && item.note}
           </span>
           <form
             id={`optionChange-area${item.student_num}`}
@@ -44,14 +42,20 @@ const EventItem = (props) => {
             }}
           >
             <select
-              name="attend-option"
+              name="option-selcet"
               id={`option-select${item.student_num}`}
               required
             >
-              <option value="">--출 결--</option>
-              {props.selectOptions.map((option) => (
-                <option value={option.value} key={option.id}>
-                  {option.class}
+              <option value="" disabled>
+                -- 분류 --
+              </option>
+              {props.selectOption.map((select_option) => (
+                <option
+                  value={select_option.value}
+                  key={select_option.id}
+                  defaultValue={item.option === select_option.value}
+                >
+                  {select_option.class}
                 </option>
               ))}
             </select>

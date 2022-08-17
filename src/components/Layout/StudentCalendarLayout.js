@@ -1,14 +1,13 @@
-import React, { useState, useContext } from "react";
-import consultingOption from "../../consultingOption";
-import ConsultContext from "../../store/consult-context";
+import React, { useState } from "react";
+
+import AttendCtxCalendar from "../Attendance/AttendCtxCalendar";
 import Attendance from "../Attendance/Attendance";
 import Student from "../Student/Student";
 
-const ConsultingPage = (props) => {
+const StudentCalendarLayout = (props) => {
   const [optionIsShown, setOptionShown] = useState(false);
   const [student, setStudent] = useState("");
-  const [showConsultList, setShowConsultList] = useState(false);
-  const anyContext = useContext(ConsultContext);
+  const [showCalendar, setShowCalendar] = useState(false);
 
   const showOptionHandler = (e) => {
     setStudent(e.target.innerText);
@@ -20,30 +19,37 @@ const ConsultingPage = (props) => {
   };
 
   const showCalHandler = () => {
-    setShowConsultList(!showConsultList);
+    setShowCalendar(!showCalendar);
   };
   return (
     <>
       <button id="switch-btn" onClick={showCalHandler}>
-        {showConsultList ? "학생명부" : "상담목록"}
+        {showCalendar ? "학생명부" : "달력보기"}
       </button>
       {optionIsShown && (
         <Attendance
           onClose={hideOptionHandler}
           who={student}
           date={new Date()}
-          selectOption={consultingOption}
-          Context={ConsultContext}
-          about="consulting"
+          selectOption={props.selectOption}
+          Context={props.Context}
+          about="attendance"
         />
       )}
-      {!showConsultList ? (
+      {!showCalendar ? (
         <Student students={props.students} showOption={showOptionHandler} />
       ) : (
-        <>{anyContext.datas.map((data) => console.log(data))}</>
+        <>
+          {/* <AttendCalendar inline={"true"} getDateValue={getAttendDates} /> */}
+          <AttendCtxCalendar
+            Context={props.Context}
+            selectOption={props.selectOption}
+            about="attendance"
+          />
+        </>
       )}
     </>
   );
 };
 
-export default ConsultingPage;
+export default StudentCalendarLayout;

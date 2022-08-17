@@ -13,11 +13,11 @@
 .button-student {
   width: 50%;
   margin: 5px 10px;
-  font-size: 1.2em;
+  font-size: 1.1em;
   border-radius: 10px;
   border-width: 0;
   letter-spacing: 1px;
-  padding: 2vh;
+  padding: 1.5vh;
   background-color: #ffbec7;
   font-family: "GowunDodum";
 }

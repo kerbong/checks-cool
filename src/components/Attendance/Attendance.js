@@ -1,34 +1,46 @@
 import classes from "./Attendance.module.css";
 import Modal from "../Layout/Modal";
-import React, { useContext, useState, useRef } from "react";
-import AttendContext from "../../store/attend-context";
+import React, { useContext, useState, useRef, useCallback } from "react";
 import AttendCalendar from "../Attendance/AttendCalendar";
 import Input from "../Layout/Input";
 import Swal from "sweetalert2";
 
-import attendanceOption from "../../attendanceOption";
-
 const Attendance = (props) => {
-  const attendCtx = useContext(AttendContext);
+  const anyContext = useContext(props.Context);
   const [inputIsShown, setInputIsShown] = useState(false);
-  const [attendOption, setAttendOption] = useState("");
+  const [option, setOption] = useState("");
   const [attendDate, setAttendDate] = useState(new Date());
 
-  const noteRef = useRef();
+  const noteRef = useRef(null);
+
+  const handleResizeHeight = useCallback(() => {
+    if (noteRef === null || noteRef.current === null) {
+      return;
+    }
+    noteRef.current.style.height = "10px";
+    noteRef.current.style.height = noteRef.current.scrollHeight + "px";
+  }, []);
 
   const getToday = (date) => {
-    var year = date.getFullYear();
-    var month = ("0" + (1 + date.getMonth())).slice(-2);
-    var day = ("0" + date.getDate()).slice(-2);
+    let year = date.getFullYear();
+    let month = ("0" + (1 + date.getMonth())).slice(-2);
+    let day = ("0" + date.getDate()).slice(-2);
 
     return year + "-" + month + "-" + day;
+  };
+
+  const getTime = (date) => {
+    let hours = ("0" + date.getHours()).slice(-2);
+    let minutes = ("0" + date.getMinutes()).slice(-2);
+
+    return hours + ":" + minutes;
   };
 
   const checkSave = (text) => {
     Swal.fire({
       icon: "success",
-      title: text,
-      text: "5초 후에 창이 사라집니다.",
+      title: "저장되었어요!",
+      text: text,
       confirmButtonText: "확인",
       confirmButtonColor: "#85bd82",
       timer: 5000,
@@ -46,7 +58,7 @@ const Attendance = (props) => {
   };
 
   const showNote = (e) => {
-    setAttendOption(e.target.id + e.target.innerText);
+    setOption(e.target.id + e.target.innerText);
     setInputIsShown(true);
   };
 
@@ -70,20 +82,34 @@ const Attendance = (props) => {
       return;
     }
 
+    let new_data_id = "";
+
+    if (props.about === "consulting") {
+      let selectDateTime = getTime(attendDate);
+      //년월일시간+번호 를 식별id로 사용 나중에 지울떄(상담)
+      new_data_id = selectDate + selectDateTime + studentInfo[0];
+    } else if (props.about === "attendance") {
+      //년월일+번호 를 식별id로 사용 나중에 지울떄(출결)
+      new_data_id = selectDate + studentInfo[0];
+    }
+
     const new_data = {
       student_num: studentInfo[0],
       student_name: studentInfo[1],
-      //년월일+번호 를 식별id로 사용 나중에 지울떄
-      id: selectDate + studentInfo[0],
-      option_id: attendOption.slice(0, 1),
-      option: attendOption.slice(1) + "*d" + inputValue + "*d" + selectDate,
+      id: new_data_id,
+      option: option,
+      note: inputValue,
     };
 
-    // console.log(new_data);
-    attendCtx.addData(new_data);
+    console.log(new_data);
+    anyContext.addData(new_data);
 
     //나중에 기간, 날짜도 추가하기
-    checkSave(`${studentInfo[1]} | ${attendOption.slice(1)} | ${inputValue}`);
+    checkSave(
+      `${studentInfo[1]} 학생의 ${option.slice(
+        1
+      )} 관련 내용이 저장되었습니다. (5초 후 창이 자동으로 사라집니다.)`
+    );
 
     setInputIsShown(false);
     props.onClose();
@@ -97,33 +123,33 @@ const Attendance = (props) => {
         <AttendCalendar getDateValue={getDateHandler} />
       </div>
       <ul className={classes["ul"]}>
-        {attendanceOption &&
-          attendanceOption.map((option) => (
+        {props.selectOption &&
+          props.selectOption.map((select_option) => (
             <li
               className={
-                option.class === attendOption.slice(1)
-                  ? classes["attend-option-select"]
-                  : classes["attend-option"]
+                select_option.value === option
+                  ? classes["option-select"]
+                  : classes["option"]
               }
-              key={option.id}
-              id={option.id}
+              key={select_option.id}
+              id={select_option.id}
               onClick={showNote}
             >
-              {option.class}
+              {select_option.class}
             </li>
           ))}
       </ul>
       <div className={classes["form-section"]}>
         {inputIsShown && (
           <form
-            id="attend-form"
+            id="area-form"
             className={classes.form}
             onSubmit={submitHandler}
           >
             <Input
               ref={noteRef}
               className={classes.input}
-              label="attendData"
+              label="inputData"
               input={{
                 id: props.id,
                 type: "text",
@@ -131,6 +157,8 @@ const Attendance = (props) => {
                 defaultValue: "",
                 autoFocus: true,
               }}
+              onKeyDown={() => handleResizeHeight(this)}
+              onKeyUp={() => handleResizeHeight(this)}
             />
             <button className={classes.btn}>저장</button>
           </form>

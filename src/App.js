@@ -30,7 +30,10 @@ function App() {
               path="attendance/:studentNum"
               element={<NumAttendancePage />}
             />
-            <Route path="consulting" element={<ConsultingPage />} />
+            <Route
+              path="consulting"
+              element={<ConsultingPage students={students} />}
+            />
             <Route path="memo" element={<MemoPage />} />
             <Route path="todo" element={<TodoPage />} />
           </Routes>

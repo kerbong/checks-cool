@@ -1,25 +1,26 @@
 import React from "react";
-import AttendContext from "./attend-context";
+import ConsultContext from "./consult-context";
 import { useReducer } from "react";
-// import Swal from "sweetalert2";
-const defaultAttendState = {
+
+const defaultConsultState = {
   datas: [],
 };
 
-const attendReducer = (state, action) => {
-  //같은 학생이 같은 날짜에 두 가지 출석 항목이 있을 경우 저장 안됨!
+const consultReducer = (state, action) => {
+  //같은 학생이 같은 날짜에 두 가지 상담 항목 저장 가능!
 
   if (action.type === "ADD") {
-    // console.log(action.data);
+    console.log("액션으로 전해진 데이터" + action.data);
     const existingStudentDataIndex = state.datas.findIndex(
       (data) => data.id === action.data.id
     );
+    //id는 날짜(yyyy-mm-dd) +시간(00:00)+ 번호
 
     const existingStudentData = state.datas[existingStudentDataIndex];
 
     let updatedDatas;
 
-    //해당날짜에 해당학생의 자료가 없으면
+    //해당날짜와 시각에 해당학생의 자료가 없으면
     if (!existingStudentData) {
       //받은자료로 데이터 추가하기
       updatedDatas = state.datas.concat(action.data);
@@ -50,34 +51,34 @@ const attendReducer = (state, action) => {
       datas: updatedDatas,
     };
   }
-  return defaultAttendState;
+  return defaultConsultState;
 };
 
-const AttendProvider = (props) => {
-  const [attendState, dispatchAttendAction] = useReducer(
-    attendReducer,
-    defaultAttendState
+const ConsultProvider = (props) => {
+  const [consultState, dispatchConsultAction] = useReducer(
+    consultReducer,
+    defaultConsultState
   );
 
-  const addDataToAttendHandler = (data) => {
-    dispatchAttendAction({ type: "ADD", data: data });
+  const addDataToConsultHandler = (data) => {
+    dispatchConsultAction({ type: "ADD", data: data });
   };
 
-  const removeDataFromAttendHandler = (id) => {
-    dispatchAttendAction({ type: "REMOVE", id: id });
+  const removeDataFromConsultHandler = (id) => {
+    dispatchConsultAction({ type: "REMOVE", id: id });
   };
 
-  const attendContext = {
-    datas: attendState.datas,
-    addData: addDataToAttendHandler,
-    removeData: removeDataFromAttendHandler,
+  const consultContext = {
+    datas: consultState.datas,
+    addData: addDataToConsultHandler,
+    removeData: removeDataFromConsultHandler,
   };
 
   return (
-    <AttendContext.Provider value={attendContext}>
+    <ConsultContext.Provider value={consultContext}>
       {props.children}
-    </AttendContext.Provider>
+    </ConsultContext.Provider>
   );
 };
 
-export default AttendProvider;
+export default ConsultProvider;

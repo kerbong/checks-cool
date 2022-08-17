@@ -27,18 +27,38 @@ const EventInput = (props) => {
     return _year + "-" + _month + "-" + _day;
   };
 
+  const getTime = (date) => {
+    let hours = ("0" + date.getHours()).slice(-2);
+    let minutes = ("0" + date.getMinutes()).slice(-2);
+
+    return hours + ":" + minutes;
+  };
+
   const saveEvent = () => {
     let eventDate = document.querySelector("h1").getAttribute("class");
 
     let eventDay = changeYyyyMmDd(eventDate);
+
+    let new_data_id = "";
+
+    if (props.about === "consulting") {
+      let selectDateTime = getTime(new Date());
+      //년월일시간+번호 를 식별id로 사용 나중에 지울떄(상담)
+      new_data_id = eventDay + selectDateTime + student.split(" ")[0];
+    } else if (props.about === "attendance") {
+      //년월일+번호 를 식별id로 사용 나중에 지울떄(출결)
+      new_data_id = eventDay + student.split(" ")[0];
+    }
 
     //EventLists saveFixedData함수에서 필요한 것만 보냄
     let new_data = {
       eventDate: eventDate,
       student_num: student.split(" ")[0],
       student_name: student.split(" ")[1],
-      id: eventDay + student.split(" ")[0],
+      id: new_data_id,
     };
+
+    console.log(new_data);
 
     props.saveNewData(new_data);
   };
@@ -78,7 +98,7 @@ const EventInput = (props) => {
               saveEvent();
             }}
           >
-            {props.selectOptions && (
+            {props.selectOption && (
               <select
                 name="attend-option"
                 id={
@@ -88,10 +108,10 @@ const EventInput = (props) => {
                 }
                 required
               >
-                <option value="">--출 결--</option>
-                {props.selectOptions.map((option) => (
-                  <option value={option.value} key={option.id}>
-                    {option.class}
+                <option value="">-- 분류 --</option>
+                {props.selectOption.map((select_option) => (
+                  <option value={select_option.value} key={select_option.id}>
+                    {select_option.class}
                   </option>
                 ))}
               </select>

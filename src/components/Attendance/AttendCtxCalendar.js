@@ -1,5 +1,4 @@
 import { useState, useContext, useEffect } from "react";
-import AttendContext from "../../store/attend-context";
 import AttendCalendar from "../Attendance/AttendCalendar";
 import Modal from "../Layout/Modal";
 
@@ -23,7 +22,7 @@ const AttendCtxCalendar = (props) => {
   const [eventOnDay, setEventOnDay] = useState([]);
   //   const [clickedDay, setClickedDay] = useState("");
 
-  const attendCtx = useContext(AttendContext);
+  const anyContext = useContext(props.Context);
 
   //   let eventOnDay = [];
   //   let highlight = [];
@@ -108,26 +107,26 @@ const AttendCtxCalendar = (props) => {
     const eventDrawOnCalendar = (month) => {
       // console.log("이벤트를 캘린더에 그리기! 전달받은 달" + month);
       //
-      if (attendCtx) {
+      if (anyContext) {
         //깊은 복사로 eventByDays 복사해두기, 185번줄 아래로 넣을 경우 eventByDays가 빈 배열인 데 거기에 계속 추가해서 문제...
         let new_eventByDays = JSON.parse(JSON.stringify(eventByDays));
 
-        // console.log(attendCtx);
-        attendCtx.datas.forEach(function (data) {
+        // console.log(anyContext);
+        anyContext.datas.forEach(function (data) {
           // console.log(data);
 
           //날짜별로 배열을 만들어서 데이터를 넣기
-          //   attendCtxDatasHandler(data);
+          //   anyContextDatasHandler(data);
 
           // 2022-08-03
-          const eventDate = data.option.split("*d")[2];
+          const eventDate = data.id.slice(0, 10);
 
           //이벤트 달과 현재 달력의 달이 같으면
           if (eventDate.slice(0, 7) === month) {
-            // 날짜를 day 변수로 저장
+            // 날짜를 day 변수로 저장 0+03
             const day = 0 + eventDate.slice(8);
 
-            //여기에서 오류가 생김. 해당 요소를 찾는데 바뀌기 전에 찾았었음. useEffect 의존배열에 attendctx넣어서 해결?
+            //여기에서 오류가 생김. 해당 요소를 찾는데 바뀌기 전에 찾았었음. useEffect 의존배열에 anyContext넣어서 해결?
 
             // 이벤트 날짜와 같은 날짜 클래스를 지닌 태그를 찾음
             const eventDayTag = document.querySelectorAll(
@@ -155,7 +154,7 @@ const AttendCtxCalendar = (props) => {
                 `button[id='${data.id}']`
               )[0];
 
-              //만약 이벤트 태그의 번호와 attendctx의 개별 data의 이벤트 날짜가 같고, 이미 그려진 버튼이 없으면
+              //만약 이벤트 태그의 번호와 anyContext의 개별 data의 이벤트 날짜가 같고, 이미 그려진 버튼이 없으면
               if (yyyy_mm_dd === eventDate && !existedBtn) {
                 //달력날짜에 (번호+이름)의 버튼 추가하기
                 const btn = document.createElement("button");
@@ -166,7 +165,7 @@ const AttendCtxCalendar = (props) => {
                 eventTag.style.backgroundColor = "#d38c85";
                 eventTag.style.borderRadius = "5px";
 
-                //attendCtx.datas의 개별 data를 eventByDays 배열에 추가
+                //anyContext.datas의 개별 data를 eventByDays 배열에 추가
                 const eventByDaysAddData = () => {
                   // console.log(new_eventByDays);
                   // 기존 데이터가 있으면
@@ -205,9 +204,9 @@ const AttendCtxCalendar = (props) => {
                 }; //eventByDays에 데이터 추가 함수 끝
                 eventByDaysAddData();
               }
-            }); //날짜가 attendCtx와 같은 태그에 할 일 forEach 함수 끝
+            }); //날짜가 anyContext와 같은 태그에 할 일 forEach 함수 끝
           } //이벤트 달과 현재 달력의 달이 같을 떄 할일 함수 끝
-        }); //attendCtx.datas 의 개별 data 함수 끝
+        }); //anyContext.datas 의 개별 data 함수 끝
       }
     }; // eventDrawOnCalendar 함수 끝
 
@@ -216,13 +215,12 @@ const AttendCtxCalendar = (props) => {
     showAllDayEvents(eventByDays);
 
     //react에서 추천해주는 데로 집어넣었음 잘 작동하는데 자료를 삭제할 경우 다시 렌더링 되어서.. 버튼이 두개씩 입력됨(버튼 입력될 때 확인하고 만들기)
-  }, [currentMonth, attendCtx, eventByDays]);
+  }, [currentMonth, anyContext, eventByDays]);
   // }, [currentMonth]);
 
   //useEffect 여러 번 사용할 수 있네???
   useEffect(() => {
     //처음 화면을 로딩했을 때 월 이동버튼에 state 변경기능 추가
-    // if (monthMoved === 0) {
     const moveMonth = document.querySelectorAll(
       ".react-datepicker__navigation"
     );
@@ -234,8 +232,6 @@ const AttendCtxCalendar = (props) => {
       let fixedM = fixCurrentMonth(currentM, -1);
       //state 설정
       setCurrentMonth(fixedM);
-      // state를 추가함
-      // setMonthMoved(monthMoved + 1);
     });
 
     moveMonth[1].addEventListener("click", () => {
@@ -243,9 +239,7 @@ const AttendCtxCalendar = (props) => {
       let currentM = getCurrentMonth();
       let fixedM = fixCurrentMonth(currentM, +1);
       setCurrentMonth(fixedM);
-      // setMonthMoved(monthMoved + 1);
     });
-    // }
   }, []);
 
   //달력에서 받은 date 형식을 바꾸기
@@ -256,9 +250,9 @@ const AttendCtxCalendar = (props) => {
     let selectDay = year + "-" + month + "-" + day;
 
     //달력에서 날짜를 클릭하면 해당 날짜와 관련된 데이터 보여주기
-    if (attendCtx.lenth > 0) {
-      const eventOnDay = attendCtx.datas.map(
-        (data) => data.option.split("*d")[2] === selectDay
+    if (anyContext.lenth > 0) {
+      const eventOnDay = anyContext.datas.map(
+        (data) => data.id(0, 10) === selectDay
       );
       console.log(eventOnDay);
     }
@@ -300,7 +294,7 @@ const AttendCtxCalendar = (props) => {
 
   //EventLists에서 호출하는 수정버튼 함수,
   const fixedEventHandler = (fixed_data, eventDate) => {
-    attendCtx.addData(fixed_data);
+    anyContext.addData(fixed_data);
     setFixIsShown("0");
 
     let new_eventByDays = fixEventByDays(fixed_data, eventDate, "fix");
@@ -327,8 +321,8 @@ const AttendCtxCalendar = (props) => {
 
   //EventLists에서 보낸 자료 삭제 요청 함수
   const removeEventHandler = (data) => {
-    //여기에 실제 attendCtx에서 지우는 거 호출
-    attendCtx.removeData(data.id);
+    //여기에 실제 anyContext에서 지우는 거 호출
+    anyContext.removeData(data.id);
 
     let new_eventByDays = fixEventByDays(data, data.eventDate, "del");
 
@@ -364,6 +358,8 @@ const AttendCtxCalendar = (props) => {
             fixedEventHandler={fixedEventHandler}
             setFixIsShown={setFixIsShown}
             removeData={removeEventHandler}
+            selectOption={props.selectOption}
+            about={props.about}
           />
         </Modal>
       )}

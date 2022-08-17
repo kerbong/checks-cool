@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import DatePicker from "react-datepicker";
-import dayjs from "dayjs";
 
 import "react-datepicker/dist/react-datepicker.css";
 import "../Layout/Calendar.css";

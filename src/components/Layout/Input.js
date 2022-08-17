@@ -4,7 +4,13 @@ const Input = React.forwardRef((props, ref) => {
   return (
     <>
       <label htmlFor={props.input.id}></label>
-      <input ref={ref} {...props.input} className={props.className} />
+      <textarea
+        ref={ref}
+        {...props.input}
+        className={props.className}
+        onKeyDown={props.onKeyDown}
+        onKeyUp={props.onKeyDown}
+      />
     </>
   );
 });

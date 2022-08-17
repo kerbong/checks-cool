@@ -5,8 +5,6 @@ import Swal from "sweetalert2";
 import EventInput from "./EventInput";
 import classes from "./EventLists.module.css";
 
-import attendanceOption from "../../attendanceOption";
-
 const EventLists = (props) => {
   const [eventOnDay, setEventOnDay] = useState(props.eventOnDay);
   const [addEvent, setAddEvent] = useState(false);
@@ -18,9 +16,9 @@ const EventLists = (props) => {
   const removeCheckSwal = (data) => {
     Swal.fire({
       title: "자료를 지울까요?",
-      text: `${data.option.split("*d")[2]} | ${data.student_name} | ${
-        data.option.split("*d")[0]
-      }`,
+      text: `${data.id.slice(0, 10)} | ${
+        data.student_name
+      } | ${data.option.slice(1)}`,
       showDenyButton: true,
       confirmButtonText: "삭제",
       confirmButtonColor: "#db100cf2",
@@ -47,9 +45,7 @@ const EventLists = (props) => {
   //이미 있던 이벤트 수정할 때 화면 수정하는 함수
   const updateEventOnScreen = (data) => {
     let option = document.querySelector(`#option-area${data.student_num}`);
-    option.innerText = `${data.option.split("*d")[0]} | ${
-      data.option.split("*d")[1]
-    }`;
+    option.innerText = `${data.option.slice(1)} | ${data.note}`;
   };
 
   //없던 이벤트 새로 추가할 떄 화면 수정하는 함수
@@ -65,25 +61,46 @@ const EventLists = (props) => {
     setEventOnDay([...new_eventOnDay]);
   };
 
+  //옵션 선택했는지 확인하기(저장가능여부 확인)
+  const enoughData = (item) => {
+    //출결 옵션 선택값
+    const optionValue = document.querySelector(
+      `#option-select${item.student_num}`
+    ).value;
+    if (item.student_num && item.student_name && optionValue) {
+      return true;
+    } else {
+      Swal.fire({
+        icon: "error",
+        title: "정보가 부족해요!",
+        text: "이름과 옵션선택은 필수 요소입니다.",
+        confirmButtonText: "확인",
+        confirmButtonColor: "#85bd82",
+        timer: 5000,
+      });
+      return false;
+    }
+  };
+
   //새로운/ 수정된 자료 저장함수
   const saveFixedData = (item) => {
     //출결 옵션 선택값
     const optionValue = document.querySelector(
       `#option-select${item.student_num}`
     ).value;
+
     //비고 입력값
     const noteValue = document.querySelector(
       `#option-note${item.student_num}`
     ).value;
     //출결 이벤트 날짜
-    const eventDay = item.id.slice(0, 10);
 
     const fixed_data = {
       student_num: item.student_num,
       student_name: item.student_name,
-      id: eventDay + item.student_num,
-      option_id: optionValue.slice(0, 1),
-      option: optionValue.slice(1) + "*d" + noteValue + "*d" + eventDay,
+      id: item.id,
+      option: optionValue,
+      note: noteValue,
     };
 
     // console.log(fixed_data);
@@ -136,12 +153,16 @@ const EventLists = (props) => {
           //addEvent 상황이면 인풋창 보여주고
           <EventInput
             closeHandler={closeHandler}
-            selectOptions={attendanceOption}
+            selectOption={props.selectOption}
             placeholder="비고를 입력하세요."
+            about={props.about}
             saveNewData={(item) => {
-              let data = saveFixedData(item);
-              newEventOnScreen(data);
-              setAddEvent(false);
+              let getEnoughData = enoughData(item);
+              if (getEnoughData) {
+                let data = saveFixedData(item);
+                newEventOnScreen(data);
+                setAddEvent(false);
+              }
             }}
           />
         )}
@@ -156,11 +177,14 @@ const EventLists = (props) => {
           <EventItem
             key={item.id}
             item={item}
-            selectOptions={attendanceOption}
+            selectOption={props.selectOption}
             fixIsShown={fixIsShown}
             saveFixedData={(item) => {
-              let data = saveFixedData(item);
-              updateEventOnScreen(data);
+              let getEnoughData = enoughData(item);
+              if (getEnoughData) {
+                let data = saveFixedData(item);
+                updateEventOnScreen(data);
+              }
             }}
             removeCheckSwal={removeCheckSwal}
             setFixIsShown={props.setFixIsShown}
