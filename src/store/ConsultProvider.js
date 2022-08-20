@@ -1,5 +1,5 @@
 import React from "react";
-import ConsultContext from "./consult-context";
+import ConsultContext from "./consult-context.js";
 import { useReducer } from "react";
 
 const defaultConsultState = {
@@ -10,7 +10,6 @@ const consultReducer = (state, action) => {
   //같은 학생이 같은 날짜에 두 가지 상담 항목 저장 가능!
 
   if (action.type === "ADD") {
-    console.log("액션으로 전해진 데이터" + action.data);
     const existingStudentDataIndex = state.datas.findIndex(
       (data) => data.id === action.data.id
     );

@@ -1,4 +1,4 @@
-.button {
+.big-menu {
   width: 180px;
   height: 150px;
   margin: 15px;
@@ -10,7 +10,7 @@
   font-family: "GowunDodum";
 }
 
-.button-student {
+.small-student {
   width: 50%;
   margin: 5px 10px;
   font-size: 1.1em;
@@ -22,10 +22,43 @@
   font-family: "GowunDodum";
 }
 
+.header-logInOut {
+  font-family: "GowunDodum";
+  background-color: inherit;
+  border-width: 0;
+  padding: 10px;
+  margin: 1px;
+  color: azure;
+}
+
 .button:nth-child(even) {
   background-color: #f79089;
 }
 
 .button:nth-child(odd) {
   background-color: #ffbec7;
+}
+
+.choose-studentBtn {
+  width: 50%;
+  margin: 5px 10px;
+  font-size: 1.1em;
+  border-radius: 10px;
+  border-width: 0;
+  letter-spacing: 1px;
+  padding: 2vh;
+  background-color: #ffbec7;
+  font-family: "GowunDodum";
+}
+
+.event-fix-btn {
+  width: 35%;
+  margin: 5px 10px;
+  font-size: 1.1em;
+  border-radius: 10px;
+  border-width: 0;
+  letter-spacing: 1px;
+  padding: 1.5vh;
+  background-color: #ffbec7;
+  font-family: "GowunDodum";
 }

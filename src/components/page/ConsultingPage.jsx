@@ -22,6 +22,7 @@ const ConsultingPage = (props) => {
   const showCalHandler = () => {
     setShowConsultList(!showConsultList);
   };
+
   return (
     <>
       <button id="switch-btn" onClick={showCalHandler}>
@@ -40,7 +41,11 @@ const ConsultingPage = (props) => {
       {!showConsultList ? (
         <Student students={props.students} showOption={showOptionHandler} />
       ) : (
-        <>{anyContext.datas.map((data) => console.log(data))}</>
+        <>
+          {anyContext &&
+            // <ConsultLists/>}
+            " 아직 빈공간"}
+        </>
       )}
     </>
   );

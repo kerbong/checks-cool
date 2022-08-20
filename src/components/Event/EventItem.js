@@ -68,7 +68,7 @@ const EventItem = (props) => {
         </div>
         <div className={classes["button-area"]}>
           <Button
-            small="true"
+            className="small-student"
             name={props.fixIsShown !== item.student_num ? "수정" : "저장"}
             id={
               props.fixIsShown !== item.student_num
@@ -88,7 +88,7 @@ const EventItem = (props) => {
             }
           />
           <Button
-            small="true"
+            className="small-student"
             name={props.fixIsShown !== item.student_num ? "삭제" : "취소"}
             id={
               props.fixIsShown !== item.student_num

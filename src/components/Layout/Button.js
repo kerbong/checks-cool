@@ -14,7 +14,7 @@ const Button = (props) => {
     <>
       <button
         id={props.id}
-        className={props.small ? classes["button-student"] : classes["button"]}
+        className={classes[props.className]}
         onClick={clickHandler}
       >
         {props.name}

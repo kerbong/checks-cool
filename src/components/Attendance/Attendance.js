@@ -102,6 +102,7 @@ const Attendance = (props) => {
     };
 
     console.log(new_data);
+    //왜 똑같이 만들었는데 attendProvider는 되고 consultProvider는 작동하지 않나... 다 잘 된거 같은데
     anyContext.addData(new_data);
 
     //나중에 기간, 날짜도 추가하기
@@ -113,6 +114,7 @@ const Attendance = (props) => {
 
     setInputIsShown(false);
     props.onClose();
+    console.log(anyContext);
   };
 
   return (

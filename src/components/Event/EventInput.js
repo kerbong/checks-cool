@@ -74,8 +74,7 @@ const EventInput = (props) => {
         <div className={classes["attendInfo-area"]}>
           <div className={classes["attendInfo-student"]}>
             <Button
-              className={classes["choose-studentBtn"]}
-              small="true"
+              className="choose-studentBtn"
               name={"학생선택"}
               onclick={function () {
                 setShowStudent(!showStudent);
@@ -128,20 +127,18 @@ const EventInput = (props) => {
         </div>
         <div className={classes["button-area"]}>
           <Button
-            small="true"
+            className="event-fix-btn"
             name="저장"
             id={`save-btn${props.student_num}`}
-            class={{ width: "30%", fontSize: "1.1em" }}
             onclick={() => {
               //추가한 이벤트 저장하는 함수, 필요한 데이터를 모아서 상위 props에 이벤트 정보 전달함.
               saveEvent();
             }}
           />
           <Button
-            small="true"
+            className="event-fix-btn"
             name={"취소"}
             id={`cancle-btn${props.student_num}`}
-            style={{ width: "30%", fontSize: "1.1em" }}
             onclick={function () {
               props.closeHandler();
             }}

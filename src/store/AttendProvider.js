@@ -1,6 +1,18 @@
-import React from "react";
+import React, { useEffect } from "react";
 import AttendContext from "./attend-context";
 import { useReducer } from "react";
+import { dbService } from "../fbase";
+import {
+  collection,
+  addDoc,
+  query,
+  onSnapshot,
+  setDoc,
+  getDocs,
+  where,
+  doc,
+} from "firebase/firestore";
+
 // import Swal from "sweetalert2";
 const defaultAttendState = {
   datas: [],
@@ -59,11 +71,53 @@ const AttendProvider = (props) => {
     defaultAttendState
   );
 
-  const addDataToAttendHandler = (data) => {
+  useEffect(() => {
+    //db에서 attend 출결 DB가져오고 attendCtx에 추가하기
+    const q = query(collection(dbService, "attend"));
+    onSnapshot(q, (snapShot) => {
+      snapShot.docs.map((doc) => {
+        const attendObj = {
+          ...doc.data(),
+          doc_id: doc.id,
+        };
+        return dispatchAttendAction({ type: "ADD", data: attendObj });
+      });
+    });
+  }, [props.userUid]);
+
+  const addDataToAttendHandler = async (data) => {
+    //앱 내부의 attendCtx에 저장
     dispatchAttendAction({ type: "ADD", data: data });
+    //firebase에 firestore에 업로드
+    console.log(attendState.datas);
+    const q = query(
+      collection(dbService, "attend"),
+      where("id", "==", data.id)
+    );
+    const querySnapshot = await getDocs(q);
+    let existedDoc_id;
+    querySnapshot.forEach((doc) => {
+      // doc.data() is never undefined for query doc snapshots
+      existedDoc_id = doc.id;
+    });
+    console.log(existedDoc_id);
+
+    if (existedDoc_id) {
+      //기존 데이터가 존재할 경우 덮어쓰기로 저장하기
+      await setDoc(doc(dbService, "attend", existedDoc_id), {
+        ...data,
+        writtenId: props.userUid,
+      });
+    } else {
+      //새로운 데이터 자료 firestore에 저장하기
+      await addDoc(collection(dbService, "attend"), {
+        ...data,
+        writtenId: props.userUid,
+      });
+    }
   };
 
-  const removeDataFromAttendHandler = (id) => {
+  const removeDataFromAttendHandler = async (id) => {
     dispatchAttendAction({ type: "REMOVE", id: id });
   };
 
