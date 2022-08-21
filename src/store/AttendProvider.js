@@ -11,6 +11,7 @@ import {
   getDocs,
   where,
   doc,
+  deleteDoc,
 } from "firebase/firestore";
 
 // import Swal from "sweetalert2";
@@ -72,8 +73,11 @@ const AttendProvider = (props) => {
   );
 
   useEffect(() => {
-    //db에서 attend 출결 DB가져오고 attendCtx에 추가하기
-    const q = query(collection(dbService, "attend"));
+    //db에서 attend 출결 DB가져오고 작성자가 현재 유저와 동일한지 확인하고 attendCtx에 추가하기
+    const q = query(
+      collection(dbService, "attend"),
+      where("writtenId", "==", props.userUid)
+    );
     onSnapshot(q, (snapShot) => {
       snapShot.docs.map((doc) => {
         const attendObj = {
@@ -88,7 +92,7 @@ const AttendProvider = (props) => {
   const addDataToAttendHandler = async (data) => {
     //앱 내부의 attendCtx에 저장
     dispatchAttendAction({ type: "ADD", data: data });
-    //firebase에 firestore에 업로드
+    //firebase에 firestore에 업로드, 데이터에서 같은게 있는지 확인
     console.log(attendState.datas);
     const q = query(
       collection(dbService, "attend"),
@@ -119,6 +123,18 @@ const AttendProvider = (props) => {
 
   const removeDataFromAttendHandler = async (id) => {
     dispatchAttendAction({ type: "REMOVE", id: id });
+
+    //firestore attend에서 현재유저가 작성한 자료가져오고 id가 같은거 찾아서 삭제하기
+    const q = query(
+      collection(dbService, "attend"),
+      where("writtenId", "==", props.userUid),
+      where("id", "==", id)
+    );
+    const querySnapshot = await getDocs(q);
+    console.log(querySnapshot);
+    querySnapshot.forEach((document) =>
+      deleteDoc(doc(dbService, "attend", document.id))
+    );
   };
 
   const attendContext = {

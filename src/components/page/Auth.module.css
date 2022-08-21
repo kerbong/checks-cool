@@ -1,0 +1,40 @@
+.logInOut-form {
+  margin: 15px 15px 1px 15px;
+  line-height: 5;
+}
+
+.logInOut-input {
+  padding: 15px;
+  font-size: 1.1em;
+  width: 65%;
+}
+
+.logInOut-SignUp {
+  padding: 15px;
+  font-size: 1em;
+  width: 50%;
+  margin: 5px;
+  font-family: "GowunDodum";
+  background-color: #b5dcc0b8;
+  border-radius: 10px;
+}
+
+.logInOut-SignUp-Change {
+  margin: 30px;
+}
+
+hr {
+  margin: 30px;
+  border-width: 0;
+  background-color: #80808066;
+  height: 2px;
+}
+
+.change-btn {
+  padding: 15px;
+  border-radius: 5px;
+  background-color: #8fcca0;
+  font-size: 1em;
+  margin-left: 15px;
+  border-radius: 10px;
+}

@@ -8,7 +8,7 @@ const Profile = (props) => {
   };
   return (
     <Button
-      onClick={logInOutHandler}
+      onclick={logInOutHandler}
       name={props.isLoggedIn ? "로그아웃" : "로그인"}
       className="header-logInOut"
     />

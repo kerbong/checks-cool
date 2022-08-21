@@ -8,6 +8,7 @@ import {
   signInWithPopup,
 } from "firebase/auth";
 import { authService } from "../../fbase";
+import classes from "./Auth.module.css";
 
 const Auth = () => {
   const [email, setEmail] = useState("");
@@ -59,7 +60,7 @@ const Auth = () => {
 
   return (
     <div>
-      <form onSubmit={onSubmit}>
+      <form onSubmit={onSubmit} className={classes["logInOut-form"]}>
         <input
           name="email"
           type="email"
@@ -67,6 +68,7 @@ const Auth = () => {
           required
           value={email}
           onChange={onChange}
+          className={classes["logInOut-input"]}
         />
         <input
           name="password"
@@ -75,16 +77,28 @@ const Auth = () => {
           required
           value={password}
           onChange={onChange}
+          className={classes["logInOut-input"]}
         />
-        <input type="submit" value={newAccount && "회원가입"} />
+        <input
+          type="submit"
+          value={newAccount ? "회원가입" : "Email 로그인"}
+          className={classes["logInOut-SignUp"]}
+        />
       </form>
-      <button onClick={toggleAccount}>
-        {newAccount ? "로그인하기" : "가입하기"}
-      </button>
-
       <div>
-        <button name="google" onClick={onSocialClick}>
-          구글로 로그인하기
+        <button
+          name="google"
+          onClick={onSocialClick}
+          className={classes["logInOut-SignUp"]}
+        >
+          Google 연동 로그인하기
+        </button>
+      </div>
+      <div className={classes["logInOut-SignUp-Change"]}>
+        <hr />
+        {newAccount ? "이미 가입하셨나요? -> " : "아직 회원이 아니신가요? -> "}
+        <button onClick={toggleAccount} className={classes["change-btn"]}>
+          {newAccount ? "로그인하기" : "가입하기"}
         </button>
       </div>
     </div>
