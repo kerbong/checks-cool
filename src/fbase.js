@@ -3,7 +3,17 @@ import { initializeApp } from "firebase/app";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 import { getAuth } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  query,
+  setDoc,
+  getDocs,
+  where,
+  doc,
+  deleteDoc,
+} from "firebase/firestore";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -16,6 +26,52 @@ const firebaseConfig = {
 };
 
 const firebaseApp = initializeApp(firebaseConfig);
+
+const dbFirestore = getFirestore(firebaseApp);
+
+//firebase에 firestore에 데이터 업로드 하기, 데이터에서 같은게 있으면 덮어쓰기, 없으면 새로 만들기
+export const dbAddData = async (collection_name, data, userId) => {
+  const q = query(
+    collection(dbFirestore, collection_name),
+    where("id", "==", data.id)
+  );
+  const querySnapshot = await getDocs(q);
+  let existedDoc_id;
+  querySnapshot.forEach((doc) => {
+    // doc.data() is never undefined for query doc snapshots
+    existedDoc_id = doc.id;
+  });
+  console.log(existedDoc_id);
+
+  if (existedDoc_id) {
+    //기존 데이터가 존재할 경우 덮어쓰기로 저장하기
+    await setDoc(doc(dbFirestore, collection_name, existedDoc_id), {
+      ...data,
+      writtenId: userId,
+    });
+  } else {
+    //새로운 데이터 자료 firestore에 저장하기
+    await addDoc(collection(dbFirestore, collection_name), {
+      ...data,
+      writtenId: userId,
+    });
+  }
+};
+
+//firebase에 firestore에서 데이터 삭제하기
+export const dbDeleteData = async (collection_name, dataId, useId) => {
+  //firestore attend에서 현재유저가 작성한 자료가져오고 id가 같은거 찾아서 삭제하기
+  const q = query(
+    collection(dbFirestore, collection_name),
+    where("writtenId", "==", useId),
+    where("id", "==", dataId)
+  );
+  const querySnapshot = await getDocs(q);
+  console.log(querySnapshot);
+  querySnapshot.forEach((document) =>
+    deleteDoc(doc(dbFirestore, collection_name, document.id))
+  );
+};
 
 export const authService = getAuth(firebaseApp);
 export const dbService = getFirestore(firebaseApp);

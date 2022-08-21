@@ -74,7 +74,7 @@
   border-width: 0;
   letter-spacing: 1px;
   padding: 2vh;
-  background-color: #ede9d0;
+  background-color: inherit;
   font-family: "GowunDodum";
 }
 
@@ -118,4 +118,27 @@
 .react-datepicker__day-name:nth-child(1),
 .react-datepicker__day-name:nth-child(7) {
   width: 15px;
+}
+
+#title-btn {
+  width: auto;
+  margin: 5px 10px;
+  font-size: 1.2em;
+  border-radius: 10px;
+  border-width: 0;
+  letter-spacing: 1px;
+  padding: 2vh;
+  background-color: #dcc329;
+  font-family: "GowunDodum";
+  position: absolute;
+  left: -3vw;
+}
+
+#title-btn.consult {
+  background-color: #95d532;
+}
+
+#title-div {
+  display: flex;
+  justify-content: flex-end;
 }

@@ -1,21 +1,12 @@
-import React from "react";
+import React, { useContext, useState } from "react";
 
 import classes from "./ConsultLists.module.css";
 
-const ConsultLists = () => {
-  return (
-    <>
-      {/* <EventLists
-            eventOnDay={eventOnDay}
-            fixIsShown={fixIsShown}
-            fixedEventHandler={fixedEventHandler}
-            setFixIsShown={setFixIsShown}
-            removeData={removeEventHandler}
-            selectOption={props.selectOption}
-            about={props.about}
-          /> */}
-    </>
-  );
+const ConsultLists = (props) => {
+  const [consults, setConsults] = useState([]);
+  const anyContext = useContext(props.ConsultContext);
+
+  return <></>;
 };
 
 export default ConsultLists;

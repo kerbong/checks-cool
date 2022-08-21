@@ -1,14 +1,15 @@
-import React, { useState, useContext } from "react";
+import React, { useState } from "react";
 import consultingOption from "../../consultingOption";
 import ConsultContext from "../../store/consult-context";
 import Attendance from "../Attendance/Attendance";
 import Student from "../Student/Student";
 
+import ConsultLists from "../Consult/ConsultLists";
+
 const ConsultingPage = (props) => {
   const [optionIsShown, setOptionShown] = useState(false);
   const [student, setStudent] = useState("");
   const [showConsultList, setShowConsultList] = useState(false);
-  const anyContext = useContext(ConsultContext);
 
   const showOptionHandler = (e) => {
     setStudent(e.target.innerText);
@@ -25,9 +26,20 @@ const ConsultingPage = (props) => {
 
   return (
     <>
-      <button id="switch-btn" onClick={showCalHandler}>
-        {showConsultList ? "학생명부" : "상담목록"}
-      </button>
+      <div id="title-div">
+        <button id="title-btn" className="consult">
+          <i className="fa-regular fa-comments"></i> 상담기록
+        </button>
+
+        <button id="switch-btn" onClick={showCalHandler}>
+          {showConsultList ? (
+            <i className="fa-solid fa-list-ol"></i>
+          ) : (
+            <i className="fa-regular fa-rectangle-list"></i>
+          )}
+        </button>
+      </div>
+
       {optionIsShown && (
         <Attendance
           onClose={hideOptionHandler}
@@ -42,9 +54,8 @@ const ConsultingPage = (props) => {
         <Student students={props.students} showOption={showOptionHandler} />
       ) : (
         <>
-          {anyContext &&
-            // <ConsultLists/>}
-            " 아직 빈공간"}
+          <ConsultLists context={ConsultContext} />
+          {/* " 아직 빈공간"} */}
         </>
       )}
     </>

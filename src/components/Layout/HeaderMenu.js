@@ -7,7 +7,7 @@ const HeaderMenu = (props) => {
   return (
     <>
       <li className={classes.li} onClick={path && (() => navigate(`/${path}`))}>
-        {props.sector}
+        <i className={props.className}></i>
       </li>
     </>
   );

@@ -17,6 +17,7 @@ const Button = (props) => {
         className={classes[props.className]}
         onClick={clickHandler}
       >
+        {props.icon && props.icon}
         {props.name}
       </button>
     </>

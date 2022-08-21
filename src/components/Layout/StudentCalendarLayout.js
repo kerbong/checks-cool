@@ -23,9 +23,18 @@ const StudentCalendarLayout = (props) => {
   };
   return (
     <>
-      <button id="switch-btn" onClick={showCalHandler}>
-        {showCalendar ? "학생명부" : "달력보기"}
-      </button>
+      <div id="title-div">
+        <button id="title-btn">
+          <i className="fa-regular fa-address-book"></i> 출석부
+        </button>
+        <button id="switch-btn" onClick={showCalHandler}>
+          {showCalendar ? (
+            <i className="fa-solid fa-list-ol"></i>
+          ) : (
+            <i className="fa-regular fa-calendar-days"></i>
+          )}
+        </button>
+      </div>
       {optionIsShown && (
         <Attendance
           onClose={hideOptionHandler}

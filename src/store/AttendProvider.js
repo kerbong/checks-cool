@@ -1,18 +1,8 @@
 import React, { useEffect } from "react";
 import AttendContext from "./attend-context";
 import { useReducer } from "react";
-import { dbService } from "../fbase";
-import {
-  collection,
-  addDoc,
-  query,
-  onSnapshot,
-  setDoc,
-  getDocs,
-  where,
-  doc,
-  deleteDoc,
-} from "firebase/firestore";
+import { dbService, dbAddData, dbDeleteData } from "../fbase";
+import { collection, query, onSnapshot, where } from "firebase/firestore";
 
 // import Swal from "sweetalert2";
 const defaultAttendState = {
@@ -93,48 +83,13 @@ const AttendProvider = (props) => {
     //앱 내부의 attendCtx에 저장
     dispatchAttendAction({ type: "ADD", data: data });
     //firebase에 firestore에 업로드, 데이터에서 같은게 있는지 확인
-    console.log(attendState.datas);
-    const q = query(
-      collection(dbService, "attend"),
-      where("id", "==", data.id)
-    );
-    const querySnapshot = await getDocs(q);
-    let existedDoc_id;
-    querySnapshot.forEach((doc) => {
-      // doc.data() is never undefined for query doc snapshots
-      existedDoc_id = doc.id;
-    });
-    console.log(existedDoc_id);
-
-    if (existedDoc_id) {
-      //기존 데이터가 존재할 경우 덮어쓰기로 저장하기
-      await setDoc(doc(dbService, "attend", existedDoc_id), {
-        ...data,
-        writtenId: props.userUid,
-      });
-    } else {
-      //새로운 데이터 자료 firestore에 저장하기
-      await addDoc(collection(dbService, "attend"), {
-        ...data,
-        writtenId: props.userUid,
-      });
-    }
+    await dbAddData("attend", data, props.userUid);
   };
 
   const removeDataFromAttendHandler = async (id) => {
     dispatchAttendAction({ type: "REMOVE", id: id });
-
     //firestore attend에서 현재유저가 작성한 자료가져오고 id가 같은거 찾아서 삭제하기
-    const q = query(
-      collection(dbService, "attend"),
-      where("writtenId", "==", props.userUid),
-      where("id", "==", id)
-    );
-    const querySnapshot = await getDocs(q);
-    console.log(querySnapshot);
-    querySnapshot.forEach((document) =>
-      deleteDoc(doc(dbService, "attend", document.id))
-    );
+    await dbDeleteData("attend", id, props.userUid);
   };
 
   const attendContext = {

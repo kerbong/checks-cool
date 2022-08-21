@@ -1,6 +1,8 @@
-import React from "react";
+import React, { useEffect } from "react";
 import ConsultContext from "./consult-context.js";
 import { useReducer } from "react";
+import { dbService, dbAddData, dbDeleteData } from "../fbase";
+import { collection, query, onSnapshot, where } from "firebase/firestore";
 
 const defaultConsultState = {
   datas: [],
@@ -59,12 +61,33 @@ const ConsultProvider = (props) => {
     defaultConsultState
   );
 
-  const addDataToConsultHandler = (data) => {
+  useEffect(() => {
+    //db에서 consult 상담 DB가져오고 작성자가 현재 유저와 동일한지 확인하고 consultCtx에 추가하기
+    const q = query(
+      collection(dbService, "consult"),
+      where("writtenId", "==", props.userUid)
+    );
+    onSnapshot(q, (snapShot) => {
+      snapShot.docs.map((doc) => {
+        const attendObj = {
+          ...doc.data(),
+          doc_id: doc.id,
+        };
+        return dispatchConsultAction({ type: "ADD", data: attendObj });
+      });
+    });
+  }, [props.userUid]);
+
+  const addDataToConsultHandler = async (data) => {
     dispatchConsultAction({ type: "ADD", data: data });
+    //firebase에 firestore에 업로드, 데이터에서 같은게 있는지 확인
+    await dbAddData("consult", data, props.userUid);
   };
 
-  const removeDataFromConsultHandler = (id) => {
+  const removeDataFromConsultHandler = async (id) => {
     dispatchConsultAction({ type: "REMOVE", id: id });
+    //firestore consult에서 현재유저가 작성한 자료가져오고 id가 같은거 찾아서 삭제하기
+    await dbDeleteData("consult", id, props.userUid);
   };
 
   const consultContext = {

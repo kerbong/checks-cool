@@ -54,8 +54,7 @@ const Auth = () => {
     if (name === "google") {
       provider = new GoogleAuthProvider();
     }
-    const data = await signInWithPopup(authService, provider);
-    console.log(data);
+    await signInWithPopup(authService, provider);
   };
 
   return (
@@ -81,7 +80,7 @@ const Auth = () => {
         />
         <input
           type="submit"
-          value={newAccount ? "회원가입" : "Email 로그인"}
+          value={newAccount ? "회원가입" : "로그인"}
           className={classes["logInOut-SignUp"]}
         />
       </form>
@@ -91,7 +90,7 @@ const Auth = () => {
           onClick={onSocialClick}
           className={classes["logInOut-SignUp"]}
         >
-          Google 연동 로그인하기
+          <i className="fa-brands fa-google"></i> Google 로그인하기
         </button>
       </div>
       <div className={classes["logInOut-SignUp-Change"]}>

@@ -47,7 +47,7 @@ const Attendance = (props) => {
     });
   };
 
-  const checkDayOfWeek = () => {
+  const checkDayOfWeekAlert = () => {
     Swal.fire({
       icon: "error",
       title: "저장에 실패했어요!",
@@ -74,14 +74,6 @@ const Attendance = (props) => {
 
     const selectDate = getToday(attendDate);
 
-    // 만약 주말(index 6 = 토, index 0 = 일)이면 저장안되도록!
-    let dayOfWeek = attendDate.getDay();
-
-    if (dayOfWeek === 0 || dayOfWeek === 6) {
-      checkDayOfWeek();
-      return;
-    }
-
     let new_data_id = "";
 
     if (props.about === "consulting") {
@@ -89,6 +81,12 @@ const Attendance = (props) => {
       //년월일시간+번호 를 식별id로 사용 나중에 지울떄(상담)
       new_data_id = selectDate + selectDateTime + studentInfo[0];
     } else if (props.about === "attendance") {
+      //주말(index 6 = 토, index 0 = 일)이면 저장안되도록!
+      let dayOfWeek = attendDate.getDay();
+      if (dayOfWeek === 0 || dayOfWeek === 6) {
+        checkDayOfWeekAlert();
+        return;
+      }
       //년월일+번호 를 식별id로 사용 나중에 지울떄(출결)
       new_data_id = selectDate + studentInfo[0];
     }
@@ -102,14 +100,13 @@ const Attendance = (props) => {
     };
 
     console.log(new_data);
-    //왜 똑같이 만들었는데 attendProvider는 되고 consultProvider는 작동하지 않나... 다 잘 된거 같은데
     anyContext.addData(new_data);
 
     //나중에 기간, 날짜도 추가하기
     checkSave(
       `${studentInfo[1]} 학생의 ${option.slice(
         1
-      )} 관련 내용이 저장되었습니다. (5초 후 창이 자동으로 사라집니다.)`
+      )} 관련 내용이 저장되었습니다. \n(5초 후 창이 자동으로 사라집니다.)`
     );
 
     setInputIsShown(false);

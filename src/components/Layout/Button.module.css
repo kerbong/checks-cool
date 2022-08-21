@@ -24,18 +24,19 @@
 
 .header-logInOut {
   font-family: "GowunDodum";
-  background-color: inherit;
+  background-color: #4621123d;
+  border-radius: 8px;
   border-width: 0;
   padding: 10px;
   margin: 1px;
   color: azure;
 }
 
-.button:nth-child(even) {
+.big-menu:nth-child(even) {
   background-color: #f79089;
 }
 
-.button:nth-child(odd) {
+.big-menu:nth-child(odd) {
   background-color: #ffbec7;
 }
 
