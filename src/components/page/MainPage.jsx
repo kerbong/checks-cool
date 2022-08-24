@@ -3,7 +3,7 @@ import Button from "../Layout/Button";
 
 const MainPage = () => {
   return (
-    <>
+    <div style={{ marginTop: "20px" }}>
       <Button
         name={"출결"}
         path={"attendance"}
@@ -34,7 +34,7 @@ const MainPage = () => {
         className="big-menu"
         icon={<i className="fa-solid fa-gamepad"></i>}
       />
-    </>
+    </div>
   );
 };
 

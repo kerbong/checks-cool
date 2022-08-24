@@ -20,13 +20,8 @@ const AttendCtxCalendar = (props) => {
   const [eventByDays, setEventByDays] = useState([]);
   //보여줄 이벤트만 있는 날짜 변수
   const [eventOnDay, setEventOnDay] = useState([]);
-  //   const [clickedDay, setClickedDay] = useState("");
 
   const anyContext = useContext(props.Context);
-
-  //   let eventOnDay = [];
-  //   let highlight = [];
-  //   highlight.push(dayjs("2022-08-03").format("ddd MMM D YYYY HH:mm:ss"));
 
   const getCurrentMonth = () => {
     const currentM = document
@@ -327,7 +322,7 @@ const AttendCtxCalendar = (props) => {
     let new_eventByDays = fixEventByDays(data, data.eventDate, "del");
 
     setEventByDays(new_eventByDays);
-    console.log(new_eventByDays);
+    // console.log(new_eventByDays);
 
     //화면에서 지워줌
     document.getElementById(data.id).remove();

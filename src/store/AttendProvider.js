@@ -48,7 +48,7 @@ const attendReducer = (state, action) => {
 
     updatedDatas = state.datas.filter((data) => data.id !== action.id);
 
-    console.log("삭제 후 데이터" + updatedDatas);
+    // console.log("삭제 후 데이터" + updatedDatas);
     return {
       datas: updatedDatas,
     };

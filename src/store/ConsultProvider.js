@@ -1,8 +1,9 @@
 import React, { useEffect } from "react";
 import ConsultContext from "./consult-context.js";
 import { useReducer } from "react";
-import { dbService, dbAddData, dbDeleteData } from "../fbase";
+import { dbService, dbAddData, dbDeleteData, storageService } from "../fbase";
 import { collection, query, onSnapshot, where } from "firebase/firestore";
+import { deleteObject, ref } from "firebase/storage";
 
 const defaultConsultState = {
   datas: [],
@@ -47,7 +48,7 @@ const consultReducer = (state, action) => {
 
     updatedDatas = state.datas.filter((data) => data.id !== action.id);
 
-    console.log("삭제 후 데이터" + updatedDatas);
+    // console.log("삭제 후 데이터" + updatedDatas);
     return {
       datas: updatedDatas,
     };
@@ -84,8 +85,12 @@ const ConsultProvider = (props) => {
     await dbAddData("consult", data, props.userUid);
   };
 
-  const removeDataFromConsultHandler = async (id) => {
+  const removeDataFromConsultHandler = async (id, attachedFileUrl) => {
     dispatchConsultAction({ type: "REMOVE", id: id });
+    //storage에 저장된 파일 지우기
+    if (attachedFileUrl !== "") {
+      await deleteObject(ref(storageService, attachedFileUrl));
+    }
     //firestore consult에서 현재유저가 작성한 자료가져오고 id가 같은거 찾아서 삭제하기
     await dbDeleteData("consult", id, props.userUid);
   };

@@ -14,6 +14,7 @@ import {
   doc,
   deleteDoc,
 } from "firebase/firestore";
+import { getStorage } from "firebase/storage";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -41,7 +42,6 @@ export const dbAddData = async (collection_name, data, userId) => {
     // doc.data() is never undefined for query doc snapshots
     existedDoc_id = doc.id;
   });
-  console.log(existedDoc_id);
 
   if (existedDoc_id) {
     //기존 데이터가 존재할 경우 덮어쓰기로 저장하기
@@ -67,7 +67,7 @@ export const dbDeleteData = async (collection_name, dataId, useId) => {
     where("id", "==", dataId)
   );
   const querySnapshot = await getDocs(q);
-  console.log(querySnapshot);
+  // console.log(querySnapshot);
   querySnapshot.forEach((document) =>
     deleteDoc(doc(dbFirestore, collection_name, document.id))
   );
@@ -75,3 +75,4 @@ export const dbDeleteData = async (collection_name, dataId, useId) => {
 
 export const authService = getAuth(firebaseApp);
 export const dbService = getFirestore(firebaseApp);
+export const storageService = getStorage(firebaseApp);

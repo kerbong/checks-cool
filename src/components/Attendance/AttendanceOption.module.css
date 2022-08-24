@@ -27,36 +27,11 @@
   justify-content: center;
 }
 
-.btn {
-  padding: 20px;
-  background-color: #85bd82;
-  font-size: 1.2em;
-  margin: 10px;
-  border-radius: 15px;
-  border-width: 0;
-  font-family: "GowunDodum";
-}
-
-.student {
-  font-family: "GowunDodum";
+.ul {
+  flex-flow: row wrap;
+  list-style: none;
   display: flex;
-  justify-content: space-between;
-}
-
-.form-section {
-  display: flex;
-  flex-direction: column;
-}
-
-.date {
-  text-align: center;
-  font-size: 1.2em;
-  font-family: "GowunDodum";
-  word-spacing: 10px;
-  letter-spacing: 1px;
-}
-
-.closeBtn {
-  color: black;
-  font-size: 1.3em;
+  justify-content: space-evenly;
+  padding: 0;
+  margin: 3px;
 }

@@ -1,0 +1,45 @@
+.form {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.input {
+  margin-left: 3%;
+  width: 60%;
+  height: 30px;
+  padding: 10px;
+  font-size: 1em;
+  font-family: "GowunDodum";
+  overflow-y: hidden;
+  resize: none;
+}
+
+.btn {
+  padding: 20px;
+  background-color: #85bd82;
+  font-size: 1.2em;
+  margin: 10px;
+  border-radius: 15px;
+  border-width: 0;
+  font-family: "GowunDodum";
+}
+
+.fileUploadBtn {
+  font-size: 1.1em;
+  font-family: "GowunDodum";
+  width: 20%;
+  padding: 20px;
+  background-color: #ff6600;
+  color: white;
+  cursor: pointer;
+  margin-left: 10px;
+  border-radius: 15px;
+  text-align: center;
+}
+
+.fileArea {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}

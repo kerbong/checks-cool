@@ -48,6 +48,7 @@ const ConsultingPage = (props) => {
           selectOption={consultingOption}
           Context={ConsultContext}
           about="consulting"
+          userUid={props.userUid}
         />
       )}
       {!showConsultList ? (

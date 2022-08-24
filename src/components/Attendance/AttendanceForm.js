@@ -1,0 +1,197 @@
+import React, { useRef, useCallback, useContext, useState } from "react";
+import classes from "./AttendanceForm.module.css";
+import Input from "../Layout/Input";
+import { v4 as uuidv4 } from "uuid";
+import { storageService } from "fbase";
+import { ref, uploadString, getDownloadURL } from "firebase/storage";
+import Swal from "sweetalert2";
+import AttendanceOption from "./AttendanceOption";
+
+const AttendanceForm = (props) => {
+  const [attachedFile, setAttachedFile] = useState("");
+  const [option, setOption] = useState("");
+  const [inputIsShown, setInputIsShown] = useState(false);
+  const anyContext = useContext(props.Context);
+  const noteRef = useRef(null);
+
+  const handleResizeHeight = useCallback(() => {
+    if (noteRef === null || noteRef.current === null) {
+      return;
+    }
+    noteRef.current.style.height = "10px";
+    noteRef.current.style.height = noteRef.current.scrollHeight + "px";
+  }, []);
+
+  const getToday = (date) => {
+    let year = date.getFullYear();
+    let month = ("0" + (1 + date.getMonth())).slice(-2);
+    let day = ("0" + date.getDate()).slice(-2);
+
+    return year + "-" + month + "-" + day;
+  };
+
+  const getTime = (date) => {
+    let hours = ("0" + date.getHours()).slice(-2);
+    let minutes = ("0" + date.getMinutes()).slice(-2);
+
+    return hours + ":" + minutes;
+  };
+
+  const checkSave = (text) => {
+    Swal.fire({
+      icon: "success",
+      title: "저장되었어요!",
+      text: text,
+      confirmButtonText: "확인",
+      confirmButtonColor: "#85bd82",
+      timer: 5000,
+    });
+  };
+
+  const checkDayOfWeekAlert = () => {
+    Swal.fire({
+      icon: "error",
+      title: "저장에 실패했어요!",
+      html: "토 / 일요일은 저장이 불가능합니다. <br>날짜를 확인, 변경해주세요",
+      confirmButtonText: "확인",
+      confirmButtonColor: "#85bd82",
+    });
+  };
+
+  const onFileChange = (e) => {
+    const theFile = e.target.files[0];
+    if (theFile) {
+      const reader = new FileReader();
+      reader.onloadend = (finishedEvent) => {
+        setAttachedFile(finishedEvent.currentTarget.result);
+      };
+      reader.readAsDataURL(theFile);
+    }
+  };
+
+  const onClearAttachedFile = () => setAttachedFile("");
+
+  const submitHandler = async (e) => {
+    e.preventDefault();
+    //파일 추가하기(storage에 랜덤 uuid 이름으로 파일 업로드 후, 그 url을 받아서 저장)
+    let attachedFileUrl = "";
+
+    if (props.about === "consulting" && attachedFile !== "") {
+      const fileRef = ref(storageService, `${props.userUid}/${uuidv4()}`);
+      const response = await uploadString(fileRef, attachedFile, "data_url");
+      attachedFileUrl = await getDownloadURL(response.ref);
+    }
+
+    const inputValue = noteRef.current.value;
+    const studentInfo = props.who.split(" ");
+
+    const selectDate = getToday(props.attendDate);
+
+    let new_data_id = "";
+
+    if (props.about === "consulting") {
+      let selectDateTime = getTime(props.attendDate);
+      //년월일시간+번호 를 식별id로 사용 나중에 지울떄(상담)
+      new_data_id = selectDate + selectDateTime + studentInfo[0];
+    } else if (props.about === "attendance") {
+      //주말(index 6 = 토, index 0 = 일)이면 저장안되도록!
+      let dayOfWeek = props.attendDate.getDay();
+      if (dayOfWeek === 0 || dayOfWeek === 6) {
+        checkDayOfWeekAlert();
+        return;
+      }
+      //년월일+번호 를 식별id로 사용 나중에 지울떄(출결)
+      new_data_id = selectDate + studentInfo[0];
+    }
+
+    const new_data = {
+      student_num: studentInfo[0],
+      student_name: studentInfo[1],
+      id: new_data_id,
+      option: option,
+      note: inputValue,
+    };
+
+    if (props.about === "consulting") {
+      new_data["attachedFileUrl"] = attachedFileUrl;
+    }
+
+    anyContext.addData(new_data);
+
+    //나중에 기간, 날짜도 추가하기
+    checkSave(
+      `${studentInfo[1]} 학생의 ${option.slice(
+        1
+      )} 관련 내용이 저장되었습니다. \n(5초 후 창이 자동으로 사라집니다.)`
+    );
+
+    setInputIsShown(false);
+    setAttachedFile("");
+    props.onClose();
+    ///
+  };
+
+  return (
+    <>
+      <AttendanceOption
+        selectOption={props.selectOption}
+        showNote={(option) => {
+          setInputIsShown(true);
+          setOption(option);
+        }}
+      />
+      {inputIsShown && (
+        <form id="area-form" className={classes.form} onSubmit={submitHandler}>
+          <Input
+            ref={noteRef}
+            className={classes.input}
+            label="inputData"
+            input={{
+              id: props.id,
+              type: "text",
+              placeholder: "비고를 입력하세요.",
+              defaultValue: "",
+              autoFocus: true,
+            }}
+            onKeyDown={() => handleResizeHeight(this)}
+            onKeyUp={() => handleResizeHeight(this)}
+          />
+          <button className={classes.btn}>저장</button>
+
+          <div className={classes.fileArea}>
+            {props.about === "consulting" && (
+              <>
+                <label
+                  htmlFor="attachFile"
+                  className={classes.fileUploadBtn}
+                  onClick={attachedFile && onClearAttachedFile}
+                >
+                  {!attachedFile ? "파일추가" : "초기화&파일추가"}
+                </label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={onFileChange}
+                  style={{ display: "none" }}
+                  id="attachFile"
+                />
+              </>
+            )}
+            {attachedFile && (
+              <>
+                <img
+                  src={attachedFile}
+                  width="60%"
+                  max-height="20vh"
+                  alt="filePreview"
+                />
+              </>
+            )}
+          </div>
+        </form>
+      )}
+    </>
+  );
+};
+
+export default AttendanceForm;

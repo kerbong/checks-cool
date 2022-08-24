@@ -16,6 +16,8 @@
   margin-left: 5px;
   display: flex;
   padding: 0;
+  justify-content: space-evenly;
+  width: 70%;
 }
 
 .logInOut {
