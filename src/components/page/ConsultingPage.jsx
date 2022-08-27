@@ -41,6 +41,7 @@ const ConsultingPage = (props) => {
       </div>
 
       {optionIsShown && (
+        //모달로 나오는 상담 입력화면
         <Attendance
           onClose={hideOptionHandler}
           who={student}
@@ -52,12 +53,14 @@ const ConsultingPage = (props) => {
         />
       )}
       {!showConsultList ? (
+        //명렬표로 입력할 수 있도록 나오는 화면
         <Student students={props.students} showOption={showOptionHandler} />
       ) : (
-        <>
-          <ConsultLists context={ConsultContext} />
-          {/* " 아직 빈공간"} */}
-        </>
+        //그동안의 기록들 볼 수 있는 화면
+        <ConsultLists
+          context={ConsultContext}
+          selectOption={consultingOption}
+        />
       )}
     </>
   );

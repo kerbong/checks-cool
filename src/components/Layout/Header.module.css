@@ -30,10 +30,6 @@
   width: 70px;
 }
 
-i {
-  font-size: 1.4em;
-  color: #573020;
-}
 /* @media screen and (max-width: 470px) {
   .header {
     flex-direction: column;

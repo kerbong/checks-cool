@@ -1,11 +1,9 @@
 import React, { useRef, useCallback, useContext, useState } from "react";
 import classes from "./AttendanceForm.module.css";
 import Input from "../Layout/Input";
-import { v4 as uuidv4 } from "uuid";
-import { storageService } from "fbase";
-import { ref, uploadString, getDownloadURL } from "firebase/storage";
 import Swal from "sweetalert2";
 import AttendanceOption from "./AttendanceOption";
+import FileArea from "components/Layout/FileArea";
 
 const AttendanceForm = (props) => {
   const [attachedFile, setAttachedFile] = useState("");
@@ -58,29 +56,16 @@ const AttendanceForm = (props) => {
     });
   };
 
-  const onFileChange = (e) => {
-    const theFile = e.target.files[0];
-    if (theFile) {
-      const reader = new FileReader();
-      reader.onloadend = (finishedEvent) => {
-        setAttachedFile(finishedEvent.currentTarget.result);
-      };
-      reader.readAsDataURL(theFile);
-    }
-  };
-
-  const onClearAttachedFile = () => setAttachedFile("");
-
   const submitHandler = async (e) => {
     e.preventDefault();
     //파일 추가하기(storage에 랜덤 uuid 이름으로 파일 업로드 후, 그 url을 받아서 저장)
-    let attachedFileUrl = "";
+    // let attachedFileUrl = "";
 
-    if (props.about === "consulting" && attachedFile !== "") {
-      const fileRef = ref(storageService, `${props.userUid}/${uuidv4()}`);
-      const response = await uploadString(fileRef, attachedFile, "data_url");
-      attachedFileUrl = await getDownloadURL(response.ref);
-    }
+    // if (props.about === "consulting" && attachedFile !== "") {
+    //   const fileRef = ref(storageService, `${props.userUid}/${uuidv4()}`);
+    //   const response = await uploadString(fileRef, attachedFile, "data_url");
+    //   attachedFileUrl = await getDownloadURL(response.ref);
+    // }
 
     const inputValue = noteRef.current.value;
     const studentInfo = props.who.split(" ");
@@ -113,7 +98,7 @@ const AttendanceForm = (props) => {
     };
 
     if (props.about === "consulting") {
-      new_data["attachedFileUrl"] = attachedFileUrl;
+      new_data["attachedFileUrl"] = attachedFile;
     }
 
     anyContext.addData(new_data);
@@ -141,54 +126,35 @@ const AttendanceForm = (props) => {
         }}
       />
       {inputIsShown && (
-        <form id="area-form" className={classes.form} onSubmit={submitHandler}>
-          <Input
-            ref={noteRef}
-            className={classes.input}
-            label="inputData"
-            input={{
-              id: props.id,
-              type: "text",
-              placeholder: "비고를 입력하세요.",
-              defaultValue: "",
-              autoFocus: true,
+        <>
+          <form
+            id="area-form"
+            className={classes.form}
+            onSubmit={submitHandler}
+          >
+            <Input
+              ref={noteRef}
+              className={classes.input}
+              label="inputData"
+              input={{
+                id: props.id,
+                type: "text",
+                placeholder: "비고를 입력하세요.",
+                defaultValue: "",
+                autoFocus: true,
+              }}
+              onKeyDown={() => handleResizeHeight(this)}
+              onKeyUp={() => handleResizeHeight(this)}
+            />
+            <button className={classes.btn}>저장</button>
+          </form>
+          <FileArea
+            about={props.about}
+            attachedFileHandler={(file) => {
+              setAttachedFile(file);
             }}
-            onKeyDown={() => handleResizeHeight(this)}
-            onKeyUp={() => handleResizeHeight(this)}
           />
-          <button className={classes.btn}>저장</button>
-
-          <div className={classes.fileArea}>
-            {props.about === "consulting" && (
-              <>
-                <label
-                  htmlFor="attachFile"
-                  className={classes.fileUploadBtn}
-                  onClick={attachedFile && onClearAttachedFile}
-                >
-                  {!attachedFile ? "파일추가" : "초기화&파일추가"}
-                </label>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={onFileChange}
-                  style={{ display: "none" }}
-                  id="attachFile"
-                />
-              </>
-            )}
-            {attachedFile && (
-              <>
-                <img
-                  src={attachedFile}
-                  width="60%"
-                  max-height="20vh"
-                  alt="filePreview"
-                />
-              </>
-            )}
-          </div>
-        </form>
+        </>
       )}
     </>
   );

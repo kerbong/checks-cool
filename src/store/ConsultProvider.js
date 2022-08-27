@@ -3,7 +3,13 @@ import ConsultContext from "./consult-context.js";
 import { useReducer } from "react";
 import { dbService, dbAddData, dbDeleteData, storageService } from "../fbase";
 import { collection, query, onSnapshot, where } from "firebase/firestore";
-import { deleteObject, ref } from "firebase/storage";
+import {
+  deleteObject,
+  ref,
+  uploadString,
+  getDownloadURL,
+} from "firebase/storage";
+import { v4 } from "uuid";
 
 const defaultConsultState = {
   datas: [],
@@ -81,18 +87,35 @@ const ConsultProvider = (props) => {
 
   const addDataToConsultHandler = async (data) => {
     dispatchConsultAction({ type: "ADD", data: data });
+    let fileUrl = "";
+    //파일 있으면 storage에 저장하기, 업데이트하면서 파일을 바꾸지 않는 경우 패스!
+    if (data.attachedFileUrl !== "") {
+      //변경이 없을 때 저장하지 않는방법 잘 모르겠dj......스냅샷을 활용해야 할 것 같은데..?!
+
+      //storage에 저장
+      const response = await uploadString(
+        ref(storageService, `${props.userUid}/${v4()}`),
+        data.attachedFileUrl,
+        "data_url"
+      );
+      //firestore에 저장할 url받아오기
+      fileUrl = await getDownloadURL(response.ref);
+    }
     //firebase에 firestore에 업로드, 데이터에서 같은게 있는지 확인
-    await dbAddData("consult", data, props.userUid);
+    const new_data = { ...data, attachedFileUrl: fileUrl };
+
+    await dbAddData("consult", new_data, props.userUid);
   };
 
   const removeDataFromConsultHandler = async (id, attachedFileUrl) => {
     dispatchConsultAction({ type: "REMOVE", id: id });
+    //firestore consult에서 현재유저가 작성한 자료가져오고 id가 같은거 찾아서 삭제하기
+    await dbDeleteData("consult", id, props.userUid);
+
     //storage에 저장된 파일 지우기
     if (attachedFileUrl !== "") {
       await deleteObject(ref(storageService, attachedFileUrl));
     }
-    //firestore consult에서 현재유저가 작성한 자료가져오고 id가 같은거 찾아서 삭제하기
-    await dbDeleteData("consult", id, props.userUid);
   };
 
   const consultContext = {

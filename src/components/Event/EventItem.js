@@ -45,16 +45,13 @@ const EventItem = (props) => {
               name="option-selcet"
               id={`option-select${item.student_num}`}
               required
+              defaultValue={item.option}
             >
               <option value="" disabled>
                 -- 분류 --
               </option>
               {props.selectOption.map((select_option) => (
-                <option
-                  value={select_option.value}
-                  key={select_option.id}
-                  defaultValue={item.option === select_option.value}
-                >
+                <option value={select_option.value} key={select_option.id}>
                   {select_option.class}
                 </option>
               ))}
@@ -103,6 +100,7 @@ const EventItem = (props) => {
                   }
                 : function () {
                     props.setFixIsShown("0");
+                    console.log(item.option);
                   }
             }
           />

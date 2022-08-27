@@ -35,10 +35,10 @@ function App() {
   }, []);
 
   return (
-    <>
-      <AttendProvider userUid={userUid}>
-        <ConsultProvider userUid={userUid}>
-          <div className="App">
+    <div>
+      <div className="App">
+        <AttendProvider userUid={userUid}>
+          <ConsultProvider userUid={userUid}>
             <Header isLoggedIn={isLoggedIn} />
             <Routes>
               {init && isLoggedIn ? (
@@ -69,10 +69,10 @@ function App() {
               )}
               <Route path="*" element={<Navigate replace to="/" />} />
             </Routes>
-          </div>
-        </ConsultProvider>
-      </AttendProvider>
-    </>
+          </ConsultProvider>
+        </AttendProvider>
+      </div>
+    </div>
   );
 }
 

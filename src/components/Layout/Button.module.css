@@ -63,3 +63,15 @@
   background-color: #ffbec7;
   font-family: "GowunDodum";
 }
+
+.consultEditBtn {
+  width: 30%;
+  margin: 5px;
+  font-size: 1.1em;
+  border-radius: 10px;
+  border-width: 0;
+  padding: 4vw;
+  height: 4vw;
+  background-color: #c4c13f47;
+  font-family: "GowunDodum";
+}
