@@ -1,0 +1,16 @@
+{
+  "files": {
+    "main.css": "/checks-cho-ok/static/css/main.be0b4d76.css",
+    "main.js": "/checks-cho-ok/static/js/main.9d38402d.js",
+    "static/media/GowunDodum-Regular.ttf": "/checks-cho-ok/static/media/GowunDodum-Regular.39c9a39c246c3c54c53e.ttf",
+    "static/media/logo.png": "/checks-cho-ok/static/media/logo.b2e6117e4f07b7fcd7e2.png",
+    "static/media/excel-example.jpg": "/checks-cho-ok/static/media/excel-example.66aceb798fc318121a7b.jpg",
+    "index.html": "/checks-cho-ok/index.html",
+    "main.be0b4d76.css.map": "/checks-cho-ok/static/css/main.be0b4d76.css.map",
+    "main.9d38402d.js.map": "/checks-cho-ok/static/js/main.9d38402d.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.be0b4d76.css",
+    "static/js/main.9d38402d.js"
+  ]
+}
