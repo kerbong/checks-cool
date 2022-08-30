@@ -34,6 +34,12 @@ const MainPage = () => {
         className="big-menu"
         icon={<i className="fa-solid fa-gamepad"></i>}
       />
+      <Button
+        name={"명단"}
+        path={"student-manage"}
+        className="big-menu"
+        icon={<i className="fa-solid fa-user-plus"></i>}
+      />
     </div>
   );
 };

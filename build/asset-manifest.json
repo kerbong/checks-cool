@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/checks-cho-ok/static/css/main.4fa187dc.css",
+    "main.js": "/checks-cho-ok/static/js/main.ebe26344.js",
+    "static/media/GowunDodum-Regular.ttf": "/checks-cho-ok/static/media/GowunDodum-Regular.39c9a39c246c3c54c53e.ttf",
+    "static/media/logo.png": "/checks-cho-ok/static/media/logo.b2e6117e4f07b7fcd7e2.png",
+    "index.html": "/checks-cho-ok/index.html",
+    "main.4fa187dc.css.map": "/checks-cho-ok/static/css/main.4fa187dc.css.map",
+    "main.ebe26344.js.map": "/checks-cho-ok/static/js/main.ebe26344.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.4fa187dc.css",
+    "static/js/main.ebe26344.js"
+  ]
+}

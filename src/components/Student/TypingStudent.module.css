@@ -1,0 +1,44 @@
+.inputArea {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.input-name {
+  margin-left: 3%;
+  width: 90px;
+  height: 30px;
+  padding: 10px;
+  font-size: 1.1em;
+  font-family: "GowunDodum";
+  overflow-y: hidden;
+  resize: none;
+  text-align: center;
+}
+
+.input-num {
+  margin-left: 3%;
+  width: 45px;
+  height: 30px;
+  padding: 10px;
+  font-size: 1.1em;
+  font-family: "GowunDodum";
+  overflow-y: hidden;
+  resize: none;
+  text-align: center;
+}
+.studentListArea {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  align-content: center;
+  margin: 15px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.addStudentInputs {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

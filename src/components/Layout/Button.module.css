@@ -30,6 +30,7 @@
   padding: 10px;
   margin: 1px;
   color: azure;
+  letter-spacing: -0.1em;
 }
 
 .big-menu:nth-child(even) {
@@ -74,4 +75,34 @@
   height: 4vw;
   background-color: #c4c13f47;
   font-family: "GowunDodum";
+}
+
+.student-add {
+  width: 60px;
+  height: 50px;
+  margin-left: 20px;
+  font-size: 1.1em;
+  border-radius: 10px;
+  border-width: 0;
+  background-color: #993fc447;
+}
+
+.student-remove {
+  width: 30%;
+  height: 35px;
+  margin-right: 10px;
+  font-size: 1em;
+  border-radius: 10px;
+  border-width: 0;
+  background-color: #993fc447;
+}
+
+.student-save {
+  width: 60px;
+  height: 50px;
+  margin-left: 20px;
+  font-size: 1.1em;
+  border-radius: 10px;
+  border-width: 0;
+  background-color: #993fc447;
 }

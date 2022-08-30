@@ -1,0 +1,18 @@
+.inputStudentLi {
+  margin-top: -5px;
+  list-style: none;
+  padding: 5px;
+  display: flex;
+  flex-direction: row;
+  font-family: "GowunDodum";
+  align-items: center;
+  margin-bottom: 0.3em;
+  justify-content: space-between;
+  width: 27vw;
+}
+
+.studentNumName {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+}

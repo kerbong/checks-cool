@@ -69,7 +69,7 @@
 #switch-btn {
   width: auto;
   margin: 5px 10px;
-  font-size: 1.2em;
+  font-size: 1.5em;
   border-radius: 10px;
   border-width: 0;
   letter-spacing: 1px;
@@ -141,4 +141,8 @@
 #title-div {
   display: flex;
   justify-content: flex-end;
+}
+
+#title-btn.upload {
+  background-color: #7632d591;
 }
