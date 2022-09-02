@@ -1,0 +1,21 @@
+.add-event-button {
+  width: 50%;
+  margin: 15px 10px;
+  font-size: 1.2em;
+  border-radius: 10px;
+  border-width: 0;
+  letter-spacing: 1px;
+  padding: 2vh;
+  background-color: #ffbec7;
+  font-family: "GowunDodum";
+}
+
+.no-events-div {
+  font-size: 1.3em;
+  margin: 20px;
+  text-align: center;
+}
+
+.add-event-div {
+  text-align: center;
+}

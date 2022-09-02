@@ -213,7 +213,6 @@ const AttendCtxCalendar = (props) => {
   }, [currentMonth, anyContext, eventByDays]);
   // }, [currentMonth]);
 
-  //useEffect 여러 번 사용할 수 있네???
   useEffect(() => {
     //처음 화면을 로딩했을 때 월 이동버튼에 state 변경기능 추가
     const moveMonth = document.querySelectorAll(
