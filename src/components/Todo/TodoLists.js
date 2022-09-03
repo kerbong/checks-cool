@@ -11,7 +11,6 @@ const TodoLists = (props) => {
 
   // let eventOnDay = props.eventOnDay;
   let fixIsShown = props.fixIsShown;
-  console.log("TodoLists의 이벤트온데이" + eventOnDay);
 
   return (
     <div className="eventOnDayList">

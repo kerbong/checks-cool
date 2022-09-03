@@ -23,16 +23,40 @@ const TodoPage = (props) => {
   //전체 받아온 이벤트 저장하기
   const [events, setEvents] = useState([]);
   const [eventOnDay, setEventOnDay] = useState([]);
+  const [showGradeEvent, setShowGradeEvent] = useState(true);
 
-  //firestore에서 해당 학교학년의 이벤트 자료 받아오기
-  useEffect(() => {
-    //db에서 consult 상담 DB가져오고 작성자가 현재 유저와 동일한지 확인하고 consultCtx에 추가하기
-    const q = query(
-      collection(dbService, "todo"),
+  //firestore에서 해당 이벤트 자료 받아오기
+  const getToDosFromDb = () => {
+    //db에서 todo DB가져오고 작성자가 현재 유저와 동일한지 확인하고 events에 추가하기
+    //기존에 있던 화면에 그려진 이벤트들 지워주기
+    document.querySelectorAll(".eventBtn").forEach((btn) => {
+      btn.remove();
+    });
+    //기존에 있던 events들도 다 지우기
+    setEvents([]);
+
+    let eventSnapshot = null;
+    let queryWhere;
+    console.log(showGradeEvent);
+    if (showGradeEvent) {
       //이부분 수정하기(경기하남초622하남6 로컬스토리지에 저장.)
-      where("owner", "==", "경기하남초-6-22하남6")
-    );
-    onSnapshot(q, (snapShot) => {
+      //"경기하남초-6-22하남6"
+      queryWhere = query(
+        collection(dbService, "todo"),
+        where("owner", "==", "경기하남초-6-22하남6")
+      );
+    } else {
+      //이부분에서 왜 오류가 나는지 모르겄네... snapshot을 한 번 써서 그런가..
+      queryWhere = query(
+        collection(dbService, "todo"),
+        //순서가 중요하구나 ㅠ ==쿼리만 쓰는게 좋고...
+        where("owner", "==", "personal"),
+        where("writtenId", "==", props.userUid)
+      );
+    }
+    console.log(queryWhere);
+
+    eventSnapshot = onSnapshot(queryWhere, (snapShot) => {
       snapShot.docs.map((doc) => {
         const eventObj = {
           ...doc.data(),
@@ -41,9 +65,20 @@ const TodoPage = (props) => {
         return setEvents((prev) => [...prev, eventObj]);
       });
     });
+  };
 
-    console.log("db에서 자료 가져오기");
-    console.log(events);
+  //기존에 있던 버튼 지워주기 함수
+  const buttonRemove = (remainObj) => {
+    remainObj.forEach((obj) => {
+      document.getElementById(obj.id).remove();
+    });
+  };
+
+  useEffect(() => {
+    //학교-학년-비번 설정하기 -> 하고나면 로컬스토리지에 저장. 있는 경우 자동으로 불러오도록
+
+    //db에서 학년 자료 가져오기
+    getToDosFromDb();
   }, []);
 
   const getCurrentMonth = () => {
@@ -147,11 +182,9 @@ const TodoPage = (props) => {
                 setEventOnDay(() => fixed_eventOnDay);
                 //만약 오늘 날짜에 해당하는 자료가 없으면
               } else {
-                console.log("오늘 ㄴ라짜에 이벤트 없음");
                 setEventOnDay(() => [{ eventDate: day_date }]);
               }
             } else {
-              console.log("해당날짜에 이벤트 업ㄱ음");
               setEventOnDay(() => [{ eventDate: day_date }]);
             }
             setDayEventIsShown(true);
@@ -191,7 +224,7 @@ const TodoPage = (props) => {
             if (ymd === eventDate && !existedBtn) {
               //달력날짜에 (번호+이름)의 버튼 추가하기
               const btn = document.createElement("button");
-              btn.className = classes.eventData;
+              btn.className = `${classes.eventData} eventBtn`;
               btn.innerText = data.eventName;
               btn.id = data.id;
               eventTag.appendChild(btn);
@@ -231,6 +264,25 @@ const TodoPage = (props) => {
 
   return (
     <>
+      <div id="title-div">
+        <button id="title-btn" className="consult">
+          <i className="fa-regular fa-comments"></i> 할 일
+        </button>
+
+        <button
+          id="switch-btn"
+          onClick={() => {
+            setShowGradeEvent((prev) => !prev);
+            getToDosFromDb();
+          }}
+        >
+          {showGradeEvent ? (
+            <i className="fa-solid fa-chalkboard-user"></i>
+          ) : (
+            <i className="fa-solid fa-school-flag"></i>
+          )}
+        </button>
+      </div>
       {dayEventIsShown && (
         <Modal onClose={dayEventHideHandler}>
           <TodoLists
