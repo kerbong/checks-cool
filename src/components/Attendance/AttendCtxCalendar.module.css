@@ -8,6 +8,7 @@
   border-width: 0;
   padding: 3px;
   margin: 2px;
+  white-space: pre-line;
 }
 li {
   margin-top: -5px;

@@ -33,3 +33,9 @@
 .selected-student {
   font-size: 1.2em;
 }
+
+.eventNameInput-area {
+  height: 40px;
+  font-size: 1.2em;
+  margin: 10px;
+}

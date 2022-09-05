@@ -5,36 +5,41 @@ import Button from "../Layout/Button";
 
 const EventItem = (props) => {
   let item = props.item;
+  let keyId = props.keyId;
+  let text = props.text;
+  let note = props.note;
+  let shownId = props.shownId;
+  let option = props.option;
 
   return (
     <>
       <li
-        key={item.id}
-        id={item.id}
+        key={keyId}
+        id={keyId}
         className={classes["event-area"]}
         style={{
-          backgroundColor: props.fixIsShown === item.student_num && "bisque",
+          backgroundColor: props.fixIsShown === shownId && "bisque",
         }}
       >
         <div
-          id={`attendInfo-area${item.student_num}`}
+          id={`attendInfo-area${shownId}`}
           className={classes["attendInfo-area"]}
         >
-          <h2 id={"name" + item.student_num}>{item.student_name}</h2>
+          <h2 id={"eventName" + shownId}>{text}</h2>
           <span
-            id={`option-area${item.student_num}`}
+            id={`option-area${shownId}`}
             className={classes["option-area"]}
             style={{
-              display: props.fixIsShown === item.student_num && "none",
+              display: props.fixIsShown === shownId && "none",
             }}
           >
-            {item.option.slice(1)} | {item.note && item.note}
+            {option} | {note && note}
           </span>
           <form
-            id={`optionChange-area${item.student_num}`}
+            id={`optionChange-area${shownId}`}
             className={classes["optionChange-area"]}
             style={{
-              display: props.fixIsShown !== item.student_num && "none",
+              display: props.fixIsShown !== shownId && "none",
             }}
             onSubmit={(e) => {
               e.preventDefault();
@@ -43,9 +48,9 @@ const EventItem = (props) => {
           >
             <select
               name="option-selcet"
-              id={`option-select${item.student_num}`}
+              id={`option-select${shownId}`}
               required
-              defaultValue={item.option}
+              defaultValue={option}
             >
               <option value="" disabled>
                 -- 분류 --
@@ -58,25 +63,28 @@ const EventItem = (props) => {
             </select>
             <input
               type="text"
-              placeholder="비고를 입력하세요."
-              id={`option-note${item.student_num}`}
+              placeholder="메모 / 비고 입력란"
+              id={`option-note${shownId}`}
+              defaultValue={note}
             />
           </form>
         </div>
         <div className={classes["button-area"]}>
           <Button
             className="small-student"
-            name={props.fixIsShown !== item.student_num ? "수정" : "저장"}
+            name={props.fixIsShown !== shownId ? "수정" : "저장"}
             id={
-              props.fixIsShown !== item.student_num
-                ? `fix-btn${item.student_num}`
-                : `save-btn${item.student_num}`
+              props.fixIsShown !== shownId
+                ? `fix-btn${shownId}`
+                : `save-btn${shownId}`
             }
             style={{ width: "30%", fontSize: "1.1em" }}
             onclick={
-              props.fixIsShown !== item.student_num
+              props.fixIsShown !== shownId
                 ? () => {
-                    props.setFixIsShown(item.student_num);
+                    props.setDefaultOptionValue(option);
+                    props.setFixIsShown(shownId);
+                    console.log(option);
                   }
                 : () => {
                     //수정한 것 저장하는 함수
@@ -86,21 +94,20 @@ const EventItem = (props) => {
           />
           <Button
             className="small-student"
-            name={props.fixIsShown !== item.student_num ? "삭제" : "취소"}
+            name={props.fixIsShown !== shownId ? "삭제" : "취소"}
             id={
-              props.fixIsShown !== item.student_num
-                ? `delete-btn${item.student_num}`
-                : `cancle-btn${item.student_num}`
+              props.fixIsShown !== shownId
+                ? `delete-btn${shownId}`
+                : `cancle-btn${shownId}`
             }
             style={{ width: "30%", fontSize: "1.1em" }}
             onclick={
-              props.fixIsShown !== item.student_num
+              props.fixIsShown !== shownId
                 ? function () {
                     props.removeCheckSwal(item);
                   }
                 : function () {
                     props.setFixIsShown("0");
-                    console.log(item.option);
                   }
             }
           />

@@ -175,8 +175,13 @@ const EventLists = (props) => {
       ) : (
         eventOnDay.map((item) => (
           <EventItem
-            key={item.id}
             item={item}
+            key={item.id}
+            keyId={item.id}
+            shownId={item.student_num}
+            text={item.student_name}
+            note={item.note}
+            option={item.option.slice(1)}
             selectOption={props.selectOption}
             fixIsShown={fixIsShown}
             saveFixedData={(item) => {

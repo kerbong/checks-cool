@@ -7,7 +7,16 @@ import selectOption from "../../todoOption";
 import classes from "../Attendance/AttendCtxCalendar.module.css";
 
 import { dbService } from "../../fbase";
-import { collection, query, onSnapshot, where } from "firebase/firestore";
+import {
+  collection,
+  query,
+  onSnapshot,
+  where,
+  addDoc,
+  setDoc,
+  deleteDoc,
+  doc,
+} from "firebase/firestore";
 
 const thisMonth = () => {
   let today = new Date();
@@ -32,12 +41,18 @@ const TodoPage = (props) => {
     document.querySelectorAll(".eventBtn").forEach((btn) => {
       btn.remove();
     });
+    //이벤트가 있던 날짜의 배경색도 초기화
+    document
+      .querySelectorAll(".react-datepicker__day[style]")
+      .forEach((tag) => (tag.style.backgroundColor = ""));
+
     //기존에 있던 events들도 다 지우기
     setEvents([]);
 
-    let eventSnapshot = null;
+    // let eventSnapshot = null;
     let queryWhere;
-    console.log(showGradeEvent);
+    // console.log(showGradeEvent);
+
     if (showGradeEvent) {
       //이부분 수정하기(경기하남초622하남6 로컬스토리지에 저장.)
       //"경기하남초-6-22하남6"
@@ -54,32 +69,33 @@ const TodoPage = (props) => {
         where("writtenId", "==", props.userUid)
       );
     }
-    console.log(queryWhere);
+    // console.log(queryWhere);
 
-    eventSnapshot = onSnapshot(queryWhere, (snapShot) => {
+    onSnapshot(queryWhere, (snapShot) => {
       snapShot.docs.map((doc) => {
         const eventObj = {
           ...doc.data(),
           doc_id: doc.id,
         };
-        return setEvents((prev) => [...prev, eventObj]);
+        return setEvents((prev) => {
+          prev.forEach((prev_data, index) => {
+            if (prev_data.id === eventObj.id) {
+              prev.splice(index, 1);
+            }
+          });
+          return [...prev, eventObj];
+        });
       });
     });
   };
 
-  //기존에 있던 버튼 지워주기 함수
-  const buttonRemove = (remainObj) => {
-    remainObj.forEach((obj) => {
-      document.getElementById(obj.id).remove();
-    });
-  };
-
+  //db에서 자료 받아오기 useEffect
   useEffect(() => {
     //학교-학년-비번 설정하기 -> 하고나면 로컬스토리지에 저장. 있는 경우 자동으로 불러오도록
 
-    //db에서 학년 자료 가져오기
+    //db에서 학년 자료 가져오기, showGradeEvent를 의존성으로 넣어두면 알아서 바뀔 때마다 실행됨. 이게 state의 변경상태에 따라 무언가를 실행하도록 하는 베스트인듯
     getToDosFromDb();
-  }, []);
+  }, [showGradeEvent]);
 
   const getCurrentMonth = () => {
     const currentM = document
@@ -127,6 +143,7 @@ const TodoPage = (props) => {
     });
   }, []);
 
+  //달력에 클릭이벤트 추가(이벤트온데이) + 달력에 버튼 그려주기
   useEffect(() => {
     //현재 연월가져옴
     let currentM = getCurrentMonth();
@@ -246,7 +263,7 @@ const TodoPage = (props) => {
     let month = ("0" + (1 + date.getMonth())).slice(-2);
     let day = ("0" + date.getDate()).slice(-2);
     let selectDay = year + "-" + month + "-" + day;
-
+    return selectDay;
     //selectDay랑 저장된 이벤트랑 일치하는 지 확인하기
   };
 
@@ -256,16 +273,102 @@ const TodoPage = (props) => {
     setFixIsShown("0");
   };
 
+  //firestore와 events 자료 추가 혹은 삭제 함수
+  const fixEvents = (data, eventDate, fixOrDel) => {
+    // events 자료 가져와서 수정하기
+    let new_events = JSON.parse(JSON.stringify(events));
+
+    new_events.forEach(async (event, index) => {
+      //기존 events에 있는 자료인 경우
+      if (event.id === data.id) {
+        if (fixOrDel === "fix") {
+          console.log(data);
+          //events에서 id 속성이 같은거 찾고 그 doc_id를 넘겨서 update하기
+          let same_event = events.filter((event) => event.id === data.id);
+          console.log(same_event);
+          await setDoc(doc(dbService, "todo", same_event[0].doc_id), data);
+
+          event = { ...data, eventDate: eventDate };
+          new_events[index] = event;
+          // console.log("이벤트바이데이즈에서 일치하는 자료 찾아서 수정함!");
+        } else if (fixOrDel === "del") {
+          //splice(인덱스값을, 1이면 제거 0이면 추가)
+          new_events.splice(index, 1);
+          // console.log("이벤트바이데이즈에서 일치하는 자료 찾아서 제거함!");
+          let same_event = events.filter((event) => event.id === data.id);
+          console.log(same_event);
+          await deleteDoc(doc(dbService, "todo", same_event[0].doc_id));
+        }
+        // 새로운 자료인 경우!
+      } else {
+        //firestore에 추가!
+        await addDoc(collection(dbService, "todo"), data);
+        //events에도 추가!
+        event = { ...data, eventDate: eventDate };
+        new_events.push(event);
+      }
+    });
+    return new_events;
+  };
+
   //EventLists에서 호출하는 event 수정버튼 함수,
-  const fixedEventHandler = (fixed_data, eventDate) => {};
+  const fixedEventHandler = (fixed_data, eventDate) => {
+    setFixIsShown("0");
+
+    let new_events = fixEvents(fixed_data, eventDate, "fix");
+
+    console.log(new_events);
+
+    let new_eventOnDay = new_events.filter(
+      (day) => day["eventDate"] === eventDate
+    );
+    console.log(new_eventOnDay);
+
+    setEventOnDay(new_eventOnDay);
+
+    let selectedDay = document.querySelectorAll(
+      `.react-datepicker__day[aria-label="${eventDate}"]`
+    )[0];
+
+    selectedDay.onclick = function () {
+      //클릭한 날짜정보와 일치하는 보여줄 정보만 저장
+      setEventOnDay(new_eventOnDay);
+      setDayEventIsShown(true);
+    };
+  }; // 수정버튼 함수 끝
 
   //EventLists에서 보낸 event 자료 삭제 요청 함수
-  const removeEventHandler = (data) => {};
+  const removeEventHandler = (data) => {
+    //firestore 자료 삭제 함수 필요
+
+    let new_events = fixEvents(data, data.eventDate, "del");
+
+    setEvents(new_events);
+    // console.log(new_eventByDays);
+
+    //화면에서 지워줌
+    document.getElementById(data.id).remove();
+
+    //해당 날짜의 이벤트 리스너 새로 등록하기
+    let new_eventOnDay = new_events.filter(
+      (day) => day["eventDate"] === data.eventDate
+    )[0];
+
+    let selectedDay = document.querySelectorAll(
+      `.react-datepicker__day[aria-label="${data.eventDate}"]`
+    )[0];
+
+    selectedDay.onclick = function () {
+      //클릭한 날짜정보와 일치하는 보여줄 정보만 저장
+      setEventOnDay(new_eventOnDay);
+      setDayEventIsShown(true);
+    };
+  };
 
   return (
     <>
       <div id="title-div">
-        <button id="title-btn" className="consult">
+        <button id="title-btn" className="todo">
           <i className="fa-regular fa-comments"></i> 할 일
         </button>
 
@@ -273,13 +376,18 @@ const TodoPage = (props) => {
           id="switch-btn"
           onClick={() => {
             setShowGradeEvent((prev) => !prev);
-            getToDosFromDb();
           }}
         >
           {showGradeEvent ? (
-            <i className="fa-solid fa-chalkboard-user"></i>
+            <>
+              <i className="fa-solid fa-chalkboard-user"></i>
+              <span style={{ fontSize: "0.7em" }}>개인용</span>
+            </>
           ) : (
-            <i className="fa-solid fa-school-flag"></i>
+            <>
+              <i className="fa-solid fa-school-flag"></i>
+              <span style={{ fontSize: "0.7em" }}>공용</span>
+            </>
           )}
         </button>
       </div>
@@ -292,7 +400,13 @@ const TodoPage = (props) => {
             setFixIsShown={setFixIsShown}
             removeData={removeEventHandler}
             selectOption={selectOption}
-            about={props.about}
+            about={
+              showGradeEvent
+                ? //todo 뒷부분 수정하기${}
+                  `todo경기하남초-6-22하남6`
+                : "todopersonal"
+            }
+            userUid={props.userUid}
           />
         </Modal>
       )}
