@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 
 import Swal from "sweetalert2";
 
@@ -9,7 +9,7 @@ import EventInput from "../Event/EventInput";
 const TodoLists = (props) => {
   const [eventOnDay, setEventOnDay] = useState(props.eventOnDay);
   const [addEvent, setAddEvent] = useState(false);
-  const [defaultOptionValue, setDefaultOptionValue] = useState("");
+  // const [defaultOptionValue, setDefaultOptionValue] = useState("");
 
   // let eventOnDay = props.eventOnDay;
   let fixIsShown = props.fixIsShown;
@@ -19,12 +19,17 @@ const TodoLists = (props) => {
     //출결 옵션 선택값, note 부분은 입력 필수아님
     const optionValue = document.querySelector("select").value;
     //행사명
-    let eventName = document.querySelector("#todo-eventName");
-
-    if (!eventName) {
-      eventName = document.querySelector(`#eventName${item.id}`);
+    let eventName;
+    //새로 추가한 자료인 경우
+    if (item["doc_id"] === undefined) {
+      eventName = document.querySelector("#todo-eventName");
+    } else {
+      eventName = "existedEvent";
     }
 
+    console.log(item.id);
+    console.log(eventName);
+    console.log(optionValue);
     if (item.id && eventName && optionValue) {
       return true;
     } else {
@@ -75,6 +80,7 @@ const TodoLists = (props) => {
       writtenId: props.userUid,
     };
 
+    console.log(item.eventDate);
     //events eventOnDay 를 수정하는 함수
     props.fixedEventHandler(fixed_data, item.eventDate);
 
@@ -91,6 +97,8 @@ const TodoLists = (props) => {
 
     let return_data = { ...fixed_data, eventDate: item.eventDate };
 
+    //TodoPage에서 events 상태를 업데이트 해줘야 리렌더링이 되어 화면에 이벤트 보임!
+    // props.setEventsHandler(return_data);
     //기존 데이터 수정할 떄 필요한 텍스트
     return return_data;
   };
@@ -111,8 +119,6 @@ const TodoLists = (props) => {
   //없던 이벤트 새로 추가할 떄 화면 수정하는 함수
   const newEventOnScreen = (item) => {
     let new_eventOnDay = JSON.parse(JSON.stringify(eventOnDay));
-    console.log(item);
-    console.log(new_eventOnDay);
     if (new_eventOnDay[0].id === undefined) {
       new_eventOnDay[0] = item;
       // console.log("없던날짜에 추가");
@@ -120,8 +126,6 @@ const TodoLists = (props) => {
       new_eventOnDay.push(item);
       // console.log("있는날짜에 추가");
     }
-    console.log(new_eventOnDay);
-
     //강제로 리 렌더링ㅜㅜ...해서 추가한 자료 보여줌
     setEventOnDay([...new_eventOnDay]);
   };
@@ -184,7 +188,7 @@ const TodoLists = (props) => {
             selectOption={props.selectOption}
             placeholder="내용을 입력해주세요."
             about={props.about}
-            dafaultValue={defaultOptionValue}
+            // dafaultValue={defaultOptionValue}
             saveNewData={(item) => {
               let getEnoughData = enoughData(item);
               if (getEnoughData) {
@@ -222,9 +226,9 @@ const TodoLists = (props) => {
             }}
             removeCheckSwal={removeCheckSwal}
             setFixIsShown={props.setFixIsShown}
-            setDefaultOptionValue={(value) => {
-              setDefaultOptionValue(value);
-            }}
+            // setDefaultOptionValue={(value) => {
+            //   setDefaultOptionValue(value);
+            // }}
           />
         ))
       )}

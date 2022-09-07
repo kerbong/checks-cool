@@ -25,7 +25,7 @@ const EventItem = (props) => {
           id={`attendInfo-area${shownId}`}
           className={classes["attendInfo-area"]}
         >
-          <h2 id={"eventName" + shownId}>{text}</h2>
+          <h2 id={"eventName" + shownId}>😀 {text}</h2>
           <span
             id={`option-area${shownId}`}
             className={classes["option-area"]}
@@ -82,9 +82,9 @@ const EventItem = (props) => {
             onclick={
               props.fixIsShown !== shownId
                 ? () => {
-                    props.setDefaultOptionValue(option);
+                    // props.setDefaultOptionValue(option);
                     props.setFixIsShown(shownId);
-                    console.log(option);
+                    // console.log(option);
                   }
                 : () => {
                     //수정한 것 저장하는 함수

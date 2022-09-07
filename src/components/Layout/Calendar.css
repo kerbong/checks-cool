@@ -98,6 +98,7 @@
   display: flex;
   flex-wrap: wrap;
   align-content: flex-start;
+  width: 100%;
 }
 
 .react-datepicker__day--outside-month {
@@ -143,6 +144,7 @@
 #title-div {
   display: flex;
   justify-content: flex-end;
+  flex-direction: row;
 }
 
 #title-btn.upload {

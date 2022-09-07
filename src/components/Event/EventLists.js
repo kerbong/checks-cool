@@ -37,9 +37,9 @@ const EventLists = (props) => {
         });
 
         props.removeData(data);
+        document.querySelectorAll(`button[id='${data.id}']`)[0].remove();
       }
     });
-    document.querySelectorAll(`button[id='${data.id}']`)[0].remove();
   }; //달력에서 자료 삭제 함수 끝
 
   //이미 있던 이벤트 수정할 때 화면 수정하는 함수
