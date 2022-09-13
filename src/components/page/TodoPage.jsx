@@ -6,7 +6,6 @@ import { useEffect } from "react";
 import selectOption from "../../todoOption";
 import classes from "../Attendance/AttendCtxCalendar.module.css";
 import TodoPublicSetting from "../Todo/TodoPublicSetting";
-import TodoPublicInput from "../Todo/TodoPublicInput";
 
 import { dbService } from "../../fbase";
 import {
@@ -416,7 +415,7 @@ const TodoPage = (props) => {
         />
       )}
       <AttendCalendar inline={"true"} getDateValue={getDateHandler} />
-      <p> * 이벤트가 안 보일 경우 사이트를 새로고침 해주세요!</p>
+      <p> * 이벤트가 안 보일 경우 공용/개인용 아이콘을 다시 클릭해주세요!</p>
     </>
   );
 };

@@ -10,5 +10,18 @@
   display: flex;
   justify-content: center;
   white-space: nowrap;
-  font-family: "GowunDodum";
+}
+
+.checklist-student {
+  width: 70px;
+  margin: 4px;
+  font-size: 1em;
+  border-radius: 15px;
+  border-width: 0;
+  letter-spacing: -1px;
+  padding: 1.5vh;
+  background-color: #e9cfcc;
+  display: flex;
+  justify-content: center;
+  white-space: nowrap;
 }

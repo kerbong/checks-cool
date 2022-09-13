@@ -15,7 +15,7 @@ const TodoPublicSetting = (props) => {
             >
               <i className="fa-regular fa-circle-xmark"></i>
             </span>
-            <h2 className={classes["header-area"]}>현재 저장된 정보</h2>
+            <h2 className={classes["header-area"]}>현재 접속된 공용정보</h2>
             <p className={classes["existed-area"]}>
               <span className={classes["span"]}>
                 학교명 : {props.publicRoom.split("-")[0]}

@@ -4,10 +4,7 @@ import classes from "./StudentBtn.module.css";
 const StudentBtn = (props) => {
   return (
     <>
-      <button
-        className={classes["button-student"]}
-        onClick={props.onShowOption}
-      >
+      <button className={classes[props.className]} onClick={props.onShowOption}>
         {props.num} {props.name}
       </button>
     </>

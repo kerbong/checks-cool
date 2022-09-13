@@ -4,6 +4,7 @@ import EventItem from "./EventItem";
 import Swal from "sweetalert2";
 import EventInput from "./EventInput";
 import classes from "./EventLists.module.css";
+import Button from "../Layout/Button";
 
 const EventLists = (props) => {
   const [eventOnDay, setEventOnDay] = useState(props.eventOnDay);
@@ -139,14 +140,12 @@ const EventLists = (props) => {
       </h1>
       {/* //addEvent false 상황이면 추가하기 버튼 */}
       <div className={classes["add-event-div"]}>
-        <button
-          className={classes["add-event-button"]}
-          onClick={() => {
-            setAddEvent(true);
-          }}
-        >
-          추가하기
-        </button>
+        <Button
+          name={"추가하기"}
+          id={"add-checkItemBtn"}
+          className={"add-event-button"}
+          onclick={() => setAddEvent(true)}
+        />
       </div>
       <div className="event-input-div">
         {addEvent && (

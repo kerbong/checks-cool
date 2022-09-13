@@ -1,0 +1,51 @@
+.div {
+  display: flex;
+  justify-content: space-evenly;
+  align-content: space-around;
+  flex-wrap: wrap;
+}
+
+.closeBtn {
+  color: black;
+  font-size: 1.3em;
+  position: fixed;
+  right: 20px;
+}
+
+.checkTitle {
+  margin-left: 3%;
+  border-radius: 5px;
+  width: 90%;
+  font-size: 1.2em;
+}
+
+.h3 {
+  margin: 10px 3px;
+}
+
+.checkLi {
+  margin-bottom: 10px;
+  list-style: none;
+  padding: 5px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: 0 5px 18px -7px rgba(0, 0, 0, 0.459);
+}
+
+.unsubmitArea {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+.checkP {
+  margin: 3px;
+}
+
+.memo-headerBtn {
+  margin-right: 15px;
+  font-size: 1.3em;
+}

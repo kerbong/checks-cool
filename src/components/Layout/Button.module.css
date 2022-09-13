@@ -7,7 +7,6 @@
   border-width: 5px;
   border-color: #703e29;
   letter-spacing: 5px;
-  font-family: "GowunDodum";
 }
 
 .small-student {
@@ -19,15 +18,14 @@
   letter-spacing: 1px;
   padding: 1.5vh;
   background-color: #ffbec7;
-  font-family: "GowunDodum";
 }
 
 .header-logInOut {
-  font-family: "GowunDodum";
+  white-space: pre-wrap;
   background-color: #4621123d;
   border-radius: 8px;
   border-width: 0;
-  padding: 10px;
+  padding: 3px;
   margin: 1px;
   color: azure;
   letter-spacing: -0.1em;
@@ -50,7 +48,6 @@
   letter-spacing: 1px;
   padding: 2vh;
   background-color: #ffbec7;
-  font-family: "GowunDodum";
 }
 
 .event-fix-btn {
@@ -62,7 +59,6 @@
   letter-spacing: 1px;
   padding: 1.5vh;
   background-color: #ffbec7;
-  font-family: "GowunDodum";
 }
 
 .consultEditBtn {
@@ -74,7 +70,6 @@
   padding: 4vw;
   height: 4vw;
   background-color: #c4c13f47;
-  font-family: "GowunDodum";
 }
 
 .student-add {
@@ -105,4 +100,50 @@
   border-radius: 10px;
   border-width: 0;
   background-color: #993fc447;
+}
+
+.add-event-button {
+  width: 50%;
+  margin: 15px 10px;
+  font-size: 1.2em;
+  border-radius: 10px;
+  border-width: 0;
+  letter-spacing: 1px;
+  padding: 2vh;
+  background-color: #ffbec7;
+}
+
+.save-checkItem-button {
+  width: 35%;
+  margin: 5px;
+  font-size: 1.2em;
+  border-radius: 10px;
+  border-width: 0;
+  letter-spacing: 7px;
+  padding: 1.5vh;
+  background-color: #da9a9a;
+  float: right;
+}
+
+.checkList-button {
+  width: 28px;
+  margin: 5px;
+  font-size: 0.9em;
+  border-radius: 10px;
+  border-width: 0;
+  letter-spacing: -1px;
+  padding: 1vh;
+  background-color: #da9a9a;
+}
+
+.del-checkItem-button {
+  width: 35%;
+  margin: 5px;
+  font-size: 1.2em;
+  border-radius: 10px;
+  border-width: 0;
+  letter-spacing: 7px;
+  padding: 1.5vh;
+  background-color: #da9a9a;
+  float: left;
 }

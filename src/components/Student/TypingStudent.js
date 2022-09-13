@@ -93,14 +93,22 @@ const TypingStudent = (props) => {
               />
               <Button
                 className="student-add"
-                name={<i className="fa-solid fa-plus"></i>}
+                name={
+                  <>
+                    1 <i className="fa-solid fa-plus"></i>
+                  </>
+                }
                 onclick={submitHandler}
               />
             </div>
           </form>
           <Button
             className="student-save"
-            name={<i className="fa-regular fa-floppy-disk"></i>}
+            name={
+              <>
+                2 <i className="fa-regular fa-floppy-disk"></i>
+              </>
+            }
             onclick={uploadStudentHandler}
           />
         </div>
@@ -115,6 +123,9 @@ const TypingStudent = (props) => {
               }}
             />
           ))}
+        </div>
+        <div className={classes.studentListArea}>
+          + 버튼으로 추가하고, 저장버튼을 눌러 적용시켜주세요!
         </div>
       </div>
     </>

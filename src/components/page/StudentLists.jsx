@@ -84,18 +84,20 @@ const StudentLists = (props) => {
       </div>
       {!addStudentByFile ? (
         // 직접 타이핑 하는 학생입력 화면
-        <TypingStudent
-          studentsInfo={studentsInfo}
-          setAddStudentsInfo={(studentData) =>
-            setStudentsInfo((prev) => [...prev, studentData])
-          }
-          setDelStudentsInfo={(num) =>
-            setStudentsInfo((prev) => [
-              ...prev.filter((stu) => stu.num !== num),
-            ])
-          }
-          uploadStudentsInfo={submitStudentUploader}
-        />
+        <>
+          <TypingStudent
+            studentsInfo={studentsInfo}
+            setAddStudentsInfo={(studentData) =>
+              setStudentsInfo((prev) => [...prev, studentData])
+            }
+            setDelStudentsInfo={(num) =>
+              setStudentsInfo((prev) => [
+                ...prev.filter((stu) => stu.num !== num),
+              ])
+            }
+            uploadStudentsInfo={submitStudentUploader}
+          />
+        </>
       ) : (
         <>
           {/* 엑셀파일 업로드 & 업로드 파일에서 불러온 자료 */}

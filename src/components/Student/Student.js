@@ -10,6 +10,7 @@ const Student = (props) => {
         props.students.map((stu) => (
           // <Button name={stu.num + stu.name} small={true} key={stu.num} />
           <StudentBtn
+            className={"button-student"}
             name={stu.name}
             key={stu.num}
             num={stu.num}

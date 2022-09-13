@@ -74,7 +74,10 @@ function App() {
                       <ConsultingPage students={students} userUid={userUid} />
                     }
                   />
-                  <Route path="memo" element={<MemoPage />} />
+                  <Route
+                    path="memo"
+                    element={<MemoPage students={students} userUid={userUid} />}
+                  />
                   <Route path="todo" element={<TodoPage userUid={userUid} />} />
                   <Route
                     path="student-manage"

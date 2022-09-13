@@ -39,8 +39,12 @@ const TodoPublicInput = (props) => {
 
   return (
     <>
-      <h2 className={classes["header-area"]}>공용으로 사용할 정보</h2>
-
+      <div className={classes["explain-span"]}>
+        <h2 className={classes["header-area"]}>공용그룹 생성 / 변경</h2>
+        <span>
+          *해당정보로 설정된 공용그룹이 없을 경우 생성, 있을 경우 접속합니다.
+        </span>
+      </div>
       <form onSubmit={publicRoomHandler} className={classes["form-area"]}>
         <input
           type="text"
@@ -60,7 +64,7 @@ const TodoPublicInput = (props) => {
         />
         <input
           type="text"
-          placeholder="간단한 비밀번호"
+          placeholder="비밀번호"
           id={"todo-publicPw"}
           className={classes["publicPw-area"]}
           autoFocus
