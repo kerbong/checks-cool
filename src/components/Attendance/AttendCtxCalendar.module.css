@@ -10,15 +10,6 @@
   margin: 2px;
   white-space: pre-line;
 }
-li {
-  margin-top: -5px;
-  list-style: none;
-  padding: 5px;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  font-family: "GowunDodum";
-}
 
 h1 {
   text-align: center;
@@ -37,11 +28,4 @@ select {
   font-family: "GowunDodum";
   line-height: 1.5;
   text-align: center;
-}
-
-input {
-  margin-left: 3%;
-  border-radius: 5px;
-  width: 80%;
-  font-family: "GowunDodum";
 }

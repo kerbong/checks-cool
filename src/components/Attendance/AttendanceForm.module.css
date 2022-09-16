@@ -6,7 +6,7 @@
 
 .input {
   margin-left: 3%;
-  width: 60%;
+  width: 58%;
   height: 30px;
   padding: 10px;
   font-size: 1em;
@@ -16,7 +16,7 @@
 }
 
 .btn {
-  padding: 20px;
+  padding: 16px;
   background-color: #85bd82;
   font-size: 1.2em;
   margin: 10px;

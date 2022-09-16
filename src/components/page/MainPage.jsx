@@ -17,7 +17,7 @@ const MainPage = () => {
         icon={<i className="fa-regular fa-comments"></i>}
       />
       <Button
-        name={"할일"}
+        name={"일정"}
         path={"todo"}
         className="big-menu"
         icon={<i className="fa-regular fa-calendar-check"></i>}

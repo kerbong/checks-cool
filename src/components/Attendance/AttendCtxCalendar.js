@@ -5,6 +5,8 @@ import Modal from "../Layout/Modal";
 import EventLists from "../Event/EventLists";
 import classes from "./AttendCtxCalendar.module.css";
 
+import AttendLists from "./AttendLists";
+
 const thisMonth = () => {
   let today = new Date();
   let year = today.getFullYear();
@@ -15,6 +17,7 @@ const thisMonth = () => {
 const AttendCtxCalendar = (props) => {
   const [currentMonth, setCurrentMonth] = useState(thisMonth);
   const [dayEventIsShown, setDayEventIsShown] = useState(false);
+  const [studentListIsShown, setStudentListIsShown] = useState(false);
   const [fixIsShown, setFixIsShown] = useState("0");
   //날짜별로 이벤트를 모아둔 변수
   const [eventByDays, setEventByDays] = useState([]);
@@ -357,7 +360,11 @@ const AttendCtxCalendar = (props) => {
           />
         </Modal>
       )}
-      <AttendCalendar inline={"true"} getDateValue={getDateHandler} />
+      {studentListIsShown ? (
+        <AttendLists />
+      ) : (
+        <AttendCalendar inline={"true"} getDateValue={getDateHandler} />
+      )}
     </>
   );
 };

@@ -175,15 +175,17 @@ const CheckInput = (props) => {
             saveCheckItem();
           }}
         />
-        <Button
-          name={"삭제"}
-          id={"del-checkItemBtn"}
-          className={"del-checkItem-button"}
-          onclick={() => {
-            delCheckItem(props.item);
-            props.setItemNull();
-          }}
-        />
+        {props.item.doc_id && (
+          <Button
+            name={"삭제"}
+            id={"del-checkItemBtn"}
+            className={"del-checkItem-button"}
+            onclick={() => {
+              delCheckItem(props.item);
+              props.setItemNull();
+            }}
+          />
+        )}
       </div>
     </>
   );

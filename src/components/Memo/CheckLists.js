@@ -95,10 +95,10 @@ const CheckLists = (props) => {
     //동일한 이름의 체크리스트가 있을 경우 묻기
     if (same_checkTitle.length > 0) {
       Swal.fire({
-        title: "자료를 저장할까요?",
-        text: `${item.title} 과 동일한 이름의 체크리스트가 이미 존재합니다.`,
+        title: "자료를 저장/수정할까요?",
+        text: `"${item.title}"로 동일한 이름의 체크리스트가 이미 존재합니다.`,
         showDenyButton: true,
-        confirmButtonText: "저장",
+        confirmButtonText: "저장/수정",
         confirmButtonColor: "#db100cf2",
         denyButtonColor: "#85bd82",
         denyButtonText: `취소`,
@@ -180,7 +180,7 @@ const CheckLists = (props) => {
               <div className={classes.unsubmitArea}>
                 {item.unSubmitStudents.map((stu) => (
                   <Button
-                    name={stu.num}
+                    name={stu.name}
                     id={"unSubmit" + stu.num}
                     key={"unSubmit" + stu.num}
                     className={"checkList-button"}

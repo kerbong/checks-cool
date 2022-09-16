@@ -286,53 +286,61 @@ const TodoPage = (props) => {
 
     //만약 events가 있었으면,
     if (new_events.length !== 0) {
-      new_events.forEach(async (event, index) => {
-        //기존 events에 있는 자료인 경우
+      //기존 events에 있는 자료인 경우
+      let event_index;
+      const existedEvent = new_events.filter((event, index) => {
         if (event.id === data.id) {
-          console.log("기존에 events에 있던 자료");
-          if (fixOrDel === "fix") {
-            console.log(data);
-            //events에서 id 속성이 같은거 찾고 그 doc_id를 넘겨서 update하기
-            let same_event = events.filter((event) => event.id === data.id);
-            console.log(same_event);
-            await setDoc(doc(dbService, "todo", same_event[0].doc_id), data);
-
-            event = { ...data, eventDate: eventDate };
-            new_events[index] = event;
-            // console.log("이벤트바이데이즈에서 일치하는 자료 찾아서 수정함!");
-          } else if (fixOrDel === "del") {
-            //splice(인덱스값을, 1이면 제거 0이면 추가)
-            new_events.splice(index, 1);
-            // console.log("이벤트바이데이즈에서 일치하는 자료 찾아서 제거함!");
-            let same_event = events.filter((event) => event.id === data.id);
-            // console.log(same_event);
-            await deleteDoc(doc(dbService, "todo", same_event[0].doc_id));
-
-            //업데이트 해줘야 eventOnDay 날짜 클릭하면 나오는 모달에서도 사라짐
-            setEvents([...new_events]);
-
-            const deleteBtnLi = () => {
-              let btn = document.getElementById(data.id);
-              if (btn) {
-                btn.remove();
-              }
-            };
-            //item에 있는 li태그 지우고, 캘린더에 있는 btn도 지우고..
-            deleteBtnLi();
-            deleteBtnLi();
-          }
-        } else {
-          console.log("기존에 events에 없던 자료");
-
-          //firestore에 추가!
-          await addDoc(collection(dbService, "todo"), data);
-          //events에도 추가!
-          event = { ...data, eventDate: eventDate };
-          new_events.push(event);
+          //events에서 인덱스 저장해두기
+          event_index = index;
         }
+        return event.id === data.id;
       });
+
+      //자료들이 있었고 기존 자료인 경우
+      if (existedEvent.length > 0) {
+        // console.log("기존에 events에 있던 자료");
+        if (fixOrDel === "fix") {
+          // console.log(data);
+          // console.log(existedEvent[0].doc_id);
+          //events에서 id 속성이 같은거 찾고 그 doc_id를 넘겨서 update하기
+          await setDoc(doc(dbService, "todo", existedEvent[0].doc_id), data);
+
+          const event = { ...data, eventDate: eventDate };
+          new_events[event_index] = event;
+          // console.log("이벤트바이데이즈에서 일치하는 자료 찾아서 수정함!");
+        } else if (fixOrDel === "del") {
+          //splice(인덱스값을, 1이면 제거 0이면 추가)
+          new_events.splice(event_index, 1);
+          // console.log("이벤트바이데이즈에서 일치하는 자료 찾아서 제거함!");
+
+          await deleteDoc(doc(dbService, "todo", existedEvent[0].doc_id));
+
+          //업데이트 해줘야 eventOnDay 날짜 클릭하면 나오는 모달에서도 사라짐
+          setEvents([...new_events]);
+
+          const deleteBtnLi = () => {
+            let btn = document.getElementById(data.id);
+            if (btn) {
+              btn.remove();
+            }
+          };
+          //item에 있는 li태그 지우고, 캘린더에 있는 btn도 지우고..
+          deleteBtnLi();
+          deleteBtnLi();
+        }
+
+        //자료들이 있었는데 새로운 자료인 경우
+      } else {
+        //firestore에 추가!
+        await addDoc(collection(dbService, "todo"), data);
+        //events에도 추가!
+        let event = { ...data, eventDate: eventDate };
+        new_events.push(event);
+      }
+
+      // 이벤트 자료가 아예 없는 경우
     } else {
-      console.log("events에 처음 입력된 자료");
+      // console.log("events에 처음 입력된 자료");
 
       //firestore에 추가!
       await addDoc(collection(dbService, "todo"), data);
@@ -359,7 +367,7 @@ const TodoPage = (props) => {
     <>
       <div id="title-div">
         <button id="title-btn" className="todo">
-          <i className="fa-regular fa-calendar-check"></i> 할 일
+          <i className="fa-regular fa-calendar-check"></i> 일정
         </button>
         <span>
           <span className="todo" onClick={() => setShowPublicSetting(true)}>

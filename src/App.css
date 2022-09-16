@@ -47,3 +47,134 @@
   font-family: "GowunDodum";
   src: url("./fonts/GowunDodum-Regular.ttf");
 }
+
+/* memo todo부분 css */
+/* Home Page Container */
+.homepage__container {
+  max-width: 500px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 10px 0;
+}
+
+/* ToDo App Input Box */
+.todoapp__inputbox {
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+.todoapp__inputbox-inp {
+  flex: 1;
+  border: none;
+  border-bottom: 1px solid #f1f3f5;
+  padding: 10px;
+  height: 50px;
+  box-sizing: border-box;
+  font-size: 1.1em;
+}
+.todoapp__inputbox-inp:focus {
+  outline: none;
+}
+.todoapp__inputbox-add-btn {
+  border: none;
+  border-radius: 0;
+  background-color: #ff9958;
+  height: 50px;
+  width: 50px;
+  font-weight: bold;
+}
+
+/* ToDo Item List */
+.todoapp__list {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+}
+.todoapp__list-tit {
+  font-weight: bold;
+  margin: 0;
+  font-size: 1.3em;
+}
+.todoapp__list-ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0;
+}
+
+/* ToDo Item */
+.todoapp__item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  height: 36px;
+}
+.todoapp__item:last-child {
+  margin-bottom: 0;
+}
+.todoapp__item-checkbox {
+  margin-right: 10px;
+  display: none;
+}
+.todoapp__item-checkbox + label {
+  display: inline-block;
+  width: 15px;
+  height: 15px;
+  border: 3px solid #707070;
+  position: relative;
+  margin-left: 10px;
+}
+
+.todoapp__item-checkbox + .label_checked::after {
+  content: "✔";
+  font-size: 10px;
+  width: 15px;
+  height: 15px;
+  text-align: center;
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+.todoapp__item-edit-input {
+  flex: 1 1;
+  border: none;
+  border-bottom: 1px solid #f1f3f5;
+  padding: 13px;
+  font-size: 1em;
+  box-sizing: border-box;
+  background-color: #ff99581c;
+  border-radius: 20px;
+}
+.todoapp__item-edit-input:focus {
+  outline: none;
+}
+.todoapp__item-ctx {
+  flex: 1;
+  font-size: 1.1em;
+}
+.todoapp__item-ctx-checked {
+  font-style: italic;
+  text-decoration: line-through;
+  color: #868e96;
+}
+.todoapp__item-edit-btn,
+.todoapp__item-delete-btn {
+  border: none;
+  border-radius: 0;
+  height: 36px;
+  width: 36px;
+  background-color: inherit;
+}
+.todoapp__item-edit-btn:hover,
+.todoapp__item-delete-btn:hover {
+  cursor: pointer;
+  background-color: #d0ebff;
+}
+.todoapp__item-edit-btn {
+  margin-right: 3px;
+  color: #270d03;
+}

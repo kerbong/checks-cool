@@ -1,6 +1,7 @@
 .event-area {
   margin-bottom: 5px;
   border-radius: 15px;
+  display: flex;
 }
 .attendInfo-area {
   width: 60%;

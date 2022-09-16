@@ -2,6 +2,8 @@ import CheckLists from "components/Memo/CheckLists";
 import React, { useState } from "react";
 import classes from "../Memo/CheckLists.module.css";
 
+import MemoTodo from "../Memo/MemoTodo";
+
 const MemoPage = (props) => {
   const [showMemos, setShowMemos] = useState(false);
   const [showChecklists, setshowChecklists] = useState(true);
@@ -11,9 +13,9 @@ const MemoPage = (props) => {
       <div id="title-div">
         <button id="title-btn" className="todo">
           <i className="fa-regular fa-note-sticky"></i>
-          {showMemos && " 메모"}
+          {showMemos && " 오늘할일"}
           {showChecklists && " 체크리스트"}
-          {showAchives && " 평가"}
+          {showAchives && " 메모장"}
         </button>
         <div style={{ height: "70px", display: "flex", alignItems: "center" }}>
           <span
@@ -24,7 +26,7 @@ const MemoPage = (props) => {
               setShowAchives(false);
             }}
           >
-            <i className="fa-regular fa-note-sticky"></i>
+            <i className="fa-solid fa-list-check"></i>
           </span>
           <span
             className={classes["memo-headerBtn"]}
@@ -34,7 +36,7 @@ const MemoPage = (props) => {
               setShowAchives(false);
             }}
           >
-            <i className="fa-solid fa-list-check"></i>
+            <i className="fa-solid fa-check"></i>
           </span>
           <span
             className={classes["memo-headerBtn"]}
@@ -44,7 +46,7 @@ const MemoPage = (props) => {
               setShowAchives(true);
             }}
           >
-            <i className="fa-solid fa-star-half-stroke"></i>
+            <i className="fa-regular fa-note-sticky"></i>
           </span>
         </div>
       </div>
@@ -52,7 +54,7 @@ const MemoPage = (props) => {
       {showChecklists && (
         <CheckLists students={props.students} userUid={props.userUid} />
       )}
-      {showMemos && "추후 업데이트 예정입니다"}
+      {showMemos && <MemoTodo userUid={props.userUid} />}
       {showAchives && "추후 업데이트 예정입니다"}
     </>
   );
