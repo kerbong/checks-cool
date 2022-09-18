@@ -72,7 +72,13 @@ const EventItem = (props) => {
         <div className={classes["button-area"]}>
           <Button
             className="small-student"
-            name={props.fixIsShown !== shownId ? "수정" : "저장"}
+            name={
+              props.fixIsShown !== shownId ? (
+                <i className="fa-solid fa-pencil"></i>
+              ) : (
+                <i className="fa-regular fa-floppy-disk"></i>
+              )
+            }
             id={
               props.fixIsShown !== shownId
                 ? `fix-btn${shownId}`
@@ -94,7 +100,13 @@ const EventItem = (props) => {
           />
           <Button
             className="small-student"
-            name={props.fixIsShown !== shownId ? "삭제" : "취소"}
+            name={
+              props.fixIsShown !== shownId ? (
+                <i className="fa-regular fa-trash-can"></i>
+              ) : (
+                <i className="fa-solid fa-xmark"></i>
+              )
+            }
             id={
               props.fixIsShown !== shownId
                 ? `delete-btn${shownId}`

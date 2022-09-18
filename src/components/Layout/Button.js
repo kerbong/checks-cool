@@ -13,6 +13,7 @@ const Button = (props) => {
   return (
     <>
       <button
+        key={props.key}
         id={props.id}
         className={classes[props.className]}
         onClick={clickHandler}

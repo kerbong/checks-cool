@@ -3,6 +3,7 @@
   height: 50px;
   text-align: center;
   font-size: 1.1em;
+  margin-right: 10px;
 }
 
 .grade-area {
@@ -10,6 +11,7 @@
   text-align: center;
   height: 50px;
   font-size: 1.1em;
+  margin-right: 10px;
 }
 
 .publicPw-area {

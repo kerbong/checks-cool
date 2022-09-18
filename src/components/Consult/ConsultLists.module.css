@@ -27,7 +27,7 @@
 
 .nameSpan {
   margin-left: 10px;
-  width: 60%;
+  width: 50%;
 }
 
 .nameIcon {
@@ -67,4 +67,8 @@
 }
 .consultDate {
   margin-left: 5px;
+}
+.noteTextArea {
+  width: 70%;
+  text-align: left;
 }

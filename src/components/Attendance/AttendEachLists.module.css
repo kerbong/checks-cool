@@ -1,0 +1,22 @@
+.li {
+  list-style: none;
+  margin-bottom: 20px;
+  font-size: 1.1em;
+  text-align: left;
+  margin-left: 20px;
+}
+
+.student-select {
+  font-size: 1.2em;
+}
+
+.ul {
+  padding: 10px;
+}
+
+.sortBtnArea {
+  display: flex;
+  margin: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+}

@@ -152,7 +152,9 @@ const ToDoItem = ({ todoItem, todoList, setTodoList }) => {
               </button>
             </>
           )
-        ) : null
+        ) : (
+          <div className="todoapp__item-done-btn"></div>
+        )
       }
     </li>
   );

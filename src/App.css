@@ -97,6 +97,9 @@
   margin: 0;
   font-size: 1.3em;
 }
+.todoapp__item-done-btn {
+  width: 10%;
+}
 .todoapp__list-ul {
   list-style: none;
   display: flex;
@@ -109,7 +112,7 @@
 .todoapp__item {
   display: flex;
   align-items: center;
-  margin-bottom: 10px;
+  margin: 5px 15px;
   height: 36px;
 }
 .todoapp__item:last-child {
@@ -125,7 +128,7 @@
   height: 15px;
   border: 3px solid #707070;
   position: relative;
-  margin-left: 10px;
+  margin-left: 20px;
 }
 
 .todoapp__item-checkbox + .label_checked::after {

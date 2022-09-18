@@ -10,20 +10,23 @@ const ConsultLists = (props) => {
 
   const anyContext = useContext(props.context);
 
-  function sortDate(consult) {
-    const sorted_consults = consult
-      .sort(function (a, b) {
-        let a_date = `${a.id.slice(0, 10)} ${a.id.slice(10, 15)}`;
-        let b_date = `${b.id.slice(0, 10)} ${b.id.slice(10, 15)}`;
-        return new Date(a_date) - new Date(b_date);
-      })
-      .reverse();
+  function sortDate(consult, upOrDown) {
+    const sorted_consults = consult.sort(function (a, b) {
+      let a_date = `${a.id.slice(0, 10)} ${a.id.slice(10, 15)}`;
+      let b_date = `${b.id.slice(0, 10)} ${b.id.slice(10, 15)}`;
+      return new Date(a_date) - new Date(b_date);
+    });
+
+    if (upOrDown === "up") {
+      sorted_consults.reverse();
+    }
+
     return sorted_consults;
   }
 
   useEffect(() => {
     if (anyContext) {
-      let sorted_datas = sortDate(anyContext.datas);
+      let sorted_datas = sortDate(anyContext.datas, "up");
       setConsults([...sorted_datas]);
     }
   }, [anyContext]);
@@ -60,6 +63,13 @@ const ConsultLists = (props) => {
     setShowEditor(consult.id);
   };
 
+  const yearMonthDay = (yyyymmdd) => {
+    const year = yyyymmdd.split("-")[0];
+    const month = yyyymmdd.split("-")[1].replace(/(^0+)/, "");
+    const day = yyyymmdd.split("-")[2].replace(/(^0+)/, "");
+    return year + "년 " + month + "월 " + day + "일  ";
+  };
+
   return (
     <>
       {consults &&
@@ -79,9 +89,9 @@ const ConsultLists = (props) => {
                     <span className={classes.nameIcon}>
                       <i className="fa-regular fa-id-badge"></i>
                     </span>
-                    <span className={classes.consultDate}>
-                      {consult.id.slice(0, 10)}
-                    </span>
+                    <p className={classes.consultDate}>
+                      {yearMonthDay(consult.id.slice(0, 10))}
+                    </p>
                     <span className={classes.nameSpan} id={"1" + consult.id}>
                       {`${consult.student_name} | ${consult.option.slice(1)}`}
                     </span>
@@ -99,7 +109,9 @@ const ConsultLists = (props) => {
                   )}
                   {/* 상담 비고 등록한 부분 있으면 보여주기 */}
                   <div className={classes.noteArea}>
-                    {consult.note ? consult.note : "'기록이 없습니다.'"}
+                    <span className={classes.noteTextArea}>
+                      {consult.note ? consult.note : "'기록이 없습니다.'"}
+                    </span>
 
                     <span className={classes.editDeleteArea}>
                       <Button

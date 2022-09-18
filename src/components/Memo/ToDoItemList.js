@@ -5,7 +5,13 @@ import ToDoItem from "./ToDoItem";
 const ToDoItemList = ({ title, todoList, setTodoList, checkedList }) => (
   <div className="todoapp__list">
     {/* props로 부터 title 값을 전달 받음 */}
-    <p className="todoapp__list-tit">{title}</p>
+    <p
+      className={
+        title !== "완료한 항목" ? "todoapp__list-tit" : "todoapp__list-tit done"
+      }
+    >
+      {title}
+    </p>
 
     <ul className="todoapp__list-ul">
       {todoList && // todoList가 있을때만 출력

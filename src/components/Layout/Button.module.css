@@ -10,14 +10,15 @@
 }
 
 .small-student {
-  width: 50%;
-  margin: 5px 10px;
+  width: 35%;
+  margin: 5px 5px;
   font-size: 1.1em;
-  border-radius: 10px;
+  border-radius: 15px;
   border-width: 0;
   letter-spacing: 1px;
   padding: 1.5vh;
   background-color: #ffbec7;
+  height: 55px;
 }
 
 .header-logInOut {
@@ -146,4 +147,15 @@
   padding: 1.5vh;
   background-color: #da9a9a;
   float: left;
+}
+
+.sortBtn {
+  width: auto;
+  margin: 5px;
+  font-size: 0.9em;
+  border-radius: 10px;
+  border-width: 0;
+  letter-spacing: -1px;
+  padding: 7px;
+  background-color: #da9a9a;
 }

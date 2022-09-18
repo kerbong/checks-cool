@@ -5,8 +5,6 @@ import Modal from "../Layout/Modal";
 import EventLists from "../Event/EventLists";
 import classes from "./AttendCtxCalendar.module.css";
 
-import AttendLists from "./AttendLists";
-
 const thisMonth = () => {
   let today = new Date();
   let year = today.getFullYear();
@@ -17,7 +15,6 @@ const thisMonth = () => {
 const AttendCtxCalendar = (props) => {
   const [currentMonth, setCurrentMonth] = useState(thisMonth);
   const [dayEventIsShown, setDayEventIsShown] = useState(false);
-  const [studentListIsShown, setStudentListIsShown] = useState(false);
   const [fixIsShown, setFixIsShown] = useState("0");
   //날짜별로 이벤트를 모아둔 변수
   const [eventByDays, setEventByDays] = useState([]);
@@ -104,6 +101,7 @@ const AttendCtxCalendar = (props) => {
     //캘린더에 이벤트 보여주기
     const eventDrawOnCalendar = (month) => {
       // console.log("이벤트를 캘린더에 그리기! 전달받은 달" + month);
+      console.log(anyContext.datas);
       //
       if (anyContext) {
         //깊은 복사로 eventByDays 복사해두기, 185번줄 아래로 넣을 경우 eventByDays가 빈 배열인 데 거기에 계속 추가해서 문제...
@@ -360,11 +358,8 @@ const AttendCtxCalendar = (props) => {
           />
         </Modal>
       )}
-      {studentListIsShown ? (
-        <AttendLists />
-      ) : (
-        <AttendCalendar inline={"true"} getDateValue={getDateHandler} />
-      )}
+
+      <AttendCalendar inline={"true"} getDateValue={getDateHandler} />
     </>
   );
 };
