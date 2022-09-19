@@ -71,6 +71,21 @@ const ToDoItem = ({ todoItem, todoList, setTodoList }) => {
     });
   };
 
+  //입력 글자수 제한
+  const handleOnInput = (e, maxlength) => {
+    if (e.target.value.length > maxlength) {
+      e.target.value = e.target.value.substr(0, maxlength);
+      Swal.fire({
+        icon: "error",
+        title: "입력 불가",
+        text: "입력한 내용을 줄여주세요.",
+        confirmButtonText: "확인",
+        confirmButtonColor: "#85bd82",
+        timer: 5000,
+      });
+    }
+  };
+
   return (
     <li className="todoapp__item">
       {/* 아이템 완료 체크 / 체크 해제를 위한 체크박스 */}
@@ -99,6 +114,7 @@ const ToDoItem = ({ todoItem, todoList, setTodoList }) => {
                 onClickSubmitButton();
               }
             }}
+            onInput={(e) => handleOnInput(e, 20)}
           />
         ) : (
           <span

@@ -7,6 +7,7 @@ import ConsultEdit from "./ConsultEdit";
 const ConsultLists = (props) => {
   const [consults, setConsults] = useState([]);
   const [showEditor, setShowEditor] = useState("");
+  const [initTextareaHeight, setInitTextareaHeight] = useState("");
 
   const anyContext = useContext(props.context);
 
@@ -59,8 +60,10 @@ const ConsultLists = (props) => {
     });
   };
 
-  const editConsult = (consult) => {
-    setShowEditor(consult.id);
+  const editConsult = (consult_id) => {
+    setShowEditor(consult_id);
+    // console.log(this.scrollHeight);
+    // setInitTextareaHeight(this.scrollHeight);
   };
 
   const yearMonthDay = (yyyymmdd) => {
@@ -82,6 +85,7 @@ const ConsultLists = (props) => {
                   consult={consult}
                   cancelEditor={() => setShowEditor("")}
                   context={props.context}
+                  initTextareaHeight={initTextareaHeight}
                 />
               ) : (
                 <div key={consult.id + "item"}>
@@ -96,6 +100,7 @@ const ConsultLists = (props) => {
                       {`${consult.student_name} | ${consult.option.slice(1)}`}
                     </span>
                   </div>
+
                   {/* 이미지가 있으면 이미지 보여주기 */}
                   {consult.attachedFileUrl && (
                     <div className={classes.fileArea}>
@@ -109,28 +114,35 @@ const ConsultLists = (props) => {
                   )}
                   {/* 상담 비고 등록한 부분 있으면 보여주기 */}
                   <div className={classes.noteArea}>
-                    <span className={classes.noteTextArea}>
+                    <span
+                      className={classes.noteTextArea}
+                      id={"note" + consult.id}
+                    >
                       {consult.note ? consult.note : "'기록이 없습니다.'"}
                     </span>
+                  </div>
+                  <div className={classes.editDeleteArea}>
+                    <Button
+                      id={"edit" + consult.id}
+                      className="consultEditBtn"
+                      onclick={() => {
+                        editConsult(consult.id);
+                        const initHeight = document.getElementById(
+                          `note${consult.id}`
+                        ).scrollHeight;
 
-                    <span className={classes.editDeleteArea}>
-                      <Button
-                        id={"edit" + consult.id}
-                        className="consultEditBtn"
-                        onclick={() => {
-                          editConsult(consult);
-                        }}
-                        icon={<i className="fa-solid fa-pencil"></i>}
-                      />
-                      <Button
-                        id={"delete" + consult.id}
-                        className="consultEditBtn"
-                        onclick={() => {
-                          deleteConsult(consult);
-                        }}
-                        icon={<i className="fa-solid fa-trash-can"></i>}
-                      />
-                    </span>
+                        setInitTextareaHeight(initHeight);
+                      }}
+                      icon={<i className="fa-solid fa-pencil"></i>}
+                    />
+                    <Button
+                      id={"delete" + consult.id}
+                      className="consultEditBtn"
+                      onclick={() => {
+                        deleteConsult(consult);
+                      }}
+                      icon={<i className="fa-solid fa-trash-can"></i>}
+                    />
                   </div>
                 </div>
               )}

@@ -58,14 +58,6 @@ const AttendanceForm = (props) => {
 
   const submitHandler = async (e) => {
     e.preventDefault();
-    //파일 추가하기(storage에 랜덤 uuid 이름으로 파일 업로드 후, 그 url을 받아서 저장)
-    // let attachedFileUrl = "";
-
-    // if (props.about === "consulting" && attachedFile !== "") {
-    //   const fileRef = ref(storageService, `${props.userUid}/${uuidv4()}`);
-    //   const response = await uploadString(fileRef, attachedFile, "data_url");
-    //   attachedFileUrl = await getDownloadURL(response.ref);
-    // }
 
     const inputValue = noteRef.current.value;
     const studentInfo = props.who.split(" ");
@@ -116,6 +108,28 @@ const AttendanceForm = (props) => {
     ///
   };
 
+  //입력 글자수 제한
+  const handleOnInput = (e) => {
+    let maxlength;
+    if (props.about === "consulting") {
+      maxlength = 400;
+    } else if (props.about === "attendance") {
+      maxlength = 30;
+    }
+
+    if (e.target.value.length > maxlength) {
+      e.target.value = e.target.value.substr(0, maxlength);
+      Swal.fire({
+        icon: "error",
+        title: "입력 불가",
+        text: "입력한 내용을 줄여주세요.",
+        confirmButtonText: "확인",
+        confirmButtonColor: "#85bd82",
+        timer: 5000,
+      });
+    }
+  };
+
   return (
     <>
       <AttendanceOption
@@ -138,22 +152,27 @@ const AttendanceForm = (props) => {
               label="inputData"
               input={{
                 id: props.id,
-                type: "text",
+                type: "textarea",
                 placeholder: "비고를 입력하세요.",
                 defaultValue: "",
                 autoFocus: true,
               }}
               onKeyDown={() => handleResizeHeight(this)}
               onKeyUp={() => handleResizeHeight(this)}
+              onInput={(e) => handleOnInput(e)}
             />
-            <button className={classes.btn}>저장</button>
           </form>
-          <FileArea
-            about={props.about}
-            attachedFileHandler={(file) => {
-              setAttachedFile(file);
-            }}
-          />
+          <div className={classes.btnArea}>
+            <FileArea
+              about={props.about}
+              attachedFileHandler={(file) => {
+                setAttachedFile(file);
+              }}
+            />
+            <button className={classes.btn} onClick={submitHandler}>
+              저장
+            </button>
+          </div>
         </>
       )}
     </>

@@ -5,10 +5,26 @@ import Button from "../Layout/Button";
 import students from "../../studentInfo";
 import Student from "../Student/Student";
 import Modal from "../Layout/Modal";
+import Swal from "sweetalert2";
 
 const EventInput = (props) => {
   const [student, setStudent] = useState("");
   const [showStudent, setShowStudent] = useState(false);
+
+  //자료 최대글자수 제한 함수
+  const handleOnInput = (e, maxlength) => {
+    if (e.target.value.length > maxlength) {
+      e.target.value = e.target.value.substr(0, maxlength);
+      Swal.fire({
+        icon: "error",
+        title: "입력 불가",
+        text: "입력한 내용을 줄여주세요.",
+        confirmButtonText: "확인",
+        confirmButtonColor: "#85bd82",
+        timer: 5000,
+      });
+    }
+  };
 
   const closeModalHandler = (e) => {
     setShowStudent(false);
@@ -104,6 +120,7 @@ const EventInput = (props) => {
                 id={"todo-eventName"}
                 className={classes["eventNameInput-area"]}
                 autoFocus
+                onInput={(e) => handleOnInput(e, 20)}
               />
             )}
 
@@ -150,6 +167,8 @@ const EventInput = (props) => {
               id={
                 student ? `option-note${student.split(" ")[0]}` : "option-note"
               }
+              className={classes["note-area"]}
+              onInput={(e) => handleOnInput(e, 30)}
             />
           </form>
         </div>

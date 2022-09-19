@@ -5,12 +5,10 @@
 }
 
 .input {
-  margin-left: 3%;
-  width: 58%;
+  width: 95%;
   height: 30px;
   padding: 10px;
   font-size: 1em;
-  font-family: "GowunDodum";
   overflow-y: hidden;
   resize: none;
 }
@@ -22,5 +20,9 @@
   margin: 10px;
   border-radius: 15px;
   border-width: 0;
-  font-family: "GowunDodum";
+}
+
+.btnArea {
+  display: flex;
+  justify-content: flex-end;
 }

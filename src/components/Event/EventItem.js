@@ -1,5 +1,5 @@
 import React from "react";
-
+import Swal from "sweetalert2";
 import classes from "./EventItem.module.css";
 import Button from "../Layout/Button";
 
@@ -10,6 +10,20 @@ const EventItem = (props) => {
   let note = props.note;
   let shownId = props.shownId;
   let option = props.option;
+
+  const handleOnInput = (e, maxlength) => {
+    if (e.target.value.length > maxlength) {
+      e.target.value = e.target.value.substr(0, maxlength);
+      Swal.fire({
+        icon: "error",
+        title: "입력 불가",
+        text: "입력한 내용을 줄여주세요.",
+        confirmButtonText: "확인",
+        confirmButtonColor: "#85bd82",
+        timer: 5000,
+      });
+    }
+  };
 
   return (
     <>
@@ -66,6 +80,8 @@ const EventItem = (props) => {
               placeholder="메모 / 비고 입력란"
               id={`option-note${shownId}`}
               defaultValue={note}
+              className={classes["note-area"]}
+              onInput={(e) => handleOnInput(e, 30)}
             />
           </form>
         </div>

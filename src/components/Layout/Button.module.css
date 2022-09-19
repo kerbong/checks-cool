@@ -10,15 +10,15 @@
 }
 
 .small-student {
-  width: 35%;
-  margin: 5px 5px;
+  width: 45px;
+  margin: 5px 6px;
   font-size: 1.1em;
   border-radius: 15px;
   border-width: 0;
   letter-spacing: 1px;
-  padding: 1.5vh;
+  padding: 10px;
   background-color: #ffbec7;
-  height: 55px;
+  height: 45px;
 }
 
 .header-logInOut {
@@ -63,13 +63,13 @@
 }
 
 .consultEditBtn {
-  width: 30%;
+  width: 20px;
   margin: 5px;
   font-size: 1.1em;
   border-radius: 10px;
   border-width: 0;
-  padding: 4vw;
-  height: 4vw;
+  padding: 20px;
+  height: 20px;
   background-color: #c4c13f47;
 }
 

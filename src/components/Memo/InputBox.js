@@ -1,6 +1,6 @@
 import React, { useRef, useState } from "react";
 import PropTypes from "prop-types";
-
+import Swal from "sweetalert2";
 const InputBox = ({ todoList, setTodoList }) => {
   const [text, setText] = useState("");
   const inputRef = useRef(null);
@@ -27,9 +27,24 @@ const InputBox = ({ todoList, setTodoList }) => {
     inputRef.current.focus();
   };
 
+  //자료 최대글자수 제한 함수
+  const handleOnInput = (e, maxlength) => {
+    if (e.target.value.length > maxlength) {
+      e.target.value = e.target.value.substr(0, maxlength);
+      Swal.fire({
+        icon: "error",
+        title: "입력 불가",
+        text: "입력한 내용을 줄여주세요.",
+        confirmButtonText: "확인",
+        confirmButtonColor: "#85bd82",
+        timer: 5000,
+      });
+    }
+  };
+
   return (
     <form onSubmit={onPressSubmitButton} className="todoapp__inputbox">
-      {/* 아이템 내용 입력 input */}
+      {/* 아이템 내용 입력 오늘할일 제일 위쪽 입력창 */}
       <input
         type="text"
         name="todoItem"
@@ -38,6 +53,7 @@ const InputBox = ({ todoList, setTodoList }) => {
         placeholder="할 일을 입력해주세요"
         className="todoapp__inputbox-inp"
         onChange={onChangeInput}
+        onInput={(e) => handleOnInput(e, 30)}
       />
       {/* 입력 후 아이템 추가 버튼 */}
       <button type="submit" className="todoapp__inputbox-add-btn">

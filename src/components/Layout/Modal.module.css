@@ -10,8 +10,8 @@
 
 .modal {
   position: fixed;
-  top: 5vh;
-  left: 5%;
+  top: 3vh;
+  left: 3%;
   width: 85%;
   background-color: white;
   padding: 1rem;

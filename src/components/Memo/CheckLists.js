@@ -180,9 +180,9 @@ const CheckLists = (props) => {
               <div className={classes.unsubmitArea}>
                 {item.unSubmitStudents.map((stu) => (
                   <Button
+                    key={item.id + stu.num}
                     name={stu.name}
-                    id={"unSubmit" + stu.num}
-                    key={"unSubmit" + stu.num}
+                    id={item.title + stu.num}
                     className={"checkList-button"}
                   />
                 ))}

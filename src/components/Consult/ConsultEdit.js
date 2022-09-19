@@ -1,4 +1,10 @@
-import React, { useCallback, useRef, useState, useContext } from "react";
+import React, {
+  useCallback,
+  useRef,
+  useState,
+  useContext,
+  useEffect,
+} from "react";
 import classes from "./ConsultLists.module.css";
 import FileForm from "components/Layout/FileForm";
 import Button from "components/Layout/Button";
@@ -69,8 +75,8 @@ const ConsultEdit = (props) => {
     if (noteRef === null || noteRef.current === null) {
       return;
     }
-    noteRef.current.style.height = "10px";
-    noteRef.current.style.height = noteRef.current.scrollHeight + "px";
+    noteRef.current.style.height = "1px";
+    noteRef.current.style.height = 3 + noteRef.current.scrollHeight + "px";
   }, []);
 
   return (
@@ -111,32 +117,16 @@ const ConsultEdit = (props) => {
       )}
       {/* 상담 비고 등록한 부분 있으면 보여주기 */}
       <div className={classes.noteArea}>
-        {consult.note ? consult.note : "'기록이 없습니다.'"}
-
-        <span className={classes.editDeleteArea}>
-          <Button
-            id={"save" + consult.id}
-            className="consultEditBtn"
-            onclick={() => {
-              saveConsult(consult);
-            }}
-            icon={<i className="fa-solid fa-floppy-disk"></i>}
-          />
-          <Button
-            id={"cancel" + consult.id}
-            className="consultEditBtn"
-            onclick={cancelEdit}
-            icon={<i className="fa-solid fa-rectangle-xmark"></i>}
-          />
-        </span>
+        {!consult.note && "기록이 없습니다."}
       </div>
       <Input
         ref={noteRef}
         className={classes.input}
+        style={{ height: props.initTextareaHeight }}
         label="inputData"
         input={{
           id: props.id,
-          type: "text",
+          type: "textarea",
           placeholder: "비고를 입력하세요.",
           defaultValue: consult.note,
           autoFocus: true,
@@ -144,6 +134,22 @@ const ConsultEdit = (props) => {
         onKeyDown={() => handleResizeHeight(this)}
         onKeyUp={() => handleResizeHeight(this)}
       />
+      <div className={classes.editDeleteArea}>
+        <Button
+          id={"save" + consult.id}
+          className="consultEditBtn"
+          onclick={() => {
+            saveConsult(consult);
+          }}
+          icon={<i className="fa-solid fa-floppy-disk"></i>}
+        />
+        <Button
+          id={"cancel" + consult.id}
+          className="consultEditBtn"
+          onclick={cancelEdit}
+          icon={<i className="fa-solid fa-rectangle-xmark"></i>}
+        />
+      </div>
 
       <div className={classes.editFileArea}>
         <FileForm
