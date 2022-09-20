@@ -68,3 +68,19 @@
 .noteTextArea {
   text-align: left;
 }
+
+.sortBtnArea {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: -30px;
+}
+
+.select-area {
+  width: 150px;
+}
+
+.student-select {
+  width: 100px;
+  font-size: 0.9em;
+}

@@ -4,7 +4,7 @@
   /* height: 75vh; */
   margin-left: 2%;
   margin-top: 5px;
-  font-family: "GowunDodum";
+
   display: flow-root;
 }
 .react-datepicker__header {
@@ -70,14 +70,13 @@
 
 #switch-btn {
   width: auto;
-  margin: 5px 10px;
+  margin: 10px 8px;
   font-size: 1.5em;
   border-radius: 10px;
   border-width: 0;
   letter-spacing: 1px;
-  padding: 2vh;
+  padding: 1.2vh;
   background-color: inherit;
-  font-family: "GowunDodum";
 }
 
 .react-datepicker__day--disabled {
@@ -89,7 +88,6 @@
   background-color: white;
   border-width: inherit;
   font-size: 1em;
-  font-family: "GowunDodum";
 }
 
 .react-datepicker__month-container {
@@ -132,7 +130,7 @@
   letter-spacing: 1px;
   padding: 2vh;
   background-color: #dcc329;
-  font-family: "GowunDodum";
+
   position: absolute;
   left: -3vw;
 }

@@ -56,11 +56,13 @@ const ConsultingPage = (props) => {
         //명렬표로 입력할 수 있도록 나오는 화면
         <Student students={props.students} showOption={showOptionHandler} />
       ) : (
-        //그동안의 기록들 볼 수 있는 화면
-        <ConsultLists
-          context={ConsultContext}
-          selectOption={consultingOption}
-        />
+        <>
+          {/* 그동안의 기록들 볼 수 있는 화면 */}
+          <ConsultLists
+            context={ConsultContext}
+            selectOption={consultingOption}
+          />
+        </>
       )}
     </>
   );

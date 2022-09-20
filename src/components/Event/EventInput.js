@@ -174,8 +174,8 @@ const EventInput = (props) => {
         </div>
         <div className={classes["button-area"]}>
           <Button
-            className="event-fix-btn"
-            name="저장"
+            className="small-student"
+            name={<i className="fa-regular fa-floppy-disk"></i>}
             id={`save-btn${props.id}`}
             onclick={() => {
               //추가한 이벤트 저장하는 함수, 필요한 데이터를 모아서 상위 props에 이벤트 정보 전달함.
@@ -183,8 +183,8 @@ const EventInput = (props) => {
             }}
           />
           <Button
-            className="event-fix-btn"
-            name={"취소"}
+            className="small-student"
+            name={<i className="fa-solid fa-xmark"></i>}
             id={`cancle-btn${props.id}`}
             onclick={function () {
               props.closeHandler();

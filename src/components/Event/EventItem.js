@@ -86,6 +86,7 @@ const EventItem = (props) => {
           </form>
         </div>
         <div className={classes["button-area"]}>
+          {/* 수정 / 저장버튼 */}
           <Button
             className="small-student"
             name={
@@ -114,6 +115,8 @@ const EventItem = (props) => {
                   }
             }
           />
+          {/* 삭제 / 취소버튼 */}
+
           <Button
             className="small-student"
             name={

@@ -9,11 +9,13 @@ import {
 } from "firebase/auth";
 import { authService } from "../../fbase";
 import classes from "./Auth.module.css";
+import AuthTerms from "./AuthTerms";
 
 const Auth = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [newAccount, setNewAccount] = useState(true);
+  const [agreeTerms, setAgreeTerms] = useState(false);
 
   const onChange = (e) => {
     const {
@@ -28,6 +30,10 @@ const Auth = () => {
 
   const onSubmit = async (e) => {
     e.preventDefault();
+    console.log(agreeTerms);
+    if (!agreeTerms) {
+      return;
+    }
     try {
       let data;
       const auth = getAuth();
@@ -78,20 +84,50 @@ const Auth = () => {
           onChange={onChange}
           className={classes["logInOut-input"]}
         />
+        {newAccount && (
+          <div>
+            <span>이용약관 및 개인정보제공동의(필수)</span>
+            <p className={classes["terms-checkbox-area"]}>
+              <input
+                type="checkbox"
+                name="terms-checkbox"
+                onClick={() => setAgreeTerms((prev) => !prev)}
+              />
+              <span>약관에 모두 동의함</span>
+            </p>
+
+            <div className={classes["terms-area"]}>
+              <div className={classes["terms-text"]}>
+                <AuthTerms />
+              </div>
+            </div>
+          </div>
+        )}
+
         <input
           type="submit"
           value={newAccount ? "회원가입" : "로그인"}
+          disabled={!agreeTerms ? true : false}
           className={classes["logInOut-SignUp"]}
         />
       </form>
-      <div>
+      <div className={classes["google-login"]}>
         <button
           name="google"
           onClick={onSocialClick}
+          disabled={!agreeTerms ? true : false}
           className={classes["logInOut-SignUp"]}
         >
           <i className="fa-brands fa-google"></i> Google 로그인하기
         </button>
+        <span>
+          {!agreeTerms && (
+            <>
+              *약관에 동의하시면
+              <br /> 회원가입/구글로그인이 가능합니다.
+            </>
+          )}
+        </span>
       </div>
       <div className={classes["logInOut-SignUp-Change"]}>
         <hr />

@@ -8,6 +8,9 @@ const ConsultLists = (props) => {
   const [consults, setConsults] = useState([]);
   const [showEditor, setShowEditor] = useState("");
   const [initTextareaHeight, setInitTextareaHeight] = useState("");
+  const [showPastFirst, setShowPastFirst] = useState(false);
+  const [showStudent, setShowStudent] = useState("");
+  const [studentsOnConsults, setStudentsOnConsults] = useState([]);
 
   const anyContext = useContext(props.context);
 
@@ -25,11 +28,18 @@ const ConsultLists = (props) => {
     return sorted_consults;
   }
 
-  useEffect(() => {
+  const getConsults = () => {
     if (anyContext) {
       let sorted_datas = sortDate(anyContext.datas, "up");
       setConsults([...sorted_datas]);
+      return sorted_datas;
     }
+  };
+
+  useEffect(() => {
+    let datas = getConsults();
+
+    setStudentsOnConsults([...new Set(datas.map((data) => data.student_name))]);
   }, [anyContext]);
 
   const deleteConsult = (consult) => {
@@ -73,8 +83,74 @@ const ConsultLists = (props) => {
     return year + "년 " + month + "월 " + day + "일  ";
   };
 
+  const timeSortedHandler = (upOrDown, tOrF) => {
+    if (consults.length === 1) {
+      return;
+    }
+    setConsults((prev) => sortDate(prev, upOrDown));
+    setShowPastFirst(tOrF);
+  };
+
+  const consultsHandler = (e) => {
+    const student = e.target.value;
+    let list;
+    if (student === "전체학생") {
+      list = sortDate(anyContext.datas, "up");
+      setShowPastFirst(false);
+    } else {
+      list = sortDate(
+        anyContext.datas.filter((data) => data.student_name === student),
+        "up"
+      );
+    }
+    setConsults(list);
+    //출결옵션부분도 초기화
+    setShowStudent("");
+  };
+
   return (
     <>
+      {/* 정렬하는 부분 */}
+      <div className={classes["sortBtnArea"]}>
+        <div className={classes["select-area"]}>
+          <select
+            name="student-selcet"
+            className={classes[`student-select`]}
+            required
+            defaultValue={""}
+            onChange={consultsHandler}
+          >
+            <option value="" disabled>
+              --학생--
+            </option>
+            <option value="전체학생">전체보기</option>
+            {studentsOnConsults.map((student) => (
+              <option value={student} key={student}>
+                {student}
+              </option>
+            ))}
+          </select>
+        </div>
+        {!showPastFirst ? (
+          <Button
+            id={"past"}
+            className={"sortBtn"}
+            name={"과거순"}
+            onclick={() => {
+              timeSortedHandler("down", true);
+            }}
+          />
+        ) : (
+          <Button
+            id={"current"}
+            className={"sortBtn"}
+            name={"최신순"}
+            onclick={() => {
+              timeSortedHandler("up", false);
+            }}
+          />
+        )}
+      </div>
       {consults &&
         consults.map((consult) => (
           <div key={consult.id}>

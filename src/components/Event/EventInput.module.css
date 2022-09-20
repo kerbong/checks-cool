@@ -6,7 +6,7 @@
   margin-top: -5px;
 }
 .attendInfo-area {
-  width: 70%;
+  width: 65%;
   display: flex;
   flex-direction: column;
 }
@@ -25,6 +25,7 @@
   display: flex;
   width: 35%;
   justify-content: center;
+  align-items: flex-end;
 }
 
 .attendInfo-student {
@@ -41,6 +42,7 @@
   height: 40px;
   font-size: 1.2em;
   margin: 10px;
+  width: 50vw;
 }
 
 .note-area {

@@ -13,9 +13,11 @@ const MemoPage = (props) => {
       <div id="title-div">
         <button id="title-btn" className="todo">
           <i className="fa-regular fa-note-sticky"></i>
-          {showMemos && " 오늘할일"}
-          {showChecklists && " 체크리스트"}
-          {showAchives && " 메모장"}
+          {showMemos && <> 오늘할일</>}
+          {showChecklists && <> 체크리스트</>}
+          {/* {showAchives && <>
+              {" > "} <i className="fa-solid fa-list-check"></i> 메모장
+            </>} */}
         </button>
         <div style={{ height: "70px", display: "flex", alignItems: "center" }}>
           <span
@@ -38,7 +40,7 @@ const MemoPage = (props) => {
           >
             <i className="fa-solid fa-check"></i>
           </span>
-          <span
+          {/* <span
             className={classes["memo-headerBtn"]}
             onClick={() => {
               setShowMemos(false);
@@ -47,7 +49,7 @@ const MemoPage = (props) => {
             }}
           >
             <i className="fa-regular fa-note-sticky"></i>
-          </span>
+          </span> */}
         </div>
       </div>
 

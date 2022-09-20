@@ -51,17 +51,6 @@
   background-color: #ffbec7;
 }
 
-.event-fix-btn {
-  width: 35%;
-  margin: 5px 10px;
-  font-size: 1.1em;
-  border-radius: 10px;
-  border-width: 0;
-  letter-spacing: 1px;
-  padding: 1.5vh;
-  background-color: #ffbec7;
-}
-
 .consultEditBtn {
   width: 20px;
   margin: 5px;
@@ -156,6 +145,6 @@
   border-radius: 10px;
   border-width: 0;
   letter-spacing: -1px;
-  padding: 7px;
+  padding: 10px;
   background-color: #da9a9a;
 }

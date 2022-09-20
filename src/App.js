@@ -1,7 +1,7 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import "./App.css";
 import { useState, useEffect } from "react";
-import { doc, getDoc, onSnapshot } from "firebase/firestore";
+import { doc, onSnapshot } from "firebase/firestore";
 import { dbService } from "./fbase";
 
 import MainPage from "./components/page/MainPage";
@@ -25,16 +25,20 @@ function App() {
   const [students, setStudents] = useState([]);
 
   useEffect(() => {
-    authService.onAuthStateChanged((user) => {
-      if (user) {
-        setUserUid(user.uid);
-        setIsLoggedIn(true);
-        getStudents(user.uid);
-      } else {
-        setIsLoggedIn(false);
-      }
-      setInit(true);
-    });
+    try {
+      authService.onAuthStateChanged((user) => {
+        if (user) {
+          setUserUid(user.uid);
+          setIsLoggedIn(true);
+          getStudents(user.uid);
+        } else {
+          setIsLoggedIn(false);
+        }
+        setInit(true);
+      });
+    } catch (error) {
+      console.log(error);
+    }
   }, []);
 
   //저장된 학생명부 불러오는 snapshot 함수
