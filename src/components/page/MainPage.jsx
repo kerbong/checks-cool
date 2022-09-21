@@ -40,6 +40,8 @@ const MainPage = () => {
         className="big-menu"
         icon={<i className="fa-solid fa-user-plus"></i>}
       />
+      <p>*처음오시면 먼저 학생명단을 입력해주세요!</p>
+      <p>*메뉴의 곰돌이를 누르면 현재 화면으로 오실 수 있어요!</p>
     </div>
   );
 };

@@ -44,12 +44,11 @@ const TypingStudent = (props) => {
     //자동으로 번호 다음으로 입력해주기
     setTempAutoNum(+studentNumValue + 1);
     numberRef = tempAutoNum;
-    studentNameValue = "";
+    nameRef.current.value = "";
   };
 
   //학생 제거 함수
   const deleteStudentHandler = (num) => {
-    console.log(num);
     //학생 번호를 제외한 리스트 새로 만들어서 등록
     props.setDelStudentsInfo(num);
   };

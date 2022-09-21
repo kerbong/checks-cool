@@ -2,7 +2,6 @@ import React, { useState } from "react";
 
 import classes from "./EventInput.module.css";
 import Button from "../Layout/Button";
-import students from "../../studentInfo";
 import Student from "../Student/Student";
 import Modal from "../Layout/Modal";
 import Swal from "sweetalert2";
@@ -129,7 +128,10 @@ const EventInput = (props) => {
             )}
             {showStudent && (
               <Modal onClose={closeModalHandler}>
-                <Student students={students} showOption={closeModalHandler} />
+                <Student
+                  students={props.students}
+                  showOption={closeModalHandler}
+                />
               </Modal>
             )}
           </div>

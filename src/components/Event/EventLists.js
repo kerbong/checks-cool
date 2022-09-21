@@ -163,6 +163,7 @@ const EventLists = (props) => {
                 setAddEvent(false);
               }
             }}
+            students={props.students}
           />
         )}
       </div>

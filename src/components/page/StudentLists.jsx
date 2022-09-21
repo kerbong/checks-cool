@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import TypingStudent from "../Student/TypingStudent";
-import { doc, setDoc } from "firebase/firestore";
+import { doc, setDoc, updateDoc } from "firebase/firestore";
 import { dbService } from "../../fbase";
 import StudentLiWithDelete from "../Student/StudentLiWithDelete";
 import StudentExcelUpload from "../Student/StudentExcelUpload";
@@ -18,14 +18,14 @@ const StudentLists = (props) => {
   //학생 제거 함수
   const deleteStudentHandler = (num) => {
     //학생 번호를 제외한 리스트 새로 만들어서 등록
-    setStudentsInfo((prev) => [...prev.filter((stu) => stu.num !== num)]);
+    setStudentsInfo((prev) => prev.filter((stu) => stu.num !== num));
   };
 
   useEffect(() => {
     setStudentsInfo(props.students);
   }, [props.students]);
 
-  //학생 추가하는 함수(덮어쓰기)
+  //저장버튼 누르면 현재 학생목록을 firestore에 저장하는 함수(덮어쓰기)
   const uploadStudents = async (data) => {
     await setDoc(doc(dbService, "students", props.userUid), data);
   };
@@ -58,13 +58,33 @@ const StudentLists = (props) => {
     }).then((result) => {
       // firestore에 저장하기
       if (result.isConfirmed) {
-        const fixed_data = { studentDatas: studentsInfo };
+        const fixed_data = { studentDatas: sortNum(studentsInfo) };
         uploadStudents(fixed_data);
+
+        Swal.fire({
+          icon: "success",
+          title: "저장되었어요!",
+          text: "5초 후에 창은 사라집니다.",
+          confirmButtonText: "확인",
+          confirmButtonColor: "#85bd82",
+          timer: 5000,
+        });
+
         //취소할 경우 저장하지 않기
       } else {
         return;
       }
     });
+  };
+
+  const sortNum = (students) => {
+    const sorted_students = students.sort(function (a, b) {
+      let a_num = `${a.num}`;
+      let b_num = `${b.num}`;
+      return a_num - b_num;
+    });
+
+    return sorted_students;
   };
 
   return (
@@ -75,7 +95,21 @@ const StudentLists = (props) => {
         </button>
 
         <button id="switch-btn" onClick={addStudentHandler}>
-          {!addStudentByFile ? (
+          {studentsInfo.length === 0 && !addStudentByFile && (
+            <>
+              <span className="excel-upload-text">엑셀파일로 업로드</span>{" "}
+              <i className="fa-solid fa-file-arrow-up"></i>
+            </>
+          )}
+
+          {studentsInfo.length === 0 && addStudentByFile && (
+            <>
+              <span className="excel-upload-text">직접 입력 및 수정</span>{" "}
+              <i className="fa-solid fa-circle-arrow-up"></i>
+            </>
+          )}
+
+          {studentsInfo.length !== 0 && !addStudentByFile ? (
             <i className="fa-solid fa-file-arrow-up"></i>
           ) : (
             <i className="fa-solid fa-circle-arrow-up"></i>
@@ -88,7 +122,10 @@ const StudentLists = (props) => {
           <TypingStudent
             studentsInfo={studentsInfo}
             setAddStudentsInfo={(studentData) =>
-              setStudentsInfo((prev) => [...prev, studentData])
+              setStudentsInfo((prev) => {
+                let students = [...prev, studentData];
+                return sortNum(students);
+              })
             }
             setDelStudentsInfo={(num) =>
               setStudentsInfo((prev) => [

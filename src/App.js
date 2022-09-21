@@ -48,7 +48,17 @@ function App() {
     const docRef = doc(dbService, "students", uid);
     onSnapshot(docRef, (doc) => {
       if (doc.exists()) {
-        setStudents([...doc.data().studentDatas]);
+        const sortNum = (students) => {
+          const sorted_students = students.sort(function (a, b) {
+            let a_num = `${a.num}`;
+            let b_num = `${b.num}`;
+            return a_num - b_num;
+          });
+
+          return sorted_students;
+        };
+
+        setStudents([...sortNum(doc.data().studentDatas)]);
       }
     });
   };

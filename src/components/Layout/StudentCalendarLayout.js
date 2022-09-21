@@ -61,6 +61,7 @@ const StudentCalendarLayout = (props) => {
             Context={props.Context}
             selectOption={props.selectOption}
             about="attendance"
+            students={props.students}
           />
         </>
       )}

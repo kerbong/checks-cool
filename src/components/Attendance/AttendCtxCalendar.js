@@ -355,6 +355,7 @@ const AttendCtxCalendar = (props) => {
             removeData={removeEventHandler}
             selectOption={props.selectOption}
             about={props.about}
+            students={props.students}
           />
         </Modal>
       )}
