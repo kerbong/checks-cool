@@ -8,9 +8,9 @@ import AttendEachLists from "../Attendance/AttendEachLists";
 const StudentCalendarLayout = (props) => {
   const [optionIsShown, setOptionShown] = useState(false);
   const [showEachStudent, setShowEachStudent] = useState(false);
-  const [showStudentsList, setShowStudentsList] = useState(true);
+  const [showStudentsList, setShowStudentsList] = useState(false);
   const [student, setStudent] = useState("");
-  const [showCalendar, setShowCalendar] = useState(false);
+  const [showCalendar, setShowCalendar] = useState(true);
 
   const showOptionHandler = (e) => {
     setStudent(e.target.innerText);
