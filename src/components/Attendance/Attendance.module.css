@@ -60,3 +60,8 @@
   color: black;
   font-size: 1.3em;
 }
+
+.datepick-explain {
+  text-align: center;
+  margin: 10px;
+}

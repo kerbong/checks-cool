@@ -92,11 +92,11 @@ const StudentCalendarLayout = (props) => {
             <button id="title-btn">
               <i className="fa-regular fa-address-book"></i> 출석부
             </button>
-            <button id="switch-btn" onClick={showEachStudentHandler}>
-              <i className="fa-solid fa-user"></i>
-            </button>
             <button id="switch-btn" onClick={showCalHandler}>
               <i className="fa-regular fa-calendar-days"></i>
+            </button>
+            <button id="switch-btn" onClick={showEachStudentHandler}>
+              <i className="fa-solid fa-user"></i>
             </button>
           </div>
           <Student students={props.students} showOption={showOptionHandler} />

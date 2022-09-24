@@ -4,6 +4,7 @@ import Modal from "../Layout/Modal";
 
 import EventLists from "../Event/EventLists";
 import classes from "./AttendCtxCalendar.module.css";
+import AttendContext from "../../store/attend-context";
 
 const thisMonth = () => {
   let today = new Date();
@@ -21,7 +22,7 @@ const AttendCtxCalendar = (props) => {
   //보여줄 이벤트만 있는 날짜 변수
   const [eventOnDay, setEventOnDay] = useState([]);
 
-  const anyContext = useContext(props.Context);
+  const anyContext = useContext(props.about === "attendance" && AttendContext);
 
   const getCurrentMonth = () => {
     const currentM = document
@@ -64,7 +65,7 @@ const AttendCtxCalendar = (props) => {
             setCurrentMonth(fixedM);
           };
         } else {
-          day.onclick = function () {
+          day.onclick = function dayOnClick() {
             //클릭한 날짜정보와 일치하는 보여줄 정보만 저장
             let day_date = day.getAttribute("aria-label");
             if (eventByDays.length !== 0) {
@@ -101,7 +102,7 @@ const AttendCtxCalendar = (props) => {
     //캘린더에 이벤트 보여주기
     const eventDrawOnCalendar = (month) => {
       // console.log("이벤트를 캘린더에 그리기! 전달받은 달" + month);
-      console.log(anyContext.datas);
+      // console.log(anyContext.datas);
       //
       if (anyContext) {
         //깊은 복사로 eventByDays 복사해두기, 185번줄 아래로 넣을 경우 eventByDays가 빈 배열인 데 거기에 계속 추가해서 문제...
@@ -249,7 +250,6 @@ const AttendCtxCalendar = (props) => {
       const eventOnDay = anyContext.datas.map(
         (data) => data.id(0, 10) === selectDay
       );
-      console.log(eventOnDay);
     }
   };
 
@@ -309,7 +309,8 @@ const AttendCtxCalendar = (props) => {
 
     selectedDay.onclick = function () {
       //클릭한 날짜정보와 일치하는 보여줄 정보만 저장
-      setEventOnDay(new_eventOnDay);
+
+      setEventOnDay([...new_eventOnDay]);
       setDayEventIsShown(true);
     };
   }; // 수정버튼 함수 끝
@@ -321,16 +322,17 @@ const AttendCtxCalendar = (props) => {
 
     let new_eventByDays = fixEventByDays(data, data.eventDate, "del");
 
-    setEventByDays(new_eventByDays);
-    // console.log(new_eventByDays);
-
-    //화면에서 지워줌
-    document.getElementById(data.id).remove();
-
     //해당 날짜의 이벤트 리스너 새로 등록하기
     let new_eventOnDay = new_eventByDays.filter(
       (day) => day[0]["eventDate"] === data.eventDate
     )[0];
+
+    setEventByDays([...new_eventByDays]);
+    setEventOnDay(new_eventOnDay);
+    // console.log(new_eventByDays);
+
+    //화면에서 지워줌
+    //
 
     let selectedDay = document.querySelectorAll(
       `.react-datepicker__day[aria-label="${data.eventDate}"]`
@@ -338,8 +340,9 @@ const AttendCtxCalendar = (props) => {
 
     selectedDay.onclick = function () {
       //클릭한 날짜정보와 일치하는 보여줄 정보만 저장
-      setEventOnDay(new_eventOnDay);
+      setEventOnDay([...new_eventOnDay]);
       setDayEventIsShown(true);
+      document.getElementById(data.id).remove();
     };
   };
 
@@ -361,6 +364,8 @@ const AttendCtxCalendar = (props) => {
       )}
 
       <AttendCalendar inline={"true"} getDateValue={getDateHandler} />
+
+      <p>{"* 여러 날짜에 걸친 출결은 명렬표 화면을 활용해주세요."}</p>
     </>
   );
 };

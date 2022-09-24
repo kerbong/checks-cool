@@ -97,8 +97,13 @@ const AttendEachLists = () => {
             <Button
               key={option}
               id={option}
-              className={"sortBtn"}
-              name={option.slice(1)}
+              className={
+                showAttendOption === option ? "sortBtn-clicked" : "sortBtn"
+              }
+              name={`${option.slice(1)} (${
+                studentAttendList.filter((data) => data.option === option)
+                  .length
+              })`}
               onclick={() => {
                 setShowAttendOption(option);
               }}
@@ -111,8 +116,8 @@ const AttendEachLists = () => {
         <ul className={classes.ul}>
           {showAttendOption === ""
             ? studentAttendList.map((data) => (
-                <>
-                  <li className={classes.li} key={data.id}>
+                <div key={data.id}>
+                  <li className={classes.li}>
                     <p>
                       {yearMonthDay(data.id.slice(0, 10))}
                       <span>{` | ${data.option.slice(1)}`}</span>{" "}
@@ -120,22 +125,22 @@ const AttendEachLists = () => {
                     </p>
                   </li>
                   <hr />
-                </>
+                </div>
               ))
             : // showAttendOption 클릭한 출결옵션과 같은지 확인하고 보여주기
               studentAttendList
                 .filter((data) => data.option === showAttendOption)
                 .map((data) => (
-                  <>
-                    <li className={classes.li} key={data.id}>
+                  <div key={data.id}>
+                    <li className={classes.li}>
                       <p>
                         {yearMonthDay(data.id.slice(0, 10))}
-                        <span>{`  ${data.option.slice(1)}`}</span>{" "}
+                        <span>{` | ${data.option.slice(1)}`}</span>{" "}
                         <span>{` | ${data.note || "-"}`}</span>
                       </p>
                     </li>
                     <hr />
-                  </>
+                  </div>
                 ))}
           <span>
             *학생별 출결 확인탭 입니다. <br />

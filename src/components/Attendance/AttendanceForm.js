@@ -56,44 +56,97 @@ const AttendanceForm = (props) => {
     });
   };
 
+  // const getDatesStartToLast = (startDate, lastDate) => {
+  //   let result = [];
+  //   let curDate = startDate;
+  //   while (curDate <= lastDate) {
+  //     //주말(index 6 = 토, index 0 = 일)이면 저장안되도록!
+  //     console.log("현재날짜" + curDate);
+  //     if (curDate.getDay() === 0 || curDate.getDay() === 6) {
+  //       curDate.setDate(curDate.getDate() + 1);
+  //     } else {
+  //       console.log(curDate);
+  //       result.push(curDate);
+  //       console.log(result);
+
+  //       curDate.setDate(curDate.getDate() + 1);
+  //     }
+  //   }
+  //   console.log(result);
+  //   return result;
+  // };
+
   const submitHandler = async (e) => {
     e.preventDefault();
 
     const inputValue = noteRef.current.value;
     const studentInfo = props.who.split(" ");
 
-    const selectDate = getToday(props.attendDate);
-
     let new_data_id = "";
 
     if (props.about === "consulting") {
+      let selectDate = getToday(props.attendDate);
       let selectDateTime = getTime(props.attendDate);
       //년월일시간+번호 를 식별id로 사용 나중에 지울떄(상담)
       new_data_id = selectDate + selectDateTime + studentInfo[0];
+
+      const new_data = {
+        student_num: studentInfo[0],
+        student_name: studentInfo[1],
+        id: new_data_id,
+        option: option,
+        note: inputValue,
+        attachedFileUrl: attachedFile,
+      };
+
+      anyContext.addData(new_data);
     } else if (props.about === "attendance") {
-      //주말(index 6 = 토, index 0 = 일)이면 저장안되도록!
-      let dayOfWeek = props.attendDate.getDay();
-      if (dayOfWeek === 0 || dayOfWeek === 6) {
+      console.log(props.attendDate);
+      let [start, end] = props.attendDate;
+
+      //만약 시작날짜와 끝날짜가 같고 주말이면 저장하지 않기
+      if ((start === end && start.getDay() === 0) || start.getDay() === 6) {
         checkDayOfWeekAlert();
         return;
       }
+
+      // 전체 날짜에서 개별적으로 작업하기
+
+      let curDate = start;
+      while (curDate <= end) {
+        //주말(index 6 = 토, index 0 = 일)이면 저장안되도록!
+
+        if (curDate.getDay() === 0 || curDate.getDay() === 6) {
+          curDate.setDate(curDate.getDate() + 1);
+        } else {
+          let selectDate = getToday(curDate);
+          new_data_id = selectDate + studentInfo[0];
+
+          const new_data = {
+            student_num: studentInfo[0],
+            student_name: studentInfo[1],
+            id: new_data_id,
+            option: option,
+            note: inputValue,
+          };
+
+          anyContext.addData(new_data);
+
+          curDate.setDate(curDate.getDate() + 1);
+        }
+      }
+
+      // let selectDates = getDatesStartToLast(start, end);
+
+      // selectDates.forEach((date) => {
+      //   console.log(date);
+      //   let selectDate = getToday(date);
+      //   new_data_id = selectDate + studentInfo[0];
+      // });
+
       //년월일+번호 를 식별id로 사용 나중에 지울떄(출결)
-      new_data_id = selectDate + studentInfo[0];
+      // new_data_id = selectDate + studentInfo[0];
     }
-
-    const new_data = {
-      student_num: studentInfo[0],
-      student_name: studentInfo[1],
-      id: new_data_id,
-      option: option,
-      note: inputValue,
-    };
-
-    if (props.about === "consulting") {
-      new_data["attachedFileUrl"] = attachedFile;
-    }
-
-    anyContext.addData(new_data);
 
     //나중에 기간, 날짜도 추가하기
     checkSave(
@@ -112,7 +165,7 @@ const AttendanceForm = (props) => {
   const handleOnInput = (e) => {
     let maxlength;
     if (props.about === "consulting") {
-      maxlength = 400;
+      maxlength = 500;
     } else if (props.about === "attendance") {
       maxlength = 30;
     }

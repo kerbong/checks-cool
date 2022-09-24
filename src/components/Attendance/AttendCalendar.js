@@ -7,6 +7,7 @@ import { ko } from "date-fns/esm/locale";
 
 const AttendCalendar = (props) => {
   const [startDate, setStartDate] = useState(new Date());
+  const [endDate, setEndDate] = useState(startDate);
 
   const isWeekday = (date) => {
     const day = date.getDay(date);
@@ -19,9 +20,15 @@ const AttendCalendar = (props) => {
     </button>
   ));
 
-  const onChange = (date) => {
-    props.getDateValue(date);
-    setStartDate(date);
+  const onChange = (dates) => {
+    if (props.about === "attendance") {
+      const [start, end] = dates;
+      setStartDate(start);
+      setEndDate(end);
+    } else {
+      setStartDate(dates);
+    }
+    props.getDateValue(dates);
   };
 
   return (
@@ -30,6 +37,9 @@ const AttendCalendar = (props) => {
         selected={startDate}
         onChange={onChange}
         filterDate={isWeekday}
+        startDate={startDate}
+        endDate={props.about === "attendance" && endDate}
+        selectsRange={props.about === "attendance" && true}
         disabledKeyboardNavigation
         highlightDates={props.highlight}
         customInput={<ExampleCustomInput />}

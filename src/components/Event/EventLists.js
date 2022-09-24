@@ -39,6 +39,16 @@ const EventLists = (props) => {
 
         props.removeData(data);
         document.querySelectorAll(`button[id='${data.id}']`)[0].remove();
+
+        const new_eventOnDay = eventOnDay.filter(
+          (event) => event.id !== data.id
+        );
+
+        if (new_eventOnDay.length === 0) {
+          new_eventOnDay.push({ eventDate: data.eventDate });
+        }
+        //모달화면에서 학생 출결정보 사라짐
+        setEventOnDay([...new_eventOnDay]);
       }
     });
   }; //달력에서 자료 삭제 함수 끝
