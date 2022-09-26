@@ -89,8 +89,6 @@ const EventInput = (props) => {
       };
     }
 
-    console.log(new_data);
-
     props.saveNewData(new_data);
   };
 

@@ -8,6 +8,7 @@ const AttendancePage = (props) => {
       selectOption={attendanceOption}
       Context={AttendContext}
       students={props.students}
+      userUid={props.userUid}
     />
   );
 };

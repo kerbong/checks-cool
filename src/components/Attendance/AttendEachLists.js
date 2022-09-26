@@ -1,16 +1,48 @@
-import React, { useContext, useState } from "react";
-import AttendContext from "../../store/attend-context";
+import React, { useState, useEffect } from "react";
 import classes from "./AttendEachLists.module.css";
 import Button from "../Layout/Button";
 
-const AttendEachLists = () => {
+import { dbService } from "../../fbase";
+import { collection, query, onSnapshot, where } from "firebase/firestore";
+
+const AttendEachLists = (props) => {
   const [studentAttendList, setStudentAttendList] = useState([]);
   const [showPastFirst, setShowPastFirst] = useState(true);
   const [showAttendOption, setShowAttendOption] = useState("");
+  const [attendLists, setAttendLists] = useState([]);
+  const [studentOn, setStudentOn] = useState("none");
 
-  const anyContext = useContext(AttendContext);
+  const getAttendListsFromDb = () => {
+    let queryWhere = query(
+      collection(dbService, "attend"),
+      where("writtenId", "==", props.userUid)
+    );
+    // console.log(queryWhere);
 
-  let studentsOnDatas = anyContext.datas.map((data) => data.student_name);
+    onSnapshot(queryWhere, (snapShot) => {
+      snapShot.docs.map((doc) => {
+        const eventObj = {
+          ...doc.data(),
+          doc_id: doc.id,
+        };
+        return setAttendLists((prev) => {
+          prev.forEach((prev_data, index) => {
+            if (prev_data.id === eventObj.id) {
+              prev.splice(index, 1);
+            }
+          });
+
+          return [...prev, eventObj];
+        });
+      });
+    });
+  };
+
+  useEffect(() => {
+    getAttendListsFromDb();
+  }, []);
+
+  let studentsOnDatas = attendLists.map((data) => data.student_name);
   let studentsLists = [...new Set(studentsOnDatas)];
 
   const sortList = (list, upOrDown) => {
@@ -28,10 +60,13 @@ const AttendEachLists = () => {
 
   const studentAttendListHandler = (e) => {
     const student = e.target.value;
-    const list = anyContext.datas.filter(
-      (data) => data.student_name === student
-    );
-    setStudentAttendList(list);
+    setStudentOn(student);
+    if (student === "전체학생") {
+      setStudentAttendList(attendLists);
+    } else {
+      const list = attendLists.filter((data) => data.student_name === student);
+      setStudentAttendList(list);
+    }
     //출결옵션부분도 초기화
     setShowAttendOption("");
   };
@@ -60,6 +95,9 @@ const AttendEachLists = () => {
         >
           <option value="" disabled>
             -- 학생 --
+          </option>
+          <option value={"전체학생"} key={"전체학생"}>
+            {"전체학생"}
           </option>
           {studentsLists.map((student) => (
             <option value={student} key={student}>
@@ -91,6 +129,19 @@ const AttendEachLists = () => {
           />
         )}
 
+        {/* 해당학생의 전체 출결자료 보여주기 */}
+        {studentOn !== "none" && (
+          <Button
+            key={`whole${studentOn}`}
+            id={`whole${studentOn}`}
+            className={showAttendOption === "" ? "sortBtn-clicked" : "sortBtn"}
+            name={`전체(${studentAttendList.length})`}
+            onclick={() => {
+              setShowAttendOption("");
+            }}
+          />
+        )}
+
         {/* 현재 화면에 보여지는 리스트에서 출결 옵션만 뽑고 중복제거해서 버튼으로 보여주기 */}
         {[...new Set(studentAttendList.map((data) => data.option))].map(
           (option) => (
@@ -112,15 +163,18 @@ const AttendEachLists = () => {
         )}
       </div>
 
-      {studentAttendList && (
+      {studentAttendList.length > 0 && (
         <ul className={classes.ul}>
           {showAttendOption === ""
             ? studentAttendList.map((data) => (
                 <div key={data.id}>
                   <li className={classes.li}>
                     <p>
-                      {yearMonthDay(data.id.slice(0, 10))}
-                      <span>{` | ${data.option.slice(1)}`}</span>{" "}
+                      📅 {yearMonthDay(data.id.slice(0, 10))}
+                      {` | ${data.student_name}`}
+                    </p>
+                    <p>
+                      <span>{` ${data.option.slice(1)}`}</span>{" "}
                       <span>{` | ${data.note || "-"}`}</span>
                     </p>
                   </li>
@@ -134,8 +188,11 @@ const AttendEachLists = () => {
                   <div key={data.id}>
                     <li className={classes.li}>
                       <p>
-                        {yearMonthDay(data.id.slice(0, 10))}
-                        <span>{` | ${data.option.slice(1)}`}</span>{" "}
+                        📅 {yearMonthDay(data.id.slice(0, 10))}
+                        {` | ${data.student_name}`}
+                      </p>
+                      <p>
+                        <span>{` ${data.option.slice(1)}`}</span>{" "}
                         <span>{` | ${data.note || "-"}`}</span>
                       </p>
                     </li>

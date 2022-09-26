@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import Swal from "sweetalert2";
 import classes from "./EventItem.module.css";
 import Button from "../Layout/Button";
+import AttendCalendar from "../Attendance/AttendCalendar";
 
 const EventItem = (props) => {
   let item = props.item;
@@ -10,6 +11,18 @@ const EventItem = (props) => {
   let note = props.note;
   let shownId = props.shownId;
   let option = props.option;
+
+  const [eventId, setEventId] = useState(keyId);
+
+  const getDateHandler = (date) => {
+    let year = date.getFullYear();
+    let month = ("0" + (date.getMonth() + 1)).slice(-2);
+    let day = ("0" + date.getDate()).slice(-2);
+
+    let yyyymmdd_id = year + "-" + month + "-" + day + keyId.slice(10);
+    console.log(yyyymmdd_id);
+    setEventId(yyyymmdd_id);
+  };
 
   const handleOnInput = (e, maxlength) => {
     if (e.target.value.length > maxlength) {
@@ -22,6 +35,21 @@ const EventItem = (props) => {
         confirmButtonColor: "#85bd82",
         timer: 5000,
       });
+    }
+  };
+
+  const changeDateFormat = (yyyy_mm_dd) => {
+    let slachDate = yyyy_mm_dd.slice(0, 10).replace(/-/g, "/");
+    return slachDate;
+  };
+
+  const saveHandler = () => {
+    if (eventId !== keyId) {
+      const new_item = { ...item, id: eventId };
+      console.log(new_item);
+      props.saveFixedData(new_item);
+    } else {
+      props.saveFixedData(item);
     }
   };
 
@@ -40,6 +68,19 @@ const EventItem = (props) => {
           className={classes["attendInfo-area"]}
         >
           <h2 id={"eventName" + shownId}>😀 {text}</h2>
+          <div
+            className={classes["date-area"]}
+            style={{
+              display: props.fixIsShown !== shownId && "none",
+            }}
+          >
+            {" 날짜를 눌러서 복사하세요."}
+            <AttendCalendar
+              getDateValue={getDateHandler}
+              setStart={new Date(changeDateFormat(keyId))}
+            />
+          </div>
+
           <span
             id={`option-area${shownId}`}
             className={classes["option-area"]}
@@ -57,7 +98,7 @@ const EventItem = (props) => {
             }}
             onSubmit={(e) => {
               e.preventDefault();
-              props.saveFixedData(item);
+              saveHandler();
             }}
           >
             <select
@@ -109,10 +150,7 @@ const EventItem = (props) => {
                     props.setFixIsShown(shownId);
                     // console.log(option);
                   }
-                : () => {
-                    //수정한 것 저장하는 함수
-                    props.saveFixedData(item);
-                  }
+                : saveHandler
             }
           />
           {/* 삭제 / 취소버튼 */}

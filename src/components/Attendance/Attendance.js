@@ -25,7 +25,7 @@ const Attendance = (props) => {
         <AttendCalendar getDateValue={getDateHandler} about={props.about} />
       </div>
       <div className={classes["datepick-explain"]}>
-        {"*시작 날짜와 끝 날짜를 선택해주세요!"}
+        {props.about === "attendance" && "*시작 날짜와 끝 날짜를 선택해주세요!"}
       </div>
       <div className={classes["form-section"]}>
         <AttendanceForm

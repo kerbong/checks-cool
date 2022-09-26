@@ -85,7 +85,7 @@
 
 .custom-input {
   height: 20px;
-  background-color: white;
+  background-color: inherit;
   border-width: inherit;
   font-size: 1em;
 }

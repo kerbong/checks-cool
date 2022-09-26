@@ -62,6 +62,7 @@ const StudentCalendarLayout = (props) => {
             selectOption={props.selectOption}
             about="attendance"
             students={props.students}
+            userUid={props.userUid}
           />
         </>
       )}
@@ -81,7 +82,7 @@ const StudentCalendarLayout = (props) => {
             </button>
           </div>
 
-          <AttendEachLists />
+          <AttendEachLists userUid={props.userUid} />
         </>
       )}
 

@@ -112,14 +112,13 @@ const EventLists = (props) => {
       id: item.id,
       option: optionValue,
       note: noteValue,
+      writtenId: props.userUid,
     };
 
     // console.log(fixed_data);
 
-    //attendCtx와 eventByDays eventOnDay 를 수정하는 함수
+    //attendCtx와 events eventOnDay 를 수정하는 함수
     props.fixedEventHandler(fixed_data, item.eventDate);
-
-    // setEventOnDay(eventOnDay.concat());
 
     Swal.fire({
       icon: "success",

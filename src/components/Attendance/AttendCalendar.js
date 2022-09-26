@@ -6,7 +6,7 @@ import "../Layout/Calendar.css";
 import { ko } from "date-fns/esm/locale";
 
 const AttendCalendar = (props) => {
-  const [startDate, setStartDate] = useState(new Date());
+  const [startDate, setStartDate] = useState(props.setStart || new Date());
   const [endDate, setEndDate] = useState(startDate);
 
   const isWeekday = (date) => {

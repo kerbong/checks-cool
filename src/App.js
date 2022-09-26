@@ -12,7 +12,7 @@ import ConsultingPage from "./components/page/ConsultingPage";
 import MemoPage from "./components/page/MemoPage";
 import TodoPage from "./components/page/TodoPage";
 import Header from "./components/Layout/Header";
-import AttendProvider from "./store/AttendProvider";
+// import AttendProvider from "./store/AttendProvider";
 import ConsultProvider from "./store/ConsultProvider";
 import Auth from "./components/page/Auth";
 import { authService } from "./fbase";
@@ -66,49 +66,49 @@ function App() {
   return (
     <div>
       <div className="App">
-        <AttendProvider userUid={userUid}>
-          <ConsultProvider userUid={userUid}>
-            <Header isLoggedIn={isLoggedIn} />
-            <Routes>
-              {init && isLoggedIn ? (
-                <>
-                  <Route index element={<MainPage />} />
-                  <Route path="classgame" element={<ClassgamePage />} />
-                  <Route
-                    path="attendance"
-                    element={<AttendancePage students={students} />}
-                  />
-                  <Route
-                    path="attendance/:studentNum"
-                    element={<NumAttendancePage />}
-                  />
-                  <Route
-                    path="consulting"
-                    element={
-                      <ConsultingPage students={students} userUid={userUid} />
-                    }
-                  />
-                  <Route
-                    path="memo"
-                    element={<MemoPage students={students} userUid={userUid} />}
-                  />
-                  <Route path="todo" element={<TodoPage userUid={userUid} />} />
-                  <Route
-                    path="student-manage"
-                    element={
-                      <StudentLists userUid={userUid} students={students} />
-                    }
-                  />
-                </>
-              ) : (
-                <>
-                  <Route index element={<Auth />} />
-                </>
-              )}
-              <Route path="*" element={<Navigate replace to="/" />} />
-            </Routes>
-          </ConsultProvider>
-        </AttendProvider>
+        <ConsultProvider userUid={userUid}>
+          <Header isLoggedIn={isLoggedIn} />
+          <Routes>
+            {init && isLoggedIn ? (
+              <>
+                <Route index element={<MainPage />} />
+                <Route path="classgame" element={<ClassgamePage />} />
+                <Route
+                  path="attendance"
+                  element={
+                    <AttendancePage students={students} userUid={userUid} />
+                  }
+                />
+                <Route
+                  path="attendance/:studentNum"
+                  element={<NumAttendancePage />}
+                />
+                <Route
+                  path="consulting"
+                  element={
+                    <ConsultingPage students={students} userUid={userUid} />
+                  }
+                />
+                <Route
+                  path="memo"
+                  element={<MemoPage students={students} userUid={userUid} />}
+                />
+                <Route path="todo" element={<TodoPage userUid={userUid} />} />
+                <Route
+                  path="student-manage"
+                  element={
+                    <StudentLists userUid={userUid} students={students} />
+                  }
+                />
+              </>
+            ) : (
+              <>
+                <Route index element={<Auth />} />
+              </>
+            )}
+            <Route path="*" element={<Navigate replace to="/" />} />
+          </Routes>
+        </ConsultProvider>
       </div>
     </div>
   );

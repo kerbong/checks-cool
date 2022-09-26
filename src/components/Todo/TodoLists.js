@@ -21,7 +21,7 @@ const TodoLists = (props) => {
     //행사명
     let eventName;
     //새로 추가한 자료인 경우
-    if (item["doc_id"] === undefined) {
+    if (item["doc_id"] === null) {
       eventName = document.querySelector("#todo-eventName");
     } else {
       eventName = "existedEvent";
