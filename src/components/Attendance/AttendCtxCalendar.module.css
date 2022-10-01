@@ -15,10 +15,12 @@ h1 {
   text-align: center;
   margin-top: 5px;
   margin-bottom: 5px;
+  font-size: 1.7em;
 }
 
 h2 {
   margin: 5px 5px 10px 2px;
+  font-size: 1.3em;
 }
 
 select {

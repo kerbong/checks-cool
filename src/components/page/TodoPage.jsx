@@ -286,6 +286,8 @@ const TodoPage = (props) => {
 
     //만약 events가 있었으면,
     if (new_events.length !== 0) {
+      //학교 공용 이벤트 todo에서는 무조건 새롭게 저장함. 기존꺼 지우고.
+
       //기존 events에 있는 자료인 경우
       let event_index;
       const existedEvent = new_events.filter((event, index) => {
@@ -403,7 +405,7 @@ const TodoPage = (props) => {
             setFixIsShown={setFixIsShown}
             removeData={removeEventHandler}
             selectOption={selectOption}
-            // setEventsHandler={(event) => setEvents((prev) => [...prev, event])}
+            dayEventHideHandler={dayEventHideHandler}
             about={
               showPublicEvent
                 ? //todo 뒷부분 수정하기${}

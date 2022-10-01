@@ -44,10 +44,17 @@ const EventItem = (props) => {
   };
 
   const saveHandler = () => {
+    //날짜가 수정된 경우
     if (eventId !== keyId) {
       const new_item = { ...item, id: eventId };
-      console.log(new_item);
+      // console.log(new_item);
+      // console.log(item);
+      //새로운거 저장하기
       props.saveFixedData(new_item);
+      //todo의 경우 기존 자료 삭제하기
+      if (props.about.slice(0, 4) === "todo") {
+        props.removeCheckSwal(item);
+      }
     } else {
       props.saveFixedData(item);
     }
@@ -74,11 +81,16 @@ const EventItem = (props) => {
               display: props.fixIsShown !== shownId && "none",
             }}
           >
-            {" 날짜를 눌러서 복사하세요."}
-            <AttendCalendar
-              getDateValue={getDateHandler}
-              setStart={new Date(changeDateFormat(keyId))}
-            />
+            {props.about.slice(0, 4) === "todo"
+              ? "행사의 날짜 변경하기"
+              : " 출결 복사할 날짜 선택하기"}
+            <div className={classes["datePick-area"]}>
+              <i className="fa-solid fa-circle-arrow-right"></i>
+              <AttendCalendar
+                getDateValue={getDateHandler}
+                setStart={new Date(changeDateFormat(keyId))}
+              />
+            </div>
           </div>
 
           <span
@@ -117,6 +129,7 @@ const EventItem = (props) => {
               ))}
             </select>
             <input
+              key={shownId}
               type="text"
               placeholder="메모 / 비고 입력란"
               id={`option-note${shownId}`}

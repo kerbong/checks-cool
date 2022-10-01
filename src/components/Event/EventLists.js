@@ -141,6 +141,14 @@ const EventLists = (props) => {
 
   return (
     <div className="eventOnDayList">
+      <p
+        className={classes["closeBtn"]}
+        onClick={() => {
+          props.dayEventHideHandler();
+        }}
+      >
+        <i className="fa-regular fa-circle-xmark"></i>
+      </p>
       <h1 className={eventOnDay[0].eventDate}>
         {`${eventOnDay[0].eventDate.slice(
           6,
@@ -153,7 +161,10 @@ const EventLists = (props) => {
           name={"추가하기"}
           id={"add-checkItemBtn"}
           className={"add-event-button"}
-          onclick={() => setAddEvent(true)}
+          onclick={() => {
+            setAddEvent(true);
+            props.setFixIsShown("0");
+          }}
         />
       </div>
       <div className="event-input-div">
@@ -200,6 +211,7 @@ const EventLists = (props) => {
                 updateEventOnScreen(data);
               }
             }}
+            about={props.about}
             removeCheckSwal={removeCheckSwal}
             setFixIsShown={props.setFixIsShown}
           />

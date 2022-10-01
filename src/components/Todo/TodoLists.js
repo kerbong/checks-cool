@@ -27,9 +27,9 @@ const TodoLists = (props) => {
       eventName = "existedEvent";
     }
 
-    console.log(item.id);
-    console.log(eventName);
-    console.log(optionValue);
+    // console.log(item.id);
+    // console.log(eventName);
+    // console.log(optionValue);
     if (item.id && eventName && optionValue) {
       return true;
     } else {
@@ -50,17 +50,7 @@ const TodoLists = (props) => {
     //출결 옵션 선택값
     const optionValue = document.querySelector(`select`).value;
 
-    let noteValue;
-    //추가하기에서 비고 입력값
-    let noteTag = document.querySelector("#option-note");
-
-    if (noteTag) {
-      noteValue = noteTag.value;
-    } else {
-      noteValue = document.querySelectorAll(
-        `input[id="option-note${item.id}"]`
-      )[0].value;
-    }
+    const noteValue = document.querySelector(`input`).value;
 
     let eventName;
     //새로운 이벤트일 경우 name없음.
@@ -80,7 +70,7 @@ const TodoLists = (props) => {
       writtenId: props.userUid,
     };
 
-    console.log(item.eventDate);
+    // console.log(item.eventDate);
     //events eventOnDay 를 수정하는 함수
     props.fixedEventHandler(fixed_data, item.eventDate);
 
@@ -109,7 +99,7 @@ const TodoLists = (props) => {
 
   //이미 있던 이벤트 수정할 때 화면 수정하는 함수
   const updateEventOnScreen = (data) => {
-    console.log(data.id);
+    // console.log(data.id);
     let option = document.querySelectorAll(
       `span[id="option-area${data.id}"]`
     )[0];
@@ -162,6 +152,14 @@ const TodoLists = (props) => {
 
   return (
     <div className="eventOnDayList">
+      <p
+        className={classes["closeBtn"]}
+        onClick={() => {
+          props.dayEventHideHandler();
+        }}
+      >
+        <i className="fa-regular fa-circle-xmark"></i>
+      </p>
       <h1 className={eventOnDay[0].eventDate}>
         {`${eventOnDay[0].eventDate.slice(
           6,
@@ -174,6 +172,7 @@ const TodoLists = (props) => {
           className={classes["add-event-button"]}
           onClick={() => {
             setAddEvent(true);
+            props.setFixIsShown("0");
           }}
         >
           추가하기
@@ -215,20 +214,18 @@ const TodoLists = (props) => {
             text={event.eventName}
             note={event.note}
             option={event.option.slice(1)}
+            about={props.about}
             selectOption={props.selectOption}
             fixIsShown={fixIsShown}
             saveFixedData={(item) => {
               let getEnoughData = enoughData(item);
               if (getEnoughData) {
                 let data = saveFixedData(item);
-                updateEventOnScreen(data);
+                // updateEventOnScreen(data);
               }
             }}
             removeCheckSwal={removeCheckSwal}
             setFixIsShown={props.setFixIsShown}
-            // setDefaultOptionValue={(value) => {
-            //   setDefaultOptionValue(value);
-            // }}
           />
         ))
       )}

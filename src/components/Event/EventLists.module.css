@@ -19,3 +19,9 @@
 .add-event-div {
   text-align: center;
 }
+
+.closeBtn {
+  margin-top: -10px;
+  float: right;
+  font-size: 1.3em;
+}

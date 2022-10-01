@@ -274,8 +274,8 @@ const AttendCtxCalendar = (props) => {
       //기존 자료인 경우
       if (existedEvent.length > 0) {
         if (fixOrDel === "fix") {
-          console.log(data);
-          console.log(existedEvent[0].doc_id);
+          // console.log(data);
+          // console.log(existedEvent[0].doc_id);
           // console.log(existedEvent[0].doc_id);
 
           await setDoc(doc(dbService, "attend", existedEvent[0].doc_id), data);
@@ -344,6 +344,7 @@ const AttendCtxCalendar = (props) => {
             removeData={removeEventHandler}
             selectOption={props.selectOption}
             about={props.about}
+            dayEventHideHandler={dayEventHideHandler}
             students={props.students}
             userUid={props.userUid}
           />

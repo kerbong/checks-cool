@@ -20,7 +20,7 @@
   z-index: 30;
   animation: slide-down 300ms ease-out forwards;
   overflow: auto !important;
-  max-height: 85vh;
+  height: 85vh;
 }
 
 @media (min-width: 768px) {

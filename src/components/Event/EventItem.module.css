@@ -33,3 +33,8 @@
 .date-area {
   margin: 0 0 12px 20px;
 }
+
+.datePick-area {
+  display: flex;
+  align-items: center;
+}
