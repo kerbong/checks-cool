@@ -1,18 +1,11 @@
 import React, { useState, useEffect } from "react";
-import InputBox from "./InputBox";
-import ToDoItemList from "./ToDoItemList";
+import MemoTodayTodoInput from "./MemoTodayTodoInput";
+import MemoTodayTodoItemList from "./MemoTodayTodoItemList";
 
 import { dbService } from "../../fbase";
-import {
-  updateDoc,
-  getDoc,
-  onSnapshot,
-  setDoc,
-  deleteDoc,
-  doc,
-} from "firebase/firestore";
+import { updateDoc, onSnapshot, doc } from "firebase/firestore";
 
-const MemoTodo = (props) => {
+const MemoTodayTodo = (props) => {
   const [todoList, setTodoList] = useState([]);
   //firestore에서 해당 이벤트 자료 받아오기
   const getMemoFromDb = async () => {
@@ -38,10 +31,13 @@ const MemoTodo = (props) => {
   return (
     <div className="homepage__container">
       {/* ToDo Item을 추가할 수 있는 input 박스 */}
-      <InputBox todoList={todoList} setTodoList={setTodoListHandler} />
+      <MemoTodayTodoInput
+        todoList={todoList}
+        setTodoList={setTodoListHandler}
+      />
 
       {/* 할 일 Item 리스트 */}
-      <ToDoItemList
+      <MemoTodayTodoItemList
         title={"할 일"}
         todoList={todoList}
         setTodoList={setTodoListHandler}
@@ -49,7 +45,7 @@ const MemoTodo = (props) => {
       />
       <hr />
       {/* 완료한 Item 리스트 */}
-      <ToDoItemList
+      <MemoTodayTodoItemList
         title={"완료한 항목"}
         todoList={todoList}
         setTodoList={setTodoListHandler}
@@ -59,4 +55,4 @@ const MemoTodo = (props) => {
   );
 };
 
-export default MemoTodo;
+export default MemoTodayTodo;

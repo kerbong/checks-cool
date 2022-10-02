@@ -22,11 +22,17 @@ const TypingStudent = (props) => {
     let existedStudent = props.studentsInfo.filter(
       (stu) => stu.name === studentNameValue
     );
+    //같은 번호의 학생이 있는지 확인!
+    let existedNum = props.studentsInfo.filter(
+      (stu) => stu.num === studentNumValue
+    );
 
-    //비어있는 정보가 있으면 alert띄워주기
-    if (studentNameValue.trim() === "" || existedStudent.length !== 0) {
-      console.log(studentNameValue.trim() === "");
-      console.log(existedStudent);
+    //비어있는 정보가 있거나 동일한 이름, 번호의 학생이 있으면 alert띄워주기
+    if (
+      studentNameValue.trim() === "" ||
+      existedStudent.length !== 0 ||
+      existedNum.length !== 0
+    ) {
       Swal.fire({
         icon: "error",
         title: "저장에 실패했어요.",

@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import PropTypes from "prop-types";
 import Swal from "sweetalert2";
 
-const ToDoItem = ({ todoItem, todoList, setTodoList }) => {
+const MemoTodayTodoItem = ({ todoItem, todoList, setTodoList }) => {
   const [edited, setEdited] = useState(false);
   const [newText, setNewTest] = useState(todoItem.text);
 
@@ -176,7 +176,7 @@ const ToDoItem = ({ todoItem, todoList, setTodoList }) => {
   );
 };
 
-ToDoItem.propTypes = {
+MemoTodayTodoItem.propTypes = {
   todoItem: PropTypes.shape({
     id: PropTypes.number,
     text: PropTypes.string.isRequired,
@@ -190,4 +190,4 @@ ToDoItem.propTypes = {
   setTodoList: PropTypes.func.isRequired,
 };
 
-export default ToDoItem;
+export default MemoTodayTodoItem;

@@ -2,11 +2,11 @@ import CheckLists from "components/Memo/CheckLists";
 import React, { useState } from "react";
 import classes from "../Memo/CheckLists.module.css";
 
-import MemoTodo from "../Memo/MemoTodo";
+import MemoTodayTodo from "../Memo/MemoTodayTodo";
 
 const MemoPage = (props) => {
-  const [showMemos, setShowMemos] = useState(false);
-  const [showChecklists, setshowChecklists] = useState(true);
+  const [showMemos, setShowMemos] = useState(true);
+  const [showChecklists, setshowChecklists] = useState(false);
   const [showAchives, setShowAchives] = useState(false);
   return (
     <>
@@ -72,7 +72,7 @@ const MemoPage = (props) => {
           about="checkLists"
         />
       )}
-      {showMemos && <MemoTodo userUid={props.userUid} />}
+      {showMemos && <MemoTodayTodo userUid={props.userUid} />}
       {showAchives && (
         <CheckLists
           students={props.students}

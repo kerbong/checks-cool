@@ -39,6 +39,7 @@
 }
 
 .eventNameInput-area {
+  text-align: center;
   height: 40px;
   font-size: 1.2em;
   margin: 10px;
@@ -47,4 +48,5 @@
 
 .note-area {
   width: 60%;
+  text-align: center;
 }

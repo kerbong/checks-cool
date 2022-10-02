@@ -1,7 +1,7 @@
 import React, { useRef, useState } from "react";
 import PropTypes from "prop-types";
 import Swal from "sweetalert2";
-const InputBox = ({ todoList, setTodoList }) => {
+const MemoTodayTodoInput = ({ todoList, setTodoList }) => {
   const [text, setText] = useState("");
   const inputRef = useRef(null);
 
@@ -64,7 +64,7 @@ const InputBox = ({ todoList, setTodoList }) => {
 };
 
 // props 값 검증
-InputBox.propTypes = {
+MemoTodayTodoInput.propTypes = {
   todoList: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.number.isRequired,
@@ -74,4 +74,4 @@ InputBox.propTypes = {
   setTodoList: PropTypes.func.isRequired,
 };
 
-export default InputBox;
+export default MemoTodayTodoInput;

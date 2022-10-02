@@ -54,7 +54,7 @@ const CheckInput = (props) => {
         unSubmitStudents,
         // fixOrNew,
       };
-      props.saveCheckItemHandler(new_checkItem, props.item.doc_id);
+      props.saveItemHandler(new_checkItem, props.item.doc_id);
       props.onClose();
       props.setItemNull();
     } else {

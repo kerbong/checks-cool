@@ -1,8 +1,13 @@
 import React from "react";
 import PropTypes from "prop-types";
-import ToDoItem from "./ToDoItem";
+import MemoTodayTodoItem from "./MemoTodayTodoItem";
 
-const ToDoItemList = ({ title, todoList, setTodoList, checkedList }) => (
+const MemoTodayTodoItemList = ({
+  title,
+  todoList,
+  setTodoList,
+  checkedList,
+}) => (
   <div className="todoapp__list">
     {/* props로 부터 title 값을 전달 받음 */}
     <p
@@ -24,7 +29,7 @@ const ToDoItemList = ({ title, todoList, setTodoList, checkedList }) => (
 
           return (
             // map을 이용하여 ToDoItem을 출력
-            <ToDoItem
+            <MemoTodayTodoItem
               key={todoItem.id}
               todoItem={todoItem}
               todoList={todoList}
@@ -36,7 +41,7 @@ const ToDoItemList = ({ title, todoList, setTodoList, checkedList }) => (
   </div>
 );
 
-ToDoItemList.propTypes = {
+MemoTodayTodoItemList.propTypes = {
   title: PropTypes.string.isRequired,
   todoList: PropTypes.arrayOf(
     PropTypes.shape({
@@ -48,4 +53,4 @@ ToDoItemList.propTypes = {
   checkedList: PropTypes.bool.isRequired,
 };
 
-export default ToDoItemList;
+export default MemoTodayTodoItemList;
