@@ -406,12 +406,7 @@ const TodoPage = (props) => {
             removeData={removeEventHandler}
             selectOption={selectOption}
             dayEventHideHandler={dayEventHideHandler}
-            about={
-              showPublicEvent
-                ? //todo 뒷부분 수정하기${}
-                  `todo${publicRoom}`
-                : "todopersonal"
-            }
+            about={showPublicEvent ? `todo${publicRoom}` : "todopersonal"}
             userUid={props.userUid}
           />
         </Modal>

@@ -268,7 +268,10 @@ const CheckLists = (props) => {
       {props.about === "listMemo" && (
         <>
           {addListMemo && (
-            <Modal onClose={() => setAddListMemo(false)}>
+            <Modal
+              addStyle={"addOverflow"}
+              onClose={() => setAddListMemo(false)}
+            >
               <ListMemoInput
                 students={props.students}
                 onClose={() => setAddListMemo(false)}

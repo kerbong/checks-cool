@@ -55,7 +55,7 @@ const EventLists = (props) => {
 
   //이미 있던 이벤트 수정할 때 화면 수정하는 함수
   const updateEventOnScreen = (data) => {
-    let option = document.querySelector(`#option-area${data.student_num}`);
+    let option = document.querySelector(`#option-area${data.student_name}`);
     option.innerText = `${data.option.slice(1)} | ${data.note}`;
   };
 
@@ -74,13 +74,7 @@ const EventLists = (props) => {
 
   //옵션 선택했는지 확인하기(저장가능여부 확인)
   const enoughData = (item) => {
-    //출결 옵션 선택값
-    const optionValue = document.querySelector(
-      `#option-select${item.student_num}`
-    ).value;
-    if (item.student_num && item.student_name && optionValue) {
-      return true;
-    } else {
+    const notEnough = () => {
       Swal.fire({
         icon: "error",
         title: "정보가 부족해요!",
@@ -89,21 +83,67 @@ const EventLists = (props) => {
         confirmButtonColor: "#85bd82",
         timer: 5000,
       });
-      return false;
+    };
+    //새로 추가하기 옵션 셀렉트
+    let new_option = document.querySelector(
+      `#option-select${item.student_num}`
+    );
+    //새로추가하기인데 옵션 선택안해서 빈칸이면
+    if (new_option) {
+      if (new_option.value.trim() === "") {
+        notEnough();
+        return false;
+      }
+
+      if (item.student_num || item.student_name) {
+        notEnough();
+        return false;
+      }
+      //기존자료인데
+    } else {
+      let new_option = document.querySelector(
+        `#option-select${item.student_name}`
+      );
+      let new_note = document.querySelector(`#option-note${item.student_name}`);
+
+      //옵션과 노트값이 기존과 같으면
+      if (new_option.value === item.option && new_note === item.note) {
+        notEnough();
+        return false;
+      }
     }
   };
 
   //새로운/ 수정된 자료 저장함수
   const saveFixedData = (item) => {
-    //출결 옵션 선택값
-    const optionValue = document.querySelector(
-      `#option-select${item.student_num}`
-    ).value;
+    let exist_option = document.querySelector(
+      `#option-select${item.student_name}`
+    );
+    let optionValue;
+    let noteValue;
 
-    //비고 입력값
-    const noteValue = document.querySelector(
-      `#option-note${item.student_num}`
-    ).value;
+    //새로운 출결 이벤트일경우
+    if (exist_option === null) {
+      optionValue = document.querySelector(
+        `#option-select${item.student_num}`
+      ).value;
+      noteValue = document.querySelector(
+        `#option-note${item.student_num}`
+      ).value;
+
+      //기존 출결 이벤트의 경우
+    } else {
+      //출결 옵션 선택값
+      optionValue = document.querySelector(
+        `#option-select${item.student_name}`
+      ).value;
+
+      //비고 입력값
+      noteValue = document.querySelector(
+        `#option-note${item.student_name}`
+      ).value;
+    }
+
     //출결 이벤트 날짜
 
     const fixed_data = {
@@ -193,27 +233,35 @@ const EventLists = (props) => {
           😕 등록된 이벤트가 없어요
         </div>
       ) : (
-        eventOnDay.map((item) => (
+        eventOnDay.map((event) => (
           <EventItem
-            item={item}
-            key={item.id}
-            keyId={item.id}
-            shownId={item.student_num}
-            text={item.student_name}
-            note={item.note}
-            option={item.option.slice(1)}
+            item={event}
+            key={event.id}
+            keyId={event.id}
+            shownId={event.student_num}
+            text={event.student_name}
+            note={event.note}
+            option={event.option}
             selectOption={props.selectOption}
             fixIsShown={fixIsShown}
             saveFixedData={(item) => {
-              let getEnoughData = enoughData(item);
-              if (getEnoughData) {
-                let data = saveFixedData(item);
-                updateEventOnScreen(data);
+              if (event.id !== item.id) {
+                saveFixedData(item);
+              } else {
+                let getEnoughData = enoughData(item);
+                if (getEnoughData) {
+                  let data = saveFixedData(item);
+
+                  updateEventOnScreen(data);
+                }
               }
             }}
             about={props.about}
             removeCheckSwal={removeCheckSwal}
-            setFixIsShown={props.setFixIsShown}
+            setFixIsShown={(id) => {
+              props.setFixIsShown(id);
+              setAddEvent(false);
+            }}
           />
         ))
       )}

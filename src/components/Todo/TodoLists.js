@@ -17,19 +17,21 @@ const TodoLists = (props) => {
   //옵션 선택했는지 확인하기(저장가능여부 확인)
   const enoughData = (item) => {
     //출결 옵션 선택값, note 부분은 입력 필수아님
-    const optionValue = document.querySelector("select").value;
+    let optionValue;
+
     //행사명
     let eventName;
     //새로 추가한 자료인 경우
-    if (item["doc_id"] === null) {
+    if (item["doc_id"] === undefined) {
       eventName = document.querySelector("#todo-eventName");
+      optionValue = document.querySelector(`#option-select`).value;
     } else {
-      eventName = "existedEvent";
+      eventName = item.eventName;
+      optionValue = document.querySelector(
+        `#option-select${eventName.replace(/ /g, "")}`
+      ).value;
     }
 
-    // console.log(item.id);
-    // console.log(eventName);
-    // console.log(optionValue);
     if (item.id && eventName && optionValue) {
       return true;
     } else {
@@ -47,17 +49,23 @@ const TodoLists = (props) => {
 
   //새로운/ 수정된 자료 저장함수
   const saveFixedData = (item) => {
-    //출결 옵션 선택값
-    const optionValue = document.querySelector(`select`).value;
-
-    const noteValue = document.querySelector(`input`).value;
-
     let eventName;
+    let optionValue;
+    let noteValue;
     //새로운 이벤트일 경우 name없음.
     if (!item.eventName) {
       eventName = document.querySelector(`#todo-eventName`).value;
+      optionValue = document.querySelector("#option-select").value;
+      noteValue = document.querySelector("#option-note").value;
+      //기존 이벤트인 경우
     } else {
       eventName = item.eventName;
+      optionValue = document.querySelector(
+        `#option-select${eventName.replace(/ /g, "")}`
+      ).value;
+      noteValue = document.querySelector(
+        `#option-note${eventName.replace(/ /g, "")}`
+      ).value;
     }
 
     //todo 이벤트 자료형식
@@ -72,6 +80,7 @@ const TodoLists = (props) => {
 
     // console.log(item.eventDate);
     //events eventOnDay 를 수정하는 함수
+    console.log(fixed_data);
     props.fixedEventHandler(fixed_data, item.eventDate);
 
     // setEventOnDay(eventOnDay.concat());
@@ -100,9 +109,9 @@ const TodoLists = (props) => {
   //이미 있던 이벤트 수정할 때 화면 수정하는 함수
   const updateEventOnScreen = (data) => {
     // console.log(data.id);
-    let option = document.querySelectorAll(
-      `span[id="option-area${data.id}"]`
-    )[0];
+    let option = document.querySelector(
+      `#option-area${data.eventName.replace(/ /g, "")}`
+    );
     option.innerText = `${data.option.slice(1)} | ${data.note}`;
   };
 
@@ -123,7 +132,7 @@ const TodoLists = (props) => {
   //달력에서 자료 삭제 함수
   const removeCheckSwal = (data) => {
     Swal.fire({
-      title: "자료를 지울까요?",
+      title: "기존자료를 지울까요?",
       text: `${data.id.slice(0, 10)} | ${data.eventName} | ${data.option.slice(
         1
       )}`,
@@ -145,6 +154,7 @@ const TodoLists = (props) => {
         });
 
         props.removeData(data);
+        //자료 복제하고 기존 자료도 남겨둘 경우
       }
     });
     document.querySelectorAll(`button[id='${data.id}']`)[0].remove();
@@ -213,7 +223,7 @@ const TodoLists = (props) => {
             shownId={event.id}
             text={event.eventName}
             note={event.note}
-            option={event.option.slice(1)}
+            option={event.option}
             about={props.about}
             selectOption={props.selectOption}
             fixIsShown={fixIsShown}
@@ -221,11 +231,17 @@ const TodoLists = (props) => {
               let getEnoughData = enoughData(item);
               if (getEnoughData) {
                 let data = saveFixedData(item);
-                // updateEventOnScreen(data);
+                if (event.id === data.id) {
+                  updateEventOnScreen(data);
+                }
               }
             }}
             removeCheckSwal={removeCheckSwal}
-            setFixIsShown={props.setFixIsShown}
+            setFixIsShown={(id) => {
+              props.setFixIsShown(id);
+              setAddEvent(false);
+            }}
+            newEventOnScreen={newEventOnScreen}
           />
         ))
       )}

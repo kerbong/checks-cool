@@ -13,6 +13,7 @@ const EventItem = (props) => {
   let option = props.option;
 
   const [eventId, setEventId] = useState(keyId);
+  const [selectValue, setSelectValue] = useState(option);
 
   const getDateHandler = (date) => {
     let year = date.getFullYear();
@@ -20,7 +21,6 @@ const EventItem = (props) => {
     let day = ("0" + date.getDate()).slice(-2);
 
     let yyyymmdd_id = year + "-" + month + "-" + day + keyId.slice(10);
-    console.log(yyyymmdd_id);
     setEventId(yyyymmdd_id);
   };
 
@@ -51,13 +51,14 @@ const EventItem = (props) => {
       // console.log(item);
       //새로운거 저장하기
       props.saveFixedData(new_item);
-      //todo의 경우 기존 자료 삭제하기
-      if (props.about.slice(0, 4) === "todo") {
-        props.removeCheckSwal(item);
-      }
+      //날짜는 그대로 내용만 변경된 경우
     } else {
       props.saveFixedData(item);
     }
+  };
+
+  const selectChangeHandler = (e) => {
+    setSelectValue(e.target.value);
   };
 
   return (
@@ -81,9 +82,6 @@ const EventItem = (props) => {
               display: props.fixIsShown !== shownId && "none",
             }}
           >
-            {props.about.slice(0, 4) === "todo"
-              ? "행사의 날짜 변경하기"
-              : " 출결 복사할 날짜 선택하기"}
             <div className={classes["datePick-area"]}>
               <i className="fa-solid fa-circle-arrow-right"></i>
               <AttendCalendar
@@ -91,16 +89,19 @@ const EventItem = (props) => {
                 setStart={new Date(changeDateFormat(keyId))}
               />
             </div>
+            {props.about.slice(0, 4) === "todo"
+              ? "*날짜  선택해서 행사 복사하기"
+              : "*날짜  선택해서 출결 복사하기"}
           </div>
 
           <span
-            id={`option-area${shownId}`}
+            id={`option-area${text.replace(/ /g, "")}`}
             className={classes["option-area"]}
             style={{
               display: props.fixIsShown === shownId && "none",
             }}
           >
-            {option} | {note && note}
+            {option.slice(1)} | {note && note}
           </span>
           <form
             id={`optionChange-area${shownId}`}
@@ -115,15 +116,21 @@ const EventItem = (props) => {
           >
             <select
               name="option-selcet"
-              id={`option-select${shownId}`}
+              id={`option-select${text.replace(/ /g, "")}`}
               required
-              defaultValue={option}
+              key={`option-select${keyId}`}
+              defaultValue={selectValue}
+              onChange={selectChangeHandler}
             >
-              <option value="" disabled>
+              <option value="" onChange={selectChangeHandler} disabled>
                 -- 분류 --
               </option>
               {props.selectOption.map((select_option) => (
-                <option value={select_option.value} key={select_option.id}>
+                <option
+                  value={select_option.value}
+                  key={select_option.id}
+                  onChange={selectChangeHandler}
+                >
                   {select_option.class}
                 </option>
               ))}
@@ -132,7 +139,7 @@ const EventItem = (props) => {
               key={shownId}
               type="text"
               placeholder="메모 / 비고 입력란"
-              id={`option-note${shownId}`}
+              id={`option-note${text.replace(/ /g, "")}`}
               defaultValue={note}
               className={classes["note-area"]}
               onInput={(e) => handleOnInput(e, 30)}
@@ -159,9 +166,7 @@ const EventItem = (props) => {
             onclick={
               props.fixIsShown !== shownId
                 ? () => {
-                    // props.setDefaultOptionValue(option);
                     props.setFixIsShown(shownId);
-                    // console.log(option);
                   }
                 : saveHandler
             }
@@ -190,6 +195,7 @@ const EventItem = (props) => {
                   }
                 : function () {
                     props.setFixIsShown("0");
+                    setSelectValue("");
                   }
             }
           />
