@@ -1,4 +1,10 @@
-import React, { useRef, useCallback, useContext, useState } from "react";
+import React, {
+  useRef,
+  useCallback,
+  useContext,
+  useState,
+  useEffect,
+} from "react";
 import classes from "./AttendanceForm.module.css";
 import Input from "../Layout/Input";
 import Swal from "sweetalert2";
@@ -6,14 +12,52 @@ import AttendanceOption from "./AttendanceOption";
 import FileArea from "components/Layout/FileArea";
 
 import { dbService } from "../../fbase";
-import { collection, setDoc, doc } from "firebase/firestore";
+import {
+  collection,
+  query,
+  onSnapshot,
+  where,
+  setDoc,
+  doc,
+} from "firebase/firestore";
 
 const AttendanceForm = (props) => {
   const [attachedFile, setAttachedFile] = useState("");
   const [option, setOption] = useState("");
   const [inputIsShown, setInputIsShown] = useState(false);
+  const [attendEvents, setAttendEvents] = useState([]);
   const anyContext = useContext(props.Context);
   const noteRef = useRef(null);
+
+  const getAttendEventsFromDb = () => {
+    let queryWhere = query(
+      collection(dbService, "attend"),
+      where("writtenId", "==", props.userUid)
+    );
+    // console.log(queryWhere);
+
+    onSnapshot(queryWhere, (snapShot) => {
+      snapShot.docs.map((doc) => {
+        const eventObj = {
+          ...doc.data(),
+          doc_id: doc.id,
+        };
+        return setAttendEvents((prev) => {
+          prev.forEach((prev_data, index) => {
+            if (prev_data.id === eventObj.id) {
+              prev.splice(index, 1);
+            }
+          });
+
+          return [...prev, eventObj];
+        });
+      });
+    });
+  };
+
+  useEffect(() => {
+    getAttendEventsFromDb();
+  }, []);
 
   const handleResizeHeight = useCallback(() => {
     if (noteRef === null || noteRef.current === null) {
@@ -59,7 +103,7 @@ const AttendanceForm = (props) => {
     });
   };
 
-  const submitHandler = async (e) => {
+  const submitHandler = (e) => {
     e.preventDefault();
 
     const inputValue = noteRef.current.value;
@@ -84,7 +128,6 @@ const AttendanceForm = (props) => {
 
       anyContext.addData(new_data);
     } else if (props.about === "attendance") {
-      console.log(props.attendDate);
       let [start, end] = props.attendDate;
 
       //만약 시작날짜와 끝날짜가 같고 주말이면 저장하지 않기
@@ -102,23 +145,33 @@ const AttendanceForm = (props) => {
         writtenId: props.userUid,
       };
 
+      //주말 제외한 날짜만 모아두기
+      let weekDayEvents = [];
       let curDate = start;
       while (curDate <= end) {
         //주말(index 6 = 토, index 0 = 일)이면 저장안되도록!
-
         if (curDate.getDay() === 0 || curDate.getDay() === 6) {
           curDate.setDate(curDate.getDate() + 1);
         } else {
           let selectDate = getToday(curDate);
           new_data_id = selectDate + studentInfo[0];
-          let new_data = { ...data, id: new_data_id };
-          console.log(new_data);
-
-          await setDoc(doc(collection(dbService, "attend")), new_data);
+          weekDayEvents.push(new_data_id);
 
           curDate.setDate(curDate.getDate() + 1);
         }
       }
+
+      //저장가능한 날짜 중에 이미 저장된 데이터 있는지 확인하고 저장하기
+      weekDayEvents.forEach(async (data_id) => {
+        let existAttend = attendEvents.filter((event) => event.id === data_id);
+        //같은 날에 저장된 다른 자료가 없으면
+        if (existAttend.length === 0) {
+          await setDoc(doc(collection(dbService, "attend")), {
+            ...data,
+            id: data_id,
+          });
+        }
+      });
     }
 
     //나중에 기간, 날짜도 추가하기

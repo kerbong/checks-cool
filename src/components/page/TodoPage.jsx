@@ -100,7 +100,7 @@ const TodoPage = (props) => {
   useEffect(() => {
     //db에서 학년 자료 가져오기, showPublicEvent를 의존성으로 넣어두면 알아서 바뀔 때마다 실행됨. 이게 state의 변경상태에 따라 무언가를 실행하도록 하는 베스트인듯
     getToDosFromDb();
-  }, [showPublicEvent]);
+  }, [showPublicEvent, publicRoom]);
 
   const getCurrentMonth = () => {
     const currentM = document
@@ -421,6 +421,11 @@ const TodoPage = (props) => {
         />
       )}
       <AttendCalendar inline={"true"} getDateValue={getDateHandler} />
+      {publicRoom.trim().length === "2" && (
+        <p>
+          * 처음 사용 시 '설정'에서 우리 달력으로 사용할 정보를 설정해주세요.
+        </p>
+      )}
       <p> * 이벤트가 안 보일 경우 공용/개인용 아이콘을 다시 클릭해주세요!</p>
     </>
   );

@@ -47,7 +47,7 @@ const StudentCalendarLayout = (props) => {
         <>
           <div id="title-div">
             <button id="title-btn">
-              <i className="fa-regular fa-address-book"></i> 왔니?
+              <i className="fa-regular fa-address-book"></i> 다왔니?
             </button>
             <button id="switch-btn" onClick={showStudentsListHandler}>
               <i className="fa-solid fa-list-ol"></i>
@@ -72,7 +72,7 @@ const StudentCalendarLayout = (props) => {
         <>
           <div id="title-div">
             <button id="title-btn">
-              <i className="fa-regular fa-address-book"></i> 출석부
+              <i className="fa-regular fa-address-book"></i> 모아보기
             </button>
             <button id="switch-btn" onClick={showStudentsListHandler}>
               <i className="fa-solid fa-list-ol"></i>
@@ -91,7 +91,7 @@ const StudentCalendarLayout = (props) => {
         <>
           <div id="title-div">
             <button id="title-btn">
-              <i className="fa-regular fa-address-book"></i> 출석부
+              <i className="fa-regular fa-address-book"></i> 안온사람?
             </button>
             <button id="switch-btn" onClick={showCalHandler}>
               <i className="fa-regular fa-calendar-days"></i>

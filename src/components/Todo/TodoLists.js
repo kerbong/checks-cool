@@ -10,7 +10,6 @@ const TodoLists = (props) => {
   const [eventOnDay, setEventOnDay] = useState(props.eventOnDay);
   const [addEvent, setAddEvent] = useState(false);
   // const [defaultOptionValue, setDefaultOptionValue] = useState("");
-
   // let eventOnDay = props.eventOnDay;
   let fixIsShown = props.fixIsShown;
 
@@ -32,7 +31,18 @@ const TodoLists = (props) => {
       ).value;
     }
 
-    if (item.id && eventName && optionValue) {
+    //빈 공용 자료에는 저장 불가
+    if (props.about === "todo--") {
+      Swal.fire({
+        icon: "error",
+        title: "자료저장이 불가능합니다.",
+        text: "먼저 '설정'을 눌러 공용방을 개설/ 입장하세요.",
+        confirmButtonText: "확인",
+        confirmButtonColor: "#85bd82",
+        timer: 5000,
+      });
+      return false;
+    } else if (item.id && eventName && optionValue) {
       return true;
     } else {
       Swal.fire({
