@@ -47,7 +47,7 @@ const StudentCalendarLayout = (props) => {
         <>
           <div id="title-div">
             <button id="title-btn">
-              <i className="fa-regular fa-address-book"></i> 출석부
+              <i className="fa-regular fa-address-book"></i> 왔니?
             </button>
             <button id="switch-btn" onClick={showStudentsListHandler}>
               <i className="fa-solid fa-list-ol"></i>
@@ -112,6 +112,7 @@ const StudentCalendarLayout = (props) => {
           date={new Date()}
           selectOption={props.selectOption}
           Context={props.Context}
+          userUid={props.userUid}
           about="attendance"
         />
       )}

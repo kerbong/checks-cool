@@ -3,7 +3,7 @@ import React from "react";
 const ClassgamePage = () => {
   return (
     <>
-      <div>추후 업데이트 예정입니다😉</div>
+      <div>채신유행을 반영하여 업데이트 예정입니다😉</div>
     </>
   );
 };

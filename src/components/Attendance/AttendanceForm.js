@@ -5,6 +5,9 @@ import Swal from "sweetalert2";
 import AttendanceOption from "./AttendanceOption";
 import FileArea from "components/Layout/FileArea";
 
+import { dbService } from "../../fbase";
+import { collection, setDoc, doc } from "firebase/firestore";
+
 const AttendanceForm = (props) => {
   const [attachedFile, setAttachedFile] = useState("");
   const [option, setOption] = useState("");
@@ -56,26 +59,6 @@ const AttendanceForm = (props) => {
     });
   };
 
-  // const getDatesStartToLast = (startDate, lastDate) => {
-  //   let result = [];
-  //   let curDate = startDate;
-  //   while (curDate <= lastDate) {
-  //     //주말(index 6 = 토, index 0 = 일)이면 저장안되도록!
-  //     console.log("현재날짜" + curDate);
-  //     if (curDate.getDay() === 0 || curDate.getDay() === 6) {
-  //       curDate.setDate(curDate.getDate() + 1);
-  //     } else {
-  //       console.log(curDate);
-  //       result.push(curDate);
-  //       console.log(result);
-
-  //       curDate.setDate(curDate.getDate() + 1);
-  //     }
-  //   }
-  //   console.log(result);
-  //   return result;
-  // };
-
   const submitHandler = async (e) => {
     e.preventDefault();
 
@@ -111,6 +94,13 @@ const AttendanceForm = (props) => {
       }
 
       // 전체 날짜에서 개별적으로 작업하기
+      let data = {
+        student_num: studentInfo[0],
+        student_name: studentInfo[1],
+        option: option,
+        note: inputValue,
+        writtenId: props.userUid,
+      };
 
       let curDate = start;
       while (curDate <= end) {
@@ -121,31 +111,14 @@ const AttendanceForm = (props) => {
         } else {
           let selectDate = getToday(curDate);
           new_data_id = selectDate + studentInfo[0];
+          let new_data = { ...data, id: new_data_id };
+          console.log(new_data);
 
-          const new_data = {
-            student_num: studentInfo[0],
-            student_name: studentInfo[1],
-            id: new_data_id,
-            option: option,
-            note: inputValue,
-          };
-
-          anyContext.addData(new_data);
+          await setDoc(doc(collection(dbService, "attend")), new_data);
 
           curDate.setDate(curDate.getDate() + 1);
         }
       }
-
-      // let selectDates = getDatesStartToLast(start, end);
-
-      // selectDates.forEach((date) => {
-      //   console.log(date);
-      //   let selectDate = getToday(date);
-      //   new_data_id = selectDate + studentInfo[0];
-      // });
-
-      //년월일+번호 를 식별id로 사용 나중에 지울떄(출결)
-      // new_data_id = selectDate + studentInfo[0];
     }
 
     //나중에 기간, 날짜도 추가하기

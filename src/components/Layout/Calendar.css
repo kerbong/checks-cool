@@ -68,6 +68,10 @@
   right: 1em;
 }
 
+.react-datepicker__day--today {
+  font-size: 1.2em;
+}
+
 #switch-btn {
   width: auto;
   margin: 10px 8px;

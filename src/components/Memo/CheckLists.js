@@ -217,7 +217,7 @@ const CheckLists = (props) => {
 
           <div>
             <Button
-              name={"체크리스트 추가"}
+              name={"추가하기"}
               id={"add-checkItemBtn"}
               className={"add-event-button"}
               onclick={() => {
@@ -287,7 +287,7 @@ const CheckLists = (props) => {
           )}
           <div>
             <Button
-              name={"명렬표 추가"}
+              name={"추가하기"}
               id={"add-listMemoBtn"}
               className={"add-listMemo-button"}
               onclick={() => {

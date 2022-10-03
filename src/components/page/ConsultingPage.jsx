@@ -28,7 +28,7 @@ const ConsultingPage = (props) => {
     <>
       <div id="title-div">
         <button id="title-btn" className="consult">
-          <i className="fa-regular fa-comments"></i> 상담기록
+          <i className="fa-regular fa-comments"></i> 금쪽상담소
         </button>
 
         <button id="switch-btn" onClick={showCalHandler}>

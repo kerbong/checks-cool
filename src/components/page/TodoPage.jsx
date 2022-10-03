@@ -369,7 +369,8 @@ const TodoPage = (props) => {
     <>
       <div id="title-div">
         <button id="title-btn" className="todo">
-          <i className="fa-regular fa-calendar-check"></i> 일정
+          <i className="fa-regular fa-calendar-check"></i>{" "}
+          {showPublicEvent ? "우리 달력" : "내 달력"}
         </button>
         <span>
           <span className="todo" onClick={() => setShowPublicSetting(true)}>

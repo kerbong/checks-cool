@@ -15,19 +15,20 @@ const MemoPage = (props) => {
           <i className="fa-regular fa-note-sticky"></i>
           {showMemos && (
             <>
-              {" "}
-              {" - "} <i className="fa-solid fa-list-check"></i> 오늘 할 일
+              {">"}
+              <i className="fa-regular fa-square-check"></i> 할거보소
             </>
           )}
           {showChecklists && (
             <>
-              {" "}
-              {" - "} <i className="fa-solid fa-check-double"></i> 체크리스트
+              {">"}
+              <i className="fa-solid fa-clipboard-check"></i> 냄/안냄
             </>
           )}
           {showAchives && (
             <>
-              {" - "} <i className="fa-solid fa-clipboard-list"></i> 메모장
+              {">"}
+              <i className="fa-solid fa-clipboard-list"></i> 개별기록
             </>
           )}
         </button>
@@ -40,7 +41,7 @@ const MemoPage = (props) => {
               setShowAchives(false);
             }}
           >
-            <i className="fa-solid fa-list-check"></i>
+            <i className="fa-regular fa-square-check"></i>
           </span>
           <span
             className={classes["memo-headerBtn"]}
@@ -50,7 +51,7 @@ const MemoPage = (props) => {
               setShowAchives(false);
             }}
           >
-            <i className="fa-solid fa-check-double"></i>
+            <i className="fa-solid fa-clipboard-check"></i>
           </span>
           <span
             className={classes["memo-headerBtn"]}
