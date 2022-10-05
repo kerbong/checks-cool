@@ -98,6 +98,7 @@ const ListMemoInput = (props) => {
         <Button
           name={"삭제"}
           id={"del-checkItemBtn"}
+          style={{ display: props.item.length === 0 && "none" }}
           className={"save-listMemo-button"}
           onclick={() => {
             delCheckItem(props.item);
@@ -108,8 +109,19 @@ const ListMemoInput = (props) => {
           id={"add-checkItemBtn"}
           className={"save-listMemo-button"}
           onclick={() => {
-            saveMemo();
-            props.setItemNull();
+            if (props.students.length === 0) {
+              Swal.fire({
+                icon: "error",
+                title: "저장에 실패했어요!",
+                text: "메뉴의 곰돌이를 눌러서 학생명단을 먼저 입력해주세요.",
+                confirmButtonText: "확인",
+                confirmButtonColor: "#85bd82",
+                timer: 5000,
+              });
+            } else {
+              saveMemo();
+              props.setItemNull();
+            }
           }}
         />
       </h2>

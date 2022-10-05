@@ -226,6 +226,7 @@ const CheckLists = (props) => {
               }}
             />
           </div>
+
           <div>
             {/* 제출 미제출 체크리스트들 보여주기 */}
             {checkLists &&
@@ -345,12 +346,20 @@ const CheckLists = (props) => {
                           className={"checkList-button"}
                         />
                       ))}
+                    {props.students.length}
                   </p>
                 </li>
               ))}
           </div>
         </>
       )}
+      {
+        <>
+          <p>* 입력한 자료가 안 보이면 로그아웃 후에 다시 로그인해주세요!</p>
+
+          <p>* 문제가 지속되면 kerbong@gmail.com으로 알려주세요.</p>
+        </>
+      }
     </>
   );
 };

@@ -11,6 +11,7 @@ const CheckInput = (props) => {
     props.item ? props.item.title : ""
   );
   const [students, setStudents] = useState(props.students);
+
   const [unSubmitStudents, setUnSubmitStudents] = useState(
     props.unSubmitStudents.length > 0 ? props.unSubmitStudents : students
   );
@@ -172,7 +173,18 @@ const CheckInput = (props) => {
           id={"add-checkItemBtn"}
           className={"save-checkItem-button"}
           onclick={() => {
-            saveCheckItem();
+            if (props.students.length === 0) {
+              Swal.fire({
+                icon: "error",
+                title: "저장에 실패했어요!",
+                text: "메뉴의 곰돌이를 눌러서 학생명단을 먼저 입력해주세요.",
+                confirmButtonText: "확인",
+                confirmButtonColor: "#85bd82",
+                timer: 5000,
+              });
+            } else {
+              saveCheckItem();
+            }
           }}
         />
         {props.item.doc_id && (

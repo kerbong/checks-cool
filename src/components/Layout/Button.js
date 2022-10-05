@@ -16,6 +16,7 @@ const Button = (props) => {
         id={props.id}
         className={classes[props.className]}
         onClick={clickHandler}
+        style={props.style}
       >
         {props.icon}
         {props.name}
