@@ -29,35 +29,36 @@ const Auth = () => {
     }
   };
 
+  const failLogIn = (text) => {
+    Swal.fire({
+      icon: "error",
+      title: `${text}에 실패했어요.`,
+      text: "아이디/비밀번호를 확인해주세요! 문제가 지속될 경우 kerbong@gmail.com 으로 문의주세요.",
+      confirmButtonText: "확인",
+      confirmButtonColor: "#85bd82",
+      timer: 5000,
+    });
+  };
+
   const onSubmit = async (e) => {
     e.preventDefault();
-    console.log(agreeTerms);
-    if (!agreeTerms) {
-      return;
-    }
-    try {
-      let data;
-      const auth = getAuth();
-      if (newAccount) {
-        data = await createUserWithEmailAndPassword(auth, email, password);
-      } else {
-        try {
-          data = await signInWithEmailAndPassword(auth, email, password);
-        } catch (error) {
-          Swal.fire({
-            icon: "error",
-            title: "로그인에 실패했어요.",
-            text: "아이디/비밀번호를 확인해주세요!",
-            confirmButtonText: "확인",
-            confirmButtonColor: "#85bd82",
-            timer: 5000,
-          });
-          return;
-        }
+    let data;
+    const auth = getAuth();
+    //기존 유저의 로그인이면
+    if (!newAccount) {
+      try {
+        data = await signInWithEmailAndPassword(auth, email, password);
+      } catch (error) {
+        failLogIn("로그인");
+        return;
       }
-      console.log(data);
-    } catch (error) {
-      console.log(error);
+    } else {
+      try {
+        data = await createUserWithEmailAndPassword(auth, email, password);
+      } catch (error) {
+        failLogIn("회원가입");
+        return;
+      }
     }
   };
 

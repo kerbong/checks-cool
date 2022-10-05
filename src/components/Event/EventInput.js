@@ -69,7 +69,6 @@ const EventInput = (props) => {
     } else {
       //년월일+행사명{/* 달라진거 고려하기.. todo에서도 쓸 수 있게 */}
       todo_eventName = document.querySelector("#todo-eventName").value;
-      console.log(todo_eventName);
       new_data_id = eventDay + todo_eventName;
     }
 
@@ -107,7 +106,18 @@ const EventInput = (props) => {
                 className="choose-studentBtn"
                 name={"학생선택"}
                 onclick={function () {
-                  setShowStudent(!showStudent);
+                  if (props.students.length !== 0) {
+                    setShowStudent(!showStudent);
+                  } else {
+                    Swal.fire({
+                      icon: "error",
+                      title: "선택 불가",
+                      text: "메뉴의 곰돌이를 눌러서 먼저 학생명단을 입력해주세요.",
+                      confirmButtonText: "확인",
+                      confirmButtonColor: "#85bd82",
+                      timer: 5000,
+                    });
+                  }
                 }}
               />
             ) : (

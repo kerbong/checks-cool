@@ -3,17 +3,23 @@ import MemoTodayTodoInput from "./MemoTodayTodoInput";
 import MemoTodayTodoItemList from "./MemoTodayTodoItemList";
 
 import { dbService } from "../../fbase";
-import { updateDoc, onSnapshot, doc } from "firebase/firestore";
+import { updateDoc, setDoc, onSnapshot, doc, getDoc } from "firebase/firestore";
 
 const MemoTodayTodo = (props) => {
   const [todoList, setTodoList] = useState([]);
   //firestore에서 해당 이벤트 자료 받아오기
   const getMemoFromDb = async () => {
     //db에서 todo DB가져오고 작성자가 현재 유저와 동일한지 확인하고 events에 추가하기
+    let memoRef = doc(dbService, "memo", props.userUid);
+    let memoSnap = await getDoc(memoRef);
 
-    const memoRef = onSnapshot(doc(dbService, "memo", props.userUid), (doc) =>
-      setTodoList(doc.data().memoTodo)
-    );
+    if (memoSnap.exists()) {
+      onSnapshot(memoRef, (doc) => setTodoList(doc.data().memoTodo));
+    }
+
+    // const memoRef = onSnapshot(doc(dbService, "memo", props.userUid), (doc) =>
+    //   setTodoList(doc.data().memoTodo)
+    // );
   };
 
   useEffect(() => {
@@ -25,7 +31,7 @@ const MemoTodayTodo = (props) => {
     //firestore에 업로드  e는 전체 배열 {[할일],[할일]}
     const new_data = { memoTodo: e };
     const memoTodoRef = doc(dbService, "memo", props.userUid);
-    await updateDoc(memoTodoRef, new_data);
+    await setDoc(memoTodoRef, new_data);
   };
 
   return (

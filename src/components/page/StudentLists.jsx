@@ -109,11 +109,11 @@ const StudentLists = (props) => {
             </>
           )}
 
-          {studentsInfo.length !== 0 && !addStudentByFile ? (
+          {/* {studentsInfo.length !== 0 && !addStudentByFile ? (
             <i className="fa-solid fa-file-arrow-up"></i>
           ) : (
             <i className="fa-solid fa-circle-arrow-up"></i>
-          )}
+          )} */}
         </button>
       </div>
       {!addStudentByFile ? (

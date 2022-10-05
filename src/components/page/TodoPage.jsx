@@ -43,15 +43,23 @@ const TodoPage = (props) => {
 
   //firestore에서 해당 이벤트 자료 받아오기
   const getToDosFromDb = () => {
-    //db에서 todo DB가져오고 작성자가 현재 유저와 동일한지 확인하고 events에 추가하기
     //기존에 있던 화면에 그려진 이벤트들 지워주기
-    document.querySelectorAll(".eventBtn").forEach((btn) => {
-      btn.remove();
-    });
+    let remainEvents = document.querySelectorAll(".eventBtn");
+
+    if (remainEvents.length !== 0) {
+      remainEvents.forEach((btn) => {
+        btn.remove();
+      });
+    }
+
     //이벤트가 있던 날짜의 배경색도 초기화
-    document
-      .querySelectorAll(".react-datepicker__day[style]")
-      .forEach((tag) => (tag.style.backgroundColor = ""));
+    let remainBgcolor = document.querySelectorAll(
+      ".react-datepicker__day[style]"
+    );
+
+    if (remainBgcolor.length !== 0) {
+      remainBgcolor.forEach((tag) => (tag.style.backgroundColor = ""));
+    }
 
     //기존에 있던 events들도 다 지우기
     setEvents([]);

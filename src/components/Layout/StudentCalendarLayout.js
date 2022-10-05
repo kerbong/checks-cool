@@ -100,6 +100,13 @@ const StudentCalendarLayout = (props) => {
               <i className="fa-solid fa-user"></i>
             </button>
           </div>
+          {props.students.length === 0 && (
+            <>
+              <div>학생 명단이 존재하지 않네요!</div>
+              <div>메뉴의 곰돌이를 눌러서</div>
+              <div>학생 명단을 먼저 입력해주세요!</div>
+            </>
+          )}
           <Student students={props.students} showOption={showOptionHandler} />
         </>
       )}
