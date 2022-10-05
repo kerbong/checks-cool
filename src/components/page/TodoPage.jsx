@@ -35,10 +35,13 @@ const TodoPage = (props) => {
   const [eventOnDay, setEventOnDay] = useState([]);
   //개인용, 공용 전환
   const [showPublicEvent, setShowPublicEvent] = useState(true);
-  //공용 방이름 저장
-  const [publicRoom, setPublicRoom] = useState(
-    localStorage.getItem("todoPublicRoom")
-  );
+  //처음 접속한 유저가 null 되지 않도록 세팅
+  let roomInfo = localStorage.getItem("todoPublicRoom");
+  if (roomInfo === null) {
+    roomInfo = "--";
+  }
+
+  const [publicRoom, setPublicRoom] = useState(roomInfo);
   const [showPublicSetting, setShowPublicSetting] = useState(false);
 
   //firestore에서 해당 이벤트 자료 받아오기
@@ -429,7 +432,7 @@ const TodoPage = (props) => {
         />
       )}
       <AttendCalendar inline={"true"} getDateValue={getDateHandler} />
-      {publicRoom.trim().length === "2" && (
+      {publicRoom.trim().length === 2 && (
         <p>
           * 처음 사용 시 '설정'에서 우리 달력으로 사용할 정보를 설정해주세요.
         </p>
