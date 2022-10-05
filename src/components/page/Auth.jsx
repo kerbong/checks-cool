@@ -10,11 +10,12 @@ import {
 import { authService } from "../../fbase";
 import classes from "./Auth.module.css";
 import AuthTerms from "./AuthTerms";
+import Swal from "sweetalert2";
 
 const Auth = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [newAccount, setNewAccount] = useState(true);
+  const [newAccount, setNewAccount] = useState(false);
   const [agreeTerms, setAgreeTerms] = useState(false);
 
   const onChange = (e) => {
@@ -40,7 +41,19 @@ const Auth = () => {
       if (newAccount) {
         data = await createUserWithEmailAndPassword(auth, email, password);
       } else {
-        data = await signInWithEmailAndPassword(auth, email, password);
+        try {
+          data = await signInWithEmailAndPassword(auth, email, password);
+        } catch (error) {
+          Swal.fire({
+            icon: "error",
+            title: "로그인에 실패했어요.",
+            text: "아이디/비밀번호를 확인해주세요!",
+            confirmButtonText: "확인",
+            confirmButtonColor: "#85bd82",
+            timer: 5000,
+          });
+          return;
+        }
       }
       console.log(data);
     } catch (error) {
@@ -48,8 +61,9 @@ const Auth = () => {
     }
   };
 
-  const toggleAccount = () => {
+  const toggleAccount = (e) => {
     setNewAccount((prev) => !prev);
+    setAgreeTerms(false);
   };
 
   const onSocialClick = async (e) => {
@@ -91,7 +105,13 @@ const Auth = () => {
               <input
                 type="checkbox"
                 name="terms-checkbox"
-                onClick={() => setAgreeTerms((prev) => !prev)}
+                onClick={(e) => {
+                  if (e.target.checked) {
+                    setAgreeTerms(true);
+                  } else {
+                    setAgreeTerms(false);
+                  }
+                }}
               />
               <span>약관에 모두 동의함</span>
             </p>
@@ -107,7 +127,7 @@ const Auth = () => {
         <input
           type="submit"
           value={newAccount ? "회원가입" : "로그인"}
-          disabled={!agreeTerms ? true : false}
+          disabled={newAccount && !agreeTerms && true}
           className={classes["logInOut-SignUp"]}
         />
       </form>
@@ -115,16 +135,17 @@ const Auth = () => {
         <button
           name="google"
           onClick={onSocialClick}
-          disabled={!agreeTerms ? true : false}
+          disabled={newAccount && !agreeTerms && true}
           className={classes["logInOut-SignUp"]}
         >
-          <i className="fa-brands fa-google"></i> Google 로그인하기
+          <i className="fa-brands fa-google"></i>{" "}
+          {newAccount ? "Google로  가입하기" : "Google 로그인하기"}
         </button>
         <span>
-          {!agreeTerms && (
+          {newAccount && !agreeTerms && (
             <>
               *약관에 동의하시면
-              <br /> 회원가입/구글로그인이 가능합니다.
+              <br /> 회원가입이 가능합니다.
             </>
           )}
         </span>
