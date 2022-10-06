@@ -33,7 +33,6 @@ const TodoPublicInput = (props) => {
 
     let publickRoomData = `${schoolName}-${grade}-${publicPw}`;
     props.setPublicRoom(publickRoomData);
-    console.log(publickRoomData);
     localStorage.setItem("todoPublicRoom", publickRoomData);
   };
 

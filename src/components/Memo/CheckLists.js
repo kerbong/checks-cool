@@ -346,7 +346,6 @@ const CheckLists = (props) => {
                           className={"checkList-button"}
                         />
                       ))}
-                    {props.students.length}
                   </p>
                 </li>
               ))}
@@ -355,9 +354,15 @@ const CheckLists = (props) => {
       )}
       {
         <>
-          <p>* 입력한 자료가 안 보이면 로그아웃 후에 다시 로그인해주세요!</p>
+          <p>
+            * 입력한 자료가 안 보이면 메뉴를 다시 클릭해주시거나 다시
+            로그인해주세요!
+          </p>
 
-          <p>* 문제가 지속되면 kerbong@gmail.com으로 알려주세요.</p>
+          <p>
+            * 문제가 지속되시면 kerbong@gmail.com으로 알려주세요. 최대한 빠르게
+            해결해 드릴게요!
+          </p>
         </>
       }
     </>

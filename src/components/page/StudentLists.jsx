@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import TypingStudent from "../Student/TypingStudent";
-import { doc, setDoc, updateDoc } from "firebase/firestore";
+import { doc, setDoc } from "firebase/firestore";
 import { dbService } from "../../fbase";
 import StudentLiWithDelete from "../Student/StudentLiWithDelete";
 import StudentExcelUpload from "../Student/StudentExcelUpload";
@@ -95,25 +95,19 @@ const StudentLists = (props) => {
         </button>
 
         <button id="switch-btn" onClick={addStudentHandler}>
-          {studentsInfo.length === 0 && !addStudentByFile && (
+          {!addStudentByFile && (
             <>
-              <span className="excel-upload-text">엑셀파일로 업로드</span>{" "}
+              <span className="excel-upload-text">엑셀파일 업로드</span>{" "}
               <i className="fa-solid fa-file-arrow-up"></i>
             </>
           )}
 
-          {studentsInfo.length === 0 && addStudentByFile && (
+          {addStudentByFile && (
             <>
-              <span className="excel-upload-text">직접 입력 및 수정</span>{" "}
+              <span className="excel-upload-text">직접 입력</span>{" "}
               <i className="fa-solid fa-circle-arrow-up"></i>
             </>
           )}
-
-          {/* {studentsInfo.length !== 0 && !addStudentByFile ? (
-            <i className="fa-solid fa-file-arrow-up"></i>
-          ) : (
-            <i className="fa-solid fa-circle-arrow-up"></i>
-          )} */}
         </button>
       </div>
       {!addStudentByFile ? (

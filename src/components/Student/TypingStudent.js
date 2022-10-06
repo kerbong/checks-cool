@@ -130,8 +130,12 @@ const TypingStudent = (props) => {
           ))}
         </div>
         <div className={classes.studentListArea}>
-          + 버튼으로 추가하고, 저장버튼을 눌러 적용시켜주세요!
+          * 학생을 추가 / 수정한 뒤에는 꼭!!! 저장버튼(2)을 눌러 적용시켜주세요!
         </div>
+        <p>
+          * 문제가 지속되시면 kerbong@gmail.com으로 알려주세요. 최대한 빠르게
+          해결해 드릴게요!
+        </p>
       </div>
     </>
   );

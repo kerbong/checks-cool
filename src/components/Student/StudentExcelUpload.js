@@ -70,16 +70,22 @@ const StudentExcelUpload = (props) => {
         />
       </div>
 
-      {/* 학생자료 없을 때 설명 화면 */}
-      {props.studentsInfo.length === 0 && (
-        <div className={classes.example}>
+      <div className={classes.example}>
+        {/* 학생자료 없을 때 설명 화면 */}
+        {props.studentsInfo.length === 0 && (
           <img src={excelExample} alt="" className={classes.exampleImg} />
-          <span>(예시)</span>
-          <span>첫 줄에 번호, 이름이 입력된 </span>
-          <span>엑셀 파일 추가(1) 후에 저장(2)을 눌러주세요.</span>
-          <span className={classes.accent}>*저장(2)을 눌러야 반영됩니다!</span>
-        </div>
-      )}
+        )}
+        <span>* 각 줄에 번호, 이름이 입력된 </span>
+        <span>
+          엑셀 파일 추가(1) 후에 <span className={classes.accent}>저장(2)</span>
+          을 눌러주세요.
+        </span>
+        <span>* pc로 접속하셔서 업로드하셔도 됩니다!</span>
+        <span>
+          * 문제가 지속되시면 kerbong@gmail.com으로 알려주세요. 최대한 빠르게
+          해결해 드릴게요!
+        </span>
+      </div>
     </div>
   );
 };

@@ -20,10 +20,24 @@ const TodoLists = (props) => {
 
     //행사명
     let eventName;
-    //새로 추가한 자료인 경우
+    //새로 추가하거나 바로 입력한 자료인 경우
     if (item["doc_id"] === undefined) {
       eventName = document.querySelector("#todo-eventName");
-      optionValue = document.querySelector(`#option-select`).value;
+      let option = document.querySelector(`#option-select`);
+      console.log(eventName);
+      console.log(option);
+      //새로운 자료(input)인 경우 있음
+      if (option !== null || eventName !== null) {
+        eventName = eventName.value;
+        optionValue = option.value;
+      } else {
+        // console.log(item);
+        eventName = item.eventName;
+        optionValue = document.querySelector(
+          `#option-select${eventName.replace(/ /g, "")}`
+        ).value;
+      }
+      //업로드 되어있던 자료인 경우
     } else {
       eventName = item.eventName;
       optionValue = document.querySelector(
@@ -90,7 +104,7 @@ const TodoLists = (props) => {
 
     // console.log(item.eventDate);
     //events eventOnDay 를 수정하는 함수
-    console.log(fixed_data);
+    // console.log(fixed_data);
     props.fixedEventHandler(fixed_data, item.eventDate);
 
     // setEventOnDay(eventOnDay.concat());

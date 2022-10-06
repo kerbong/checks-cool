@@ -22,14 +22,14 @@ const ListMemoInput = (props) => {
             student_num: inputTag.id,
             memo: inputTag.value,
           });
-          console.log(new_memo);
+          // console.log(new_memo);
         }
       });
 
       setStudentMemo((prev) => [...prev, new_memo]);
 
-      console.log(new_memo);
-      console.log(studentMemo);
+      // console.log(new_memo);
+      // console.log(studentMemo);
 
       props.saveItemHandler(new_memo, props.item.doc_id);
       props.onClose();
