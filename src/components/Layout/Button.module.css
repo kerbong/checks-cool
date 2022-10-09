@@ -182,3 +182,12 @@
   padding: 2.3vh;
   background-color: #da9a9a;
 }
+
+.studentAddBtn {
+  width: auto;
+  height: 50px;
+  margin: 10px 2px;
+  font-size: 1.3em;
+  border-width: 0;
+  background-color: inherit;
+}

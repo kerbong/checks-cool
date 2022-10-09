@@ -5,15 +5,12 @@ import { dbService } from "../../fbase";
 import StudentLiWithDelete from "../Student/StudentLiWithDelete";
 import StudentExcelUpload from "../Student/StudentExcelUpload";
 import Swal from "sweetalert2";
+import StudentInputByOcr from "../Student/StudentInputByOcr";
+import Button from "../Layout/Button";
 
 const StudentLists = (props) => {
-  const [addStudentByFile, setAddStudentByFile] = useState(false);
+  const [addStudentBy, setAddStudentBy] = useState("imageFile");
   const [studentsInfo, setStudentsInfo] = useState([]);
-
-  //직접입력 <<==>> 파일업로드 바꾸는 함수
-  const addStudentHandler = () => {
-    setAddStudentByFile((prev) => !prev);
-  };
 
   //학생 제거 함수
   const deleteStudentHandler = (num) => {
@@ -87,6 +84,10 @@ const StudentLists = (props) => {
     return sorted_students;
   };
 
+  const getStudentAddType = (e) => {
+    setAddStudentBy(e.target.getAttribute("id"));
+  };
+
   return (
     <div>
       <div id="title-div">
@@ -94,23 +95,98 @@ const StudentLists = (props) => {
           <i className="fa-solid fa-user-plus"></i> 학생등록
         </button>
 
-        <button id="switch-btn" onClick={addStudentHandler}>
-          {!addStudentByFile && (
-            <>
-              <span className="excel-upload-text">엑셀파일 업로드</span>{" "}
-              <i className="fa-solid fa-file-arrow-up"></i>
-            </>
-          )}
+        {addStudentBy === "typing" && (
+          <>
+            <Button
+              className={"studentAddBtn"}
+              name={
+                <>
+                  <span id="excelFile" className="excel-upload-text">
+                    엑셀파일 업로드
+                  </span>{" "}
+                  <i className="fa-solid fa-file-arrow-up"></i>
+                </>
+              }
+              onclick={getStudentAddType}
+            />
 
-          {addStudentByFile && (
-            <>
-              <span className="excel-upload-text">직접 입력</span>{" "}
-              <i className="fa-solid fa-circle-arrow-up"></i>
-            </>
-          )}
-        </button>
+            <Button
+              className={"studentAddBtn"}
+              name={
+                <>
+                  <span id="imageFile" className="excel-upload-text">
+                    명렬표 이미지
+                  </span>{" "}
+                  <i className="fa-regular fa-file-image"></i>
+                </>
+              }
+              onclick={getStudentAddType}
+            />
+          </>
+        )}
+
+        {addStudentBy === "excelFile" && (
+          <>
+            <Button
+              className={"studentAddBtn"}
+              name={
+                <>
+                  <span id="typing" className="excel-upload-text">
+                    직접 입력
+                  </span>{" "}
+                  <i className="fa-solid fa-circle-arrow-up"></i>
+                </>
+              }
+              onclick={getStudentAddType}
+            />
+
+            <Button
+              className={"studentAddBtn"}
+              name={
+                <>
+                  <span id="imageFile" className="excel-upload-text">
+                    명렬표 이미지
+                  </span>{" "}
+                  <i className="fa-regular fa-file-image"></i>
+                </>
+              }
+              onclick={getStudentAddType}
+            />
+          </>
+        )}
+
+        {addStudentBy === "imageFile" && (
+          <>
+            <Button
+              className={"studentAddBtn"}
+              name={
+                <>
+                  <span id="typing" className="excel-upload-text">
+                    직접 입력
+                  </span>{" "}
+                  <i className="fa-solid fa-circle-arrow-up"></i>
+                </>
+              }
+              onclick={getStudentAddType}
+            />
+
+            <Button
+              className={"studentAddBtn"}
+              name={
+                <>
+                  <span id="excelFile" className="excel-upload-text">
+                    엑셀파일 업로드
+                  </span>{" "}
+                  <i className="fa-solid fa-file-arrow-up"></i>
+                </>
+              }
+              onclick={getStudentAddType}
+            />
+          </>
+        )}
       </div>
-      {!addStudentByFile ? (
+
+      {addStudentBy === "typing" && (
         // 직접 타이핑 하는 학생입력 화면
         <>
           <TypingStudent
@@ -129,7 +205,9 @@ const StudentLists = (props) => {
             uploadStudentsInfo={submitStudentUploader}
           />
         </>
-      ) : (
+      )}
+
+      {addStudentBy === "excelFile" && (
         <>
           {/* 엑셀파일 업로드 & 업로드 파일에서 불러온 자료 */}
           <StudentExcelUpload
@@ -158,6 +236,8 @@ const StudentLists = (props) => {
           </div>
         </>
       )}
+
+      {addStudentBy === "imageFile" && <StudentInputByOcr />}
     </div>
   );
 };
