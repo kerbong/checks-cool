@@ -42,3 +42,10 @@
   justify-content: center;
   align-items: center;
 }
+
+.span-highlight {
+  color: #de0505;
+  font-weight: bold;
+  font-size: 1.2em;
+  margin: 0px 5px;
+}

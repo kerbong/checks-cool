@@ -16,3 +16,39 @@
   align-items: center;
   justify-content: flex-start;
 }
+
+.span-expain {
+  margin: 15px 10px;
+  line-height: 2.5em;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.image-upload-btn {
+  width: 60px;
+  height: 50px;
+  margin-left: 20px;
+  font-size: 1.1em;
+  border-radius: 10px;
+  border-width: 0;
+  background-color: #993fc447;
+  padding: 13px;
+}
+
+.span-highlight {
+  color: #de0505;
+  font-weight: bold;
+  font-size: 1.2em;
+}
+
+.studentListArea {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  align-content: center;
+  margin-left: 15px;
+  flex-wrap: wrap;
+  justify-content: center;
+}

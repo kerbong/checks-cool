@@ -85,7 +85,7 @@ const StudentLists = (props) => {
   };
 
   const getStudentAddType = (e) => {
-    setAddStudentBy(e.target.getAttribute("id"));
+    setAddStudentBy(e.target.parentElement.getAttribute("id"));
   };
 
   return (
@@ -98,12 +98,11 @@ const StudentLists = (props) => {
         {addStudentBy === "typing" && (
           <>
             <Button
+              id="excelFile"
               className={"studentAddBtn"}
               name={
                 <>
-                  <span id="excelFile" className="excel-upload-text">
-                    엑셀파일 업로드
-                  </span>{" "}
+                  <span className="excel-upload-text">엑셀파일 업로드</span>{" "}
                   <i className="fa-solid fa-file-arrow-up"></i>
                 </>
               }
@@ -111,12 +110,11 @@ const StudentLists = (props) => {
             />
 
             <Button
+              id="imageFile"
               className={"studentAddBtn"}
               name={
                 <>
-                  <span id="imageFile" className="excel-upload-text">
-                    명렬표 이미지
-                  </span>{" "}
+                  <span className="excel-upload-text">명렬표 이미지</span>{" "}
                   <i className="fa-regular fa-file-image"></i>
                 </>
               }
@@ -128,12 +126,11 @@ const StudentLists = (props) => {
         {addStudentBy === "excelFile" && (
           <>
             <Button
+              id="typing"
               className={"studentAddBtn"}
               name={
                 <>
-                  <span id="typing" className="excel-upload-text">
-                    직접 입력
-                  </span>{" "}
+                  <span className="excel-upload-text">직접 입력</span>{" "}
                   <i className="fa-solid fa-circle-arrow-up"></i>
                 </>
               }
@@ -141,12 +138,11 @@ const StudentLists = (props) => {
             />
 
             <Button
+              id="imageFile"
               className={"studentAddBtn"}
               name={
                 <>
-                  <span id="imageFile" className="excel-upload-text">
-                    명렬표 이미지
-                  </span>{" "}
+                  <span className="excel-upload-text">명렬표 이미지</span>{" "}
                   <i className="fa-regular fa-file-image"></i>
                 </>
               }
@@ -158,12 +154,11 @@ const StudentLists = (props) => {
         {addStudentBy === "imageFile" && (
           <>
             <Button
+              id="typing"
               className={"studentAddBtn"}
               name={
                 <>
-                  <span id="typing" className="excel-upload-text">
-                    직접 입력
-                  </span>{" "}
+                  <span className="excel-upload-text">직접 입력</span>{" "}
                   <i className="fa-solid fa-circle-arrow-up"></i>
                 </>
               }
@@ -171,12 +166,11 @@ const StudentLists = (props) => {
             />
 
             <Button
+              id="excelFile"
               className={"studentAddBtn"}
               name={
                 <>
-                  <span id="excelFile" className="excel-upload-text">
-                    엑셀파일 업로드
-                  </span>{" "}
+                  <span className="excel-upload-text">엑셀파일 업로드</span>{" "}
                   <i className="fa-solid fa-file-arrow-up"></i>
                 </>
               }
@@ -237,7 +231,15 @@ const StudentLists = (props) => {
         </>
       )}
 
-      {addStudentBy === "imageFile" && <StudentInputByOcr />}
+      {addStudentBy === "imageFile" && (
+        <StudentInputByOcr
+          studentsInfo={studentsInfo}
+          setAddStudentsInfo={(studentData) => {
+            setStudentsInfo([...studentData]);
+            setAddStudentBy("typing");
+          }}
+        />
+      )}
     </div>
   );
 };

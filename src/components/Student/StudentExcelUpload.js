@@ -75,12 +75,18 @@ const StudentExcelUpload = (props) => {
         {props.studentsInfo.length === 0 && (
           <img src={excelExample} alt="" className={classes.exampleImg} />
         )}
-        <span>* 각 줄에 번호, 이름이 입력된 </span>
+        <span>
+          1. pc로 업로드가 편리합니다!
+          <br />
+          (kerbong.github.io/checks-cho-ok)
+        </span>
+        <span>
+          2. <span className={classes.accent}>각 줄에 번호, 이름</span>이 입력된{" "}
+        </span>
         <span>
           엑셀 파일 추가(1) 후에 <span className={classes.accent}>저장(2)</span>
           을 눌러주세요.
         </span>
-        <span>* pc로 접속하셔서 업로드하셔도 됩니다!</span>
         <span>
           * 문제가 지속되시면 kerbong@gmail.com으로 알려주세요. 최대한 빠르게
           해결해 드릴게요!
