@@ -1,28 +1,17 @@
 import React, { useRef } from "react";
 import Button from "../Layout/Button";
 import imageCompression from "browser-image-compression";
+
 import axios from "axios";
-// import vision from "@google-cloud/vision";
+// import fs from "fs";
 
 const StudentInputByOcr = (props) => {
   const fileInfoInput = useRef(null);
 
-  //   const quickStart = async (file) => {
-  //     const client = new vision.ImageAnnotatorClient();
-
-  //     const [result] = await client.labelDetection(file);
-  //     const labels = result.labelAnnotations;
-  //     console.log("Labels. ");
-  //     console.log(labels);
-  //     // labels.forEach((label) => console.log(label.description));
-  //   };
-
+  // 네이버 ocr 실험
   const imageOcrHandler = async (img) => {
-    const URL = process.env.NAVER_OCR_APIGW_URL;
-    // const URL =
-    //   "https://a4929zexaf.apigw.ntruss.com/custom/v1/18557/6d58ba3626b8ecce640f3a4a64775e2dcc85d6813b60f59583d9a3f8f1ce75e7/general";
-    // const KEY = `${process.env.NAVER_OCR_KEY}=`;
-    const KEY = `"${process.env.NAVER_OCR_KEY}"`;
+    const URL = process.env.REACT_APP_NAVER_OCR_APIGW_URL;
+    const KEY = process.env.REACT_APP_NAVER_OCR_KEY;
     const config = {
       headers: {
         "Content-Type": "application/json",
@@ -30,62 +19,33 @@ const StudentInputByOcr = (props) => {
       },
     };
     let timestamp = new Date().getTime();
+    let sumText = "";
 
-    await axios
+    axios
       .post(
         URL,
         {
+          version: "v2",
+          requestId: "sample_id",
+          timestamp: 0,
+          lang: "ko",
           images: [
             {
+              format: "jpeg",
               name: "sample_image",
-              format: "jpg",
-              //   data: img.split(",")[1],
-              data: img,
+              data: img.split(",")[1],
+              //   data: img,
             },
           ],
-          lang: "ko",
-          requestId: "sample_id",
+
           enableTableDetection: true,
-          timestamp: timestamp,
-          version: "v1",
         },
         config
       )
       .then((res) => {
         console.log(res);
-        console.log(res.data);
-        console.log(res.data.images[0]);
-        console.log(res.data.images[0].fields);
       })
       .catch((error) => console.log(error));
-
-    // const data = {
-    //   version: "V1",
-    //   // 요청을 구분하기 위한 ID, 사용자가 정의
-    //   requestId: "sample_id",
-    //   // # 현재 시간값
-    //   lang: "ko",
-    //   timestamp: 0,
-    //   images: [
-    //     {
-    //       name: "sample_image",
-    //       format: "jpeg",
-    //       data: img.split(",")[1],
-    //     },
-    //   ],
-    //   enableTableDetection: true,
-    // };
-
-    // await fetch(URL, {
-    //   method: "POST", // POST
-
-    //   body: JSON.stringify(data),
-    // }).then((res) => console.log(res.json()));
-    // .then((res) => console.log(res.images[0].fields));
-    //   .then((res) => res.json())
-    //   .then((json) => console.log(json));
-    // let resData = await res.json();
-    // console.log(resData);
   };
 
   const actionImgCompress = async (fileSrc) => {
@@ -99,16 +59,16 @@ const StudentInputByOcr = (props) => {
     try {
       //   압축 결과
       const compressedFile = await imageCompression(fileSrc, options);
-
+      console.log(compressedFile);
       // FileReader 는 File 혹은 Blob 객체를 이용하여, 파일의 내용을 읽을 수 있게 해주는 Web API
-      //   quickStart(compressedFile);
+      //   quickStart(fileSrc);
 
       const reader = new FileReader();
       reader.readAsDataURL(compressedFile);
       reader.onloadend = () => {
         // 변환 완료!
         const base64data = reader.result;
-        console.log(base64data);
+        console.log(base64data.split(",")[1]);
 
         //image파일 ocr 하기
         imageOcrHandler(base64data);
