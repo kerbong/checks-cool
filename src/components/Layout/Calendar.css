@@ -69,7 +69,8 @@
 }
 
 .react-datepicker__day--today {
-  font-size: 1.2em;
+  background-color: #e7c300 !important;
+  border-radius: 5px;
 }
 
 #switch-btn {
@@ -134,9 +135,8 @@
   letter-spacing: 1px;
   padding: 2vh;
   background-color: #dcc329;
-
   position: absolute;
-  left: -3vw;
+  left: -5px;
 }
 
 #title-btn.consult {

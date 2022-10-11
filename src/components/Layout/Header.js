@@ -21,17 +21,29 @@ const Header = (props) => {
           <HeaderMenu
             className={"fa-regular fa-address-book"}
             path={"attendance"}
+            menuText={"출석부"}
           />
           <HeaderMenu
             className={"fa-regular fa-comments"}
             path={"consulting"}
+            menuText={"금쪽상담소"}
           />
           <HeaderMenu
             className={"fa-regular fa-calendar-check"}
             path={"todo"}
+            menuText={"일정달력"}
           />
-          <HeaderMenu className={"fa-regular fa-note-sticky"} path={"memo"} />
-          <HeaderMenu className={"fa-solid fa-gamepad"} path={"classgame"} />
+          <HeaderMenu
+            className={"fa-regular fa-note-sticky"}
+            path={"memo"}
+            menuText={"메모장모음"}
+          />
+
+          <HeaderMenu
+            className={"fa-solid fa-gamepad"}
+            path={"classgame"}
+            menuText={"잼잼"}
+          />
         </ul>
         <ul className={classes.logInOut} id="logInOut">
           <Profile isLoggedIn={props.isLoggedIn} />

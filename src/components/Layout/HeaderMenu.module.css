@@ -6,3 +6,14 @@
   font-weight: bold;
   padding: 10px;
 }
+
+.menuText {
+  display: none;
+}
+
+@media screen and (min-width: 620px) {
+  .menuText {
+    font-size: 0.7em;
+    display: flex;
+  }
+}

@@ -9,7 +9,9 @@ import StudentInputByOcr from "../Student/StudentInputByOcr";
 import Button from "../Layout/Button";
 
 const StudentLists = (props) => {
-  const [addStudentBy, setAddStudentBy] = useState("imageFile");
+  const [addStudentBy, setAddStudentBy] = useState(
+    props.students.length !== 0 ? "typing" : "imageFile"
+  );
   const [studentsInfo, setStudentsInfo] = useState([]);
 
   //학생 제거 함수
@@ -87,6 +89,9 @@ const StudentLists = (props) => {
   const getStudentAddType = (e) => {
     setAddStudentBy(e.target.parentElement.getAttribute("id"));
   };
+
+  console.log(props.userUid);
+  console.log(props.students);
 
   return (
     <div>

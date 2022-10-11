@@ -116,7 +116,7 @@
 }
 
 .checkList-button {
-  width: 55px;
+  width: auto;
   margin: 5px;
   font-size: 0.9em;
   border-radius: 10px;
@@ -190,4 +190,10 @@
   font-size: 1.3em;
   border-width: 0;
   background-color: inherit;
+}
+
+@media screen and (min-width: 620px) {
+  .save-listMemo-button {
+    font-size: 1em;
+  }
 }

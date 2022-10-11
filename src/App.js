@@ -33,6 +33,7 @@ function App() {
           getStudents(user.uid);
         } else {
           setIsLoggedIn(false);
+          setStudents([]);
         }
         setInit(true);
       });

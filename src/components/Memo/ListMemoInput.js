@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import classes from "./ListMemoInput.module.css";
 import Button from "../Layout/Button";
 import Swal from "sweetalert2";
+import Input from "../Layout/Input";
 
 const ListMemoInput = (props) => {
   const [students, setStudents] = useState(props.students);
@@ -131,7 +132,30 @@ const ListMemoInput = (props) => {
             <li className={classes["li-section"]} key={student.num}>
               <div className={classes["num-section"]}>{student.num}</div>
               <div className={classes["name-section"]}>{student.name}</div>
-              <input
+
+              <Input
+                id={student.num}
+                myKey={"textArea" + student.num}
+                className={`${classes["memo-section"]} memo`}
+                label="inputData"
+                input={{
+                  type: "textarea",
+                  autoFocus: true,
+                }}
+                defaultValue={
+                  //자료가 있으면 length가 undefined가 나오고 없으면 0이 나옴. 자료 있을 때만 저장되어 있던거 보여주기
+                  studentMemo.length !== 0 &&
+                  studentMemo.data.filter(
+                    (data) => student.num === data.student_num
+                  ).length > 0
+                    ? studentMemo.data.filter(
+                        (data) => student.num === data.student_num
+                      )[0].memo
+                    : ""
+                }
+              />
+
+              {/* <input
                 type="text"
                 className={`${classes["memo-section"]} memo`}
                 id={student.num}
@@ -150,7 +174,7 @@ const ListMemoInput = (props) => {
                       )[0].memo
                     : ""
                 }
-              />
+              /> */}
             </li>
           ))}
       </ul>

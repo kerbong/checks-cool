@@ -64,7 +64,7 @@ const AttendanceForm = (props) => {
       return;
     }
     noteRef.current.style.height = "10px";
-    noteRef.current.style.height = noteRef.current.scrollHeight + "px";
+    noteRef.current.style.height = noteRef.current.scrollHeight - 13 + "px";
   }, []);
 
   const getToday = (date) => {
@@ -106,7 +106,7 @@ const AttendanceForm = (props) => {
   const submitHandler = (e) => {
     e.preventDefault();
 
-    const inputValue = noteRef.current.value;
+    const inputValue = document.getElementById("textArea").value;
     const studentInfo = props.who.split(" ");
 
     let new_data_id = "";
@@ -128,10 +128,18 @@ const AttendanceForm = (props) => {
 
       anyContext.addData(new_data);
     } else if (props.about === "attendance") {
-      let [start, end] = props.attendDate;
-
+      let start;
+      let end;
+      //시작날짜와 끝날짜가 다를 경우
+      if (Array.isArray(props.attendDate)) {
+        [start, end] = props.attendDate;
+        //같은 경우
+      } else {
+        start = props.attendDate;
+        end = props.attendDate;
+      }
       //만약 시작날짜와 끝날짜가 같고 주말이면 저장하지 않기
-      if ((start === end && start.getDay() === 0) || start.getDay() === 6) {
+      if (start.getDay() === 0 || start.getDay() === 6) {
         checkDayOfWeekAlert();
         return;
       }
@@ -148,16 +156,24 @@ const AttendanceForm = (props) => {
       //주말 제외한 날짜만 모아두기
       let weekDayEvents = [];
       let curDate = start;
-      while (curDate <= end) {
-        //주말(index 6 = 토, index 0 = 일)이면 저장안되도록!
-        if (curDate.getDay() === 0 || curDate.getDay() === 6) {
-          curDate.setDate(curDate.getDate() + 1);
-        } else {
-          let selectDate = getToday(curDate);
-          new_data_id = selectDate + studentInfo[0];
-          weekDayEvents.push(new_data_id);
 
-          curDate.setDate(curDate.getDate() + 1);
+      //날짜가 하루일 때를 분리하지 않으면 아마도.. 얕은 복사라 start와 end가 모두 1일씩 같이 늘어나서 while문이 무한실행
+      if (start === end) {
+        let selectDate = getToday(start);
+        new_data_id = selectDate + studentInfo[0];
+        weekDayEvents.push(new_data_id);
+      } else {
+        while (curDate <= end) {
+          //주말(index 6 = 토, index 0 = 일)이면 저장안되도록!
+          if (curDate.getDay() === 0 || curDate.getDay() === 6) {
+            curDate.setDate(curDate.getDate() + 1);
+          } else {
+            let selectDate = getToday(curDate);
+            new_data_id = selectDate + studentInfo[0];
+            weekDayEvents.push(new_data_id);
+
+            curDate.setDate(curDate.getDate() + 1);
+          }
         }
       }
 
@@ -178,7 +194,7 @@ const AttendanceForm = (props) => {
     checkSave(
       `${studentInfo[1]} 학생의 ${option.slice(
         1
-      )} 관련 내용이 저장되었습니다. \n(5초 후 창이 자동으로 사라집니다.)`
+      )} 정보가 저장되었습니다. \n(5초 후 창이 자동으로 사라집니다.)`
     );
 
     setInputIsShown(false);
@@ -227,17 +243,15 @@ const AttendanceForm = (props) => {
           >
             <Input
               ref={noteRef}
+              id={"textArea"}
               className={classes.input}
               label="inputData"
               input={{
-                id: props.id,
                 type: "textarea",
                 placeholder: "비고를 입력하세요.",
                 defaultValue: "",
                 autoFocus: true,
               }}
-              onKeyDown={() => handleResizeHeight(this)}
-              onKeyUp={() => handleResizeHeight(this)}
               onInput={(e) => handleOnInput(e)}
             />
           </form>

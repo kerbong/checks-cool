@@ -57,8 +57,24 @@
   font-weight: normal;
   position: absolute;
   left: 10px;
+  margin-left: 10px;
 }
 
 .listMemo-title {
   margin-top: 15px;
+}
+
+.headerBtn-text {
+  display: none;
+}
+
+@media screen and (min-width: 620px) {
+  .headerBtn-text {
+    display: flex;
+    font-size: 0.8em;
+  }
+
+  .checkLi {
+    font-size: 1.2em;
+  }
 }

@@ -30,7 +30,7 @@
   width: 60px;
 }
 
-/* @media screen and (max-width: 470px) {
+/* @media screen and (min-width: 860px) {
   .header {
     flex-direction: column;
     text-align: center;

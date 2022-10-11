@@ -181,3 +181,10 @@
   margin-right: 3px;
   color: #270d03;
 }
+
+@media screen and (min-width: 620px) {
+  .homepage__container {
+    max-width: 600px;
+    font-size: 1.2em;
+  }
+}

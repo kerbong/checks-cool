@@ -248,7 +248,9 @@ const CheckLists = (props) => {
                   </span>
                   <h2 className={classes["listMemo-title"]}>{item.title}</h2>
                   <p className={classes.checkP}>
-                    미제출 {item.unSubmitStudents.length} 명
+                    {item.unSubmitStudents.length !== 0
+                      ? `미제출(${item.unSubmitStudents.length})`
+                      : "😎 모두 제출했네요!"}
                   </p>
                   <div className={classes.unsubmitArea}>
                     {item.unSubmitStudents.map((stu) => (

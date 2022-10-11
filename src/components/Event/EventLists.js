@@ -90,14 +90,16 @@ const EventLists = (props) => {
     );
     //새로추가하기인데 옵션 선택안해서 빈칸이면
     if (new_option) {
-      if (new_option.value.trim() === "") {
+      if (new_option.value === "") {
         notEnough();
         return false;
       }
 
-      if (item.student_num || item.student_name) {
+      if (!item.student_num || !item.student_name) {
         notEnough();
         return false;
+      } else {
+        return true;
       }
       //기존자료인데
     } else {
@@ -110,6 +112,8 @@ const EventLists = (props) => {
       if (new_option.value === item.option && new_note === item.note) {
         notEnough();
         return false;
+      } else {
+        return true;
       }
     }
   };
@@ -123,7 +127,7 @@ const EventLists = (props) => {
     let noteValue;
 
     //새로운 출결 이벤트일경우
-    if (exist_option === null) {
+    if (!exist_option) {
       optionValue = document.querySelector(
         `#option-select${item.student_num}`
       ).value;
@@ -155,7 +159,7 @@ const EventLists = (props) => {
       writtenId: props.userUid,
     };
 
-    // console.log(fixed_data);
+    console.log(fixed_data);
 
     //attendCtx와 events eventOnDay 를 수정하는 함수
     props.fixedEventHandler(fixed_data, item.eventDate);
