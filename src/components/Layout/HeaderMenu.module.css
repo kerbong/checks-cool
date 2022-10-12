@@ -17,3 +17,37 @@
     display: flex;
   }
 }
+
+.profile-dropdown-ul {
+  position: absolute;
+  right: -4px;
+  top: 60px;
+
+  padding: 5px;
+  width: auto;
+  list-style: none;
+  background-color: #fae7e4ad;
+  border-radius: 10px;
+  z-index: 50;
+}
+
+.profile-dropdown-li {
+  margin: 5px;
+  padding: 5px;
+}
+
+.profile-dropdown-li:hover {
+  background-color: #dcb2a1f0;
+  box-shadow: 1px 4px 0 #573020;
+  border-radius: 10px;
+}
+
+.profile-dropdown-li:active {
+  background-color: #dcb2a1f0;
+  position: relative;
+  top: 2px;
+}
+
+.profile-dropdown-div {
+  position: relative;
+}

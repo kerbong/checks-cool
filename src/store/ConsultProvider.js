@@ -70,19 +70,21 @@ const ConsultProvider = (props) => {
 
   useEffect(() => {
     //db에서 consult 상담 DB가져오고 작성자가 현재 유저와 동일한지 확인하고 consultCtx에 추가하기
-    const q = query(
-      collection(dbService, "consult"),
-      where("writtenId", "==", props.userUid)
-    );
-    onSnapshot(q, (snapShot) => {
-      snapShot.docs.map((doc) => {
-        const attendObj = {
-          ...doc.data(),
-          doc_id: doc.id,
-        };
-        return dispatchConsultAction({ type: "ADD", data: attendObj });
+    if (props.userUid !== "") {
+      const q = query(
+        collection(dbService, "consult"),
+        where("writtenId", "==", props.userUid)
+      );
+      onSnapshot(q, (snapShot) => {
+        snapShot.docs.map((doc) => {
+          const attendObj = {
+            ...doc.data(),
+            doc_id: doc.id,
+          };
+          return dispatchConsultAction({ type: "ADD", data: attendObj });
+        });
       });
-    });
+    }
   }, [props.userUid]);
 
   const addDataToConsultHandler = async (data) => {

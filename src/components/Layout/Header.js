@@ -1,6 +1,6 @@
 import classes from "./Header.module.css";
 import HeaderMenu from "./HeaderMenu";
-import Profile from "./Profile";
+import HeaderProfileBtn from "./HeaderProfileBtn";
 import mainLogo from "../../assets/logo.png";
 import { useNavigate } from "react-router-dom";
 
@@ -46,7 +46,7 @@ const Header = (props) => {
           />
         </ul>
         <ul className={classes.logInOut} id="logInOut">
-          <Profile isLoggedIn={props.isLoggedIn} />
+          <HeaderProfileBtn isLoggedIn={props.isLoggedIn} user={props.user} />
         </ul>
       </nav>
     </>

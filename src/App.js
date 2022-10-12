@@ -12,7 +12,8 @@ import ConsultingPage from "./components/page/ConsultingPage";
 import MemoPage from "./components/page/MemoPage";
 import TodoPage from "./components/page/TodoPage";
 import Header from "./components/Layout/Header";
-// import AttendProvider from "./store/AttendProvider";
+import Profile from "./components/page/Profile";
+
 import ConsultProvider from "./store/ConsultProvider";
 import Auth from "./components/page/Auth";
 import { authService } from "./fbase";
@@ -23,6 +24,7 @@ function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userUid, setUserUid] = useState(null);
   const [students, setStudents] = useState([]);
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
     try {
@@ -31,6 +33,7 @@ function App() {
           setUserUid(user.uid);
           setIsLoggedIn(true);
           getStudents(user.uid);
+          setUser(user);
         } else {
           setIsLoggedIn(false);
           setStudents([]);
@@ -67,8 +70,8 @@ function App() {
   return (
     <div>
       <div className="App">
-        <ConsultProvider userUid={userUid}>
-          <Header isLoggedIn={isLoggedIn} />
+        <ConsultProvider userUid={isLoggedIn ? userUid : ""}>
+          <Header isLoggedIn={isLoggedIn} user={isLoggedIn && user} />
           <Routes>
             {init && isLoggedIn ? (
               <>
@@ -101,6 +104,7 @@ function App() {
                     <StudentLists userUid={userUid} students={students} />
                   }
                 />
+                <Route path="profile" element={<Profile user={user} />} />
               </>
             ) : (
               <>

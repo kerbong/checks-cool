@@ -90,9 +90,6 @@ const StudentLists = (props) => {
     setAddStudentBy(e.target.parentElement.getAttribute("id"));
   };
 
-  console.log(props.userUid);
-  console.log(props.students);
-
   return (
     <div>
       <div id="title-div">

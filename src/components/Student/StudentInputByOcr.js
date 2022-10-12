@@ -81,6 +81,7 @@ const StudentInputByOcr = (props) => {
         console.log(sumStudents);
         setstudentsByOcr([...sumStudents]);
         setCount((prev) => prev + 1);
+        console.log(URL);
       })
       .catch((error) =>
         Swal.fire({

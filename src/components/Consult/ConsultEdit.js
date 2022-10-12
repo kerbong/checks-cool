@@ -12,7 +12,6 @@ import Input from "../Layout/Input";
 import Swal from "sweetalert2";
 
 const ConsultEdit = (props) => {
-  const noteRef = useRef(null);
   const consult = props.consult;
   const [attachedFileUrl, setAttachedFileUrl] = useState("");
   const anyContext = useContext(props.context);
@@ -22,7 +21,7 @@ const ConsultEdit = (props) => {
   };
 
   const saveConsult = (consult) => {
-    const inputValue = noteRef.current.value;
+    const inputValue = document.querySelector("#consult_note").value;
     const optionValue = document.querySelector(`#option-select`).value;
 
     let consult_fileUrl;
@@ -71,14 +70,6 @@ const ConsultEdit = (props) => {
     cancelEdit();
   };
 
-  const handleResizeHeight = useCallback(() => {
-    if (noteRef === null || noteRef.current === null) {
-      return;
-    }
-    noteRef.current.style.height = "1px";
-    noteRef.current.style.height = 3 + noteRef.current.scrollHeight + "px";
-  }, []);
-
   return (
     <>
       <div className={classes.nameArea}>
@@ -104,7 +95,6 @@ const ConsultEdit = (props) => {
           )}
         </span>
       </div>
-
       {consult.attachedFileUrl && (
         <div className={classes.fileArea}>
           <img
@@ -116,24 +106,22 @@ const ConsultEdit = (props) => {
         </div>
       )}
       {/* 상담 비고 등록한 부분 있으면 보여주기 */}
-      <div className={classes.noteArea}>
+      {/* <div className={classes.noteArea}>
         {!consult.note && "기록이 없습니다."}
-      </div>
+      </div> */}
       <Input
-        ref={noteRef}
+        myKey={consult.id}
         className={classes.input}
-        style={{ height: props.initTextareaHeight }}
+        id={"consult_note"}
         label="inputData"
+        defaultValue={consult.note && consult.note}
         input={{
-          id: props.id,
           type: "textarea",
-          placeholder: "비고를 입력하세요.",
-          defaultValue: consult.note,
+          style: { height: props.initTextareaHeight + "px" },
           autoFocus: true,
         }}
-        onKeyDown={() => handleResizeHeight(this)}
-        onKeyUp={() => handleResizeHeight(this)}
       />
+
       <div className={classes.editDeleteArea}>
         <Button
           id={"save" + consult.id}
@@ -150,7 +138,6 @@ const ConsultEdit = (props) => {
           icon={<i className="fa-solid fa-rectangle-xmark"></i>}
         />
       </div>
-
       <div className={classes.editFileArea}>
         <FileForm
           attachedFileHandler={(url) => {
