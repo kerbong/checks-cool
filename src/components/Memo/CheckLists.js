@@ -292,7 +292,7 @@ const CheckLists = (props) => {
             <Button
               name={"추가하기"}
               id={"add-listMemoBtn"}
-              className={"add-listMemo-button"}
+              className={"add-event-button"}
               onclick={() => {
                 setItem([]);
                 setAddListMemo(true);

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 
 import Swal from "sweetalert2";
-
+import Button from "../Layout/Button";
 import classes from "./TodoLists.module.css";
 import EventItem from "../Event/EventItem";
 import EventInput from "../Event/EventInput";
@@ -202,15 +202,14 @@ const TodoLists = (props) => {
       </h1>
       {/* //addEvent false 상황이면 추가하기 버튼 */}
       <div className={classes["add-event-div"]}>
-        <button
-          className={classes["add-event-button"]}
-          onClick={() => {
+        <Button
+          name={"추가하기"}
+          className={"add-event-button"}
+          onclick={() => {
             setAddEvent(true);
             props.setFixIsShown("0");
           }}
-        >
-          추가하기
-        </button>
+        />
       </div>
       <div className="event-input-div">
         {addEvent && (

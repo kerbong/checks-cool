@@ -102,6 +102,15 @@
   letter-spacing: 1px;
   padding: 2vh;
   background-color: #ffbec7;
+  box-shadow: 3px 5px 0 #ba616d;
+}
+
+.add-event-button:active {
+  background-color: #d999a2;
+  box-shadow: 1px 2px 0 #ba616d;
+  position: relative;
+  top: 3px;
+  left: 2px;
 }
 
 .save-checkItem-button {
@@ -160,17 +169,6 @@
   letter-spacing: -1px;
   padding: 15px;
   background-color: #da9a9a;
-}
-
-.add-listMemo-button {
-  width: auto;
-  margin: 15px 10px;
-  font-size: 1.2em;
-  border-radius: 10px;
-  border-width: 0;
-  letter-spacing: 1px;
-  padding: 2vh;
-  background-color: #ffbec7;
 }
 
 .save-listMemo-button {
