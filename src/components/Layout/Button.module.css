@@ -196,3 +196,13 @@
     font-size: 1em;
   }
 }
+
+.change-submit-button {
+  width: auto;
+  font-size: 1.1em;
+
+  border-radius: 10px;
+  border-width: 0;
+  padding: 1vh 2vh;
+  background-color: #ffbec7;
+}

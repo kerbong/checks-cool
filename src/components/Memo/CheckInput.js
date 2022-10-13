@@ -13,7 +13,7 @@ const CheckInput = (props) => {
   const [students, setStudents] = useState(props.students);
 
   const [unSubmitStudents, setUnSubmitStudents] = useState(
-    props.unSubmitStudents.length > 0 ? props.unSubmitStudents : students
+    props.unSubmitStudents.length === 0 ? [] : props.unSubmitStudents
   );
   const [submitStudents, setSubmitStudents] = useState(
     students.filter(
@@ -98,6 +98,15 @@ const CheckInput = (props) => {
       }
     });
   };
+  const changeSubmitHandler = () => {
+    let new_unSubmitStudents = JSON.parse(JSON.stringify(unSubmitStudents));
+    setUnSubmitStudents([...submitStudents]);
+    setSubmitStudents((prev) => [...new_unSubmitStudents]);
+    console.log(submitStudents);
+    console.log(unSubmitStudents);
+
+    //바꾸기 버튼 수정 필요함...
+  };
 
   return (
     <>
@@ -148,8 +157,23 @@ const CheckInput = (props) => {
               />
             ))}
         </div>
-
-        <hr />
+        <div className={classes.upDownDiv}>
+          <span className={classes.upDownDivHr}>
+            <hr className={classes.hr} />
+          </span>
+          <span>
+            {/* 제출 미제출 한번에 교체하는 버튼 */}
+            <Button
+              icon={<i className="fa-solid fa-arrows-up-down"></i>}
+              id={"add-checkItemBtn"}
+              className={"change-submit-button"}
+              onclick={changeSubmitHandler}
+            />
+          </span>
+          <span className={classes.upDownDivHr}>
+            <hr className={classes.hr} />
+          </span>
+        </div>
         <h3 className={classes.h3}> 제 출 </h3>
 
         <div className={classes.div}>

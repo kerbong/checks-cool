@@ -6,6 +6,11 @@ import { useNavigate } from "react-router-dom";
 
 const Header = (props) => {
   let navigate = useNavigate();
+
+  const logOutHandler = () => {
+    props.logOutHandler();
+  };
+
   return (
     <>
       <nav className={classes.header}>
@@ -46,7 +51,11 @@ const Header = (props) => {
           />
         </ul>
         <ul className={classes.logInOut} id="logInOut">
-          <HeaderProfileBtn isLoggedIn={props.isLoggedIn} user={props.user} />
+          <HeaderProfileBtn
+            isLoggedIn={props.isLoggedIn}
+            user={props.user}
+            logOutHandler={logOutHandler}
+          />
         </ul>
       </nav>
     </>

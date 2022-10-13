@@ -86,10 +86,6 @@ const StudentLists = (props) => {
     return sorted_students;
   };
 
-  const getStudentAddType = (e) => {
-    setAddStudentBy(e.target.parentElement.getAttribute("id"));
-  };
-
   return (
     <div>
       <div id="title-div">
@@ -108,7 +104,7 @@ const StudentLists = (props) => {
                   <i className="fa-solid fa-file-arrow-up"></i>
                 </>
               }
-              onclick={getStudentAddType}
+              onclick={() => setAddStudentBy("excelFile")}
             />
 
             <Button
@@ -120,7 +116,7 @@ const StudentLists = (props) => {
                   <i className="fa-regular fa-file-image"></i>
                 </>
               }
-              onclick={getStudentAddType}
+              onclick={() => setAddStudentBy("imageFile")}
             />
           </>
         )}
@@ -136,7 +132,7 @@ const StudentLists = (props) => {
                   <i className="fa-solid fa-circle-arrow-up"></i>
                 </>
               }
-              onclick={getStudentAddType}
+              onclick={() => setAddStudentBy("typing")}
             />
 
             <Button
@@ -148,7 +144,7 @@ const StudentLists = (props) => {
                   <i className="fa-regular fa-file-image"></i>
                 </>
               }
-              onclick={getStudentAddType}
+              onclick={() => setAddStudentBy("imageFile")}
             />
           </>
         )}
@@ -164,7 +160,7 @@ const StudentLists = (props) => {
                   <i className="fa-solid fa-circle-arrow-up"></i>
                 </>
               }
-              onclick={getStudentAddType}
+              onclick={() => setAddStudentBy("typing")}
             />
 
             <Button
@@ -176,7 +172,7 @@ const StudentLists = (props) => {
                   <i className="fa-solid fa-file-arrow-up"></i>
                 </>
               }
-              onclick={getStudentAddType}
+              onclick={() => setAddStudentBy("excelFile")}
             />
           </>
         )}

@@ -87,6 +87,7 @@ const CheckLists = (props) => {
     }
   };
 
+  console.log(checkLists);
   useEffect(() => {
     getDatasFromDb();
   }, []);

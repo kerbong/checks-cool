@@ -78,3 +78,22 @@
     font-size: 1.2em;
   }
 }
+
+.hr {
+  width: 80%;
+
+  margin: 10px;
+}
+
+.upDownDiv {
+  display: flex;
+  margin: 5px;
+
+  justify-content: center;
+  align-items: center;
+}
+
+.upDownDivHr {
+  width: 40%;
+  text-align: -webkit-center;
+}

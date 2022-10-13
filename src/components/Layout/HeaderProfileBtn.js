@@ -6,25 +6,29 @@ import { useNavigate } from "react-router-dom";
 
 const HeaderProfileBtn = (props) => {
   const [showDropdown, setShowDropdown] = useState(false);
+
+  //드롭다운 시간지나면 자동으로 사라지게
+  // const dropdownAutoHide = setTimeout(() => {
+  //   setShowDropdown(false);
+  //   return 0;
+  // }, 5000);
+
   const logOutHandler = (e) => {
     authService.signOut();
+    props.logOutHandler();
     setShowDropdown(false);
   };
+
   let navigate = useNavigate();
-  const dropdownAutoHide = setTimeout(() => {
-    setShowDropdown(false);
-  }, 5000);
+
+  const dropdownHandler = () => {
+    setShowDropdown((prev) => !prev);
+  };
 
   return (
     <>
       <Button
-        onclick={() => {
-          props.isLoggedIn &&
-            setShowDropdown((prev) => {
-              clearTimeout(dropdownAutoHide);
-              return !prev;
-            });
-        }}
+        onclick={props.isLoggedIn && dropdownHandler}
         icon={
           props.isLoggedIn ? (
             <i className="fa-solid fa-user"></i>
@@ -35,8 +39,15 @@ const HeaderProfileBtn = (props) => {
         name={props.isLoggedIn ? "On" : "-"}
         className="header-logInOut"
       />
-      {!showDropdown && clearTimeout(dropdownAutoHide)}
-      {showDropdown && dropdownAutoHide}
+      {/* {!showDropdown && clearTimeout(dropdownAutoHide)} */}
+      {/* {showDropdown
+        ? () => dropdownAutoHide
+        : () => {
+            for (let i = 0; i < dropdownAutoHide; i++) {
+              clearTimeout(i);
+            }
+          }} */}
+
       {props.isLoggedIn && showDropdown && (
         <div className={classes["profile-dropdown-div"]}>
           <ul className={classes["profile-dropdown-ul"]}>
@@ -45,7 +56,6 @@ const HeaderProfileBtn = (props) => {
               onClick={() => {
                 navigate(`/${"profile"}`);
                 setShowDropdown(false);
-                clearTimeout(dropdownAutoHide);
               }}
             >
               {props.user.email}

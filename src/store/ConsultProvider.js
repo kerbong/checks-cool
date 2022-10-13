@@ -59,6 +59,12 @@ const consultReducer = (state, action) => {
       datas: updatedDatas,
     };
   }
+
+  if (action.type === "INIT") {
+    return {
+      datas: [],
+    };
+  }
   return defaultConsultState;
 };
 
@@ -84,6 +90,8 @@ const ConsultProvider = (props) => {
           return dispatchConsultAction({ type: "ADD", data: attendObj });
         });
       });
+    } else {
+      return dispatchConsultAction({ type: "INIT" });
     }
   }, [props.userUid]);
 

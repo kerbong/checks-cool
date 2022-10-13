@@ -67,11 +67,23 @@ function App() {
     });
   };
 
+  const logOutHandler = () => {
+    setInit(false);
+    setIsLoggedIn(false);
+    setUserUid(null);
+    setStudents([]);
+    setUser(null);
+  };
+
   return (
     <div>
       <div className="App">
         <ConsultProvider userUid={isLoggedIn ? userUid : ""}>
-          <Header isLoggedIn={isLoggedIn} user={isLoggedIn && user} />
+          <Header
+            isLoggedIn={isLoggedIn}
+            user={isLoggedIn && user}
+            logOutHandler={logOutHandler}
+          />
           <Routes>
             {init && isLoggedIn ? (
               <>
