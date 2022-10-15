@@ -25,5 +25,3 @@ yarn-error.log*
 studentInfo.js
 
 .env
-
-google_cloud_api.json

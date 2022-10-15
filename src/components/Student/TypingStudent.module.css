@@ -49,3 +49,15 @@
   font-size: 1.2em;
   margin: 0px 5px;
 }
+
+.hr {
+  margin: 15px;
+  border-width: 1px;
+  background-color: #80808073;
+  height: 1px;
+  width: 80vw;
+}
+
+.span-explain {
+  line-height: 2;
+}

@@ -2,48 +2,31 @@ import React, { useRef, useState } from "react";
 import Input from "../Layout/Input";
 import Button from "../Layout/Button";
 import classes from "./TypingStudent.module.css";
-import Swal from "sweetalert2";
 import StudentLiWithDelete from "./StudentLiWithDelete";
 
 const TypingStudent = (props) => {
   const [tempAutoNum, setTempAutoNum] = useState(1);
-
+  const [tempStudent, setTempStudent] = useState({});
   let numberRef = useRef(null);
   const nameRef = useRef(null);
 
-  //학생 추가하기 함수
+  //학생 추가/수정하기 함수
   const submitHandler = (e) => {
     e.preventDefault();
+
+    console.log("임시저장학생");
+    console.log(tempStudent);
+    //기존값 수정할 경우 해당 값 지우기
+    console.log("임시저장학생 변경?");
+    if (Object.keys(tempStudent).length !== 0) {
+      props.deleteStudentHandler(tempStudent);
+    }
+
     //번호 이름 값가져오기
     let studentNumValue = numberRef.current.value;
     let studentNameValue = nameRef.current.value;
 
-    //같은 이름의 학생이 있는지 확인!
-    let existedStudent = props.studentsInfo.filter(
-      (stu) => stu.name === studentNameValue
-    );
-    //같은 번호의 학생이 있는지 확인!
-    let existedNum = props.studentsInfo.filter(
-      (stu) => stu.num === studentNumValue
-    );
-
-    //비어있는 정보가 있거나 동일한 이름, 번호의 학생이 있으면 alert띄워주기
-    if (
-      studentNameValue.trim() === "" ||
-      existedStudent.length !== 0 ||
-      existedNum.length !== 0
-    ) {
-      Swal.fire({
-        icon: "error",
-        title: "저장에 실패했어요.",
-        text: "학생번호 / 이름 정보를 확인해주세요!",
-        confirmButtonText: "확인",
-        confirmButtonColor: "#85bd82",
-        timer: 5000,
-      });
-      return;
-    }
-
+    //학생추가하기
     const studentData = { num: studentNumValue, name: studentNameValue };
     props.setAddStudentsInfo(studentData);
 
@@ -51,18 +34,29 @@ const TypingStudent = (props) => {
     setTempAutoNum(+studentNumValue + 1);
     numberRef = tempAutoNum;
     nameRef.current.value = "";
+
+    //임시 학생저장값 초기화
+    setTempStudent({});
   };
 
   //학생 제거 함수
-  const deleteStudentHandler = (num) => {
+  const deleteStudentHandler = (student) => {
     //학생 번호를 제외한 리스트 새로 만들어서 등록
-    props.setDelStudentsInfo(num);
+    props.deleteStudentHandler(student);
   };
 
   //학생자료 firebase upload함수
   const uploadStudentHandler = () => {
     props.uploadStudentsInfo();
   };
+
+  //기존 학생 클릭하면 수정할 수 있도록 인풋창에 보여주는 함수
+  const studentFixHandler = (student) => {
+    numberRef.current.value = student.num;
+    nameRef.current.value = student.name;
+    setTempStudent({ ...student });
+  };
+
   return (
     <>
       <div className={classes.addStudent}>
@@ -100,7 +94,8 @@ const TypingStudent = (props) => {
                 className="student-add"
                 name={
                   <>
-                    1 <i className="fa-solid fa-plus"></i>
+                    <i className="fa-solid fa-plus"></i>/
+                    <i className="fa-solid fa-pencil"></i>
                   </>
                 }
                 onclick={submitHandler}
@@ -111,7 +106,7 @@ const TypingStudent = (props) => {
             className="student-save"
             name={
               <>
-                2 <i className="fa-regular fa-floppy-disk"></i>
+                <i className="fa-regular fa-floppy-disk"></i>
               </>
             }
             onclick={uploadStudentHandler}
@@ -121,23 +116,34 @@ const TypingStudent = (props) => {
         <div className={classes.studentListArea}>
           {props.studentsInfo.map((student) => (
             <StudentLiWithDelete
-              key={student.num}
+              myKey={student.num + student.name}
               student={student}
-              deleteStudentHandler={(num) => {
-                deleteStudentHandler(num);
+              deleteStudentHandler={(student) => {
+                deleteStudentHandler(student);
+              }}
+              studentFixHandler={(student) => {
+                studentFixHandler(student);
               }}
             />
           ))}
         </div>
         <div className={classes.studentListArea}>
-          * 학생을 추가 / 수정한 뒤에는{"  "}
-          <span className={classes["span-highlight"]}> 저장버튼(2) </span>을
-          눌러 적용시켜주세요!
+          <hr className={classes["hr"]} />
+          <span className={classes["span-explain"]}>
+            * 번호와 이름을 직접 입력하거나 <br />
+            학생의 이름을 눌러서 수정한 후<br />
+            <span className={classes["span-highlight"]}>추가/수정 버튼</span>을
+            눌러주세요.
+          </span>
+          <hr className={classes["hr"]} />
+          <span className={classes["span-explain"]}>
+            * 모든 입력/수정이 끝나면 꼭!!!
+            <br />
+            <span className={classes["span-highlight"]}> 저장버튼</span>으로
+            반영해주세요!
+          </span>
+          <hr className={classes["hr"]} />
         </div>
-        <p>
-          * 문제가 지속되시면 kerbong@gmail.com으로 알려주세요. 최대한 빠르게
-          해결해 드릴게요!
-        </p>
       </div>
     </>
   );

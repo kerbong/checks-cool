@@ -7,8 +7,7 @@ const StudentLiWithDelete = (props) => {
   const deleteConfirmHandler = (student) => {
     Swal.fire({
       title: "학생을 지울까요?",
-      text: `${student.num} 번 ${student.name} 학생. \n\n 지우면 등록된 자료들도 삭제됩니다. 
-               `,
+      text: `${student.num} 번 ${student.name} 학생`,
       showDenyButton: true,
       confirmButtonText: "삭제",
       confirmButtonColor: "#db100cf2",
@@ -25,17 +24,25 @@ const StudentLiWithDelete = (props) => {
           confirmButtonColor: "#85bd82",
           timer: 5000,
         });
-        props.deleteStudentHandler(props.student.num);
+        props.deleteStudentHandler(props.student);
       }
     });
   };
+
+  const studentFixHandler = () => {
+    props.studentFixHandler({
+      num: props.student.num,
+      name: props.student.name,
+    });
+  };
+
   return (
     <li
-      key={props.student.num}
+      key={props.myKey}
       id={props.student.num}
       className={classes.inputStudentLi}
     >
-      <span className={classes.studentNumName}>
+      <span className={classes.studentNumName} onClick={studentFixHandler}>
         {props.student.num + " " + props.student.name}
       </span>
       <Button

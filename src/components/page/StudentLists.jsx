@@ -15,9 +15,15 @@ const StudentLists = (props) => {
   const [studentsInfo, setStudentsInfo] = useState([]);
 
   //학생 제거 함수
-  const deleteStudentHandler = (num) => {
-    //학생 번호를 제외한 리스트 새로 만들어서 등록
-    setStudentsInfo((prev) => prev.filter((stu) => stu.num !== num));
+  const deleteStudentHandler = (student) => {
+    setStudentsInfo((prev) => {
+      let new_studentsInfo = JSON.parse(
+        `${JSON.stringify(prev).replace("]", ",]")}`
+          .replace(`${JSON.stringify(student)},`, "")
+          .replace(",]", "]")
+      );
+      return [...new_studentsInfo];
+    });
   };
 
   useEffect(() => {
@@ -47,10 +53,11 @@ const StudentLists = (props) => {
 
     //기존 자료에 덮어쓰기 됨을 알리기
     Swal.fire({
-      title: "저장하시겠어요?",
-      text: `기존 학생의 번호나 이름이 변경될 경우 자료와 내용이 사라질 수 있습니다.`,
+      icon: "question",
+      title: "저장할까요?",
+      text: `번호나 이름이 중복되지 않았는지 확인해주세요.`,
       showDenyButton: true,
-      confirmButtonText: "저장/덮어쓰기",
+      confirmButtonText: "저장하기",
       confirmButtonColor: "#db100cf2",
       denyButtonColor: "#85bd82",
       denyButtonText: `취소`,
@@ -63,7 +70,7 @@ const StudentLists = (props) => {
         Swal.fire({
           icon: "success",
           title: "저장되었어요!",
-          text: "5초 후에 창은 사라집니다.",
+          text: "수정/추가된 학생 명단이 저장되었습니다.",
           confirmButtonText: "확인",
           confirmButtonColor: "#85bd82",
           timer: 5000,
@@ -84,6 +91,14 @@ const StudentLists = (props) => {
     });
 
     return sorted_students;
+  };
+
+  const setAddStudentsInfo = (studentData) => {
+    setStudentsInfo((prev) => {
+      //새로 수정해서 저장하기
+      let students = [...prev, studentData];
+      return sortNum(students);
+    });
   };
 
   return (
@@ -184,16 +199,9 @@ const StudentLists = (props) => {
           <TypingStudent
             studentsInfo={studentsInfo}
             setAddStudentsInfo={(studentData) =>
-              setStudentsInfo((prev) => {
-                let students = [...prev, studentData];
-                return sortNum(students);
-              })
+              setAddStudentsInfo(studentData)
             }
-            setDelStudentsInfo={(num) =>
-              setStudentsInfo((prev) => [
-                ...prev.filter((stu) => stu.num !== num),
-              ])
-            }
+            deleteStudentHandler={(student) => deleteStudentHandler(student)}
             uploadStudentsInfo={submitStudentUploader}
           />
         </>
@@ -218,10 +226,10 @@ const StudentLists = (props) => {
             {studentsInfo &&
               studentsInfo.map((student) => (
                 <StudentLiWithDelete
-                  key={student.num}
+                  myKey={student.num + student.name}
                   student={student}
-                  deleteStudentHandler={(num) => {
-                    deleteStudentHandler(num);
+                  deleteStudentHandler={(student) => {
+                    deleteStudentHandler(student);
                   }}
                 />
               ))}
@@ -238,6 +246,12 @@ const StudentLists = (props) => {
           }}
         />
       )}
+
+      <p>
+        * 문제는 kerbong@gmail.com으로 알려주세요.
+        <br />
+        최대한 빠르게 해결해 드릴게요!
+      </p>
     </div>
   );
 };
