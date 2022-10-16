@@ -6,6 +6,7 @@ import {
   signInWithEmailAndPassword,
   GoogleAuthProvider,
   signInWithPopup,
+  signInWithRedirect,
 } from "firebase/auth";
 import { authService } from "../../fbase";
 import classes from "./Auth.module.css";
@@ -75,7 +76,29 @@ const Auth = () => {
     if (name === "google") {
       provider = new GoogleAuthProvider();
     }
-    await signInWithPopup(authService, provider);
+
+    if (navigator.platform) {
+      var filter = "win16|win32|win64|mac|macintel";
+      if (filter.indexOf(navigator.platform.toLowerCase()) < 0) {
+        // mobile 접속인 경우
+        // console.log("mobile");
+        await signInWithRedirect(authService, provider);
+      } else {
+        if (
+          navigator.userAgent.match(
+            ".*(iPhone|iPod|iPad|Android|Windows CE|BlackBerry|Symbian|Windows Phone|webOS|Opera Mini|Opera Mobi|POLARIS|IEMobile|lgtelecom|nokia|SonyEricsson).*"
+          )
+        ) {
+          // PC 상의 모바일 에뮬레이터
+          // console.log("mobile on pc");
+          await signInWithPopup(authService, provider);
+        } else {
+          // pc 접속인 경우
+          // console.log("pc");
+          await signInWithPopup(authService, provider);
+        }
+      }
+    }
   };
 
   return (
@@ -99,6 +122,8 @@ const Auth = () => {
           onChange={onChange}
           className={classes["logInOut-input"]}
         />
+        <p>{!newAccount && <>* 이메일/연동 로그인 후 잠시 기다려주세요!</>}</p>
+
         {newAccount && (
           <div>
             <span>이용약관 및 개인정보제공동의(필수)</span>
@@ -144,12 +169,13 @@ const Auth = () => {
         </button>
         <span>
           {newAccount && !agreeTerms && (
-            <>
-              *약관에 동의하시면
-              <br /> 회원가입이 가능합니다.
-            </>
+            <>*약관 동의 후 회원가입이 가능합니다.</>
           )}
         </span>
+
+        {newAccount && agreeTerms && (
+          <p>* 회원가입 후 잠시 기다리시면 로그인이 됩니다!</p>
+        )}
       </div>
       <div className={classes["logInOut-SignUp-Change"]}>
         <hr />
