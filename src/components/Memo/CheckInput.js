@@ -12,7 +12,9 @@ const CheckInput = (props) => {
   );
   const [students, setStudents] = useState(props.students);
 
-  const [unSubmitStudents, setUnSubmitStudents] = useState(props.students);
+  const [unSubmitStudents, setUnSubmitStudents] = useState(
+    props.unSubmitStudents
+  );
   const [submitStudents, setSubmitStudents] = useState(
     students.filter(
       (stu1) => !unSubmitStudents.some((stu2) => stu1.num === stu2.num)
