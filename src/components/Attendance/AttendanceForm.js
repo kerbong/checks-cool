@@ -59,14 +59,6 @@ const AttendanceForm = (props) => {
     getAttendEventsFromDb();
   }, []);
 
-  const handleResizeHeight = useCallback(() => {
-    if (noteRef === null || noteRef.current === null) {
-      return;
-    }
-    noteRef.current.style.height = "10px";
-    noteRef.current.style.height = noteRef.current.scrollHeight - 13 + "px";
-  }, []);
-
   const getToday = (date) => {
     let year = date.getFullYear();
     let month = ("0" + (1 + date.getMonth())).slice(-2);

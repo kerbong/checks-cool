@@ -23,7 +23,7 @@ const CheckLists = (props) => {
   const [addListMemo, setAddListMemo] = useState(false);
   const [checkLists, setCheckLists] = useState([]);
   const [listMemo, setListMemo] = useState([]);
-  const [unSubmitStudents, setUnSubmitStudents] = useState([]);
+  const [unSubmitStudents, setUnSubmitStudents] = useState(props.students);
   const [item, setItem] = useState([]);
 
   const sortList = (list) => {
@@ -87,7 +87,6 @@ const CheckLists = (props) => {
     }
   };
 
-  console.log(checkLists);
   useEffect(() => {
     getDatasFromDb();
   }, []);

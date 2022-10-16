@@ -12,9 +12,7 @@ const CheckInput = (props) => {
   );
   const [students, setStudents] = useState(props.students);
 
-  const [unSubmitStudents, setUnSubmitStudents] = useState(
-    props.unSubmitStudents.length === 0 ? [] : props.unSubmitStudents
-  );
+  const [unSubmitStudents, setUnSubmitStudents] = useState(props.students);
   const [submitStudents, setSubmitStudents] = useState(
     students.filter(
       (stu1) => !unSubmitStudents.some((stu2) => stu1.num === stu2.num)
@@ -102,8 +100,6 @@ const CheckInput = (props) => {
     let new_unSubmitStudents = JSON.parse(JSON.stringify(unSubmitStudents));
     setUnSubmitStudents([...submitStudents]);
     setSubmitStudents((prev) => [...new_unSubmitStudents]);
-    console.log(submitStudents);
-    console.log(unSubmitStudents);
 
     //바꾸기 버튼 수정 필요함...
   };

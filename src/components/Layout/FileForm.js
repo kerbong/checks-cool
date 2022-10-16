@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import classes from "./FileForm.module.css";
+import imageCompression from "browser-image-compression";
 
 const FileForm = (props) => {
   const [attachedFile, setAttachedFile] = useState("");
-  const onFileChange = (e) => {
+
+  const onFileChange = async (e) => {
     const theFile = e.target.files[0];
     if (theFile) {
       const reader = new FileReader();

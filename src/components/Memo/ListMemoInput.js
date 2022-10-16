@@ -5,9 +5,20 @@ import Swal from "sweetalert2";
 import Input from "../Layout/Input";
 
 const ListMemoInput = (props) => {
+  const getDateHandler = (date) => {
+    let month = ("0" + (date.getMonth() + 1)).slice(-2);
+    let day = ("0" + date.getDate()).slice(-2);
+    let weekd = date.getDay();
+    let weekDays = ["일", "월", "화", "수", "목", "금", "토"];
+
+    return `${month}월 ${day}일(${weekDays[weekd]})`;
+  };
+
   const [students, setStudents] = useState(props.students);
   const [studentMemo, setStudentMemo] = useState(props.item || []);
-  const [memoTitle, setMemoTitle] = useState(props.item.title || "");
+  const [memoTitle, setMemoTitle] = useState(
+    props.item.title || getDateHandler(new Date())
+  );
 
   const saveMemo = () => {
     if (memoTitle) {
@@ -92,7 +103,7 @@ const ListMemoInput = (props) => {
           type="text"
           placeholder="명렬표 기록 제목"
           onChange={(e) => setMemoTitle(e.target.value)}
-          value={memoTitle || ""}
+          value={memoTitle}
           className={classes["title-input"]}
           autoFocus
         />{" "}
@@ -140,7 +151,6 @@ const ListMemoInput = (props) => {
                 label="inputData"
                 input={{
                   type: "textarea",
-                  autoFocus: true,
                 }}
                 defaultValue={
                   //자료가 있으면 length가 undefined가 나오고 없으면 0이 나옴. 자료 있을 때만 저장되어 있던거 보여주기
@@ -154,27 +164,6 @@ const ListMemoInput = (props) => {
                     : ""
                 }
               />
-
-              {/* <input
-                type="text"
-                className={`${classes["memo-section"]} memo`}
-                id={student.num}
-                //키 값을 넣어줘야 재렌더링 되면서 화면에 보임
-                key={student.num}
-                placeholder=""
-                // 여기가 문제
-                defaultValue={
-                  //자료가 있으면 length가 undefined가 나오고 없으면 0이 나옴. 자료 있을 때만 저장되어 있던거 보여주기
-                  studentMemo.length !== 0 &&
-                  studentMemo.data.filter(
-                    (data) => student.num === data.student_num
-                  ).length > 0
-                    ? studentMemo.data.filter(
-                        (data) => student.num === data.student_num
-                      )[0].memo
-                    : ""
-                }
-              /> */}
             </li>
           ))}
       </ul>
