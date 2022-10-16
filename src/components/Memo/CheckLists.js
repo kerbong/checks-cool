@@ -207,7 +207,9 @@ const CheckLists = (props) => {
 
                   setAddCheckItem(false);
                 }}
-                unSubmitStudents={unSubmitStudents}
+                unSubmitStudents={
+                  item.length !== 0 ? unSubmitStudents : props.students
+                }
                 item={item}
                 removeData={removeData}
                 setItemNull={setItemNull}
