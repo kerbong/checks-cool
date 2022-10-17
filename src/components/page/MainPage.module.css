@@ -1,0 +1,13 @@
+.event-div {
+  background-color: #91d1dc4d;
+  padding: 20px;
+  font-size: 1.3em;
+  margin: 10px;
+  width: 80vw;
+  height: auto;
+  border-radius: 15px;
+}
+
+.events {
+  display: flex;
+}

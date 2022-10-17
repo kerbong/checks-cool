@@ -50,10 +50,10 @@ const StudentCalendarLayout = (props) => {
               <i className="fa-regular fa-address-book"></i> 다왔니?
             </button>
             <button id="switch-btn" onClick={showStudentsListHandler}>
-              <i className="fa-solid fa-list-ol"></i>
+              <i className="fa-solid fa-list-ol"></i> 명렬표
             </button>
             <button id="switch-btn" onClick={showEachStudentHandler}>
-              <i className="fa-solid fa-user"></i>
+              <i className="fa-solid fa-user"></i> 조회
             </button>
           </div>
 
@@ -75,10 +75,10 @@ const StudentCalendarLayout = (props) => {
               <i className="fa-regular fa-address-book"></i> 모아보기
             </button>
             <button id="switch-btn" onClick={showStudentsListHandler}>
-              <i className="fa-solid fa-list-ol"></i>
+              <i className="fa-solid fa-list-ol"></i> 명렬표
             </button>
             <button id="switch-btn" onClick={showCalHandler}>
-              <i className="fa-regular fa-calendar-days"></i>
+              <i className="fa-regular fa-calendar-days"></i> 출결달력
             </button>
           </div>
 
@@ -94,10 +94,10 @@ const StudentCalendarLayout = (props) => {
               <i className="fa-regular fa-address-book"></i> 안온사람?
             </button>
             <button id="switch-btn" onClick={showCalHandler}>
-              <i className="fa-regular fa-calendar-days"></i>
+              <i className="fa-regular fa-calendar-days"></i> 출결달력
             </button>
             <button id="switch-btn" onClick={showEachStudentHandler}>
-              <i className="fa-solid fa-user"></i>
+              <i className="fa-solid fa-user"></i> 조회
             </button>
           </div>
           {props.students.length === 0 && (

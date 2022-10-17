@@ -87,35 +87,43 @@ function App() {
           <Routes>
             {init && isLoggedIn ? (
               <>
-                <Route index element={<MainPage />} />
+                <Route index element={<MainPage userUid={userUid} />} />
+
                 <Route path="classgame" element={<ClassgamePage />} />
+
                 <Route
                   path="attendance"
                   element={
                     <AttendancePage students={students} userUid={userUid} />
                   }
                 />
+
                 <Route
                   path="attendance/:studentNum"
                   element={<NumAttendancePage />}
                 />
+
                 <Route
                   path="consulting"
                   element={
                     <ConsultingPage students={students} userUid={userUid} />
                   }
                 />
+
                 <Route
                   path="memo"
                   element={<MemoPage students={students} userUid={userUid} />}
                 />
+
                 <Route path="todo" element={<TodoPage userUid={userUid} />} />
+
                 <Route
                   path="student-manage"
                   element={
                     <StudentLists userUid={userUid} students={students} />
                   }
                 />
+
                 <Route path="profile" element={<Profile user={user} />} />
               </>
             ) : (

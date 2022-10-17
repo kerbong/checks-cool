@@ -33,9 +33,13 @@ const ConsultingPage = (props) => {
 
         <button id="switch-btn" onClick={showCalHandler}>
           {showConsultList ? (
-            <i className="fa-solid fa-list-ol"></i>
+            <>
+              <i className="fa-solid fa-list-ol"></i> 쓰기
+            </>
           ) : (
-            <i className="fa-regular fa-rectangle-list"></i>
+            <>
+              <i className="fa-regular fa-rectangle-list"></i> 보기
+            </>
           )}
         </button>
       </div>

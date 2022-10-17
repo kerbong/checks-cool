@@ -24,8 +24,8 @@ const TodoLists = (props) => {
     if (item["doc_id"] === undefined) {
       eventName = document.querySelector("#todo-eventName");
       let option = document.querySelector(`#option-select`);
-      console.log(eventName);
-      console.log(option);
+      // console.log(eventName);
+      // console.log(option);
       //새로운 자료(input)인 경우 있음
       if (option !== null || eventName !== null) {
         eventName = eventName.value;

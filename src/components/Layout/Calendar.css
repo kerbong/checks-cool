@@ -75,12 +75,12 @@
 
 #switch-btn {
   width: auto;
-  margin: 10px 8px;
-  font-size: 1.5em;
+  margin: 20px 5px;
+  font-size: 1em;
   border-radius: 10px;
   border-width: 0;
   letter-spacing: 1px;
-  padding: 1.2vh;
+  padding: 1vh;
   background-color: inherit;
 }
 
@@ -159,4 +159,8 @@
 
 .excel-upload-text {
   font-size: 0.6em;
+}
+
+#title-btn.mainSum {
+  background-color: #91d1dc;
 }

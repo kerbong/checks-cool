@@ -385,8 +385,7 @@ const TodoPage = (props) => {
         </button>
         <span>
           <span className="todo" onClick={() => setShowPublicSetting(true)}>
-            <i className="fa-solid fa-gear"></i>
-            설정
+            <i className="fa-solid fa-gear"></i> 설정
           </span>
           <button
             id="switch-btn"
@@ -396,13 +395,11 @@ const TodoPage = (props) => {
           >
             {showPublicEvent ? (
               <>
-                <i className="fa-solid fa-chalkboard-user"></i>
-                <span style={{ fontSize: "0.7em" }}>개인용</span>
+                <i className="fa-solid fa-chalkboard-user"></i> 개인용
               </>
             ) : (
               <>
-                <i className="fa-solid fa-school-flag"></i>
-                <span style={{ fontSize: "0.7em" }}>공용</span>
+                <i className="fa-solid fa-school-flag"></i> 공용
               </>
             )}
           </button>

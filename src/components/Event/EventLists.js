@@ -159,7 +159,7 @@ const EventLists = (props) => {
       writtenId: props.userUid,
     };
 
-    console.log(fixed_data);
+    // console.log(fixed_data);
 
     //attendCtx와 events eventOnDay 를 수정하는 함수
     props.fixedEventHandler(fixed_data, item.eventDate);

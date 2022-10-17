@@ -42,7 +42,7 @@ const MemoPage = (props) => {
             }}
           >
             <i className="fa-regular fa-square-check"></i>
-            <span className={classes["headerBtn-text"]}>할일</span>
+            <span className={classes["headerBtn-text"]}> 할일</span>
           </span>
           <span
             className={classes["memo-headerBtn"]}
@@ -53,7 +53,7 @@ const MemoPage = (props) => {
             }}
           >
             <i className="fa-solid fa-clipboard-check"></i>
-            <span className={classes["headerBtn-text"]}>제출목록</span>
+            <span className={classes["headerBtn-text"]}> 제출목록</span>
           </span>
           <span
             className={classes["memo-headerBtn"]}
@@ -64,7 +64,7 @@ const MemoPage = (props) => {
             }}
           >
             <i className="fa-solid fa-clipboard-list"></i>
-            <span className={classes["headerBtn-text"]}>명렬표기록</span>
+            <span className={classes["headerBtn-text"]}> 명렬표기록</span>
           </span>
         </div>
       </div>

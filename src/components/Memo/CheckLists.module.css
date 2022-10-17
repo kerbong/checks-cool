@@ -48,8 +48,9 @@
 }
 
 .memo-headerBtn {
-  margin-right: 25px;
-  font-size: 1.4em;
+  margin-left: 15px;
+  display: flex;
+  flex-direction: column;
 }
 
 .listMemo-date {
@@ -65,13 +66,13 @@
 }
 
 .headerBtn-text {
-  display: none;
+  font-size: 1em;
 }
 
 @media screen and (min-width: 620px) {
   .headerBtn-text {
     display: flex;
-    font-size: 0.8em;
+    font-size: 1.1em;
   }
 
   .checkLi {
