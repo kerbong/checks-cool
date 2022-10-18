@@ -209,11 +209,12 @@
 
 .main-studentPage {
   width: auto;
-  margin: 20px 5px;
-  font-size: 1em;
+  margin: 10px 5px;
+  font-size: 1.1em;
   border-radius: 10px;
   border-width: 0;
   letter-spacing: 1px;
   padding: 1vh;
   background-color: inherit;
+  color: rgba(18, 2, 0, 0.951);
 }

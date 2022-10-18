@@ -10,31 +10,58 @@ import {
   doc,
 } from "firebase/firestore";
 import classes from "./MainPage.module.css";
+import { useNavigate } from "react-router-dom";
+
+//오늘 날짜 yyyy-mm-dd로 만들기
+const getDateHandler = (date, titleOrQuery) => {
+  let year = date.getFullYear();
+  let month = ("0" + (date.getMonth() + 1)).slice(-2);
+  let day = ("0" + date.getDate()).slice(-2);
+
+  if (titleOrQuery === "title") {
+    let weekd = date.getDay();
+    let weekDays = ["일", "월", "화", "수", "목", "금", "토"];
+    return `${year}년 ${month}월 ${day}일(${weekDays[weekd]})`;
+  } else {
+    return year + "-" + month + "-" + day;
+  }
+};
 
 const MainPage = (props) => {
   const [attendEvents, setAttendEvents] = useState([]);
   const [schedule, setSchedule] = useState([]);
   const [toDoLists, setToDoLists] = useState([]);
   const [listMemo, setListMemo] = useState([]);
+  const [todayYyyymmdd, setTodayYyyymmdd] = useState(
+    getDateHandler(new Date())
+  );
+  const [titleDate, setTitleDate] = useState(
+    getDateHandler(new Date(), "title")
+  );
+
+  let navigate = useNavigate();
 
   let roomInfo = localStorage.getItem("todoPublicRoom");
   if (roomInfo === null) {
     roomInfo = "--";
   }
 
-  //오늘 날짜 yyyy-mm-dd로 만들기
-  const getDateHandler = (date) => {
-    let year = date.getFullYear();
-    let month = ("0" + (date.getMonth() + 1)).slice(-2);
-    let day = ("0" + date.getDate()).slice(-2);
-
-    return year + "-" + month + "-" + day;
+  const moveDateHandler = (tomoOrYester) => {
+    let now = new Date(todayYyyymmdd);
+    let tOrY;
+    if (tomoOrYester === "tomorrow") {
+      tOrY = new Date(now.setDate(now.getDate() + 1));
+    } else if (tomoOrYester === "yesterday") {
+      tOrY = new Date(now.setDate(now.getDate() - 1));
+    }
+    setTodayYyyymmdd(getDateHandler(tOrY, "query"));
+    setTitleDate(getDateHandler(tOrY, "title"));
   };
-
-  let todayYyyymmdd = getDateHandler(new Date());
 
   //firestore에서 오늘 attend관련 자료들 받아오기
   const getAttendsFromDb = () => {
+    setAttendEvents([]);
+
     let attendQuery = query(
       collection(dbService, "attend"),
       where("writtenId", "==", props.userUid)
@@ -68,6 +95,8 @@ const MainPage = (props) => {
 
   //firestore에서 공용/개인 스케쥴 자료 받아오기
   const getScheduleFromDb = () => {
+    setSchedule([]);
+
     let publicQuery = query(
       collection(dbService, "todo"),
       where("owner", "==", roomInfo)
@@ -153,48 +182,103 @@ const MainPage = (props) => {
     getAttendsFromDb();
     getScheduleFromDb();
     getTodoListsFromDb();
-  }, []);
+  }, [todayYyyymmdd]);
 
   return (
     <div style={{ marginTop: "0px" }}>
-      <div id="title-div">
-        <button id="title-btn" className="mainSum">
-          오늘-요약
-        </button>
-
-        <Button
-          name={" 학생명부"}
-          path={"student-manage"}
-          className="main-studentPage"
-          icon={<i className="fa-solid fa-user-plus"></i>}
-        />
-      </div>
       <div className={classes["events"]}>
-        <div className={classes["event-div"]}>
-          {attendEvents.length === 0
-            ? "오늘 출결관련 정보가 없어요"
-            : attendEvents.map((event) => (
-                <li key={event.id}>
-                  {event.id}
-                  {event.student_name}
-                </li>
-              ))}
+        <h2 className={classes["events-dateArea"]}>
+          <span
+            className={classes["events-dateMove"]}
+            onClick={() => moveDateHandler("yesterday")}
+          >
+            <i className="fa-solid fa-chevron-left"></i>
+          </span>
+          <span
+            className={
+              getDateHandler(new Date(), "title") === titleDate &&
+              classes["events-today"]
+            }
+          >
+            {titleDate}
+          </span>
+          <span
+            className={classes["events-dateMove"]}
+            onClick={() => moveDateHandler("tomorrow")}
+          >
+            <i className="fa-solid fa-chevron-right"></i>
+          </span>
+        </h2>
+        <div
+          className={classes["event-div"]}
+          onClick={() => navigate(`/attendance`)}
+        >
+          <div className={classes["event-title"]}>
+            😉 출결 {attendEvents.length || ""}
+          </div>
+          {attendEvents.length === 0 ? (
+            <li className={classes["main-li"]}>모두 출석!</li>
+          ) : (
+            attendEvents.map((event) => (
+              <li key={event.id} className={classes["main-li"]}>
+                {event.student_num}번 {event.student_name} /{" "}
+                {event.option.slice(1)} / {event.note || ""}
+              </li>
+            ))
+          )}
         </div>
 
-        <div className={classes["event-div"]}>
-          {schedule.length === 0
-            ? "오늘 공용/개인 일정 관련 정보가 없어요"
-            : schedule.map((event) => <li key={event.id}>{event.id}</li>)}
+        <div className={classes["event-div"]} onClick={() => navigate(`/todo`)}>
+          <div className={classes["event-title"]}>📆 일정</div>
+
+          {schedule.length === 0 ? (
+            <li className={classes["main-li"]}>일정 없음</li>
+          ) : (
+            schedule.map((event) => (
+              <li key={event.id} className={classes["main-li"]}>
+                <span>
+                  {event.eventName}({event.option.slice(1)})
+                </span>
+                <span>/ {event.note || ""}</span>
+              </li>
+            ))
+          )}
         </div>
 
-        <div className={classes["event-div"]}>
-          {toDoLists.length === 0
-            ? "오늘 할일 관련 정보가 없어요"
-            : toDoLists.map((event) => <li key={event.id}>{event.text}</li>)}
+        <div className={classes["event-div"]} onClick={() => navigate(`/memo`)}>
+          <div className={classes["event-title"]}>📝 할 일</div>
+          {toDoLists.length === 0 ? (
+            <li className={classes["main-li"]}>할 일 업음</li>
+          ) : (
+            toDoLists.map((event) => (
+              <li key={event.id} className={classes["main-li"]}>
+                {event.text}
+              </li>
+            ))
+          )}
+        </div>
+
+        <div id="title-div">
+          <Button
+            name={" 오늘로"}
+            onclick={() => {
+              setTodayYyyymmdd(getDateHandler(new Date()));
+              setTitleDate(getDateHandler(new Date(), "title"));
+            }}
+            className="main-studentPage"
+            icon={<i className="fa-solid fa-reply"></i>}
+          />
+          <Button
+            name={" 학생명부"}
+            path={"student-manage"}
+            className="main-studentPage"
+            icon={<i className="fa-solid fa-user-plus"></i>}
+          />
         </div>
       </div>
 
       <p>* 처음오시면 먼저 학생명부를 입력해주세요!</p>
+      <p>* 입력/확인이 필요한 부분을 누르시면 해당 메뉴로 이동합니다.</p>
       <p>* 메뉴의 곰돌이를 누르면 현재 화면으로 오실 수 있어요!</p>
     </div>
   );

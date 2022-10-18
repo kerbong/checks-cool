@@ -1,13 +1,57 @@
 .event-div {
-  background-color: #91d1dc4d;
-  padding: 20px;
-  font-size: 1.3em;
+  box-shadow: 3px 5px 0 #d6e9ea;
+  padding: 10px;
   margin: 10px;
   width: 80vw;
   height: auto;
-  border-radius: 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  font-size: 1.1em;
+  border-radius: 10px;
 }
 
 .events {
   display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 15px;
+}
+
+.main-li {
+  list-style: none;
+  margin: 8px;
+  display: flex;
+  justify-content: flex-start;
+  flex-direction: row;
+  flex-wrap: wrap;
+  line-height: 1.2em;
+}
+
+.event-title {
+  font-size: 1.2em;
+  margin-bottom: 10px;
+}
+
+.events-dateArea {
+  display: flex;
+  justify-content: space-between;
+  flex-direction: row;
+  width: 85vw;
+  align-items: center;
+  margin: 0px;
+  font-size: 1.5em;
+}
+
+.events-dateMove {
+  color: #00000024;
+  padding: 5px;
+}
+
+.events-today {
+  padding: 5px 10px;
+  border-width: 0 0 5px;
+  color: rgba(18, 2, 0, 0.951);
+  border-style: solid;
+  border-color: rgb(241, 227, 145);
 }
