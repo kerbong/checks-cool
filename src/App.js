@@ -25,6 +25,7 @@ function App() {
   const [userUid, setUserUid] = useState(null);
   const [students, setStudents] = useState([]);
   const [user, setUser] = useState(null);
+  const [menuOnHead, setMenuOnHead] = useState(true);
 
   useEffect(() => {
     try {
@@ -75,14 +76,20 @@ function App() {
     setUser(null);
   };
 
+  const setMenuHandler = () => {
+    setMenuOnHead((prev) => !prev);
+  };
+
   return (
     <div>
-      <div className="App">
+      <div className={menuOnHead ? "App" : "App-bottom"}>
         <ConsultProvider userUid={isLoggedIn ? userUid : ""}>
           <Header
             isLoggedIn={isLoggedIn}
             user={isLoggedIn && user}
             logOutHandler={logOutHandler}
+            setMenuHandler={setMenuHandler}
+            menuOnHead={menuOnHead}
           />
           <Routes>
             {init && isLoggedIn ? (

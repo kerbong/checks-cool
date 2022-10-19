@@ -1,14 +1,18 @@
 .li {
   list-style: none;
-  margin: 2px;
+  margin: 5px 2px;
   font-size: 1.5em;
-  color: #573020;
+  color: #573020b3;
   font-weight: bold;
-  padding: 10px;
+  padding: 3px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .menuText {
-  display: none;
+  font-size: 0.1em;
+  display: flex;
 }
 
 @media screen and (min-width: 620px) {
@@ -21,14 +25,25 @@
 .profile-dropdown-ul {
   position: absolute;
   right: -4px;
-  top: 60px;
-
+  top: 65px;
   padding: 5px;
-  width: auto;
+  width: 130px;
   list-style: none;
-  background-color: #fae7e4ad;
+  background-color: #e2e2e2e8;
   border-radius: 10px;
   z-index: 50;
+}
+
+.profile-dropdown-ul-bottom {
+  position: absolute;
+  right: -4px;
+  bottom: 65px;
+  padding: 5px;
+  width: 130px;
+  list-style: none;
+  background-color: #e2e2e2e8;
+  border-radius: 10px;
+  z-index: 10;
 }
 
 .profile-dropdown-li {

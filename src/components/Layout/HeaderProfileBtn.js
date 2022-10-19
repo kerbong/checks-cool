@@ -50,7 +50,15 @@ const HeaderProfileBtn = (props) => {
 
       {props.isLoggedIn && showDropdown && (
         <div className={classes["profile-dropdown-div"]}>
-          <ul className={classes["profile-dropdown-ul"]}>
+          <ul
+            className={
+              classes[
+                props.menuOnHead
+                  ? "profile-dropdown-ul"
+                  : "profile-dropdown-ul-bottom"
+              ]
+            }
+          >
             <li
               className={classes["profile-dropdown-li"]}
               onClick={() => {
@@ -58,7 +66,16 @@ const HeaderProfileBtn = (props) => {
                 setShowDropdown(false);
               }}
             >
-              {props.user.email}
+              프로필 수정
+            </li>
+            <li
+              className={classes["profile-dropdown-li"]}
+              onClick={() => {
+                props.setMenuHandler();
+                setShowDropdown(false);
+              }}
+            >
+              메뉴바 위치변경
             </li>
             <li
               className={classes["profile-dropdown-li"]}

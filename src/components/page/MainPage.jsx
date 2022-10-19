@@ -196,8 +196,9 @@ const MainPage = (props) => {
           </span>
           <span
             className={
-              getDateHandler(new Date(), "title") === titleDate &&
-              classes["events-today"]
+              getDateHandler(new Date(), "title") === titleDate
+                ? classes["events-today"]
+                : ""
             }
           >
             {titleDate}
@@ -209,6 +210,7 @@ const MainPage = (props) => {
             <i className="fa-solid fa-chevron-right"></i>
           </span>
         </h2>
+
         <div
           className={classes["event-div"]}
           onClick={() => navigate(`/attendance`)}
@@ -248,7 +250,7 @@ const MainPage = (props) => {
         <div className={classes["event-div"]} onClick={() => navigate(`/memo`)}>
           <div className={classes["event-title"]}>📝 할 일</div>
           {toDoLists.length === 0 ? (
-            <li className={classes["main-li"]}>할 일 업음</li>
+            <li className={classes["main-li"]}>할 일 없음</li>
           ) : (
             toDoLists.map((event) => (
               <li key={event.id} className={classes["main-li"]}>
@@ -257,7 +259,6 @@ const MainPage = (props) => {
             ))
           )}
         </div>
-
         <div id="title-div">
           <Button
             name={" 오늘로"}

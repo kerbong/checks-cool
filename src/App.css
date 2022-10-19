@@ -1,7 +1,12 @@
 .App {
   text-align: center;
   margin: 0;
-  font-family: "GowunDodum";
+}
+
+.App-bottom {
+  text-align: center;
+  margin: 0;
+  margin-bottom: 80px;
 }
 
 .App-logo {
