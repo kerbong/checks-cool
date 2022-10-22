@@ -31,22 +31,22 @@ const Header = (props) => {
           <HeaderMenu
             icon={"fa-regular fa-address-book"}
             path={"attendance"}
-            menuText={"출석부"}
+            menuText={"출석"}
           />
           <HeaderMenu
             icon={"fa-regular fa-comments"}
             path={"consulting"}
-            menuText={"금쪽상담소"}
+            menuText={"상담"}
           />
           <HeaderMenu
             icon={"fa-regular fa-calendar-check"}
             path={"todo"}
-            menuText={"일정달력"}
+            menuText={"일정"}
           />
           <HeaderMenu
             icon={"fa-regular fa-note-sticky"}
             path={"memo"}
-            menuText={"메모장모음"}
+            menuText={"메모"}
           />
 
           <HeaderMenu

@@ -3,6 +3,7 @@
   justify-content: space-evenly;
   align-content: space-around;
   flex-wrap: wrap;
+  line-height: 0.1;
 }
 
 .closeBtn {

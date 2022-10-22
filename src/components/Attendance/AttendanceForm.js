@@ -241,9 +241,9 @@ const AttendanceForm = (props) => {
               input={{
                 type: "textarea",
                 placeholder: "비고를 입력하세요.",
-                defaultValue: "",
                 autoFocus: true,
               }}
+              defaultValue={""}
               onInput={(e) => handleOnInput(e)}
             />
           </form>

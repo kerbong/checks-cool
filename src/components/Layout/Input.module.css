@@ -1,5 +1,13 @@
 input {
   padding: 10px;
   font-size: 1em;
-  font-family: "GowunDodum";
+}
+
+.class-subject {
+  height: 20px;
+  width: 30%;
+  margin-left: 10px;
+  margin-bottom: 5px;
+  padding: 10px;
+  text-align: center;
 }

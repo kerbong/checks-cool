@@ -193,3 +193,13 @@
     font-size: 1.2em;
   }
 }
+
+.class-memo {
+  height: 23px;
+  width: 65%;
+  margin-left: 10px;
+  margin-bottom: 5px;
+  padding: 10px;
+  overflow-y: hidden;
+  resize: none;
+}

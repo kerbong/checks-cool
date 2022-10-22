@@ -31,6 +31,11 @@
 .event-title {
   font-size: 1.2em;
   margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
 }
 
 .events-dateArea {
@@ -54,4 +59,34 @@
   color: rgba(18, 2, 0, 0.951);
   border-style: solid;
   border-color: rgb(241, 227, 145);
+}
+
+.ul-section {
+  padding: 5px;
+  margin: 5px;
+  width: 95%;
+}
+
+.eventSave-div {
+  display: flex;
+  width: 100%;
+  justify-content: flex-end;
+}
+
+.event-title-dropdown {
+  padding: 10px 20px;
+  color: #00000082;
+}
+
+.eventContent-hide {
+  visibility: hidden;
+  opacity: 0;
+  transition: visibility 0s linear 0ms, opacity 300ms;
+  height: 0px;
+}
+
+.eventContent-show {
+  visibility: visible;
+  opacity: 1;
+  transition: visibility 0s linear 0s, opacity 300ms;
 }

@@ -1,7 +1,14 @@
-import React, { useRef, useCallback } from "react";
+import React, { useRef, useCallback, useState, useEffect } from "react";
+import classes from "./Input.module.css";
 
 const Input = React.forwardRef((props, ref) => {
+  const [value, setValue] = useState(props.defaultValue || "");
   const noteRef = useRef(null);
+
+  useEffect(() => {
+    setValue(props.defaultValue);
+  }, [props.defaultValue]);
+
   const handleResizeHeight = useCallback(() => {
     if (noteRef === null || noteRef.current === null) {
       return;
@@ -10,6 +17,9 @@ const Input = React.forwardRef((props, ref) => {
     noteRef.current.style.height = "10px";
     noteRef.current.style.height = noteRef.current.scrollHeight - 13 + "px";
   }, []);
+  const changeHandler = () => {
+    setValue(noteRef.current.value);
+  };
 
   return (
     <>
@@ -24,18 +34,23 @@ const Input = React.forwardRef((props, ref) => {
           onKeyDown={() => handleResizeHeight(this)}
           onKeyUp={() => handleResizeHeight(this)}
           onClick={() => handleResizeHeight(this)}
+          value={value}
           onInput={props.onInput}
           required={props.required ? true : false}
-          defaultValue={props.defaultValue}
+          onChange={changeHandler}
         />
       ) : (
         <input
+          key={props.myKey}
+          id={props.input.id}
           type={props.input.type}
           required={props.required ? true : false}
-          className={props.className}
+          className={classes[props.className]}
           onInput={props.onInput}
-          ref={ref}
+          ref={noteRef}
           {...props.input}
+          defaultValue={value}
+          onChange={changeHandler}
         />
       )}
     </>

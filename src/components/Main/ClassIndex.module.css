@@ -1,0 +1,15 @@
+.ul-section {
+  padding: 5px;
+  margin: 5px;
+  width: 95%;
+}
+
+.li-section {
+  list-style: none;
+  display: flex;
+  align-items: flex-start;
+}
+
+.class-section {
+  width: 60%;
+}
