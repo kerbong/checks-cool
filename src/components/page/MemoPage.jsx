@@ -1,13 +1,21 @@
 import CheckLists from "components/Memo/CheckLists";
 import React, { useState } from "react";
 import classes from "../Memo/CheckLists.module.css";
-
+import { useLocation } from "react-router";
 import MemoTodayTodo from "../Memo/MemoTodayTodo";
 
 const MemoPage = (props) => {
-  const [showMemos, setShowMemos] = useState(true);
-  const [showChecklists, setshowChecklists] = useState(false);
-  const [showAchives, setShowAchives] = useState(false);
+  const { state } = useLocation();
+  const [showMemos, setShowMemos] = useState(
+    state === "checkLists" || state === "listMemo" ? false : true
+  );
+  const [showChecklists, setshowChecklists] = useState(
+    state === "checkLists" ? true : false
+  );
+  const [showAchives, setShowAchives] = useState(
+    state === "listMemo" ? true : false
+  );
+
   return (
     <>
       <div id="title-div">
@@ -53,7 +61,7 @@ const MemoPage = (props) => {
             }}
           >
             <i className="fa-solid fa-clipboard-check"></i>
-            <span className={classes["headerBtn-text"]}> 제출목록</span>
+            <span className={classes["headerBtn-text"]}> 제출ox</span>
           </span>
           <span
             className={classes["memo-headerBtn"]}
@@ -64,7 +72,7 @@ const MemoPage = (props) => {
             }}
           >
             <i className="fa-solid fa-clipboard-list"></i>
-            <span className={classes["headerBtn-text"]}> 명렬표기록</span>
+            <span className={classes["headerBtn-text"]}> 개별기록</span>
           </span>
         </div>
       </div>

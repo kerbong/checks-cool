@@ -36,6 +36,8 @@ const MainPage = (props) => {
   const [schedule, setSchedule] = useState([]);
   const [toDoLists, setToDoLists] = useState([]);
   const [classTable, setClassTable] = useState([]);
+  const [checkLists, setCheckLists] = useState([]);
+  const [listMemo, setListMemo] = useState([]);
   const [todayYyyymmdd, setTodayYyyymmdd] = useState(
     getDateHandler(new Date())
   );
@@ -186,6 +188,88 @@ const MainPage = (props) => {
     }
   };
 
+  const sortList = (list) => {
+    const sorted_lists = list.sort(function (a, b) {
+      let a_date = `${a.id}`;
+      let b_date = `${b.id}`;
+      return new Date(a_date) - new Date(b_date);
+    });
+    return sorted_lists.reverse();
+  };
+
+  const getDateDiff = (d1, d2) => {
+    const date1 = new Date(d1);
+    const date2 = new Date(d2);
+
+    const diffDate = date1.getTime() - date2.getTime();
+
+    return Math.abs(diffDate / (1000 * 60 * 60 * 24));
+    // 밀리세컨 * 초 * 분 * 시 = 일
+  };
+  //firestore에서 제출(냄 안냄) 받아오기
+  const getCheckListsFromDb = () => {
+    let checkListsQuery = query(
+      collection(dbService, "checkLists"),
+      where("writtenId", "==", props.userUid)
+    );
+
+    onSnapshot(checkListsQuery, (snapShot) => {
+      snapShot.docs.map((doc) => {
+        const itemObj = {
+          ...doc.data(),
+          doc_id: doc.id,
+        };
+
+        //최근 7일 이내의 자료만 보여줌
+        if (getDateDiff(doc.data().id, todayYyyymmdd) < 7) {
+          return setCheckLists((prev) => {
+            prev.forEach((prev_data, index) => {
+              if (prev_data.doc_id === itemObj.doc_id) {
+                prev.splice(index, 1);
+              }
+            });
+            return [...prev, itemObj];
+          });
+        } else {
+          return false;
+        }
+      });
+    });
+  };
+
+  //firestore에서 개별 명렬표 기록 받아오기
+
+  const getListMemoFromDb = () => {
+    let listMemoQuery = query(
+      collection(dbService, "listMemo"),
+      where("writtenId", "==", props.userUid)
+    );
+
+    onSnapshot(listMemoQuery, (snapShot) => {
+      snapShot.docs.map((doc) => {
+        const itemObj = {
+          ...doc.data(),
+          doc_id: doc.id,
+        };
+
+        //최근 7일 이내의 자료만 보여줌
+        if (getDateDiff(doc.data().id, todayYyyymmdd) < 7) {
+          return setListMemo((prev) => {
+            prev.forEach((prev_data, index) => {
+              if (prev_data.doc_id === itemObj.doc_id) {
+                prev.splice(index, 1);
+              }
+            });
+            return [...prev, itemObj];
+          });
+        } else {
+          return false;
+        }
+      });
+      // console.log(listMemo);
+    });
+  };
+
   //firestore에서 오늘 시간표 관련 자료들 받아오기
   const getClassTableFromDb = async () => {
     let classTableRef = doc(dbService, "classTable", props.userUid);
@@ -212,12 +296,15 @@ const MainPage = (props) => {
     getAttendsFromDb();
     getScheduleFromDb();
     getClassTableFromDb();
+    getCheckListsFromDb();
+    getListMemoFromDb();
   }, [todayYyyymmdd]);
 
   useEffect(() => {
     getTodoListsFromDb();
   }, []);
 
+  //시간표 저장 함수
   const saveClassMemoHandler = async (classMemo) => {
     let new_classMemo = {
       id: todayYyyymmdd,
@@ -369,7 +456,79 @@ const MainPage = (props) => {
           )}
         </div>
 
-        {/* 제출목록 */}
+        {/* 제출 냄안냄 목록 */}
+        <div
+          className={classes["event-div"]}
+          onClick={() => navigate(`/memo`, { state: "checkLists" })}
+        >
+          <div className={classes["event-title"]}>👉 미제출</div>
+
+          {checkLists.length === 0 ? (
+            <li className={classes["main-li"]}>* 7일 이내의 자료 없음</li>
+          ) : (
+            <>
+              {checkLists.map(
+                (event) =>
+                  event.unSubmitStudents.length !== 0 && (
+                    <li key={event.id} className={classes["mainCheckLists-li"]}>
+                      <span>
+                        {event.title}({event.unSubmitStudents.length})
+                      </span>
+                      <span className={classes["mainCheckLists-students"]}>
+                        {" "}
+                        {event.unSubmitStudents.map((stu) => (
+                          <span
+                            key={stu.num + stu.name}
+                            className={classes["mainCheckLists-student"]}
+                          >{`${stu.num}번 ${stu.name}`}</span>
+                        )) || ""}
+                      </span>
+                    </li>
+                  )
+              )}
+              <span className={classes["mainCheckLists-student"]}>
+                * 날짜를 기준으로 7일 이내의 자료입니다
+              </span>
+            </>
+          )}
+        </div>
+
+        {/* 개별기록 목록 */}
+        <div
+          className={classes["event-div"]}
+          onClick={() => navigate(`/memo`, { state: "listMemo" })}
+        >
+          <div className={classes["event-title"]}>📑 개별기록</div>
+
+          {listMemo.length === 0 ? (
+            <li className={classes["main-li"]}>* 7일 이내의 자료 없음</li>
+          ) : (
+            <>
+              {listMemo.map(
+                (event) =>
+                  event.data.length !== props.students.length && (
+                    <li key={event.id} className={classes["mainCheckLists-li"]}>
+                      <span className={classes["mainCheckLists-student"]}>
+                        {event.title} / 미입력 (
+                        {
+                          props.students.filter(
+                            (stu) =>
+                              !event.data
+                                .map((data) => data.student_num)
+                                .includes(stu.num)
+                          ).length
+                        }
+                        )
+                      </span>
+                    </li>
+                  )
+              )}
+              <span className={classes["mainCheckLists-student"]}>
+                * 날짜를 기준으로 7일 이내의 자료입니다
+              </span>
+            </>
+          )}
+        </div>
 
         {/* 시간표 */}
         <div className={classes["event-div"]}>

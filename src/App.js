@@ -94,7 +94,10 @@ function App() {
           <Routes>
             {init && isLoggedIn ? (
               <>
-                <Route index element={<MainPage userUid={userUid} />} />
+                <Route
+                  index
+                  element={<MainPage userUid={userUid} students={students} />}
+                />
 
                 <Route path="classgame" element={<ClassgamePage />} />
 

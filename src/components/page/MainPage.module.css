@@ -20,7 +20,7 @@
 
 .main-li {
   list-style: none;
-  margin: 8px;
+  margin: 10px;
   display: flex;
   justify-content: flex-start;
   flex-direction: row;
@@ -89,4 +89,27 @@
   visibility: visible;
   opacity: 1;
   transition: visibility 0s linear 0s, opacity 300ms;
+}
+
+.mainCheckLists-li {
+  list-style: none;
+  margin: 8px;
+  display: flex;
+  justify-content: flex-start;
+  flex-direction: column;
+  flex-wrap: wrap;
+  line-height: 1.2em;
+  align-items: flex-start;
+}
+
+.mainCheckLists-students {
+  margin: 10px 20px;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.mainCheckLists-student {
+  margin-right: 15px;
+  font-size: 0.9em;
 }
