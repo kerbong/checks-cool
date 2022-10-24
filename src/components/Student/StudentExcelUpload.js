@@ -85,20 +85,24 @@ const StudentExcelUpload = (props) => {
         {props.studentsInfo.length === 0 && (
           <img src={excelExample} alt="" className={classes.exampleImg} />
         )}
+        <hr className={classes["hr"]} />
+        <span className={classes["span-title"]}>엑셀 파일로 학생업로드</span>
 
         <hr className={classes["hr"]} />
         <span>
-          <span className={classes.accent}>번호, 이름</span>이 입력된 엑셀 파일
+          <span className={classes.accent}> 번호, 이름</span>이 입력된 엑셀 파일
           추가(1)
         </span>
-        <hr className={classes["hr"]} />
         <span>
           <span className={classes.accent}>저장(2)</span>을 누르면 반영됩니다.
         </span>
-        <span>* 수정은 "직접 입력"을 활용해주세요.</span>
         <hr className={classes["hr"]} />
-        <span>
-          pc로 업로드가 더 편리합니다!
+        <span className={classes["explain"]}>
+          * 화면 왼쪽 상단의 보라색 [학생등록]
+          <br />
+          버튼을 누르시면 예시를 보실 수 있어요! <br />
+          * 수정은 "직접 입력"을 활용해주세요.
+          <br />* pc로 업로드가 더 편리할 수 있어요!
           <br />
           (kerbong.github.io/checks-cho-ok)
         </span>

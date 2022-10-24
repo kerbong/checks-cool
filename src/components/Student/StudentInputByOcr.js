@@ -137,27 +137,35 @@ const StudentInputByOcr = (props) => {
         />
       </div>
       <div className={classes["span-expain"]}>
-        {studentsByOcr.length === 0 && <img src={imageOcrExample} alt="" />}
+        {studentsByOcr.length === 0 && (
+          <>
+            <img src={imageOcrExample} alt="" />
+          </>
+        )}
         <hr className={classes["hr"]} />
+        <span className={classes["span-title"]}>명렬표 이미지로 학생등록</span>
+        <hr className={classes["hr"]} />
+
         <span>
           <span className={classes["span-highlight"]}>번호, 이름만</span>{" "}
           보이도록 명렬표 촬영 및 자르기
         </span>
+
+        <span>
+          1번 버튼으로 파일 불러와서{" "}
+          <span className={classes["span-highlight"]}>내용 확인!</span>
+        </span>
+        <span>
+          2번 버튼으로 번호와 이름
+          <span className={classes["span-highlight"]}> 수정/저장</span>
+        </span>
+        <hr className={classes["hr"]} />
         <span className={classes["span-small"]}>
           * 인쇄된 파일을 촬영하면 인식률이 높아집니다.
-        </span>
-        <span className={classes["span-small"]}>
-          * 엑셀파일 업로드를 활용하시면 더욱 정확합니다.
-        </span>
-        <hr className={classes["hr"]} />
-        <span>
-          (1)번 버튼 눌러서 파일 불러오고{" "}
-          <span className={classes["span-highlight"]}>내용 확인</span>하기
-        </span>
-        <hr className={classes["hr"]} />
-        <span>
-          (2)번 버튼 눌러서
-          <span className={classes["span-highlight"]}>수정하고 저장</span> 하기
+          <br />
+          * 화면 왼쪽 상단의 보라색 [학생등록]
+          <br />
+          버튼을 누르시면 예시를 보실 수 있어요!
         </span>
         <hr className={classes["hr"]} />
       </div>

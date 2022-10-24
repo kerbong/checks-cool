@@ -7,12 +7,17 @@ import StudentExcelUpload from "../Student/StudentExcelUpload";
 import Swal from "sweetalert2";
 import StudentInputByOcr from "../Student/StudentInputByOcr";
 import Button from "../Layout/Button";
+import ExampleModal from "./ExampleModal";
+import imageFile from "../../assets/ocr-example-gif.gif";
+import typing from "../../assets/typing-example-gif.gif";
+import excelFile from "../../assets/excel-example-gif.gif";
 
 const StudentLists = (props) => {
   const [addStudentBy, setAddStudentBy] = useState(
     props.students.length !== 0 ? "typing" : "imageFile"
   );
   const [studentsInfo, setStudentsInfo] = useState([]);
+  const [showExample, setShowExample] = useState(false);
 
   //학생 제거 함수
   const deleteStudentHandler = (student) => {
@@ -104,9 +109,39 @@ const StudentLists = (props) => {
   return (
     <div>
       <div id="title-div">
-        <button id="title-btn" className="upload">
+        <button
+          id="title-btn"
+          className="upload"
+          onClick={() => setShowExample(true)}
+        >
           <i className="fa-solid fa-user-plus"></i> 학생등록
         </button>
+
+        {showExample && (
+          <ExampleModal
+            onClose={() => setShowExample(false)}
+            imgSrc={
+              addStudentBy === "imageFile"
+                ? imageFile
+                : addStudentBy === "typing"
+                ? typing
+                : excelFile
+            }
+            text={
+              <>
+                <p style={{ fontSize: "1.3em", textAlign: "center" }}>
+                  === {addStudentBy === "imageFile" && "학생명부 업로드"}{" "}
+                  {addStudentBy === "typing" && "직접 입력"}{" "}
+                  {addStudentBy === "excelFile" && "엑셀파일 업로드 "} 예시 ===
+                </p>
+                <p>
+                  * 다시 보시려면 페이지의 왼쪽 상단, [보라색 학생등록 버튼]을
+                  클릭해주세요!"
+                </p>
+              </>
+            }
+          />
+        )}
 
         {addStudentBy === "typing" && (
           <>

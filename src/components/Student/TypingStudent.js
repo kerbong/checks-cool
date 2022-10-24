@@ -120,13 +120,16 @@ const TypingStudent = (props) => {
         </div>
         <div className={classes.studentListArea}>
           <hr className={classes["hr"]} />
+          <span className={classes["span-title"]}>학생 직접 입력/수정</span>
+
+          <hr className={classes["hr"]} />
           <span className={classes["span-explain"]}>
             * 번호와 이름을 직접 입력하거나 <br />
             학생의 이름을 눌러서 수정한 후<br />
             <span className={classes["span-highlight"]}>추가/수정 버튼</span>을
             눌러주세요.
           </span>
-          <hr className={classes["hr"]} />
+
           <span className={classes["span-explain"]}>
             * 모든 입력/수정이 끝나면 꼭!!!
             <br />
@@ -135,6 +138,12 @@ const TypingStudent = (props) => {
               저장버튼으로 반영
             </span>
             해주세요!
+          </span>
+          <hr className={classes["hr"]} />
+          <span className={classes["span-explain"]}>
+            * 화면 왼쪽 상단의 보라색 [학생등록] <br />
+            버튼을 누르시면 예시를 보실 수 있어요!
+            <br />
           </span>
           <hr className={classes["hr"]} />
         </div>
