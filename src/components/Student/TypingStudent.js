@@ -1,5 +1,4 @@
 import React, { useRef, useState } from "react";
-import Input from "../Layout/Input";
 import Button from "../Layout/Button";
 import classes from "./TypingStudent.module.css";
 import StudentLiWithDelete from "./StudentLiWithDelete";
@@ -14,10 +13,7 @@ const TypingStudent = (props) => {
   const submitHandler = (e) => {
     e.preventDefault();
 
-    console.log("임시저장학생");
-    console.log(tempStudent);
     //기존값 수정할 경우 해당 값 지우기
-    console.log("임시저장학생 변경?");
     if (Object.keys(tempStudent).length !== 0) {
       props.deleteStudentHandler(tempStudent);
     }
@@ -63,31 +59,26 @@ const TypingStudent = (props) => {
         <div className={classes.addStudentInputs}>
           <form onSubmit={submitHandler}>
             <div className={classes.inputArea}>
-              <Input
+              <input
                 ref={numberRef}
                 className={classes["input-num"]}
                 label="inputData"
-                input={{
-                  type: "number",
-                  placeholder: "번호",
-                  key: tempAutoNum,
-                  defaultValue: tempAutoNum,
-                  autoFocus: true,
-                  min: 1,
-                  step: 1,
-                }}
+                type="number"
+                placeholder="번호"
+                key={tempAutoNum}
+                defaultValue={tempAutoNum}
+                min="1"
+                step="1"
                 required={true}
               />
-              <Input
+              <input
                 ref={nameRef}
                 className={classes["input-name"]}
                 label="inputData"
-                input={{
-                  type: "text",
-                  placeholder: "이름을 입력하세요.",
-                  defaultValue: "",
-                  autoFocus: true,
-                }}
+                type="text"
+                placeholder="이름을 입력하세요."
+                defaultValue=""
+                autoFocus={true}
                 required={true}
               />
               <Button
@@ -139,8 +130,11 @@ const TypingStudent = (props) => {
           <span className={classes["span-explain"]}>
             * 모든 입력/수정이 끝나면 꼭!!!
             <br />
-            <span className={classes["span-highlight"]}> 저장버튼</span>으로
-            반영해주세요!
+            <span className={classes["span-highlight"]}>
+              {" "}
+              저장버튼으로 반영
+            </span>
+            해주세요!
           </span>
           <hr className={classes["hr"]} />
         </div>

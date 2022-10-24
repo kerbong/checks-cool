@@ -412,7 +412,10 @@ const MainPage = (props) => {
           <div className={classes["event-title"]}>
             😉 출결 {attendEvents.length || ""}
           </div>
-          {attendEvents.length === 0 ? (
+          {props.students.length === 0 && (
+            <li className={classes["main-li"]}>* 학생명부를 입력해주세요!</li>
+          )}
+          {props.students.length !== 0 && attendEvents.length === 0 ? (
             <li className={classes["main-li"]}>모두 출석!</li>
           ) : (
             attendEvents.map((event) => (

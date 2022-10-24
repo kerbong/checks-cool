@@ -71,7 +71,7 @@ const TodoPublicInput = (props) => {
         />
 
         <Button
-          className="event-fix-btn"
+          className="checkList-button"
           name="저장"
           id={"save-todoPublicBtn"}
           onclick={(e) => {

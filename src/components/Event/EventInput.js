@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useCallback, useState } from "react";
 
 import classes from "./EventInput.module.css";
 import Button from "../Layout/Button";
@@ -9,6 +9,18 @@ import Swal from "sweetalert2";
 const EventInput = (props) => {
   const [student, setStudent] = useState("");
   const [showStudent, setShowStudent] = useState(false);
+
+  const noteRef = useRef(null);
+
+  //사이즈조절
+  const handleResizeHeight = useCallback(() => {
+    if (noteRef === null || noteRef.current === null) {
+      return;
+    }
+
+    noteRef.current.style.height = "10px";
+    noteRef.current.style.height = noteRef.current.scrollHeight - 13 + "px";
+  }, []);
 
   //자료 최대글자수 제한 함수
   const handleOnInput = (e, maxlength) => {
@@ -131,6 +143,26 @@ const EventInput = (props) => {
               />
             )}
 
+            <div className={classes["button-area"]}>
+              <Button
+                className="small-student"
+                name={<i className="fa-regular fa-floppy-disk"></i>}
+                id={`save-btn${props.id}`}
+                onclick={() => {
+                  //추가한 이벤트 저장하는 함수, 필요한 데이터를 모아서 상위 props에 이벤트 정보 전달함.
+                  saveEvent();
+                }}
+              />
+              <Button
+                className="small-student"
+                name={<i className="fa-solid fa-xmark"></i>}
+                id={`cancle-btn${props.id}`}
+                onclick={function () {
+                  props.closeHandler();
+                }}
+              />
+            </div>
+
             {student && (
               <span className={classes["selected-student"]}>{student}</span>
             )}
@@ -171,8 +203,12 @@ const EventInput = (props) => {
               </select>
             )}
 
-            <input
+            <textarea
+              ref={noteRef}
               type="text"
+              onKeyDown={() => handleResizeHeight(this)}
+              onKeyUp={() => handleResizeHeight(this)}
+              onClick={() => handleResizeHeight(this)}
               placeholder={props.placeholder}
               id={
                 student ? `option-note${student.split(" ")[0]}` : "option-note"
@@ -181,25 +217,6 @@ const EventInput = (props) => {
               onInput={(e) => handleOnInput(e, 30)}
             />
           </form>
-        </div>
-        <div className={classes["button-area"]}>
-          <Button
-            className="small-student"
-            name={<i className="fa-regular fa-floppy-disk"></i>}
-            id={`save-btn${props.id}`}
-            onclick={() => {
-              //추가한 이벤트 저장하는 함수, 필요한 데이터를 모아서 상위 props에 이벤트 정보 전달함.
-              saveEvent();
-            }}
-          />
-          <Button
-            className="small-student"
-            name={<i className="fa-solid fa-xmark"></i>}
-            id={`cancle-btn${props.id}`}
-            onclick={function () {
-              props.closeHandler();
-            }}
-          />
         </div>
       </li>
     </>

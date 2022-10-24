@@ -6,7 +6,7 @@
   margin-top: -5px;
 }
 .attendInfo-area {
-  width: 65%;
+  width: 90%;
   display: flex;
   flex-direction: column;
 }
@@ -15,9 +15,10 @@
 }
 
 .optionChange-area {
-  margin-left: 5%;
+  margin-left: 6%;
   display: flex;
   flex-wrap: nowrap;
+  width: 100%;
   justify-content: center;
 }
 
@@ -40,13 +41,18 @@
 
 .eventNameInput-area {
   text-align: center;
-  height: 40px;
+  height: 30px;
   font-size: 1.2em;
   margin: 10px;
-  width: 50vw;
+  width: 45vw;
 }
 
 .note-area {
-  width: 60%;
+  width: 95%;
   text-align: center;
+  height: 33px;
+  resize: none;
+  padding: 10px 5px;
+  overflow: hidden;
+  font-size: 1.1em;
 }
