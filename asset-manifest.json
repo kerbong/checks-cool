@@ -1,0 +1,14 @@
+{
+  "files": {
+    "main.css": "/checks-cool/static/css/main.ac56ce10.css",
+    "main.js": "/checks-cool/static/js/main.9cd01507.js",
+    "static/media/GowunDodum-Regular.ttf": "/checks-cool/static/media/GowunDodum-Regular.39c9a39c246c3c54c53e.ttf",
+    "index.html": "/checks-cool/index.html",
+    "main.ac56ce10.css.map": "/checks-cool/static/css/main.ac56ce10.css.map",
+    "main.9cd01507.js.map": "/checks-cool/static/js/main.9cd01507.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.ac56ce10.css",
+    "static/js/main.9cd01507.js"
+  ]
+}
