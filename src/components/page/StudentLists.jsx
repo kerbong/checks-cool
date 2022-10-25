@@ -8,9 +8,6 @@ import Swal from "sweetalert2";
 import StudentInputByOcr from "../Student/StudentInputByOcr";
 import Button from "../Layout/Button";
 import ExampleModal from "./ExampleModal";
-import imageFile from "../../assets/ocr-example-gif.gif";
-import typing from "../../assets/typing-example-gif.gif";
-import excelFile from "../../assets/excel-example-gif.gif";
 
 const StudentLists = (props) => {
   const [addStudentBy, setAddStudentBy] = useState(
@@ -122,10 +119,10 @@ const StudentLists = (props) => {
             onClose={() => setShowExample(false)}
             imgSrc={
               addStudentBy === "imageFile"
-                ? imageFile
+                ? process.env.PUBLIC_URL + "/ocr-example-gif.gif"
                 : addStudentBy === "typing"
-                ? typing
-                : excelFile
+                ? process.env.PUBLIC_URL + "/typing-example-gif.gif"
+                : process.env.PUBLIC_URL + "/excel-example-gif.gif"
             }
             text={
               <>

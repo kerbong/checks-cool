@@ -1,8 +1,6 @@
 import React, { useRef } from "react";
 import { read, utils } from "xlsx";
 import classes from "./StudentLiWithDelete.module.css";
-import excelExample from "../../assets/excel-example.jpg";
-
 import Button from "../Layout/Button";
 import Swal from "sweetalert2";
 
@@ -83,7 +81,11 @@ const StudentExcelUpload = (props) => {
       <div className={classes.example}>
         {/* 학생자료 없을 때 설명 화면 */}
         {props.studentsInfo.length === 0 && (
-          <img src={excelExample} alt="" className={classes.exampleImg} />
+          <img
+            src={process.env.PUBLIC_URL + "/excel-example.jpg"}
+            alt=""
+            className={classes.exampleImg}
+          />
         )}
         <hr className={classes["hr"]} />
         <span className={classes["span-title"]}>엑셀 파일로 학생업로드</span>

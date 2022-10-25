@@ -1,7 +1,7 @@
 {
   "homepage": "https://kerbong.github.io/checks-cho-ok/",
   "name": "checks-cho-ok",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "dependencies": {
     "@google-cloud/vision": "^3.0.1",

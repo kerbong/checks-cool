@@ -15,7 +15,6 @@ import ClassItem from "../Main/ClassItem";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import ExampleModal from "./ExampleModal";
-import ocrExample from "../../assets/ocr-example-gif.gif";
 
 //오늘 날짜 yyyy-mm-dd로 만들기
 const getDateHandler = (date, titleOrQuery) => {
@@ -368,7 +367,7 @@ const MainPage = (props) => {
       {showExample && (
         <ExampleModal
           onClose={() => setShowExample(false)}
-          imgSrc={ocrExample}
+          imgSrc={process.env.PUBLIC_URL + "/ocr-example-gif.gif"}
           text={
             <>
               <p style={{ fontSize: "1.3em", textAlign: "center" }}>

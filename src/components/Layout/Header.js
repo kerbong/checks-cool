@@ -1,9 +1,7 @@
 import classes from "./Header.module.css";
 import HeaderMenu from "./HeaderMenu";
 import HeaderProfileBtn from "./HeaderProfileBtn";
-import mainLogo from "../../assets/logo.png";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
 
 const Header = (props) => {
   let navigate = useNavigate();
@@ -21,7 +19,7 @@ const Header = (props) => {
       <nav className={classes[props.menuOnHead ? "header" : "header-bottom"]}>
         <h2 className={classes.h2}>
           <img
-            src={mainLogo}
+            src={process.env.PUBLIC_URL + "/logo.png"}
             alt=""
             className={classes.logoImg}
             onClick={() => navigate("/")}

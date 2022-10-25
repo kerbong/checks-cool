@@ -116,7 +116,7 @@ const EventInput = (props) => {
             {props.about.slice(0, 4) !== "todo" ? (
               <Button
                 className="choose-studentBtn"
-                name={"학생선택"}
+                name={student || "학생선택"}
                 onclick={function () {
                   if (props.students.length !== 0) {
                     setShowStudent(!showStudent);
@@ -163,9 +163,9 @@ const EventInput = (props) => {
               />
             </div>
 
-            {student && (
+            {/* {student && (
               <span className={classes["selected-student"]}>{student}</span>
-            )}
+            )} */}
             {showStudent && (
               <Modal onClose={closeModalHandler}>
                 <Student
