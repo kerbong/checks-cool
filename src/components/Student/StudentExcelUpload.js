@@ -106,7 +106,7 @@ const StudentExcelUpload = (props) => {
           * 수정은 "직접 입력"을 활용해주세요.
           <br />* pc로 업로드가 더 편리할 수 있어요!
           <br />
-          (kerbong.github.io/checks-cho-ok)
+          (kerbong.github.io/checks-cool)
         </span>
 
         <hr className={classes["hr"]} />

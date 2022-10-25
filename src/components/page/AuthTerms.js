@@ -7,7 +7,7 @@ const AuthTerms = () => {
         제 1 장 총칙
       </span>{" "}
       제 1 조 (목적)
-      <br /> 본 약관은 웹 사이트 (https://kerbong.github.io/checks-cho-ok, 이하
+      <br /> 본 약관은 웹 사이트 (https://kerbong.github.io/checks-cool, 이하
       회사)의 제반 서비스의 이용조건 및 절차에 관한 사항 및 기타 필요한 사항을
       규정함을 목적으로 한다.
       <br />
@@ -177,12 +177,12 @@ const AuthTerms = () => {
       ========================
       <br />
       <br />
-      "첵스-쿨"('https://kerbong.github.io/checks-cho-ok'이하 '첵스-쿨')은(는)
+      "첵스-쿨"('https://kerbong.github.io/checks-cool'이하 '첵스-쿨')은(는)
       「개인정보 보호법」 제30조에 따라 정보주체의 개인정보를 보호하고 이와
       관련한 고충을 신속하고 원활하게 처리할 수 있도록 하기 위하여 다음과 같이
       개인정보 처리방침을 수립·공개합니다. ○ 이 개인정보처리방침은 2022년 9월
       14부터 적용됩니다. 제1조(개인정보의 처리 목적)
-      "첵스-쿨"('https://kerbong.github.io/checks-cho-ok'이하 '첵스-쿨')은(는)
+      "첵스-쿨"('https://kerbong.github.io/checks-cool'이하 '첵스-쿨')은(는)
       다음의 목적을 위하여 개인정보를 처리합니다. 처리하고 있는 개인정보는
       다음의 목적 이외의 용도로는 이용되지 않으며 이용 목적이 변경되는 경우에는
       「개인정보 보호법」 제18조에 따라 별도의 동의를 받는 등 필요한 조치를

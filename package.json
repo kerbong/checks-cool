@@ -1,6 +1,6 @@
 {
-  "homepage": "https://kerbong.github.io/checks-cho-ok/",
-  "name": "checks-cho-ok",
+  "homepage": "https://checks-cool.netlify.app/",
+  "name": "checks-cool",
   "version": "0.1.1",
   "private": true,
   "dependencies": {
