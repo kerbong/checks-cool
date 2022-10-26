@@ -126,14 +126,20 @@ const StudentLists = (props) => {
             }
             text={
               <>
-                <p style={{ fontSize: "1.3em", textAlign: "center" }}>
+                <p
+                  style={{
+                    fontSize: "1.3em",
+                    textAlign: "center",
+                    margin: "5px",
+                  }}
+                >
                   === {addStudentBy === "imageFile" && "학생명부 업로드"}{" "}
                   {addStudentBy === "typing" && "직접 입력"}{" "}
                   {addStudentBy === "excelFile" && "엑셀파일 업로드 "} 예시 ===
                 </p>
-                <p>
-                  * 다시 보시려면 페이지의 왼쪽 상단, [보라색 학생등록 버튼]을
-                  클릭해주세요!"
+                <p style={{ margin: "15px" }}>
+                  * 페이지의 왼쪽 상단, [보라색 학생등록]을 클릭하시면 다시 보실
+                  수 있어요!
                 </p>
               </>
             }

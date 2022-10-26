@@ -32,9 +32,9 @@ function App() {
       authService.onAuthStateChanged((user) => {
         if (user) {
           setUserUid(user.uid);
-          setIsLoggedIn(true);
           getStudents(user.uid);
           setUser(user);
+          setIsLoggedIn(true);
         } else {
           setIsLoggedIn(false);
           setStudents([]);

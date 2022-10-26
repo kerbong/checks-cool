@@ -1,11 +1,11 @@
 .button-student {
-  width: 25%;
-  margin: 5px 10px;
-  font-size: 1.2em;
+  width: 85px;
+  margin: 3px 5px;
+  font-size: 1.1em;
   border-radius: 20px;
   border-width: 0;
-  letter-spacing: 1px;
-  padding: 2vh;
+  letter-spacing: -1px;
+  padding: 13px 15px;
   background-color: #e9cfcc;
   display: flex;
   justify-content: center;

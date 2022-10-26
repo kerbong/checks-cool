@@ -14,7 +14,6 @@ import classes from "./MainPage.module.css";
 import ClassItem from "../Main/ClassItem";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
-import ExampleModal from "./ExampleModal";
 
 //오늘 날짜 yyyy-mm-dd로 만들기
 const getDateHandler = (date, titleOrQuery) => {
@@ -49,9 +48,6 @@ const MainPage = (props) => {
     classMemo: [],
   });
   const [hideClassTable, setHideClassTable] = useState(false);
-  const [showExample, setShowExample] = useState(
-    props.students.length === 0 ? true : false
-  );
 
   let classLists = ["1", "2", "3", "4", "5", "6"];
 
@@ -191,14 +187,14 @@ const MainPage = (props) => {
     }
   };
 
-  const sortList = (list) => {
-    const sorted_lists = list.sort(function (a, b) {
-      let a_date = `${a.id}`;
-      let b_date = `${b.id}`;
-      return new Date(a_date) - new Date(b_date);
-    });
-    return sorted_lists.reverse();
-  };
+  // const sortList = (list) => {
+  //   const sorted_lists = list.sort(function (a, b) {
+  //     let a_date = `${a.id}`;
+  //     let b_date = `${b.id}`;
+  //     return new Date(a_date) - new Date(b_date);
+  //   });
+  //   return sorted_lists.reverse();
+  // };
 
   const getDateDiff = (d1, d2) => {
     const date1 = new Date(d1);
@@ -364,20 +360,6 @@ const MainPage = (props) => {
 
   return (
     <div style={{ marginTop: "0px" }}>
-      {showExample && (
-        <ExampleModal
-          onClose={() => setShowExample(false)}
-          imgSrc={process.env.PUBLIC_URL + "/ocr-example-gif.gif"}
-          text={
-            <>
-              <p style={{ fontSize: "1.3em", textAlign: "center" }}>
-                === 학생명부 입력 예시 ===
-              </p>
-              <p>* 다시 보시려면 오늘 날짜를 클릭해주세요!"</p>
-            </>
-          }
-        />
-      )}
       <div className={classes["events"]}>
         <h2 className={classes["events-dateArea"]}>
           <span
@@ -392,7 +374,6 @@ const MainPage = (props) => {
                 ? classes["events-today"]
                 : ""
             }
-            onClick={() => setShowExample(true)}
           >
             {titleDate}
           </span>
