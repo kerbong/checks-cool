@@ -29,7 +29,7 @@ const EventInput = (props) => {
       Swal.fire({
         icon: "error",
         title: "입력 불가",
-        text: "입력한 내용을 줄여주세요.",
+        text: "글자수를 초과했어요! 내용을 줄여주세요.",
         confirmButtonText: "확인",
         confirmButtonColor: "#85bd82",
         timer: 5000,
@@ -78,10 +78,58 @@ const EventInput = (props) => {
     } else if (props.about === "attendance") {
       //년월일+번호 를 식별id로 사용 나중에 지울떄(출결)
       new_data_id = eventDay + student.split(" ")[0];
+
+      //같은날 같은학생의 출결이 있을경우 취소하기
+      const existedEvent = document
+        .querySelector(".eventOnDayList")
+        .querySelectorAll("li");
+
+      const existedSameEvent = [];
+      existedEvent.forEach((event) => {
+        if (event.getAttribute("id") === new_data_id) {
+          existedSameEvent.push(event);
+        }
+      });
+
+      if (existedSameEvent.length !== 0) {
+        Swal.fire({
+          icon: "error",
+          title: "저장 실패",
+          text: "같은 날, 같은 학생의 출결정보가 있어요!",
+          confirmButtonText: "확인",
+          confirmButtonColor: "#85bd82",
+          timer: 5000,
+        });
+        return;
+      }
     } else {
       //년월일+행사명{/* 달라진거 고려하기.. todo에서도 쓸 수 있게 */}
       todo_eventName = document.querySelector("#todo-eventName").value;
       new_data_id = eventDay + todo_eventName;
+
+      //같은날 같은이름의 행사가 있을경우 취소하기
+      const existedEvent = document
+        .querySelector(".eventOnDayList")
+        .querySelectorAll("li");
+
+      const existedSameEvent = [];
+      existedEvent.forEach((event) => {
+        if (event.getAttribute("id") === new_data_id) {
+          existedSameEvent.push(event);
+        }
+      });
+
+      if (existedSameEvent.length !== 0) {
+        Swal.fire({
+          icon: "error",
+          title: "저장 실패",
+          text: "같은 이름의 행사가 같은 날 존재해요!",
+          confirmButtonText: "확인",
+          confirmButtonColor: "#85bd82",
+          timer: 5000,
+        });
+        return;
+      }
     }
 
     //EventLists saveFixedData함수에서 필요한 것만 보냄

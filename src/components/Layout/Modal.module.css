@@ -20,6 +20,7 @@
   z-index: 30;
   animation: slide-down 300ms ease-out forwards;
   max-height: 85vh;
+  overflow-y: scroll;
 }
 
 .addOverflow {
