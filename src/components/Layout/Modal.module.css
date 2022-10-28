@@ -29,8 +29,8 @@
 
 @media (min-width: 768px) {
   .modal {
-    width: 40rem;
-    left: calc(50% - 20rem);
+    width: 42rem;
+    left: calc(50% - 22rem);
   }
 }
 

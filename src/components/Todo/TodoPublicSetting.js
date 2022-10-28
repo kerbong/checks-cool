@@ -29,6 +29,9 @@ const TodoPublicSetting = (props) => {
                 비밀번호 : {props.publicRoom.split("-")[2]}
               </span>
             </p>
+            <span className={classes["existed-area"]}>
+              *입력한 정보를 잊지않도록 주의해주세요!
+            </span>
           </>
         ) : (
           <h2 className={classes["header-area"]}>저장된 자료가 없어요.</h2>

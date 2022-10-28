@@ -45,7 +45,7 @@ const AttendCalendar = (props) => {
         customInput={<ExampleCustomInput />}
         inline={props.inline}
         locale={ko}
-        dateFormat="yyyy년 MMMM d일"
+        dateFormat="yy년 MMMM d일"
       />
     </>
   );

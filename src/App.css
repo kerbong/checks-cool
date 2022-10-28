@@ -194,6 +194,12 @@
   }
 }
 
+@media screen and (min-width: 800px) {
+  * {
+    font-size: 1.1rem;
+  }
+}
+
 .class-memo {
   height: 23px;
   width: 65%;

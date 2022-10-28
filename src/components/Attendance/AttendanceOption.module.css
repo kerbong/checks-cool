@@ -35,3 +35,33 @@
   padding: 0;
   margin: 3px;
 }
+
+@media screen and (min-width: 800px) {
+  .option {
+    background-color: #b5dcc0b8;
+    padding: 24px;
+    font-size: 1.5em;
+    margin: 7px;
+    width: 90px;
+    height: 35px;
+    border-radius: 15px;
+    align-items: center;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    letter-spacing: -5px;
+  }
+  .option-select {
+    background-color: #8fcca0;
+    padding: 24px;
+    font-size: 1.7em;
+    margin: 7px;
+    width: 90px;
+    height: 35px;
+    border-radius: 15px;
+    align-items: center;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+  }
+}
