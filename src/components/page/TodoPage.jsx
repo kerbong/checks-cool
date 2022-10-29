@@ -18,6 +18,7 @@ import {
   deleteDoc,
   doc,
 } from "firebase/firestore";
+import ExampleModal from "./ExampleModal";
 
 const thisMonth = () => {
   let today = new Date();
@@ -35,6 +36,8 @@ const TodoPage = (props) => {
   const [eventOnDay, setEventOnDay] = useState([]);
   //개인용, 공용 전환
   const [showPublicEvent, setShowPublicEvent] = useState(true);
+  const [showExample, setShowExample] = useState(false);
+
   //처음 접속한 유저가 null 되지 않도록 세팅
   let roomInfo = localStorage.getItem("todoPublicRoom");
   if (roomInfo === null) {
@@ -378,8 +381,35 @@ const TodoPage = (props) => {
 
   return (
     <>
+      {showExample && (
+        <ExampleModal
+          onClose={() => setShowExample(false)}
+          imgSrc={process.env.PUBLIC_URL + "/gif/todo/publicSetting.gif"}
+          text={
+            <>
+              <p
+                style={{
+                  fontSize: "1.3em",
+                  textAlign: "center",
+                  margin: "5px",
+                }}
+              >
+                === 공용설정 예시 ===
+              </p>
+              <p style={{ margin: "15px" }}>
+                * 화면 왼쪽 상단의 현재 페이지 타이틀을 클릭하시면 다시 보실 수
+                있어요!
+              </p>
+            </>
+          }
+        />
+      )}
       <div id="title-div">
-        <button id="title-btn" className="todo">
+        <button
+          id="title-btn"
+          className="todo"
+          onClick={() => setShowExample(true)}
+        >
           <i className="fa-regular fa-calendar-check"></i>{" "}
           {showPublicEvent ? "우리 달력" : "내 달력"}
         </button>

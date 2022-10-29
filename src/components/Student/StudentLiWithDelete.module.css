@@ -6,7 +6,7 @@
   flex-direction: row;
   align-items: center;
   margin-bottom: 0.3em;
-  justify-content: space-between;
+  justify-content: flex-start;
   width: 27vw;
   letter-spacing: -2px;
 }
@@ -14,7 +14,8 @@
 .studentNumName {
   display: inline-flex;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: center;
+  width: 90px;
 }
 
 .span-expain {

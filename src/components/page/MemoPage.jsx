@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import classes from "../Memo/CheckLists.module.css";
 import { useLocation } from "react-router";
 import MemoTodayTodo from "../Memo/MemoTodayTodo";
+import ExampleModal from "./ExampleModal";
 
 const MemoPage = (props) => {
   const { state } = useLocation();
@@ -15,11 +16,47 @@ const MemoPage = (props) => {
   const [showAchives, setShowAchives] = useState(
     state === "listMemo" ? true : false
   );
+  const [showExample, setShowExample] = useState(false);
+
+  const exampleHandler = () => {
+    setShowExample(true);
+  };
 
   return (
     <>
+      {showExample && (
+        <ExampleModal
+          onClose={() => setShowExample(false)}
+          imgSrc={
+            showChecklists
+              ? process.env.PUBLIC_URL + "/gif/memo/submitMemo.gif"
+              : showMemos
+              ? process.env.PUBLIC_URL + "/gif/memo/todayTodo.gif"
+              : process.env.PUBLIC_URL + "/gif/memo/listMemo.gif"
+          }
+          text={
+            <>
+              <p
+                style={{
+                  fontSize: "1.3em",
+                  textAlign: "center",
+                  margin: "5px",
+                }}
+              >
+                === {showMemos && "할 일 메모"} {showChecklists && "제출ox"}{" "}
+                {showAchives && "개별기록 "} 예시 ===
+              </p>
+              <p style={{ margin: "15px" }}>
+                * 화면 왼쪽 상단의 현재 페이지 타이틀을 클릭하시면 다시 보실 수
+                있어요!
+              </p>
+            </>
+          }
+        />
+      )}
+
       <div id="title-div">
-        <button id="title-btn" className="todo">
+        <button id="title-btn" className="todo" onClick={exampleHandler}>
           <i className="fa-regular fa-note-sticky"></i>
           {showMemos && (
             <>

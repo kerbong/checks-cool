@@ -25,6 +25,10 @@ const CheckLists = (props) => {
   const [listMemo, setListMemo] = useState([]);
   const [unSubmitStudents, setUnSubmitStudents] = useState(props.students);
   const [item, setItem] = useState([]);
+  const [searchYear, setSearchYear] = useState(
+    String(new Date().getFullYear())
+  );
+  const [dataYears, setDataYears] = useState([]);
 
   const sortList = (list) => {
     const sorted_lists = list.sort(function (a, b) {
@@ -38,7 +42,7 @@ const CheckLists = (props) => {
   //firestore에서 해당 이벤트 자료 받아오기
   const getDatasFromDb = () => {
     let queryWhere;
-
+    let years = [];
     if (props.about === "checkLists") {
       queryWhere = query(
         collection(dbService, "checkLists"),
@@ -46,20 +50,20 @@ const CheckLists = (props) => {
       );
 
       onSnapshot(queryWhere, (snapShot) => {
+        setCheckLists([]);
         snapShot.docs.map((doc) => {
-          const itemObj = {
+          let itemObj = {
             ...doc.data(),
             doc_id: doc.id,
           };
-          return setCheckLists((prev) => {
-            prev.forEach((prev_data, index) => {
-              if (prev_data.doc_id === itemObj.doc_id) {
-                prev.splice(index, 1);
-              }
-            });
-            return [...prev, itemObj];
-          });
+          years.push(doc.data().id.slice(0, 4));
+          if (doc.data().id.slice(0, 4) !== searchYear) {
+            return false;
+          }
+
+          return setCheckLists((prev) => [...prev, itemObj]);
         });
+        setDataYears([...new Set(years)]);
       });
     } else if (props.about === "listMemo") {
       queryWhere = query(
@@ -68,28 +72,27 @@ const CheckLists = (props) => {
       );
 
       onSnapshot(queryWhere, (snapShot) => {
+        setListMemo([]);
         snapShot.docs.map((doc) => {
           const itemObj = {
             ...doc.data(),
             doc_id: doc.id,
           };
+          years.push(doc.data().id.slice(0, 4));
+          if (doc.data().id.slice(0, 4) !== searchYear) {
+            return false;
+          }
 
-          return setListMemo((prev) => {
-            prev.forEach((prev_data, index) => {
-              if (prev_data.doc_id === itemObj.doc_id) {
-                prev.splice(index, 1);
-              }
-            });
-            return [...prev, itemObj];
-          });
+          return setListMemo((prev) => [...prev, itemObj]);
         });
+        setDataYears([...new Set(years)]);
       });
     }
   };
 
   useEffect(() => {
     getDatasFromDb();
-  }, []);
+  }, [searchYear]);
 
   const saveItemHandler = async (item, doc_id) => {
     const tiemStamp = () => {
@@ -193,6 +196,11 @@ const CheckLists = (props) => {
     setItem([]);
   };
 
+  const searchYearHandler = (e) => {
+    const year = e.target.value;
+    setSearchYear(year);
+  };
+
   return (
     <>
       {props.about === "checkLists" && (
@@ -216,7 +224,26 @@ const CheckLists = (props) => {
               />
             </Modal>
           )}
-
+          <select
+            style={{
+              position: "absolute",
+              width: "80px",
+              left: "15px",
+              marginTop: "5px",
+            }}
+            name="searchYear-selcet"
+            defaultValue={searchYear}
+            onChange={searchYearHandler}
+          >
+            <option value="" disabled>
+              --년도--
+            </option>
+            {dataYears.map((year) => (
+              <option value={year} key={year}>
+                {year}년
+              </option>
+            ))}
+          </select>
           <div>
             <Button
               name={"추가하기"}
@@ -290,6 +317,26 @@ const CheckLists = (props) => {
               />
             </Modal>
           )}
+          <select
+            style={{
+              position: "absolute",
+              width: "80px",
+              left: "15px",
+              marginTop: "5px",
+            }}
+            name="searchYear-selcet"
+            defaultValue={searchYear}
+            onChange={searchYearHandler}
+          >
+            <option value="" disabled>
+              --년도--
+            </option>
+            {dataYears.map((year) => (
+              <option value={year} key={year}>
+                {year}년
+              </option>
+            ))}
+          </select>
           <div>
             <Button
               name={"추가하기"}

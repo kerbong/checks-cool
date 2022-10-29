@@ -119,10 +119,10 @@ const StudentLists = (props) => {
             onClose={() => setShowExample(false)}
             imgSrc={
               addStudentBy === "imageFile"
-                ? process.env.PUBLIC_URL + "/ocr-example-gif.gif"
+                ? process.env.PUBLIC_URL + "/gif/student/ocrGif.gif"
                 : addStudentBy === "typing"
-                ? process.env.PUBLIC_URL + "/typing-example-gif.gif"
-                : process.env.PUBLIC_URL + "/excel-example-gif.gif"
+                ? process.env.PUBLIC_URL + "/gif/student/typingGif.gif"
+                : process.env.PUBLIC_URL + "/gif/student/excelGif.gif"
             }
             text={
               <>
@@ -241,6 +241,9 @@ const StudentLists = (props) => {
             }
             deleteStudentHandler={(student) => deleteStudentHandler(student)}
             uploadStudentsInfo={submitStudentUploader}
+            deleteAllHandler={() => {
+              setStudentsInfo([]);
+            }}
           />
         </>
       )}

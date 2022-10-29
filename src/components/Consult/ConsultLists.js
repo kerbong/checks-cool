@@ -9,8 +9,11 @@ const ConsultLists = (props) => {
   const [showEditor, setShowEditor] = useState("");
   const [initTextareaHeight, setInitTextareaHeight] = useState("");
   const [showPastFirst, setShowPastFirst] = useState(false);
-  const [showStudent, setShowStudent] = useState("");
   const [studentsOnConsults, setStudentsOnConsults] = useState([]);
+  const [searchYear, setSearchYear] = useState(
+    String(new Date().getFullYear())
+  );
+  const [dataYears, setDataYears] = useState([]);
 
   const anyContext = useContext(props.context);
 
@@ -30,17 +33,28 @@ const ConsultLists = (props) => {
 
   const getConsults = () => {
     if (anyContext) {
-      let sorted_datas = sortDate(anyContext.datas, "up");
+      //세팅된 년도의 자료만 걸러냄
+      let yearData = [];
+      let years = [];
+      anyContext.datas.forEach((data) => {
+        years.push(data.id.slice(0, 4));
+        if (data.id.slice(0, 4) === searchYear) {
+          yearData.push(data);
+        }
+      });
+      setDataYears([...new Set(years)]);
+
+      let sorted_datas = sortDate(yearData, "up");
       setConsults([...sorted_datas]);
-      return sorted_datas;
+      setStudentsOnConsults([
+        ...new Set(sorted_datas.map((data) => data.student_name)),
+      ]);
     }
   };
 
   useEffect(() => {
-    let datas = getConsults();
-
-    setStudentsOnConsults([...new Set(datas.map((data) => data.student_name))]);
-  }, [anyContext]);
+    getConsults();
+  }, [searchYear]);
 
   const deleteConsult = (consult) => {
     Swal.fire({
@@ -104,8 +118,12 @@ const ConsultLists = (props) => {
       );
     }
     setConsults(list);
-    //출결옵션부분도 초기화
-    setShowStudent("");
+  };
+
+  const searchYearHandler = (e) => {
+    const year = e.target.value;
+    console.log(year);
+    setSearchYear(year);
   };
 
   return (
@@ -114,9 +132,22 @@ const ConsultLists = (props) => {
       <div className={classes["sortBtnArea"]}>
         <div className={classes["select-area"]}>
           <select
+            name="searchYear-selcet"
+            defaultValue={searchYear}
+            onChange={searchYearHandler}
+          >
+            <option value="" disabled>
+              --년도--
+            </option>
+            {dataYears.map((year) => (
+              <option value={year} key={year}>
+                {year}년
+              </option>
+            ))}
+          </select>
+          <select
             name="student-selcet"
             className={classes[`student-select`]}
-            required
             defaultValue={""}
             onChange={consultsHandler}
           >

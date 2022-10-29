@@ -474,9 +474,9 @@ const MainPage = (props) => {
                   event.unSubmitStudents.length !== 0 && (
                     <li key={event.id} className={classes["mainCheckLists-li"]}>
                       <span>
-                        {event.title}({event.unSubmitStudents.length})
+                        {event.title} / 미제출 ({event.unSubmitStudents.length})
                       </span>
-                      <span className={classes["mainCheckLists-students"]}>
+                      {/* <span className={classes["mainCheckLists-students"]}>
                         {" "}
                         {event.unSubmitStudents.map((stu) => (
                           <span
@@ -484,7 +484,7 @@ const MainPage = (props) => {
                             className={classes["mainCheckLists-student"]}
                           >{`${stu.num}번 ${stu.name}`}</span>
                         )) || ""}
-                      </span>
+                      </span> */}
                     </li>
                   )
               )}

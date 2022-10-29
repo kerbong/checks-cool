@@ -5,11 +5,13 @@ import Attendance from "../Attendance/Attendance";
 import Student from "../Student/Student";
 
 import ConsultLists from "../Consult/ConsultLists";
+import ExampleModal from "./ExampleModal";
 
 const ConsultingPage = (props) => {
   const [optionIsShown, setOptionShown] = useState(false);
   const [student, setStudent] = useState("");
   const [showConsultList, setShowConsultList] = useState(false);
+  const [showExample, setShowExample] = useState(false);
 
   const showOptionHandler = (e) => {
     setStudent(e.target.innerText);
@@ -26,8 +28,35 @@ const ConsultingPage = (props) => {
 
   return (
     <>
+      {showExample && (
+        <ExampleModal
+          onClose={() => setShowExample(false)}
+          imgSrc={process.env.PUBLIC_URL + "/gif/consult/consultAdd.gif"}
+          text={
+            <>
+              <p
+                style={{
+                  fontSize: "1.3em",
+                  textAlign: "center",
+                  margin: "5px",
+                }}
+              >
+                === 상담기록 예시 ===
+              </p>
+              <p style={{ margin: "15px" }}>
+                * 화면 왼쪽 상단의 현재 페이지 타이틀을 클릭하시면 다시 보실 수
+                있어요!
+              </p>
+            </>
+          }
+        />
+      )}
       <div id="title-div">
-        <button id="title-btn" className="consult">
+        <button
+          id="title-btn"
+          className="consult"
+          onClick={() => setShowExample(true)}
+        >
           <i className="fa-regular fa-comments"></i> 금쪽상담소
         </button>
 

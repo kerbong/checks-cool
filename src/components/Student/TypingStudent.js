@@ -41,6 +41,12 @@ const TypingStudent = (props) => {
     props.deleteStudentHandler(student);
   };
 
+  //학생 전체 제거 함수
+  const deleteAllHandler = () => {
+    //학생 번호를 제외한 리스트 새로 만들어서 등록
+    props.deleteAllHandler();
+  };
+
   //학생자료 firebase upload함수
   const uploadStudentHandler = () => {
     props.uploadStudentsInfo();
@@ -107,6 +113,7 @@ const TypingStudent = (props) => {
         <div className={classes.studentListArea}>
           {props.studentsInfo.map((student) => (
             <StudentLiWithDelete
+              key={student.num + student.name}
               myKey={student.num + student.name}
               student={student}
               deleteStudentHandler={(student) => {
@@ -117,28 +124,44 @@ const TypingStudent = (props) => {
               }}
             />
           ))}
+
+          {/* 전체삭제 버튼 */}
+          {props.studentsInfo.length !== 0 && (
+            <Button
+              className="student-save"
+              name={
+                <>
+                  전체
+                  <i className="fa-solid fa-trash-can"></i>
+                </>
+              }
+              onclick={deleteAllHandler}
+            />
+          )}
         </div>
         <div className={classes.studentListArea}>
           <hr className={classes["hr"]} />
           <span className={classes["span-title"]}>학생 직접 입력/수정</span>
 
           <hr className={classes["hr"]} />
-          <span className={classes["span-explain"]}>
-            * 번호와 이름을 직접 입력하거나 <br />
-            학생의 이름을 눌러서 수정한 후<br />
-            <span className={classes["span-highlight"]}>추가/수정 버튼</span>을
-            눌러주세요.
-          </span>
-
-          <span className={classes["span-explain"]}>
-            * 모든 입력/수정이 끝나면 꼭!!!
-            <br />
-            <span className={classes["span-highlight"]}>
-              {" "}
-              저장버튼으로 반영
+          <div className={classes["div-explain"]}>
+            <span className={classes["span-explain"]}>
+              * 번호와 이름을 직접 입력하거나 <br />
+              학생의 이름을 눌러서 수정한 후<br />
+              <span className={classes["span-highlight"]}>추가/수정 버튼</span>
+              을 눌러주세요.
             </span>
-            해주세요!
-          </span>
+
+            <span className={classes["span-explain"]}>
+              * 모든 입력/수정이 끝나면 꼭!!!
+              <br />
+              <span className={classes["span-highlight"]}>
+                {" "}
+                저장버튼으로 반영
+              </span>
+              해주세요!
+            </span>
+          </div>
           <hr className={classes["hr"]} />
           <span className={classes["span-explain"]}>
             * 화면 왼쪽 상단의 보라색 [학생등록] <br />
