@@ -26,6 +26,7 @@ function App() {
   const [students, setStudents] = useState([]);
   const [user, setUser] = useState(null);
   const [menuOnHead, setMenuOnHead] = useState(true);
+  const [showMainExample, setShowMainExample] = useState();
 
   useEffect(() => {
     try {
@@ -53,6 +54,8 @@ function App() {
     const docRef = doc(dbService, "students", uid);
     onSnapshot(docRef, (doc) => {
       if (doc.exists()) {
+        setShowMainExample(false);
+        setShowMainExample(false);
         const sortNum = (students) => {
           const sorted_students = students.sort(function (a, b) {
             let a_num = `${a.num}`;
@@ -64,6 +67,8 @@ function App() {
         };
 
         setStudents([...sortNum(doc.data().studentDatas)]);
+      } else {
+        setShowMainExample(true);
       }
     });
   };
@@ -96,7 +101,14 @@ function App() {
               <>
                 <Route
                   index
-                  element={<MainPage userUid={userUid} students={students} />}
+                  element={
+                    <MainPage
+                      userUid={userUid}
+                      showMainExample={showMainExample}
+                      students={students}
+                      setShowMainExample={() => setShowMainExample(false)}
+                    />
+                  }
                 />
 
                 <Route path="classgame" element={<ClassgamePage />} />

@@ -14,6 +14,7 @@ import classes from "./MainPage.module.css";
 import ClassItem from "../Main/ClassItem";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
+import ExampleModal from "./ExampleModal";
 
 //오늘 날짜 yyyy-mm-dd로 만들기
 const getDateHandler = (date, titleOrQuery) => {
@@ -187,15 +188,6 @@ const MainPage = (props) => {
     }
   };
 
-  // const sortList = (list) => {
-  //   const sorted_lists = list.sort(function (a, b) {
-  //     let a_date = `${a.id}`;
-  //     let b_date = `${b.id}`;
-  //     return new Date(a_date) - new Date(b_date);
-  //   });
-  //   return sorted_lists.reverse();
-  // };
-
   const getDateDiff = (d1, d2) => {
     const date1 = new Date(d1);
     const date2 = new Date(d2);
@@ -322,7 +314,7 @@ const MainPage = (props) => {
       });
     });
     //데이터는 new_classMemo라는 객체에 저장
-    console.log(new_classMemo);
+    // console.log(new_classMemo);
 
     Swal.fire({
       icon: "success",
@@ -333,13 +325,13 @@ const MainPage = (props) => {
       timer: 5000,
     });
 
-    console.log(classTable);
+    // console.log(classTable);
 
     const new_classTable = [...classTable];
     if (new_classTable.length !== 0) {
       new_classTable.forEach((data, index) => {
-        console.log(data.id);
-        console.log(new_classMemo.id);
+        // console.log(data.id);
+        // console.log(new_classMemo.id);
         if (data.id === new_classMemo.id) {
           // console.log("날짜가 같은 자료");
           new_classTable.splice(index, 1);
@@ -351,8 +343,8 @@ const MainPage = (props) => {
 
     const new_classData = { datas: new_classTable };
 
-    console.log(new_classTable);
-    console.log(new_classData);
+    // console.log(new_classTable);
+    // console.log(new_classData);
 
     const classMemoRef = doc(dbService, "classTable", props.userUid);
     await setDoc(classMemoRef, new_classData);
@@ -360,6 +352,30 @@ const MainPage = (props) => {
 
   return (
     <div style={{ marginTop: "0px" }}>
+      {props.showMainExample && (
+        <ExampleModal
+          onClose={() => props.setShowMainExample()}
+          imgSrc={process.env.PUBLIC_URL + "/gif/student/ocrGif.gif"}
+          text={
+            <>
+              <p
+                style={{
+                  fontSize: "1.3em",
+                  textAlign: "center",
+                  margin: "5px",
+                }}
+              >
+                === 처음 학생등록 예시 ===
+              </p>
+              <p style={{ margin: "15px" }}>
+                * 화면 왼쪽 상단의 현재 페이지 타이틀을 클릭하시면 각 화면의
+                예시를 보실 수 있어요!
+              </p>
+            </>
+          }
+        />
+      )}
+
       <div className={classes["events"]}>
         <h2 className={classes["events-dateArea"]}>
           <span

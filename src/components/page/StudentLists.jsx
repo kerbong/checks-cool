@@ -267,6 +267,7 @@ const StudentLists = (props) => {
             {studentsInfo &&
               studentsInfo.map((student) => (
                 <StudentLiWithDelete
+                  key={"key" + student.num + student.name}
                   myKey={student.num + student.name}
                   student={student}
                   deleteStudentHandler={(student) => {
