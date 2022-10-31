@@ -1,0 +1,19 @@
+@media (orientation: portrait) {
+  html {
+    transform: rotate(-90deg);
+    transform-origin: top left;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100vh;
+    height: 100vw;
+  }
+}
+
+.input-div {
+  display: flex;
+  height: 85vh;
+  justify-content: center;
+  align-items: center;
+  font-size: 4em;
+}

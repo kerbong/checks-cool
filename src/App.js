@@ -111,7 +111,12 @@ function App() {
                   }
                 />
 
-                <Route path="classgame" element={<ClassgamePage />} />
+                <Route
+                  path="classgame"
+                  element={
+                    <ClassgamePage students={students} userUid={userUid} />
+                  }
+                />
 
                 <Route
                   path="attendance"
