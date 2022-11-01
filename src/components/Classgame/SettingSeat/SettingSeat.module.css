@@ -1,4 +1,5 @@
-@media (orientation: portrait) {
+/* 특정 버튼을 눌러서 클래스가 적용되면 전체화면 가로로 */
+/* @media (orientation: portrait) and ( 클래스 명 ) {
   html {
     transform: rotate(-90deg);
     transform-origin: top left;
@@ -8,7 +9,7 @@
     width: 100vh;
     height: 100vw;
   }
-}
+} */
 
 .input-div {
   display: flex;
