@@ -38,7 +38,9 @@ const ClassgamePage = (props) => {
         />
       )}
 
-      {selectedMenu === "settingSeat" && <SettingSeat />}
+      {selectedMenu === "settingSeat" && (
+        <SettingSeat students={props.students} />
+      )}
     </>
   );
 };

@@ -15,4 +15,6 @@ input {
 .rowcolumn-input {
   width: 20%;
   margin: 20px;
+  text-align: center;
+  font-size: 4rem;
 }

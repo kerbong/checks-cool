@@ -1,15 +1,9 @@
-/* 특정 버튼을 눌러서 클래스가 적용되면 전체화면 가로로 */
-/* @media (orientation: portrait) and ( 클래스 명 ) {
-  html {
-    transform: rotate(-90deg);
-    transform-origin: top left;
-    position: absolute;
-    top: 100%;
-    left: 0;
-    width: 100vh;
-    height: 100vw;
-  }
-} */
+/*  특정 버튼을 눌러서 클래스가 적용되면 전체화면 가로로  */
+:root {
+  --columns: 5;
+  --rows: 5;
+  --ishtml: "none";
+}
 
 .input-div {
   display: flex;
@@ -17,4 +11,84 @@
   justify-content: center;
   align-items: center;
   font-size: 4em;
+  flex-wrap: wrap;
+  flex-direction: column;
+}
+
+@media screen and (min-width: 800px) {
+  .input-div {
+    flex-direction: row;
+    flex-wrap: nowrap;
+  }
+}
+
+.input-span {
+  font-size: 2.5rem;
+}
+
+.item {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid #181818;
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.items-container {
+  display: grid;
+  padding: 20px;
+  margin-bottom: 20px;
+  grid-template-columns: repeat(var(--columns), 1fr);
+  grid-auto-rows: repeat(var(--rows), 1fr);
+  grid-gap: 10px;
+}
+
+.blackboard {
+  margin-top: 20px;
+  width: 80%;
+  height: 20px;
+  border: 1px solid #181818;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: whitesmoke;
+  background-color: darkgreen;
+}
+
+.blackboard-area {
+  display: flex;
+  justify-content: center;
+}
+
+.title-div {
+  display: flex;
+  justify-content: center;
+  margin-top: 70px;
+}
+
+.contentChangeBtn-div {
+  float: right;
+  position: absolute;
+  margin-top: 20px;
+  right: 20px;
+}
+
+.num-input {
+  width: 40px;
+  font-size: 1.5rem;
+  text-align: center;
+}
+
+.remain-student {
+  margin: 5px;
+}
+
+.remain-student-div {
+  display: flex;
+  width: 100%;
+  margin: 5px;
+  justify-content: space-evenly;
+  flex-wrap: wrap;
+  align-items: center;
 }
