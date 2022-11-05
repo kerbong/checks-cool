@@ -31,8 +31,9 @@
   justify-content: center;
   align-items: center;
   border: 1px solid #181818;
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   font-weight: bold;
+  letter-spacing: -3px;
 }
 
 .items-container {

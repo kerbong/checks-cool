@@ -7,6 +7,7 @@ const SeatTable = (props) => {
   const [tableColumn, setTableColumn] = useState(props.rowColumn.split("-")[1]);
   const [items, setItems] = useState();
   const [tempStudent, setTempStudent] = useState({});
+  const [switchStudent, setSwitchStudent] = useState({});
   const [students, setStudents] = useState(props.students);
   const [startNum, setStartNum] = useState(1);
   const [endNum, setEndNum] = useState(startNum);
@@ -32,7 +33,7 @@ const SeatTable = (props) => {
     document.documentElement.style.setProperty("--columns", tableColumn);
     document.documentElement.style.setProperty("--rows", tableRow);
 
-    setEndNum(students[students.length - 1].num);
+    setEndNum(students[students.length - 1]?.num);
   }, []);
 
   //뽑기함수 실행전, 가능한지 확인하는 함수
@@ -153,12 +154,24 @@ const SeatTable = (props) => {
 
           return { ...temp };
         });
-
         document.getElementById("randomPickBtn")?.focus();
       } else {
         let clickedName = e.target.innerText;
-        console.log(clickedName);
-        // let temp
+        let clickedItemId = e.target.getAttribute("id");
+
+        // 선택된 학생이 없으면 선택하고
+        setSwitchStudent((prev_stu) => {
+          if (Object.keys(prev_stu).length === 0) {
+            // e.target.classList.add("blinking");
+            return { ...{ name: clickedName, id: clickedItemId } };
+
+            //선택된 학생이 있으면 현재 학생과 스위치!
+          } else {
+            e.target.innerText = prev_stu.name;
+            document.getElementById(prev_stu.id).innerText = clickedName;
+            return { ...{} };
+          }
+        });
       }
 
       return [...prev];
@@ -245,20 +258,7 @@ const SeatTable = (props) => {
         seatHandler(prev.name);
         return { ...prev };
       });
-      //   let stu_index = randomNum(students.length);
-      //   tempStu = students[stu_index];
-      //   setTempStudent(tempStu);
-      //   new_students.splice(stu_index, 1);
     }
-
-    //뽑힌 학생이 있는경우 학생의 자리 결정
-    // if (Object.keys(tempStu).length > 0) {
-    //   selectedSwal(tempStu.num, tempStu.name);
-    //   seatHandler(tempStu.name);
-    //   setStudents([...new_students]);
-    // } else {
-    //   errorSwal(`뽑힌 "${tempStudent.name}" 학생을 먼저 배치해주세요!`);
-    // }
   };
 
   return (
@@ -321,6 +321,11 @@ const SeatTable = (props) => {
         <span className={classes["blackboard"]}>칠 판</span>
       </div>
       <div className={classes[`items-container`]}>{items}</div>
+
+      <div>
+        * 모든 학생이 뽑힌 후에 학생을 차례로 선택하면, 두 학생의 자리를 바꿀 수
+        있습니다.
+      </div>
     </>
   );
 };

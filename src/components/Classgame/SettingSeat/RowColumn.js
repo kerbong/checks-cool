@@ -1,13 +1,25 @@
 import React from "react";
 import classes from "./SettingSeat.module.css";
 import Input from "../../Layout/Input";
+import Swal from "sweetalert2";
 
 const RowColumn = (props) => {
   const submitHandler = (e) => {
     e.preventDefault();
     let row = document.querySelector("#row-input").value;
     let column = document.querySelector("#column-input").value;
-    props.setRowColumn(row, column);
+    if (row.trim().length !== 0 && column.trim().length !== 0) {
+      props.setRowColumn(row, column);
+    } else {
+      Swal.fire({
+        icon: "error",
+        title: "확인필요",
+        text: "가로(칸)과 세로(줄)을 모두 입력해주세요.",
+        confirmButtonText: "확인",
+        confirmButtonColor: "#85bd82",
+        timer: 5000,
+      });
+    }
   };
 
   return (
