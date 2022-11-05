@@ -23,6 +23,7 @@ const RowColumn = (props) => {
               min="1"
               step="1"
               max="8"
+              required
             />
             <span className={classes["input-span"]}>(칸)</span>
           </span>
@@ -37,6 +38,7 @@ const RowColumn = (props) => {
               min="1"
               step="1"
               max="8"
+              required
             />
             <span className={classes["input-span"]}>(줄)</span>
           </span>

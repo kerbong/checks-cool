@@ -31,6 +31,8 @@ const SeatTable = (props) => {
     );
     document.documentElement.style.setProperty("--columns", tableColumn);
     document.documentElement.style.setProperty("--rows", tableRow);
+
+    setEndNum(students[students.length - 1].num);
   }, []);
 
   //뽑기함수 실행전, 가능한지 확인하는 함수
@@ -64,7 +66,7 @@ const SeatTable = (props) => {
 
   //뽑힌 학생 자리 배치 했는지 확인
   const selectSeatCheck = () => {
-    if (Object.keys(tempStudent).length === 0) {
+    if (Object.keys(tempStudent).length === 0 || tempStudent === undefined) {
       return true;
     }
     let new_students = [...students];
@@ -83,7 +85,7 @@ const SeatTable = (props) => {
 
   //뽑기 함수, 뽑힌 학생을 뽑아서 temp에 저장함
   const randomSeatHandler = (e) => {
-    e.preventDefault();
+    // e.preventDefault();
     let selectedStudent = {};
     let new_students = [...students];
     const getRandomNum = () => {
@@ -94,8 +96,9 @@ const SeatTable = (props) => {
     };
 
     const removePickStudent = () => {
+      let randNum = getRandomNum();
       new_students.forEach((stu, index) => {
-        if (stu.num === String(getRandomNum())) {
+        if (+stu.num === randNum) {
           selectedStudent = stu;
           new_students.splice(index, 1);
         }
@@ -106,44 +109,59 @@ const SeatTable = (props) => {
       removePickStudent();
     }
 
-    Swal.fire({
-      title: `${selectedStudent.name}`,
-      width: 600,
-      padding: "3em",
-      color: "#312b76",
-      background: "#fff url(/images/trees.png)",
-      backdrop: `
-      #00087ba1
-          url("/images/nyan-cat.gif")
-          left top
-          no-repeat
-        `,
-      timer: 5000,
-    });
+    selectedSwal(selectedStudent.num, selectedStudent.name);
 
     setStudents(new_students);
     setTempStudent({ ...selectedStudent });
   };
 
-  //자리를 누르면 학생이름 넣어주기
+  //자리를 누르면 실행되는 함수
   const itemAddStudentHandler = (e) => {
-    if (isNaN(+e.target.innerText)) {
-      return false;
-    }
-
     let existItems = document.querySelectorAll(".item");
+    let notSelectedSeats = existItems.length;
+    existItems.forEach((item) => {
+      if (isNaN(+item.innerText)) {
+        notSelectedSeats -= 1;
+      }
+    });
 
-    setTempStudent((prev) => {
-      let student = { ...prev };
-      existItems.forEach((item) => {
-        //혹시 현재 뽑힌 학생이 다른 곳에 이름이 미리 들어가 있으면 번호로 다시 바꿈
-        if (item.innerText === student.name) {
-          item.innerText = item.getAttribute("id").slice(6);
+    setStudents((prev) => {
+      let seatsOver = false;
+      let new_students = [...prev];
+
+      if (new_students.length > 0 || notSelectedSeats !== 0) {
+        if (isNaN(+e.target.innerText)) {
+          console.log("중복/방지");
+          return [...prev];
         }
-      });
+        //학생이름 넣어주기
+        let existItems = document.querySelectorAll(".item");
 
-      e.target.innerText = student.name;
-      return { ...prev };
+        setTempStudent((temp) => {
+          let student = { ...temp };
+          existItems.forEach((item) => {
+            //혹시 현재 뽑힌 학생이 다른 곳에 이름이 미리 들어가 있으면 번호로 다시 바꿈
+            if (item.innerText === student.name) {
+              item.innerText = item.getAttribute("id").slice(6);
+            }
+          });
+
+          //임시 학생이 뽑혀있는 경우에만 해당 칸에 이름 넣기
+          if (Object.keys(student).length !== 0) {
+            e.target.innerText = student.name;
+          }
+
+          return { ...temp };
+        });
+
+        document.getElementById("randomPickBtn")?.focus();
+      } else {
+        let clickedName = e.target.innerText;
+        console.log(clickedName);
+        // let temp
+      }
+
+      return [...prev];
     });
   };
 
@@ -156,6 +174,91 @@ const SeatTable = (props) => {
       confirmButtonColor: "#85bd82",
       timer: 5000,
     });
+  };
+
+  const selectedSwal = (num, name) => {
+    Swal.fire({
+      title: `${num}번 ${name}`,
+      width: 600,
+      padding: "3em",
+      color: "#312b76",
+      background: "#fff url(/images/trees.png)",
+      backdrop: `
+        #00087ba1
+            url("/images/nyan-cat.gif")
+            left top
+            no-repeat
+          `,
+      timer: 5000,
+    });
+  };
+
+  //뽑기 버튼 누르면 실행되는 전체 흐름
+  const randomPickHandler = (e) => {
+    if (!selectSeatCheck()) {
+      errorSwal(`뽑힌 "${tempStudent.name}" 학생의 자리를 선택해주세요!`);
+      return false;
+    }
+    if (!randomIsPossible()) {
+      setStartNum(students[0].num);
+      setEndNum(students[0].num);
+      errorSwal("범위의 모든 학생이 뽑혔어요! 범위를 새로 설정해주세요!");
+      return false;
+    }
+    randomSeatHandler(e);
+  };
+
+  //알아서 뽑고 알아서 자리에 넣어주는 함수
+  const pickAndSeatHandler = () => {
+    const randomNum = (b) => {
+      return Math.floor(Math.random() * Number(b));
+    };
+
+    //자리결정해서 이름 넣기 함수
+    const seatHandler = (name) => {
+      let existItems = document.querySelectorAll(".item");
+      let leftSeats = [];
+      //아직 학생 없는 숫자만 있는 자리들
+      existItems.forEach((item) => {
+        if (!isNaN(+item.innerText)) {
+          leftSeats.push(item);
+        }
+      });
+      //랜덤으로 하나 골라서 이름 넣기
+      leftSeats[randomNum(leftSeats.length)].innerText = name;
+    };
+
+    let tempStu = {};
+    let new_students = [...students];
+    //뽑힌 모든 학생의 자리가 결정되었으면 새로 학생뽑고
+    if (selectSeatCheck()) {
+      //번호 범위에서 가능하지 않으면
+      if (!randomIsPossible()) {
+        setStartNum(students[0].num);
+        setEndNum(students[0].num);
+        errorSwal("범위의 모든 학생이 뽑혔어요! 범위를 새로 설정해주세요!");
+        return false;
+      }
+
+      randomSeatHandler();
+      setTempStudent((prev) => {
+        seatHandler(prev.name);
+        return { ...prev };
+      });
+      //   let stu_index = randomNum(students.length);
+      //   tempStu = students[stu_index];
+      //   setTempStudent(tempStu);
+      //   new_students.splice(stu_index, 1);
+    }
+
+    //뽑힌 학생이 있는경우 학생의 자리 결정
+    // if (Object.keys(tempStu).length > 0) {
+    //   selectedSwal(tempStu.num, tempStu.name);
+    //   seatHandler(tempStu.name);
+    //   setStudents([...new_students]);
+    // } else {
+    //   errorSwal(`뽑힌 "${tempStudent.name}" 학생을 먼저 배치해주세요!`);
+    // }
   };
 
   return (
@@ -205,22 +308,11 @@ const SeatTable = (props) => {
             }}
             max={students.length > 0 && students[students.length - 1].num}
           />
-          <button
-            onClick={(e) => {
-              if (!selectSeatCheck()) {
-                errorSwal(
-                  "새로운 학생을 뽑기 전에, 뽑힌 학생의 자리를 선택해주세요!"
-                );
-                return false;
-              }
-              if (!randomIsPossible()) {
-                errorSwal("모든 학생이 뽑혔어요! 번호를 새로 설정해주세요!");
-                return false;
-              }
-              randomSeatHandler(e);
-            }}
-          >
+          <button id="randomPickBtn" onClick={randomPickHandler}>
             뽑기
+          </button>
+          <button id="randomSeatBtn" onClick={pickAndSeatHandler}>
+            알아서
           </button>
         </div>
       )}
