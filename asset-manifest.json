@@ -1,14 +1,14 @@
 {
   "files": {
-    "main.css": "/checks-cool/static/css/main.29a37971.css",
-    "main.js": "/checks-cool/static/js/main.fc2920a7.js",
+    "main.css": "/checks-cool/static/css/main.2f669bda.css",
+    "main.js": "/checks-cool/static/js/main.58a48025.js",
     "static/media/GowunDodum-Regular.ttf": "/checks-cool/static/media/GowunDodum-Regular.39c9a39c246c3c54c53e.ttf",
     "index.html": "/checks-cool/index.html",
-    "main.29a37971.css.map": "/checks-cool/static/css/main.29a37971.css.map",
-    "main.fc2920a7.js.map": "/checks-cool/static/js/main.fc2920a7.js.map"
+    "main.2f669bda.css.map": "/checks-cool/static/css/main.2f669bda.css.map",
+    "main.58a48025.js.map": "/checks-cool/static/js/main.58a48025.js.map"
   },
   "entrypoints": [
-    "static/css/main.29a37971.css",
-    "static/js/main.fc2920a7.js"
+    "static/css/main.2f669bda.css",
+    "static/js/main.58a48025.js"
   ]
 }
