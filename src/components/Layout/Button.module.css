@@ -230,3 +230,24 @@
   background-color: #9fd9dc;
   float: right;
 }
+
+.settingSeat {
+  width: auto;
+  margin: 5px;
+  font-size: 1.5rem;
+  border-radius: 10px;
+  border-width: 0;
+  letter-spacing: 2px;
+  padding: 25px;
+  background-color: #c3da9a;
+}
+
+.settingSeat-btn {
+  width: auto;
+  font-size: 1.1rem;
+  padding: 12px;
+  margin: 0 5px;
+  background-color: #c3da9a;
+  border-radius: 5px;
+  border-width: 0;
+}

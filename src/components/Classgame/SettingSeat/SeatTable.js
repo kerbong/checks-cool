@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import classes from "./SettingSeat.module.css";
 import Swal from "sweetalert2";
+import Button from "../../Layout/Button";
 
 const SeatTable = (props) => {
   const [tableRow, setTableRow] = useState(props.rowColumn.split("-")[0]);
@@ -150,6 +151,7 @@ const SeatTable = (props) => {
           //임시 학생이 뽑혀있는 경우에만 해당 칸에 이름 넣기
           if (Object.keys(student).length !== 0) {
             e.target.innerText = student.name;
+            e.target.style.backgroundColor = "#d4e8dcbd";
           }
 
           return { ...temp };
@@ -238,11 +240,11 @@ const SeatTable = (props) => {
         }
       });
       //랜덤으로 하나 골라서 이름 넣기
-      leftSeats[randomNum(leftSeats.length)].innerText = name;
+      let randomSeat = leftSeats[randomNum(leftSeats.length)];
+      randomSeat.innerText = name;
+      randomSeat.style.backgroundColor = "#d4e8dcbd";
     };
 
-    let tempStu = {};
-    let new_students = [...students];
     //뽑힌 모든 학생의 자리가 결정되었으면 새로 학생뽑고
     if (selectSeatCheck()) {
       //번호 범위에서 가능하지 않으면
@@ -308,12 +310,18 @@ const SeatTable = (props) => {
             }}
             max={students.length > 0 && students[students.length - 1].num}
           />
-          <button id="randomPickBtn" onClick={randomPickHandler}>
-            뽑기
-          </button>
-          <button id="randomSeatBtn" onClick={pickAndSeatHandler}>
-            알아서
-          </button>
+          <Button
+            id="randomPickBtn"
+            onclick={randomPickHandler}
+            className={"settingSeat-btn"}
+            name="뽑기"
+          />
+          <Button
+            id="randomSeatBtn"
+            onclick={pickAndSeatHandler}
+            className={"settingSeat-btn"}
+            name="알아서"
+          />
         </div>
       )}
 
@@ -322,10 +330,14 @@ const SeatTable = (props) => {
       </div>
       <div className={classes[`items-container`]}>{items}</div>
 
-      <div>
-        * 모든 학생이 뽑힌 후에 학생을 차례로 선택하면, 두 학생의 자리를 바꿀 수
-        있습니다.
-      </div>
+      <p className={classes[`gameMenu`]}>
+        * 뽑기버튼 👉 자리선택! / 알아서 버튼은 뽑기와 자리선택을 랜덤으로
+        실행합니다!
+      </p>
+      <p className={classes[`gameMenu`]}>
+        * 모든 학생이 뽑힌 후에 학생을 차례로 선택하면, 선택한 두 학생의 자리를
+        바꿀 수 있습니다.
+      </p>
     </>
   );
 };

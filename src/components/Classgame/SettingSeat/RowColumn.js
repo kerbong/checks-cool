@@ -2,6 +2,7 @@ import React from "react";
 import classes from "./SettingSeat.module.css";
 import Input from "../../Layout/Input";
 import Swal from "sweetalert2";
+import Button from "../../Layout/Button";
 
 const RowColumn = (props) => {
   const submitHandler = (e) => {
@@ -55,9 +56,11 @@ const RowColumn = (props) => {
             <span className={classes["input-span"]}>(줄)</span>
           </span>
 
-          <button value="설정저장" onClick={submitHandler}>
-            설정저장{" "}
-          </button>
+          <Button
+            name="설정저장"
+            onclick={submitHandler}
+            className={"settingSeat"}
+          />
         </div>
       </form>
     </>

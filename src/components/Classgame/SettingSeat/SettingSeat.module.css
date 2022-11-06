@@ -33,7 +33,7 @@
   border: 1px solid #181818;
   font-size: 1.1rem;
   font-weight: bold;
-  letter-spacing: -3px;
+  letter-spacing: 3px;
 }
 
 .items-container {
@@ -54,7 +54,7 @@
   justify-content: center;
   align-items: center;
   color: whitesmoke;
-  background-color: darkgreen;
+  background-color: #006400c4;
 }
 
 .blackboard-area {
@@ -65,7 +65,7 @@
 .title-div {
   display: flex;
   justify-content: center;
-  margin-top: 70px;
+  margin: 70px 0 20px 0;
 }
 
 .contentChangeBtn-div {
@@ -77,20 +77,34 @@
 
 .num-input {
   width: 40px;
-  font-size: 1.5rem;
+  font-size: 1.3rem;
   text-align: center;
+  margin: 0 15px;
 }
 
 .remain-student {
-  margin: 2%;
-  width: 6%;
+  margin: 7px;
+  width: 22px;
+  background-color: #d4e8dc;
+  border-radius: 15px;
+  padding: 2px;
 }
 
 .remain-student-div {
   display: flex;
   width: 100%;
-  margin: 5px;
-  justify-content: space-evenly;
+  margin: 10px 0;
+  justify-content: center;
   flex-wrap: wrap;
   align-items: center;
+}
+
+.gameMenu-btn {
+  margin-top: 70px;
+}
+
+.gameMenu {
+  margin: 10px;
+  line-height: 35px;
+  word-break: keep-all;
 }

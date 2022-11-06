@@ -24,7 +24,7 @@ const SettingSeat = (props) => {
 
   return (
     <>
-      <div className={classes["contentChangeBtn-div"]}>
+      {/* <div className={classes["contentChangeBtn-div"]}>
         {showTable && (
           <button
             onClick={() => {
@@ -35,7 +35,7 @@ const SettingSeat = (props) => {
           </button>
         )}
         <ContentToWidth />
-      </div>
+      </div> */}
 
       {!showTable ? (
         <RowColumn
@@ -47,12 +47,14 @@ const SettingSeat = (props) => {
       ) : (
         <>
           <div className={classes["title-div"]}>
-            <form onSubmit={saveHandler}>
+            {/* <form onSubmit={saveHandler}>
               <input id="title-input" type="text" placeholder="제목" />
             </form>
-            <button onClick={saveHandler}>저장</button>
+            <button onClick={saveHandler}>저장</button> */}
           </div>
-
+          <p className={classes[`gameMenu`]}>
+            * 저장 is comming soon. 스크린샷을 활용해주세요..!
+          </p>
           {randomSeat && <></>}
 
           <SeatTable rowColumn={rowColumn} students={students} />
