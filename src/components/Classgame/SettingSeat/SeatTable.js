@@ -2,6 +2,16 @@ import React, { useState, useEffect } from "react";
 import classes from "./SettingSeat.module.css";
 import Swal from "sweetalert2";
 import Button from "../../Layout/Button";
+import { dbService } from "../../../fbase";
+import { collection, addDoc } from "firebase/firestore";
+
+const getDateHandler = (date) => {
+  let year = date.getFullYear();
+  let month = ("0" + (date.getMonth() + 1)).slice(-2);
+  let day = ("0" + date.getDate()).slice(-2);
+
+  return year + "-" + month + "-" + day;
+};
 
 const SeatTable = (props) => {
   const [tableRow, setTableRow] = useState(props.rowColumn.split("-")[0]);
@@ -9,7 +19,7 @@ const SeatTable = (props) => {
   const [items, setItems] = useState();
   const [tempStudent, setTempStudent] = useState({});
   const [switchStudent, setSwitchStudent] = useState({});
-  const [students, setStudents] = useState(props.students);
+  const [students, setStudents] = useState(props.students || []);
   const [startNum, setStartNum] = useState(1);
   const [endNum, setEndNum] = useState(startNum);
 
@@ -27,7 +37,9 @@ const SeatTable = (props) => {
           onClick={itemAddStudentHandler}
         >
           {" "}
-          {item}{" "}
+          {props.seatStudents?.length > 0
+            ? props.seatStudents[+item - 1]
+            : item}{" "}
         </div>
       ))
     );
@@ -144,6 +156,7 @@ const SeatTable = (props) => {
           existItems.forEach((item) => {
             //혹시 현재 뽑힌 학생이 다른 곳에 이름이 미리 들어가 있으면 번호로 다시 바꿈
             if (item.innerText === student.name) {
+              item.style.backgroundColor = "#ffffff";
               item.innerText = item.getAttribute("id").slice(6);
             }
           });
@@ -164,13 +177,15 @@ const SeatTable = (props) => {
         // 선택된 학생이 없으면 선택하고
         setSwitchStudent((prev_stu) => {
           if (Object.keys(prev_stu).length === 0) {
-            // e.target.classList.add("blinking");
+            //선택한 학생을 노란색으로 표시하기
+            e.target.style.backgroundColor = "#ebee3fbd";
             return { ...{ name: clickedName, id: clickedItemId } };
-
             //선택된 학생이 있으면 현재 학생과 스위치!
           } else {
             e.target.innerText = prev_stu.name;
             document.getElementById(prev_stu.id).innerText = clickedName;
+            document.getElementById(prev_stu.id).style.backgroundColor =
+              "#d4e8dcbd";
             return { ...{} };
           }
         });
@@ -263,8 +278,59 @@ const SeatTable = (props) => {
     }
   };
 
+  const saveSeatsHandler = async () => {
+    let items_students = [];
+    document
+      .getElementById("items-div")
+      .childNodes.forEach((item) => items_students.push(item.innerText));
+    console.log(items_students);
+    console.log(props.rowColumn);
+    const title = document.getElementById("title-input");
+    if (title.value.trim().length === 0) {
+      Swal.fire({
+        icon: "error",
+        title: "저장실패",
+        text: `제목을 입력해주세요.`,
+        confirmButtonText: "확인",
+        confirmButtonColor: "#85bd82",
+        timer: 5000,
+      });
+      return;
+    }
+
+    const data = {
+      students: items_students,
+      title: title.value,
+      rowColumn: props.rowColumn,
+      writtenId: props.userUid,
+      saveDate: getDateHandler(new Date()),
+    };
+
+    Swal.fire({
+      icon: "success",
+      title: "저장완료",
+      text: `${title.value} 자리표가 저장되었어요.`,
+      confirmButtonText: "확인",
+      confirmButtonColor: "#85bd82",
+      timer: 5000,
+    });
+
+    await addDoc(collection(dbService, "seats"), data);
+  };
+
   return (
     <>
+      {students.length === 0 && (
+        <div>
+          <input id="title-input" type="text" placeholder="제목" />
+          <Button
+            name={"저장"}
+            onclick={saveSeatsHandler}
+            className={"settingSeat-btn"}
+          />
+        </div>
+      )}
+
       <div>
         {students.length > 0 ? (
           <>
@@ -328,7 +394,9 @@ const SeatTable = (props) => {
       <div className={classes["blackboard-area"]}>
         <span className={classes["blackboard"]}>칠 판</span>
       </div>
-      <div className={classes[`items-container`]}>{items}</div>
+      <div className={classes[`items-container`]} id="items-div">
+        {items}
+      </div>
 
       <p className={classes[`gameMenu`]}>
         * 뽑기버튼 👉 자리선택! / 알아서 버튼은 뽑기와 자리선택을 랜덤으로
