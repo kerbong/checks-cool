@@ -1,10 +1,3 @@
-/*  특정 버튼을 눌러서 클래스가 적용되면 전체화면 가로로  */
-:root {
-  --columns: 5;
-  --rows: 5;
-  --ishtml: "none";
-}
-
 .input-div {
   display: flex;
   height: 85vh;
@@ -13,6 +6,7 @@
   font-size: 4em;
   flex-wrap: wrap;
   flex-direction: column;
+  margin: 30px 0;
 }
 
 @media screen and (min-width: 800px) {
@@ -107,4 +101,31 @@
   margin: 10px;
   line-height: 35px;
   word-break: keep-all;
+}
+
+.list-li {
+  list-style: none;
+  --columns: 5;
+  --rows: 5;
+  margin-bottom: 50px;
+}
+
+.list-date {
+  display: flex;
+  margin: 10px 20px;
+}
+
+.lists {
+  margin: 90px 10px;
+}
+
+.select {
+  position: absolute;
+  width: 80px;
+  right: 15px;
+  top: 70px;
+}
+
+.temp-name {
+  font-size: 1.3rem;
 }

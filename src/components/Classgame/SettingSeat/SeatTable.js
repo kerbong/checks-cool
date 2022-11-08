@@ -3,7 +3,7 @@ import classes from "./SettingSeat.module.css";
 import Swal from "sweetalert2";
 import Button from "../../Layout/Button";
 import { dbService } from "../../../fbase";
-import { collection, addDoc } from "firebase/firestore";
+import { collection, setDoc, doc, updateDoc } from "firebase/firestore";
 
 const getDateHandler = (date) => {
   let year = date.getFullYear();
@@ -43,8 +43,12 @@ const SeatTable = (props) => {
         </div>
       ))
     );
-    document.documentElement.style.setProperty("--columns", tableColumn);
-    document.documentElement.style.setProperty("--rows", tableRow);
+    document
+      .getElementById(props.title || "newSeats")
+      .style.setProperty("--columns", tableColumn);
+    document
+      .getElementById(props.title || "newSeats")
+      .style.setProperty("--rows", tableRow);
 
     setEndNum(students[students.length - 1]?.num);
   }, []);
@@ -140,12 +144,10 @@ const SeatTable = (props) => {
     });
 
     setStudents((prev) => {
-      let seatsOver = false;
       let new_students = [...prev];
 
       if (new_students.length > 0 || notSelectedSeats !== 0) {
         if (isNaN(+e.target.innerText)) {
-          console.log("중복/방지");
           return [...prev];
         }
         //학생이름 넣어주기
@@ -186,6 +188,7 @@ const SeatTable = (props) => {
             document.getElementById(prev_stu.id).innerText = clickedName;
             document.getElementById(prev_stu.id).style.backgroundColor =
               "#d4e8dcbd";
+            e.target.style.backgroundColor = "#d4e8dcbd";
             return { ...{} };
           }
         });
@@ -285,7 +288,9 @@ const SeatTable = (props) => {
       .childNodes.forEach((item) => items_students.push(item.innerText));
     console.log(items_students);
     console.log(props.rowColumn);
-    const title = document.getElementById("title-input");
+    const title = document.getElementById(
+      !props.title ? "title-input" : `title-input${props.title}`
+    );
     if (title.value.trim().length === 0) {
       Swal.fire({
         icon: "error",
@@ -315,14 +320,28 @@ const SeatTable = (props) => {
       timer: 5000,
     });
 
-    await addDoc(collection(dbService, "seats"), data);
+    //기존자료면 업데이트
+    if (props.doc_id) {
+      const existRef = doc(dbService, "seats", props.doc_id);
+      await updateDoc(existRef, data);
+
+      //새로운 자료면 새롭게
+    } else {
+      const newRef = doc(collection(dbService, "seats"));
+      await setDoc(newRef, data);
+    }
   };
 
   return (
-    <>
+    <div id={props.title || "newSeats"}>
       {students.length === 0 && (
         <div>
-          <input id="title-input" type="text" placeholder="제목" />
+          <input
+            id={`title-input${props.title || ""}`}
+            type="text"
+            placeholder="제목"
+            defaultValue={props.title || ""}
+          />
           <Button
             name={"저장"}
             onclick={saveSeatsHandler}
@@ -337,7 +356,19 @@ const SeatTable = (props) => {
             남은학생 ({students.length})
             <div className={classes["remain-student-div"]}>
               {students.map((stu) => (
-                <span key={stu.name} className={classes["remain-student"]}>
+                <span
+                  key={stu.name}
+                  className={classes["remain-student"]}
+                  onClick={() => {
+                    let new_students = [...students];
+                    setStudents([
+                      ...new_students.filter(
+                        (student) => student.num !== stu.num
+                      ),
+                    ]);
+                    setTempStudent(stu);
+                  }}
+                >
                   {stu.num}
                 </span>
               ))}
@@ -345,7 +376,7 @@ const SeatTable = (props) => {
           </>
         ) : (
           <div className={classes["remain-student-div"]}>
-            자리뽑기가 끝났어요!
+            {props.title ? "" : "자리뽑기가 끝났어요!"}
           </div>
         )}
       </div>
@@ -391,22 +422,20 @@ const SeatTable = (props) => {
         </div>
       )}
 
+      {students.length > 0 && (
+        <div className={classes["temp-name"]}>
+          <span>✋ </span>
+          {tempStudent.name}
+        </div>
+      )}
+
       <div className={classes["blackboard-area"]}>
         <span className={classes["blackboard"]}>칠 판</span>
       </div>
       <div className={classes[`items-container`]} id="items-div">
         {items}
       </div>
-
-      <p className={classes[`gameMenu`]}>
-        * 뽑기버튼 👉 자리선택! / 알아서 버튼은 뽑기와 자리선택을 랜덤으로
-        실행합니다!
-      </p>
-      <p className={classes[`gameMenu`]}>
-        * 모든 학생이 뽑힌 후에 학생을 차례로 선택하면, 선택한 두 학생의 자리를
-        바꿀 수 있습니다.
-      </p>
-    </>
+    </div>
   );
 };
 

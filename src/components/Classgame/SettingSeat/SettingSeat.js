@@ -2,12 +2,13 @@ import React, { useEffect, useState } from "react";
 import classes from "./SettingSeat.module.css";
 import RowColumn from "./RowColumn";
 import SeatTable from "./SeatTable";
-import ContentToWidth from "../ContentToWidth";
+import SeatLists from "./SeatLists";
 import Button from "../../Layout/Button";
 
 const SettingSeat = (props) => {
+  const [init, setInit] = useState(true);
   const [showTable, setShowTable] = useState(false);
-  const [addNew, setAddNew] = useState(true);
+  const [addNew, setAddNew] = useState();
   const [rowColumn, setRowColumn] = useState("");
   const [randomSeat, setRandomSeat] = useState(false);
   const [students, setStudents] = useState();
@@ -16,59 +17,66 @@ const SettingSeat = (props) => {
     setStudents(props.students);
   }, [props.students]);
 
-  const saveHandler = (e) => {
-    e.preventDefault();
-    let inputValue = document.querySelector("#title-input").value;
-    if (inputValue.trim().length > 0) {
-      console.log(inputValue);
-    }
-  };
-
   return (
     <>
-      {/* <Button name={"추가하기"} />
-      <Button name={"기존자료"} onclick={() => setShowTable(true)} /> */}
+      {init && (
+        <>
+          <div className={classes["input-div"]}>
+            <Button
+              name={"추가하기"}
+              className={"settingSeat"}
+              onclick={() => {
+                setAddNew(true);
+                setShowTable(false);
+                setInit(false);
+              }}
+            />
+            <Button
+              name={"기존자료"}
+              className={"settingSeat"}
+              onclick={() => {
+                setAddNew(false);
+                setShowTable(true);
+                setInit(false);
+              }}
+            />
+          </div>
+        </>
+      )}
 
-      {/* {!addNew &&
-        !showTable ? (
+      {!addNew && showTable && (
         // 저장된 자료를 불러와서 리스트로 보여주기
-      ) : (
-        //저장된 자료를 보여주는 방법.
-        //rowColumn저장하고 seatStudents만 저장해서 불러오면 될듯.
-        <SeatTable
-          rowColumn={"6-4"}
-          students={[]}
-          seatStudents={students.map((stu) => stu.name)}
-        />
-      )} */}
+        //firebase에서 자료 가져오고 그거 state에 저장해두고 그거 li태그에 감싸서 보여주기
+        <SeatLists userUid={props.userUid} />
+      )}
 
-      {addNew && !showTable ? (
+      {addNew && !showTable && (
         <RowColumn
           setRowColumn={(col, row) => {
             setShowTable(true);
             setRowColumn(`${row}-${col}`);
           }}
         />
-      ) : (
-        <>
-          <div className={classes["title-div"]}>
-            {/* <form onSubmit={saveHandler}>
-              <input id="title-input" type="text" placeholder="제목" />
-            </form>
-            <button onClick={saveHandler}>저장</button> */}
-          </div>
+      )}
 
-          {randomSeat && <></>}
+      {addNew && showTable && (
+        <>
+          <div className={classes["title-div"]}></div>
 
           <SeatTable
             rowColumn={rowColumn}
             students={students}
             userUid={props.userUid}
           />
-
           <p className={classes[`gameMenu`]}>
-            * 저장 후 불러오는 기능을 개발 중입니다.(저장한 자료는 추후
-            사용가능합니다.) 당분간은 스크린샷을 활용해주세요..!
+            * 뽑기버튼 or 번호클릭 👉 자리선택
+          </p>
+          <p className={classes[`gameMenu`]}>
+            * 알아서 버튼은 학생, 자리를 모두 랜덤으로 선택!
+          </p>
+          <p className={classes[`gameMenu`]}>
+            * 모든 학생이 뽑힌 후에 학생을 차례로 선택하면, 선택한 두 학생의
+            자리를 바꿀 수 있습니다.
           </p>
         </>
       )}

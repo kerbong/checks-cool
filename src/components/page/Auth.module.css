@@ -25,10 +25,10 @@
 }
 
 hr {
-  margin: 25px;
+  margin: 30px 15px;
   border-width: 0;
   background-color: #80808066;
-  height: 2px;
+  height: 1px;
 }
 
 .change-btn {
