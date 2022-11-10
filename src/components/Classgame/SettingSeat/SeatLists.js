@@ -3,15 +3,7 @@ import Button from "../../Layout/Button";
 import classes from "./SettingSeat.module.css";
 import SeatTable from "./SeatTable";
 import { dbService } from "../../../fbase";
-import {
-  collection,
-  query,
-  onSnapshot,
-  where,
-  setDoc,
-  deleteDoc,
-  doc,
-} from "firebase/firestore";
+import { collection, query, onSnapshot, where } from "firebase/firestore";
 
 const SeatLists = (props) => {
   const [seatLists, setSeatLists] = useState([]);
@@ -58,11 +50,11 @@ const SeatLists = (props) => {
 
   const sortList = (list) => {
     const sorted_lists = list.sort(function (a, b) {
-      let a_date = `${a.id}`;
-      let b_date = `${b.id}`;
+      let a_date = `${a.saveDate}`;
+      let b_date = `${b.saveDate}`;
       return new Date(a_date) - new Date(b_date);
     });
-    return sorted_lists;
+    return sorted_lists.reverse();
   };
 
   return (

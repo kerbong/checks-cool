@@ -293,7 +293,9 @@ const SeatTable = (props) => {
   const saveSeatsHandler = async () => {
     let items_students = [];
     document
-      .getElementById("items-div")
+      .getElementById(
+        props.title?.length > 0 ? `items-${props.title}-div` : "items-div"
+      )
       .childNodes.forEach((item) => items_students.push(item.innerText));
     console.log(items_students);
     console.log(props.rowColumn);
@@ -442,7 +444,10 @@ const SeatTable = (props) => {
       <div className={classes["blackboard-area"]}>
         <span className={classes["blackboard"]}>칠 판</span>
       </div>
-      <div className={classes[`items-container`]} id="items-div">
+      <div
+        className={classes[`items-container`]}
+        id={props.title?.length > 0 ? `items-${props.title}-div` : "items-div"}
+      >
         {items}
       </div>
     </div>
