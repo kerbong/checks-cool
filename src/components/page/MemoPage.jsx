@@ -5,6 +5,10 @@ import { useLocation } from "react-router";
 import MemoTodayTodo from "../Memo/MemoTodayTodo";
 import ExampleModal from "./ExampleModal";
 
+import submitMemo from "../../assets/memo/submitMemo.gif";
+import todayTodo from "../../assets/memo/todayTodo.gif";
+import listMemo from "../../assets/memo/listMemo.gif";
+
 const MemoPage = (props) => {
   const { state } = useLocation();
   const [showMemos, setShowMemos] = useState(
@@ -28,11 +32,7 @@ const MemoPage = (props) => {
         <ExampleModal
           onClose={() => setShowExample(false)}
           imgSrc={
-            showChecklists
-              ? process.env.PUBLIC_URL + "/gif/memo/submitMemo.gif"
-              : showMemos
-              ? process.env.PUBLIC_URL + "/gif/memo/todayTodo.gif"
-              : process.env.PUBLIC_URL + "/gif/memo/listMemo.gif"
+            showChecklists ? submitMemo : showMemos ? todayTodo : listMemo
           }
           text={
             <>
@@ -56,7 +56,7 @@ const MemoPage = (props) => {
       )}
 
       <div id="title-div">
-        <button id="title-btn" className="todo" onClick={exampleHandler}>
+        <button id="title-btn" className="memo" onClick={exampleHandler}>
           <i className="fa-regular fa-note-sticky"></i>
           {showMemos && (
             <>

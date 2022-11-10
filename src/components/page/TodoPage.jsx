@@ -7,6 +7,8 @@ import selectOption from "../../todoOption";
 import classes from "../Attendance/AttendCtxCalendar.module.css";
 import TodoPublicSetting from "../Todo/TodoPublicSetting";
 
+import publicSetting from "../../assets/todo/publicSetting.gif";
+
 import { dbService } from "../../fbase";
 import {
   collection,
@@ -384,7 +386,7 @@ const TodoPage = (props) => {
       {showExample && (
         <ExampleModal
           onClose={() => setShowExample(false)}
-          imgSrc={process.env.PUBLIC_URL + "/gif/todo/publicSetting.gif"}
+          imgSrc={publicSetting}
           text={
             <>
               <p

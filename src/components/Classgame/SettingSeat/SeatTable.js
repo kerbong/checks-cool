@@ -13,6 +13,8 @@ const getDateHandler = (date) => {
   return year + "-" + month + "-" + day;
 };
 
+// const imageUrls = ["", "", "", "", "", "", ""];
+
 const SeatTable = (props) => {
   const [tableRow, setTableRow] = useState(props.rowColumn.split("-")[0]);
   const [tableColumn, setTableColumn] = useState(props.rowColumn.split("-")[1]);
@@ -33,7 +35,11 @@ const SeatTable = (props) => {
         <div
           key={`table-${item}`}
           className={`${classes["item"]} item`}
-          id={`table-${item}`}
+          id={
+            props.title?.length > 0
+              ? `table-${props.title}-${item}`
+              : `table-${item}`
+          }
           onClick={itemAddStudentHandler}
         >
           {" "}
@@ -210,15 +216,18 @@ const SeatTable = (props) => {
   };
 
   const selectedSwal = (num, name) => {
+    // Math.random() *
+    let backdropUrl = process.env.PUBLIC_URL + "/미니언즈박수.gif";
+
     Swal.fire({
       title: `${num}번 ${name}`,
       width: 600,
       padding: "3em",
       color: "#312b76",
-      background: "#fff url(/images/trees.png)",
+      background: `#fff url(/images/trees.png)`,
       backdrop: `
         #00087ba1
-            url("/images/nyan-cat.gif")
+            url(${backdropUrl})
             left top
             no-repeat
           `,
@@ -337,6 +346,7 @@ const SeatTable = (props) => {
       {students.length === 0 && (
         <div>
           <input
+            className={classes["title-input"]}
             id={`title-input${props.title || ""}`}
             type="text"
             placeholder="제목"

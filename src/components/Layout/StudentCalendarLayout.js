@@ -5,6 +5,9 @@ import Attendance from "../Attendance/Attendance";
 import Student from "../Student/Student";
 import AttendEachLists from "../Attendance/AttendEachLists";
 import ExampleModal from "../page/ExampleModal";
+import calendar from "../../assets/attend/calendar.gif";
+import list from "../../assets/attend/list.gif";
+import show from "../../assets/attend/show.gif";
 
 const StudentCalendarLayout = (props) => {
   const [optionIsShown, setOptionShown] = useState(false);
@@ -47,13 +50,7 @@ const StudentCalendarLayout = (props) => {
       {showExample && (
         <ExampleModal
           onClose={() => setShowExample(false)}
-          imgSrc={
-            showCalendar
-              ? process.env.PUBLIC_URL + "/gif/attend/calendar.gif"
-              : showStudentsList
-              ? process.env.PUBLIC_URL + "/gif/attend/list.gif"
-              : process.env.PUBLIC_URL + "/gif/attend/show.gif"
-          }
+          imgSrc={showCalendar ? calendar : showStudentsList ? list : show}
           text={
             <>
               <p

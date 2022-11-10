@@ -16,6 +16,8 @@ import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import ExampleModal from "./ExampleModal";
 
+import ocrGif from "../../assets/student/ocrGif.gif";
+
 //오늘 날짜 yyyy-mm-dd로 만들기
 const getDateHandler = (date, titleOrQuery) => {
   let year = date.getFullYear();
@@ -355,7 +357,7 @@ const MainPage = (props) => {
       {props.showMainExample && (
         <ExampleModal
           onClose={() => props.setShowMainExample()}
-          imgSrc={process.env.PUBLIC_URL + "/gif/student/ocrGif.gif"}
+          imgSrc={ocrGif}
           text={
             <>
               <p

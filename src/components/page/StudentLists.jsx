@@ -9,6 +9,10 @@ import StudentInputByOcr from "../Student/StudentInputByOcr";
 import Button from "../Layout/Button";
 import ExampleModal from "./ExampleModal";
 
+import ocrGif from "../../assets/student/ocrGif.gif";
+import typingGif from "../../assets/student/typingGif.gif";
+import excelGif from "../../assets/student/excelGif.gif";
+
 const StudentLists = (props) => {
   const [addStudentBy, setAddStudentBy] = useState(
     props.students.length !== 0 ? "typing" : "imageFile"
@@ -119,10 +123,10 @@ const StudentLists = (props) => {
             onClose={() => setShowExample(false)}
             imgSrc={
               addStudentBy === "imageFile"
-                ? process.env.PUBLIC_URL + "/gif/student/ocrGif.gif"
+                ? ocrGif
                 : addStudentBy === "typing"
-                ? process.env.PUBLIC_URL + "/gif/student/typingGif.gif"
-                : process.env.PUBLIC_URL + "/gif/student/excelGif.gif"
+                ? typingGif
+                : excelGif
             }
             text={
               <>

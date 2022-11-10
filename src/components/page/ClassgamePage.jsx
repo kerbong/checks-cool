@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import Button from "../Layout/Button";
 import SettingSeat from "../Classgame/SettingSeat/SettingSeat";
 import classes from "../Classgame/SettingSeat/SettingSeat.module.css";
+import Simsim from "../Classgame/Simsim/Simsim";
 
 const ClassgamePage = (props) => {
   const [gemgemMenu, setGemgemMenu] = useState("");
@@ -10,7 +11,7 @@ const ClassgamePage = (props) => {
   return (
     <>
       <div id="title-div">
-        <button id="title-btn" className="todo">
+        <button id="title-btn" className="">
           {/* onClick={exampleHandler}>/ */}
           {selectedMenu === "settingSeat" && (
             <>
@@ -19,23 +20,19 @@ const ClassgamePage = (props) => {
           )}
           {selectedMenu === "" && (
             <>
-              <i className="fa-solid fa-gamepad"></i>
-              잼잼
+              <i className="fa-solid fa-gamepad"></i> 잼잼
             </>
           )}
-          {/* {showChecklists && (
+          {selectedMenu === "simsim" && (
             <>
-              {">"}
-              <i className="fa-solid fa-clipboard-check"></i> 냄/안냄
+              <i className="fa-regular fa-square-check"></i> 심심해요
             </>
           )}
-          {showAchives && (
-            <>
-              {">"}
-              <i className="fa-solid fa-clipboard-list"></i> 개별기록
-            </>
-          )} */}
         </button>
+
+        {/* 추가하기 버튼 */}
+
+        {/*  )} */}
       </div>
 
       {selectedMenu === "" && (
@@ -45,6 +42,11 @@ const ClassgamePage = (props) => {
             className={"settingSeat"}
             onclick={() => setSelectedMenu("settingSeat")}
           />
+          <Button
+            name={"심심해요"}
+            className={"settingSeat"}
+            onclick={() => setSelectedMenu("simsim")}
+          />
           <p className={classes["gameMenu"]}>
             {" "}
             고민이 많아요... 사용하고 싶은 기능들을 추천해주세요! 심사숙고 후에
@@ -53,9 +55,13 @@ const ClassgamePage = (props) => {
         </div>
       )}
 
-      {selectedMenu === "settingSeat" && (
-        <SettingSeat students={props.students} userUid={props.userUid} />
-      )}
+      <div className={classes["container-div"]}>
+        {selectedMenu === "settingSeat" && (
+          <SettingSeat students={props.students} userUid={props.userUid} />
+        )}
+
+        {selectedMenu === "simsim" && <Simsim userUid={props.userUid} />}
+      </div>
     </>
   );
 };

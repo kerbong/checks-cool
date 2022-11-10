@@ -47,7 +47,18 @@ const SettingSeat = (props) => {
       {!addNew && showTable && (
         // 저장된 자료를 불러와서 리스트로 보여주기
         //firebase에서 자료 가져오고 그거 state에 저장해두고 그거 li태그에 감싸서 보여주기
-        <SeatLists userUid={props.userUid} />
+        <>
+          <button
+            className={classes["seatsAdd-btn"]}
+            onClick={() => {
+              setAddNew(true);
+              setShowTable(false);
+            }}
+          >
+            <i className="fa-solid fa-plus"></i>
+          </button>
+          <SeatLists userUid={props.userUid} />
+        </>
       )}
 
       {addNew && !showTable && (

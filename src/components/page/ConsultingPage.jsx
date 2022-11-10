@@ -6,6 +6,7 @@ import Student from "../Student/Student";
 
 import ConsultLists from "../Consult/ConsultLists";
 import ExampleModal from "./ExampleModal";
+import consultAdd from "../../assets/consult/consultAdd.gif";
 
 const ConsultingPage = (props) => {
   const [optionIsShown, setOptionShown] = useState(false);
@@ -31,7 +32,7 @@ const ConsultingPage = (props) => {
       {showExample && (
         <ExampleModal
           onClose={() => setShowExample(false)}
-          imgSrc={process.env.PUBLIC_URL + "/gif/consult/consultAdd.gif"}
+          imgSrc={consultAdd}
           text={
             <>
               <p

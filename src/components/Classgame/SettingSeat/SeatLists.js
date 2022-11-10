@@ -66,7 +66,7 @@ const SeatLists = (props) => {
   };
 
   return (
-    <div className={classes["lists"]}>
+    <div>
       <select
         className={classes["select"]}
         name="searchYear-selcet"
@@ -89,12 +89,6 @@ const SeatLists = (props) => {
               key={`${item.saveDate}${item.title}`}
               id={`${item.saveDate}${item.title}`}
               className={classes["list-li"]}
-              //   onClick={() => {
-              //     setUnSubmitStudents(item.unSubmitStudents);
-              //     setItem([]);
-              //     setItem(item);
-              //     setAddCheckItem(true);
-              //   }}
             >
               <span className={classes["list-date"]}> {item.saveDate}</span>
 

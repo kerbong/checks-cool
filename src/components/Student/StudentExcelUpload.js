@@ -4,6 +4,8 @@ import classes from "./StudentLiWithDelete.module.css";
 import Button from "../Layout/Button";
 import Swal from "sweetalert2";
 
+import excelExample from "../../assets/student/excel-example.jpg";
+
 const StudentExcelUpload = (props) => {
   const fileInfoInput = useRef(null);
 
@@ -81,11 +83,7 @@ const StudentExcelUpload = (props) => {
       <div className={classes.example}>
         {/* 학생자료 없을 때 설명 화면 */}
         {props.studentsInfo.length === 0 && (
-          <img
-            src={process.env.PUBLIC_URL + "/excel-example.jpg"}
-            alt=""
-            className={classes.exampleImg}
-          />
+          <img src={excelExample} alt="" className={classes.exampleImg} />
         )}
         <hr className={classes["hr"]} />
         <span className={classes["span-title"]}>엑셀 파일로 학생업로드</span>

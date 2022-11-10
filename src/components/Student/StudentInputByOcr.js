@@ -4,6 +4,8 @@ import imageCompression from "browser-image-compression";
 import classes from "./StudentLiWithDelete.module.css";
 import Swal from "sweetalert2";
 
+import imageOcrExample from "../../assets/student/image-ocr-example.jpg";
+
 const StudentInputByOcr = (props) => {
   const fileInfoInput = useRef(null);
   const [studentsByOcr, setstudentsByOcr] = useState(props.studentsInfo);
@@ -138,10 +140,7 @@ const StudentInputByOcr = (props) => {
       <div className={classes["span-expain"]}>
         {studentsByOcr.length === 0 && (
           <>
-            <img
-              src={process.env.PUBLIC_URL + "/image-ocr-example.jpg"}
-              alt=""
-            />
+            <img src={imageOcrExample} alt="" />
           </>
         )}
         <hr className={classes["hr"]} />

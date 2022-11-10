@@ -1,11 +1,11 @@
 .input-div {
   display: flex;
-  height: 85vh;
+  height: 60vh;
   justify-content: center;
   align-items: center;
-  font-size: 4em;
+  font-size: 3em;
   flex-wrap: wrap;
-  flex-direction: column;
+  flex-direction: row;
   margin: 30px 0;
 }
 
@@ -115,17 +115,40 @@
   margin: 10px 20px;
 }
 
-.lists {
-  margin: 90px 10px;
+.container-div {
+  margin: 60px 0px;
 }
 
 .select {
-  position: absolute;
   width: 80px;
-  right: 15px;
-  top: 70px;
+  display: flex;
+  margin: -15px 0 15px 15px;
 }
 
 .temp-name {
   font-size: 1.3rem;
+}
+
+.title-input {
+  width: 40vw;
+}
+
+.seatsAdd-btn {
+  position: relative;
+  top: -45px;
+  right: -40%;
+  padding: 10px;
+  width: 45px;
+  height: 45px;
+  border-radius: 25px;
+  border-width: 0;
+  background-color: #e2e2e2;
+}
+
+.settingSeat {
+  background-color: #b0ce79;
+}
+
+.simsim {
+  background-color: #b0ce79;
 }
