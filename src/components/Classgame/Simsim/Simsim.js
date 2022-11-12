@@ -1,12 +1,24 @@
 import React, { useState, useEffect } from "react";
 import classes from "./Simsim.module.css";
 import { dbService } from "../../../fbase";
-import { collection, doc, getDoc, onSnapshot, query } from "firebase/firestore";
+import {
+  arrayRemove,
+  arrayUnion,
+  updateDoc,
+  collection,
+  doc,
+  getDoc,
+  onSnapshot,
+  query,
+} from "firebase/firestore";
+import LikeBtn from "./LikeBtn";
 
 const Simsim = (props) => {
   const [simsim, setSimsim] = useState([]);
-  const [nowOnSim, setNowOnSim] = useState({});
+  const [nowOnSimsim, setNowOnSimsim] = useState({});
   const [userInfo, setUserInfo] = useState({});
+  const [addNew, setAddNew] = useState(false);
+  const [like, setLike] = useState();
 
   const getSimsimFromDb = () => {
     let queryWhere = query(collection(dbService, "simsim"));
@@ -41,41 +53,113 @@ const Simsim = (props) => {
   }, []);
 
   useEffect(() => {
-    setNowOnSim(simsim[0]);
+    setNowOnSimsim(simsim[0]);
   }, [simsim]);
 
+  useEffect(() => {
+    nowOnSimsim?.like?.filter((user) => user === props.userUid).length === 0
+      ? setLike(false)
+      : setLike(true);
+  }, [nowOnSimsim]);
+
+  //라이크를 변경하는 함수, 값을 찾아서 업데이트
+  const changeLikeHandler = async () => {
+    const nowOnRef = doc(dbService, "simsim", nowOnSimsim.doc_id);
+    setLike((prev) => !prev);
+
+    if (like) {
+      await updateDoc(nowOnRef, {
+        like: arrayRemove(props.userUid),
+      });
+    } else {
+      await updateDoc(nowOnRef, {
+        like: arrayUnion(props.userUid),
+      });
+    }
+  };
+
   return (
-    <div className={classes["container-div"]}>
-      <div className={classes["image-div"]}>
-        {nowOnSim?.image === "" ? (
-          <div className={classes["insteadText-div"]}>
-            {nowOnSim?.insteadText}
-          </div>
+    <>
+      <div>
+        {/* 심심글작성하기 */}
+        <button
+          className={classes["simsimAdd-btn"]}
+          onClick={() => {
+            setAddNew((prev) => !prev);
+          }}
+        >
+          {addNew ? (
+            <i className="fa-solid fa-xmark"></i>
+          ) : (
+            <i className="fa-solid fa-plus"></i>
+          )}
+        </button>
+      </div>
+
+      {/* 내용 보여줄 부분 */}
+      <div className={classes["container-div"]}>
+        {!addNew ? (
+          <>
+            {/* 이미지가 없는 글만 있는 자료의 경우 이미지 대신 insteadText(최대 100자)를 메인에 넣어줌 */}
+            <div className={classes["image-div"]}>
+              {nowOnSimsim?.image === "" ? (
+                <div className={classes["insteadText-div"]}>
+                  {nowOnSimsim?.insteadText}
+                </div>
+              ) : (
+                // 이미지있을 경우 넣어줌
+                <img alt="" src={nowOnSimsim?.image} />
+              )}
+            </div>
+
+            <div className={classes["user-like-div"]}>
+              {/* 글쓴이 프로필이미지 */}
+              <div className={classes["userImage-div"]}>
+                <img
+                  className={classes["userImage-img"]}
+                  alt=""
+                  src={props.image}
+                />
+              </div>
+              {/* 글쓴이정보 */}
+              <div className={classes["user-div"]}>
+                <div className={classes["nickName-div"]}>
+                  {nowOnSimsim?.nickName}
+                </div>
+                <div className={classes["stateMessage-div"]}>
+                  {nowOnSimsim?.stateMessage}
+                </div>
+              </div>
+              {/* 좋아요 버튼 */}
+              <div className={classes["like-div"]}>
+                <LikeBtn like={like} changeLike={changeLikeHandler} />
+                <div>{nowOnSimsim?.like?.length}</div>
+              </div>
+            </div>
+
+            {/* 설명텍스트란 최대 30자 */}
+            <div className={classes["text-div"]}>
+              <span className={classes["text-span"]}>
+                {nowOnSimsim?.descText}
+              </span>
+            </div>
+          </>
         ) : (
-          <img alt="" src={nowOnSim?.image} />
+          <>
+            {/* 먼저 닉네임 있는지 확인하고 없으면 swal로 띄워서 해당화면으로 보냄. */}
+
+            {/* 파일첨부버튼 먼저 보여주고 o,x 조건에 따라 화면 구성을 다르게... 첨부일 경우 파일첨부image, 설명텍스트descText, 입력하는 창 */}
+
+            {/* 첨부가 아닌경우 100자 insteadText 입력하고 부가 설명descText입력하는 창 */}
+
+            {/* 저장버튼은 공용 */}
+            <div>새로운거 입력하는 화면</div>
+          </>
         )}
 
-        {/* 보여줄 이미지 부분 수정 */}
+        <p className={classes["p"]}>* 개발중입니다!</p>
       </div>
-      <div className={classes["user-like-div"]}>
-        <div className={classes["userImage-div"]}>
-          <img className={classes["userImage-img"]} alt="" src={props.image} />
-        </div>
-        <div className={classes["user-div"]}>
-          <div className={classes["nickName-div"]}>{nowOnSim?.nickName}</div>
-          <div className={classes["stateMessage-div"]}>
-            {nowOnSim?.stateMessage}
-          </div>
-        </div>
-        <div className={classes["like-div"]}>
-          <i className="fa-regular fa-heart"></i>
-        </div>
-      </div>
-
-      <div className={classes["text-div"]}>{nowOnSim?.descText}</div>
-
-      <p className={classes["p"]}>* 개발중입니다!</p>
-    </div>
+    </>
   );
 };
 
