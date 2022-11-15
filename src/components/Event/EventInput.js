@@ -29,7 +29,7 @@ const EventInput = (props) => {
       Swal.fire({
         icon: "error",
         title: "입력 불가",
-        text: "글자수를 초과했어요! 내용을 줄여주세요.",
+        text: `글자수를 초과했어요! 내용을 ${maxlength}자 이내로 줄여주세요.`,
         confirmButtonText: "확인",
         confirmButtonColor: "#85bd82",
         timer: 5000,

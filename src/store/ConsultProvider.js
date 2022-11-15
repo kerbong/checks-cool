@@ -83,11 +83,11 @@ const ConsultProvider = (props) => {
       );
       onSnapshot(q, (snapShot) => {
         snapShot.docs.map((doc) => {
-          const attendObj = {
+          const consultObj = {
             ...doc.data(),
             doc_id: doc.id,
           };
-          return dispatchConsultAction({ type: "ADD", data: attendObj });
+          return dispatchConsultAction({ type: "ADD", data: consultObj });
         });
       });
     } else {

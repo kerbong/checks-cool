@@ -91,7 +91,7 @@ const ConsultLists = (props) => {
   };
 
   const yearMonthDay = (yyyymmdd) => {
-    const year = yyyymmdd.split("-")[0];
+    const year = yyyymmdd.split("-")[0].slice(2);
     const month = yyyymmdd.split("-")[1].replace(/(^0+)/, "");
     const day = yyyymmdd.split("-")[2].replace(/(^0+)/, "");
     return year + "년 " + month + "월 " + day + "일  ";
@@ -213,8 +213,7 @@ const ConsultLists = (props) => {
                     <div className={classes.fileArea}>
                       <img
                         src={consult.attachedFileUrl}
-                        width="100%"
-                        max-height="20vh"
+                        height="400px"
                         alt="filePreview"
                       />
                     </div>

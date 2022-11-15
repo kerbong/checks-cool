@@ -30,7 +30,7 @@ const Input = React.forwardRef((props, ref) => {
           key={"textArea" + props.myKey}
           ref={noteRef}
           {...props.input}
-          className={props.className}
+          className={classes[props.className]}
           onKeyDown={() => handleResizeHeight(this)}
           onKeyUp={() => handleResizeHeight(this)}
           onClick={() => handleResizeHeight(this)}
@@ -38,6 +38,7 @@ const Input = React.forwardRef((props, ref) => {
           onInput={props.onInput}
           required={props.required ? true : false}
           onChange={changeHandler}
+          placeholder={props.placeholder || ""}
         />
       ) : (
         <input
@@ -51,6 +52,7 @@ const Input = React.forwardRef((props, ref) => {
           {...props.input}
           defaultValue={value}
           onChange={changeHandler}
+          placeholder={props.placeholder || ""}
         />
       )}
     </>

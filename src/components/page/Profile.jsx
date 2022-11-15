@@ -117,6 +117,9 @@ const Profile = (props) => {
           onclick={userInfoSaveHandler}
         />
       </form>
+      <p className={classes["explain-p"]}>
+        * 메뉴의 "On" 👉 "프로필 수정" 을 통해 현재 페이지로 이동이 가능합니다.{" "}
+      </p>
     </div>
   );
 };

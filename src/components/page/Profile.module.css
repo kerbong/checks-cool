@@ -31,3 +31,8 @@
   resize: none;
   border-radius: 5px;
 }
+
+.explain-p {
+  margin: 10px;
+  word-break: keep-all;
+}

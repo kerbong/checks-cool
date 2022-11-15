@@ -236,7 +236,7 @@ const AttendanceForm = (props) => {
             <Input
               ref={noteRef}
               id={"textArea"}
-              className={classes.input}
+              className={"attendForm-input"}
               label="inputData"
               input={{
                 type: "textarea",

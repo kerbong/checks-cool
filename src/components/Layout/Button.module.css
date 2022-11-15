@@ -251,3 +251,17 @@
   border-radius: 5px;
   border-width: 0;
 }
+
+.saveSimsim-btn {
+  padding: 10px;
+  color: #ffffff;
+  background-color: #ff7920c2;
+  border-width: 0;
+  font-size: 1.3rem;
+  width: 50px;
+  height: 50px;
+  border-radius: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

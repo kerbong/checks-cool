@@ -2,4 +2,13 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-direction: column;
+  margin: 10px;
+}
+
+.previewImg {
+  height: 70%;
+  width: 90%;
+  object-fit: cover;
+  margin-bottom: 10px;
 }

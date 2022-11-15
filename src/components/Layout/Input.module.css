@@ -18,3 +18,26 @@ input {
   text-align: center;
   font-size: 4rem;
 }
+
+.simsim-Text {
+  width: 80vw;
+  font-size: 1.3rem;
+  padding: 15px;
+  height: 47px;
+}
+
+.class-memo {
+  height: 23px;
+  width: 65%;
+  margin-left: 10px;
+  margin-bottom: 5px;
+  padding: 10px;
+  overflow-y: hidden;
+  resize: none;
+}
+
+.attendForm-input {
+  width: 90%;
+  padding: 10px;
+  height: 26px;
+}
