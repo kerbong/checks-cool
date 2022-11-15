@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/checks-cool/static/css/main.8c78cd2f.css",
-    "main.js": "/checks-cool/static/js/main.f29b75d5.js",
+    "main.css": "/checks-cool/static/css/main.521447c0.css",
+    "main.js": "/checks-cool/static/js/main.145f2b8e.js",
     "static/media/GowunDodum-Regular.ttf": "/checks-cool/static/media/GowunDodum-Regular.39c9a39c246c3c54c53e.ttf",
     "static/media/list.gif": "/checks-cool/static/media/list.8fffec1112ca3ad4d287.gif",
     "static/media/listMemo.gif": "/checks-cool/static/media/listMemo.9b1e9fbe144c9fd5c575.gif",
@@ -16,11 +16,11 @@
     "static/media/todayTodo.gif": "/checks-cool/static/media/todayTodo.538cb7bb82a6b9a8bd5c.gif",
     "static/media/excel-example.jpg": "/checks-cool/static/media/excel-example.66aceb798fc318121a7b.jpg",
     "index.html": "/checks-cool/index.html",
-    "main.8c78cd2f.css.map": "/checks-cool/static/css/main.8c78cd2f.css.map",
-    "main.f29b75d5.js.map": "/checks-cool/static/js/main.f29b75d5.js.map"
+    "main.521447c0.css.map": "/checks-cool/static/css/main.521447c0.css.map",
+    "main.145f2b8e.js.map": "/checks-cool/static/js/main.145f2b8e.js.map"
   },
   "entrypoints": [
-    "static/css/main.8c78cd2f.css",
-    "static/js/main.f29b75d5.js"
+    "static/css/main.521447c0.css",
+    "static/js/main.145f2b8e.js"
   ]
 }
