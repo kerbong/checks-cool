@@ -27,15 +27,15 @@ const Simsim = (props) => {
   const [addNew, setAddNew] = useState(false);
   const [like, setLike] = useState(false);
   const [hasUserInfo, setHasUserInfo] = useState(false);
-  const [contentNum, setContentNum] = useState();
+  const [contentNum, setContentNum] = useState(0);
   const [simsimLength, setSimsimLength] = useState(0);
 
   let navigate = useNavigate();
 
   const getSimsimFromDb = () => {
     let queryWhere = query(collection(dbService, "simsim"));
-
     onSnapshot(queryWhere, (snapShot) => {
+      setSimsim([]);
       snapShot.docs.map((doc) => {
         let itemObj = {
           ...doc.data(),
@@ -69,9 +69,8 @@ const Simsim = (props) => {
 
   useEffect(() => {
     setSimsimLength(simsim.length);
-    setContentNum(0);
+    // setContentNum(0);
     setNowOnSimsim(simsim[contentNum]);
-    checkSetLike();
   }, [simsim]);
 
   useEffect(() => {
@@ -79,7 +78,6 @@ const Simsim = (props) => {
   }, [nowOnSimsim]);
 
   useEffect(() => {
-    console.log(contentNum);
     //simsim자료에서 다음 이전 번호로 넘김
     if (contentNum < simsimLength && contentNum >= 0) {
       setNowOnSimsim(simsim[contentNum]);
