@@ -33,7 +33,7 @@ const Attendance = (props) => {
           selectOption={props.selectOption}
           attendDate={attendDate}
           about={props.about}
-          Context={props.Context}
+          addData={(data) => props.addData(data)}
           userUid={props.userUid}
           who={props.who}
           onClose={props.onClose}

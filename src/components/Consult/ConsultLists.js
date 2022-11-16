@@ -1,21 +1,64 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import classes from "./ConsultLists.module.css";
 import Button from "components/Layout/Button";
 import ConsultEdit from "./ConsultEdit";
+import { dbService } from "../../fbase";
+import { collection, query, onSnapshot, where } from "firebase/firestore";
 
 const ConsultLists = (props) => {
   const [consults, setConsults] = useState([]);
+  const [nowOnConsult, setNowOnConsult] = useState([]);
   const [showEditor, setShowEditor] = useState("");
   const [initTextareaHeight, setInitTextareaHeight] = useState("");
   const [showPastFirst, setShowPastFirst] = useState(false);
-  const [studentsOnConsults, setStudentsOnConsults] = useState([]);
   const [searchYear, setSearchYear] = useState(
     String(new Date().getFullYear())
   );
   const [dataYears, setDataYears] = useState([]);
+  const [studentsOnConsults, setStudentsOnConsults] = useState([]);
 
-  const anyContext = useContext(props.context);
+  //상담자료 받아오기
+  const getConsultFromDb = () => {
+    let q = query(
+      collection(dbService, "consult"),
+      where("writtenId", "==", props.userUid)
+    );
+
+    onSnapshot(q, (snapShot) => {
+      const new_consults = [];
+      const years = [];
+      snapShot.docs.forEach((doc) => {
+        const itemObj = {
+          ...doc.data(),
+          doc_id: doc.id,
+        };
+        years.push(doc.data().id.slice(0, 4));
+        if (doc.data().id.slice(0, 4) !== searchYear) {
+          return false;
+        }
+        new_consults.push(itemObj);
+      });
+
+      setDataYears([...new Set(years)]);
+      setConsults([...new_consults]);
+    });
+  };
+
+  useEffect(() => {
+    getConsultFromDb();
+  }, [searchYear]);
+
+  useEffect(() => {
+    setNowOnConsult([...consults]);
+    timeSortedHandler("up", true);
+  }, [consults]);
+
+  useEffect(() => {
+    setStudentsOnConsults([
+      ...new Set(consults.map((data) => data.student_name)),
+    ]);
+  }, [consults]);
 
   function sortDate(consult, upOrDown) {
     const sorted_consults = consult.sort(function (a, b) {
@@ -27,34 +70,8 @@ const ConsultLists = (props) => {
     if (upOrDown === "up") {
       sorted_consults.reverse();
     }
-
     return sorted_consults;
   }
-
-  const getConsults = () => {
-    if (anyContext) {
-      //세팅된 년도의 자료만 걸러냄
-      let yearData = [];
-      let years = [];
-      anyContext.datas.forEach((data) => {
-        years.push(data.id.slice(0, 4));
-        if (data.id.slice(0, 4) === searchYear) {
-          yearData.push(data);
-        }
-      });
-      setDataYears([...new Set(years)]);
-
-      let sorted_datas = sortDate(yearData, "up");
-      setConsults([...sorted_datas]);
-      setStudentsOnConsults([
-        ...new Set(sorted_datas.map((data) => data.student_name)),
-      ]);
-    }
-  };
-
-  useEffect(() => {
-    getConsults();
-  }, [searchYear]);
 
   const deleteConsult = (consult) => {
     Swal.fire({
@@ -79,7 +96,7 @@ const ConsultLists = (props) => {
           timer: 5000,
         });
 
-        anyContext.removeData(consult.id, consult.attachedFileUrl);
+        props.deleteConsult(consult.doc_id, consult.attachedFileUrl);
       }
     });
   };
@@ -98,10 +115,10 @@ const ConsultLists = (props) => {
   };
 
   const timeSortedHandler = (upOrDown, tOrF) => {
-    if (consults.length === 1) {
+    if (nowOnConsult.length === 1) {
       return;
     }
-    setConsults((prev) => sortDate(prev, upOrDown));
+    setNowOnConsult((prev) => sortDate(prev, upOrDown));
     setShowPastFirst(tOrF);
   };
 
@@ -109,20 +126,19 @@ const ConsultLists = (props) => {
     const student = e.target.value;
     let list;
     if (student === "전체학생") {
-      list = sortDate(anyContext.datas, "up");
+      list = sortDate(consults, "up");
       setShowPastFirst(false);
     } else {
       list = sortDate(
-        anyContext.datas.filter((data) => data.student_name === student),
+        consults?.filter((data) => data.student_name === student),
         "up"
       );
     }
-    setConsults(list);
+    setNowOnConsult(list);
   };
 
   const searchYearHandler = (e) => {
     const year = e.target.value;
-    console.log(year);
     setSearchYear(year);
   };
 
@@ -133,13 +149,13 @@ const ConsultLists = (props) => {
         <div className={classes["select-area"]}>
           <select
             name="searchYear-selcet"
-            defaultValue={searchYear}
+            defaultValue={props.searchYear}
             onChange={searchYearHandler}
           >
             <option value="" disabled>
               --년도--
             </option>
-            {dataYears.map((year) => (
+            {dataYears?.map((year) => (
               <option value={year} key={year}>
                 {year}년
               </option>
@@ -148,14 +164,14 @@ const ConsultLists = (props) => {
           <select
             name="student-selcet"
             className={classes[`student-select`]}
-            defaultValue={""}
+            defaultValue={"전체학생"}
             onChange={consultsHandler}
           >
             <option value="" disabled>
               --학생--
             </option>
             <option value="전체학생">전체보기</option>
-            {studentsOnConsults.map((student) => (
+            {studentsOnConsults?.map((student) => (
               <option value={student} key={student}>
                 {student}
               </option>
@@ -182,8 +198,8 @@ const ConsultLists = (props) => {
           />
         )}
       </div>
-      {consults &&
-        consults.map((consult) => (
+      {nowOnConsult &&
+        nowOnConsult.map((consult) => (
           <div key={consult.id}>
             <li key={consult.id} className={classes.listArea} id={consult.id}>
               {showEditor === consult.id ? (
@@ -193,6 +209,7 @@ const ConsultLists = (props) => {
                   cancelEditor={() => setShowEditor("")}
                   context={props.context}
                   initTextareaHeight={initTextareaHeight}
+                  addData={(data) => props.addData(data)}
                 />
               ) : (
                 <div key={consult.id + "item"}>

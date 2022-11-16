@@ -101,3 +101,10 @@
   color: #6a646414;
   padding: 100px 60px 100px 0;
 }
+
+.p {
+  margin: 15px;
+  line-height: 35px;
+  word-break: keep-all;
+  text-align: left;
+}

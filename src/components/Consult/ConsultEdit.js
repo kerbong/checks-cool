@@ -1,10 +1,4 @@
-import React, {
-  useCallback,
-  useRef,
-  useState,
-  useContext,
-  useEffect,
-} from "react";
+import React, { useState } from "react";
 import classes from "./ConsultLists.module.css";
 import FileForm from "components/Layout/FileForm";
 import Button from "components/Layout/Button";
@@ -13,8 +7,9 @@ import Swal from "sweetalert2";
 
 const ConsultEdit = (props) => {
   const consult = props.consult;
-  const [attachedFileUrl, setAttachedFileUrl] = useState("");
-  const anyContext = useContext(props.context);
+  const [attachedFileUrl, setAttachedFileUrl] = useState(
+    consult.attachedFileUrl
+  );
 
   const cancelEdit = () => {
     props.cancelEditor();
@@ -55,7 +50,7 @@ const ConsultEdit = (props) => {
     }
 
     //context랑 firestore & Storage에 수정하기
-    anyContext.addData(new_data);
+    props.addData(new_data);
 
     Swal.fire({
       icon: "success",

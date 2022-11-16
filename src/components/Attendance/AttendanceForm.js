@@ -26,7 +26,6 @@ const AttendanceForm = (props) => {
   const [option, setOption] = useState("");
   const [inputIsShown, setInputIsShown] = useState(false);
   const [attendEvents, setAttendEvents] = useState([]);
-  const anyContext = useContext(props.Context);
   const noteRef = useRef(null);
 
   const getAttendEventsFromDb = () => {
@@ -118,7 +117,7 @@ const AttendanceForm = (props) => {
         attachedFileUrl: attachedFile,
       };
 
-      anyContext.addData(new_data);
+      props.addData(new_data);
     } else if (props.about === "attendance") {
       let start;
       let end;

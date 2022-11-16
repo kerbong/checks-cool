@@ -13,6 +13,7 @@ import {
   onSnapshot,
   query,
   addDoc,
+  orderBy,
 } from "firebase/firestore";
 
 import Swal from "sweetalert2";
@@ -33,7 +34,10 @@ const Simsim = (props) => {
   let navigate = useNavigate();
 
   const getSimsimFromDb = () => {
-    let queryWhere = query(collection(dbService, "simsim"));
+    let queryWhere = query(
+      collection(dbService, "simsim"),
+      orderBy("id", "desc")
+    );
     onSnapshot(queryWhere, (snapShot) => {
       setSimsim([]);
       snapShot.docs.map((doc) => {
@@ -244,7 +248,7 @@ const Simsim = (props) => {
     Swal.fire({
       icon: "success",
       title: "작성 성공",
-      text: "심심헤요에 글이 성공적으로 작성되었습니다.",
+      text: "심심해요에 글이 성공적으로 작성되었습니다.",
       confirmButtonText: "확인",
       confirmButtonColor: "#85bd82",
       showDenyButton: false,
@@ -307,10 +311,15 @@ const Simsim = (props) => {
             {/* 저장버튼은 공용 */}
           </>
         )}
-
+        <div>
+          <hr />
+        </div>
         <p className={classes["p"]}>
           * 화면 중앙의 우측, 혹은 좌측 부분을 클릭하시면 다음, 이전 내용으로
           이동합니다.
+        </p>
+        <p className={classes["p"]}>
+          * 좋아요 버튼은 4초에 한 번만 상태 변경이 가능합니다.
         </p>
       </div>
     </>
