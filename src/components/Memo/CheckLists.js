@@ -17,6 +17,7 @@ import {
   deleteDoc,
   doc,
 } from "firebase/firestore";
+import { utils, writeFile } from "xlsx";
 
 const CheckLists = (props) => {
   const [addCheckItem, setAddCheckItem] = useState(false);
@@ -201,6 +202,28 @@ const CheckLists = (props) => {
     setSearchYear(year);
   };
 
+  //엑셀로 저장하기 함수
+  const saveExcelHandler = () => {
+    const book = utils.book_new();
+    console.log(listMemo);
+    listMemo.forEach((memo) => {
+      const new_datas = [];
+      memo.data.forEach((stud) => {
+        let data = [stud.student_num, stud.memo];
+        new_datas.push(data);
+      });
+      new_datas.unshift(["번호", "기록내용"]);
+      //새로운 가상 엑셀파일 생성
+      const listMemo_datas = utils.aoa_to_sheet(new_datas);
+      //셀의 넓이 지정
+      listMemo_datas["!cols"] = [{ wpx: 40 }, { wpx: 150 }];
+      //시트에 작성한 데이터 넣기
+      utils.book_append_sheet(book, listMemo_datas, `${memo.title}`);
+    });
+
+    writeFile(book, `개별기록(${searchYear}).xlsx`);
+  };
+
   return (
     <>
       {props.about === "checkLists" && (
@@ -317,27 +340,23 @@ const CheckLists = (props) => {
               />
             </Modal>
           )}
-          <select
-            style={{
-              position: "absolute",
-              width: "80px",
-              left: "15px",
-              marginTop: "5px",
-            }}
-            name="searchYear-selcet"
-            defaultValue={searchYear}
-            onChange={searchYearHandler}
-          >
-            <option value="" disabled>
-              --년도--
-            </option>
-            {dataYears.map((year) => (
-              <option value={year} key={year}>
-                {year}년
+
+          <div className={classes["listMemoBtn-div"]}>
+            <select
+              className={classes["listMemo-select"]}
+              name="searchYear-selcet"
+              defaultValue={searchYear}
+              onChange={searchYearHandler}
+            >
+              <option value="" disabled>
+                --년도--
               </option>
-            ))}
-          </select>
-          <div>
+              {dataYears.map((year) => (
+                <option value={year} key={year}>
+                  {year}년
+                </option>
+              ))}
+            </select>
             <Button
               name={"추가하기"}
               id={"add-listMemoBtn"}
@@ -346,6 +365,12 @@ const CheckLists = (props) => {
                 setItem([]);
                 setAddListMemo(true);
               }}
+            />
+            <Button
+              name={"엑셀저장"}
+              id={"save-listMemoBtn"}
+              className={"add-event-button"}
+              onclick={saveExcelHandler}
             />
           </div>
           <div>

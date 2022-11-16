@@ -99,3 +99,13 @@
   width: 40%;
   text-align: -webkit-center;
 }
+
+.listMemo-select {
+  width: auto;
+}
+
+.listMemoBtn-div {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}

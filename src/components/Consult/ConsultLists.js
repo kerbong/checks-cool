@@ -5,6 +5,7 @@ import Button from "components/Layout/Button";
 import ConsultEdit from "./ConsultEdit";
 import { dbService } from "../../fbase";
 import { collection, query, onSnapshot, where } from "firebase/firestore";
+import { utils, writeFile } from "xlsx";
 
 const ConsultLists = (props) => {
   const [consults, setConsults] = useState([]);
@@ -142,6 +143,44 @@ const ConsultLists = (props) => {
     setSearchYear(year);
   };
 
+  //엑셀로 저장하기 함수
+  const saveExcelHandler = () => {
+    const new_datas = [];
+    consults.forEach((consult) => {
+      let data = [
+        consult.student_num,
+        consult.student_name,
+        consult.option.slice(1),
+        `${consult.id.slice(0, 10)} ${consult.id.slice(10, 15)}`,
+        consult.note,
+      ];
+      new_datas.push(data);
+    });
+    new_datas.unshift([
+      "번호",
+      "이름",
+      "관련",
+      "날짜(년월일 시각)",
+      "기록내용",
+    ]);
+
+    //새로운 가상 엑셀파일 생성
+    const book = utils.book_new();
+    const consult_datas = utils.aoa_to_sheet(new_datas);
+    //셀의 넓이 지정
+    consult_datas["!cols"] = [
+      { wpx: 40 },
+      { wpx: 60 },
+      { wpx: 60 },
+      { wpx: 100 },
+      { wpx: 150 },
+    ];
+    //시트에 작성한 데이터 넣기
+    utils.book_append_sheet(book, consult_datas, "상담기록");
+
+    writeFile(book, `상담기록(${searchYear}).xlsx`);
+  };
+
   return (
     <>
       {/* 정렬하는 부분 */}
@@ -197,6 +236,12 @@ const ConsultLists = (props) => {
             }}
           />
         )}
+        <Button
+          id={"saveExcel"}
+          className={"sortBtn"}
+          name={"엑셀저장"}
+          onclick={saveExcelHandler}
+        />
       </div>
       {nowOnConsult &&
         nowOnConsult.map((consult) => (
