@@ -85,3 +85,19 @@
   object-fit: cover;
   margin-bottom: 10px;
 }
+
+.image-next {
+  position: absolute;
+  right: 10px;
+  font-size: 3rem;
+  color: #6a646414;
+  padding: 100px 0 100px 60px;
+}
+
+.image-prev {
+  position: absolute;
+  left: 10px;
+  font-size: 3rem;
+  color: #6a646414;
+  padding: 100px 60px 100px 0;
+}

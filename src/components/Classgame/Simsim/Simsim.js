@@ -103,7 +103,7 @@ const Simsim = (props) => {
     let likeOrNot = nowOnSimsim?.like?.filter(
       (user) => user === props.userUid
     ).length;
-    console.log(likeOrNot);
+
     if (likeOrNot > 0) {
       setLike(true);
     } else {
@@ -286,6 +286,8 @@ const Simsim = (props) => {
               like={like}
               nowOnSimsim={nowOnSimsim}
               key={nowOnSimsim?.id}
+              prev={prev}
+              next={next}
             />
           </>
         ) : (
@@ -306,7 +308,10 @@ const Simsim = (props) => {
           </>
         )}
 
-        <p className={classes["p"]}>* 개발중입니다!</p>
+        <p className={classes["p"]}>
+          * 화면 중앙의 우측, 혹은 좌측 부분을 클릭하시면 다음, 이전 내용으로
+          이동합니다.
+        </p>
       </div>
     </>
   );

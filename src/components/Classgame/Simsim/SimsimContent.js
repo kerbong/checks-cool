@@ -8,6 +8,10 @@ const SimsimContent = (props) => {
       {" "}
       {/* 이미지가 없는 글만 있는 자료의 경우 이미지 대신 insteadText(최대 100자)를 메인에 넣어줌 */}
       <div className={classes["image-div"]}>
+        <div className={classes["image-prev"]} onClick={() => props.prev()}>
+          <i className="fa-solid fa-chevron-left"></i>
+        </div>
+
         {props.nowOnSimsim?.image === "" ? (
           <div className={classes["insteadText-div"]}>
             {props.nowOnSimsim?.insteadText}
@@ -20,6 +24,9 @@ const SimsimContent = (props) => {
             className={classes["previewImg"]}
           />
         )}
+        <div className={classes["image-next"]} onClick={() => props.next()}>
+          <i className="fa-solid fa-chevron-right"></i>
+        </div>
       </div>
       <div className={classes["user-like-div"]}>
         {/* 글쓴이 프로필이미지 */}
