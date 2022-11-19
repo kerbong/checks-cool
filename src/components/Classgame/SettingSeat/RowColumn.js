@@ -25,9 +25,17 @@ const RowColumn = (props) => {
 
   return (
     <>
+      <button
+        className={classes["seatsAdd-btn"]}
+        onClick={() => {
+          props.addNewCancel();
+        }}
+      >
+        <i className="fa-solid fa-xmark"></i>
+      </button>
       <form onSubmit={submitHandler}>
         <div className={classes["input-div"]}>
-          <span>
+          <span style={{ marginTop: "-60px" }}>
             <span className={classes["input-span"]}>가로</span>
             <Input
               input={{ id: "row-input" }}

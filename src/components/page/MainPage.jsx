@@ -15,8 +15,8 @@ import ClassItem from "../Main/ClassItem";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import ExampleModal from "./ExampleModal";
-
 import ocrGif from "../../assets/student/ocrGif.gif";
+import new_seatSetting from "../../assets/notice/new_seatSetting.jpg";
 
 //오늘 날짜 yyyy-mm-dd로 만들기
 const getDateHandler = (date, titleOrQuery) => {
@@ -51,6 +51,10 @@ const MainPage = (props) => {
     classMemo: [],
   });
   const [hideClassTable, setHideClassTable] = useState(false);
+  //업데이트 내용 보여주기 로컬스토리지에서 showNotice를 스트링으로 저장해서 확인 후에 이전에 봤으면 안보여주기
+  const [showNotice, setShowNotice] = useState(
+    localStorage.getItem("showNotice") === "seatSetting" ? false : true
+  );
 
   let classLists = ["1", "2", "3", "4", "5", "6"];
 
@@ -378,6 +382,41 @@ const MainPage = (props) => {
         />
       )}
 
+      {/* //update 업데이트 시 보여줄 팝업창 */}
+      {showNotice && (
+        <ExampleModal
+          onClose={() => {
+            localStorage.setItem("showNotice", "seatSetting");
+            setShowNotice(false);
+          }}
+          imgSrc={new_seatSetting}
+          text={
+            <>
+              <p
+                style={{
+                  fontSize: "1.3em",
+                  textAlign: "center",
+                  margin: "5px",
+                }}
+              >
+                ==== 업 데 이 트 ====
+              </p>
+              <p className={`${classes.p} ${classes.top}`}>
+                * 메뉴의 "잼잼" => "자리뽑기"에서 재미있게 자리를 뽑아보세요!
+              </p>
+            </>
+          }
+          bottomText={
+            <>
+              <p className={classes.p}>
+                * 화면 우측 상단의 <i className="fa-solid fa-user"></i> =>
+                "공지사항"에 들어오시면 내용을 다시 보실 수 있어요.
+              </p>
+            </>
+          }
+        />
+      )}
+
       <div className={classes["events"]}>
         <h2 className={classes["events-dateArea"]}>
           <span
@@ -611,9 +650,10 @@ const MainPage = (props) => {
         </div>
       </div>
 
-      <p>* 처음오시면 먼저 학생명부를 입력해주세요!</p>
-      <p>* 입력/확인이 필요한 부분을 누르시면 해당 메뉴로 이동합니다.</p>
-      <p>* 메뉴의 곰돌이를 누르면 현재 화면으로 오실 수 있어요!</p>
+      <p className={classes.p}>* 처음오시면 먼저 학생명부를 입력해주세요!</p>
+      <p className={classes.p}>
+        * 메뉴의 곰돌이를 누르면 현재 화면으로 오실 수 있어요!
+      </p>
     </div>
   );
 };

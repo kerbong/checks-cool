@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 const HeaderProfileBtn = (props) => {
   const [showDropdown, setShowDropdown] = useState(false);
 
-  //드롭다운 시간지나면 자동으로 사라지게
+  //드롭다운 후 5초 후에 해당 버튼이 클릭되거나 메뉴를 누르지 않아 상태 변경이 되지 않은 경우 상태 변경하기
   // const dropdownAutoHide = setTimeout(() => {
   //   setShowDropdown(false);
   //   return 0;
@@ -62,12 +62,22 @@ const HeaderProfileBtn = (props) => {
             <li
               className={classes["profile-dropdown-li"]}
               onClick={() => {
+                navigate(`/${"notice"}`);
+                setShowDropdown(false);
+              }}
+            >
+              공지사항
+            </li>
+            <li
+              className={classes["profile-dropdown-li"]}
+              onClick={() => {
                 navigate(`/${"profile"}`);
                 setShowDropdown(false);
               }}
             >
               프로필 수정
             </li>
+
             <li
               className={classes["profile-dropdown-li"]}
               onClick={() => {

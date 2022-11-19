@@ -114,3 +114,14 @@
   margin-right: 15px;
   font-size: 0.9em;
 }
+
+.p {
+  margin: 10px;
+  line-height: 35px;
+  word-break: keep-all;
+}
+
+.top {
+  font-size: 1.1rem;
+  text-align: center;
+}

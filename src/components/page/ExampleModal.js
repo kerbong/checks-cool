@@ -12,6 +12,7 @@ const ExampleModal = (props) => {
       <div className={classes["img-div"]}>
         <img src={props.imgSrc} className={classes.img} alt="exampleGif" />
       </div>
+      <div>{props.bottomText}</div>
     </Modal>
   );
 };

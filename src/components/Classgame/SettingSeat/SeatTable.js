@@ -362,7 +362,15 @@ const SeatTable = (props) => {
         </div>
       )}
 
-      <div>
+      <button
+        className={classes["seatsAdd-btn"]}
+        onClick={() => {
+          props.addNewCancel();
+        }}
+      >
+        <i className="fa-solid fa-xmark"></i>
+      </button>
+      <div className={classes["mt--20"]}>
         {students.length > 0 ? (
           <>
             남은학생 ({students.length})

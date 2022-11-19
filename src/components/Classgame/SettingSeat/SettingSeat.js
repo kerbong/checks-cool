@@ -67,12 +67,17 @@ const SettingSeat = (props) => {
             setShowTable(true);
             setRowColumn(`${row}-${col}`);
           }}
+          addNewCancel={() => {
+            setAddNew(false);
+            setShowTable(false);
+            setInit(true);
+          }}
         />
       )}
 
       {addNew && showTable && (
         <>
-          <div className={classes["title-div"]}></div>
+          <div className={`${classes["title-div"]} ${classes["mt--20"]}`}></div>
 
           <SeatTable
             rowColumn={rowColumn}

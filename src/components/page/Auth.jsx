@@ -22,12 +22,12 @@ const Auth = () => {
 
   useEffect(() => {
     const isKakao = navigator.userAgent.match("KAKAOTALK");
-    console.log(navigator.userAgent);
+    // console.log(navigator.userAgent);
     setIsKakaoLink(Boolean(isKakao));
   }, []);
 
   useEffect(() => {
-    console.log(isKakaoLink);
+    // console.log(isKakaoLink);
     if (isKakaoLink) {
       let text;
       const mobileType = navigator.userAgent.toLowerCase();
@@ -113,7 +113,7 @@ const Auth = () => {
       var filter = "win16|win32|win64|mac|macintel";
       if (filter.indexOf(navigator.platform.toLowerCase()) < 0) {
         // mobile 접속인 경우
-        console.log("모바일");
+        // console.log("모바일");
 
         await signInWithRedirect(authService, provider);
       } else {

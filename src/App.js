@@ -13,6 +13,7 @@ import MemoPage from "./components/page/MemoPage";
 import TodoPage from "./components/page/TodoPage";
 import Header from "./components/Layout/Header";
 import Profile from "./components/page/Profile";
+import Notice from "./components/page/Notice";
 
 import ConsultProvider from "./store/ConsultProvider";
 import Auth from "./components/page/Auth";
@@ -152,6 +153,8 @@ function App() {
                 />
 
                 <Route path="profile" element={<Profile user={user} />} />
+
+                <Route path="notice" element={<Notice />} />
               </>
             ) : (
               <>
