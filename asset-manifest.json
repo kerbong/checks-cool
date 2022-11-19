@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/checks-cool/static/css/main.6a66c7a1.css",
-    "main.js": "/checks-cool/static/js/main.7ec1a21b.js",
+    "main.js": "/checks-cool/static/js/main.263496ee.js",
     "static/media/GowunDodum-Regular.ttf": "/checks-cool/static/media/GowunDodum-Regular.39c9a39c246c3c54c53e.ttf",
     "static/media/list.gif": "/checks-cool/static/media/list.8fffec1112ca3ad4d287.gif",
     "static/media/listMemo.gif": "/checks-cool/static/media/listMemo.9b1e9fbe144c9fd5c575.gif",
@@ -17,10 +17,10 @@
     "static/media/excel-example.jpg": "/checks-cool/static/media/excel-example.66aceb798fc318121a7b.jpg",
     "index.html": "/checks-cool/index.html",
     "main.6a66c7a1.css.map": "/checks-cool/static/css/main.6a66c7a1.css.map",
-    "main.7ec1a21b.js.map": "/checks-cool/static/js/main.7ec1a21b.js.map"
+    "main.263496ee.js.map": "/checks-cool/static/js/main.263496ee.js.map"
   },
   "entrypoints": [
     "static/css/main.6a66c7a1.css",
-    "static/js/main.7ec1a21b.js"
+    "static/js/main.263496ee.js"
   ]
 }
