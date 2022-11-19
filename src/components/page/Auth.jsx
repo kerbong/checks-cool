@@ -1,5 +1,5 @@
 import React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   createUserWithEmailAndPassword,
   getAuth,
@@ -18,6 +18,38 @@ const Auth = () => {
   const [password, setPassword] = useState("");
   const [newAccount, setNewAccount] = useState(false);
   const [agreeTerms, setAgreeTerms] = useState(false);
+  const [isKakaoLink, setIsKakaoLink] = useState(false);
+
+  useEffect(() => {
+    const isKakao = navigator.userAgent.match("KAKAOTALK");
+    console.log(navigator.userAgent);
+    setIsKakaoLink(Boolean(isKakao));
+  }, []);
+
+  useEffect(() => {
+    console.log(isKakaoLink);
+    if (isKakaoLink) {
+      let text;
+      const mobileType = navigator.userAgent.toLowerCase();
+      //안드로이드폰에서 카톡링크로 접속하면
+      if (mobileType.indexOf("android") > -1) {
+        text = " ... 을 눌러 '다른 브라우저로 열기' ";
+        //아이폰에서 카톡링크로 접속하면
+      } else if (
+        mobileType.indexOf("iphone") > -1 ||
+        mobileType.indexOf("ipad") > -1
+      ) {
+        text = " '공유 버튼'을 눌러 'Safari로 열기' 등으";
+      }
+      Swal.fire({
+        icon: "error",
+        title: `연동 로그인 불가`,
+        text: `카카오톡 링크로 접속하면 구글 연동 로그인이 불가능합니다. 오른쪽 하단의 ${text}로 접속해주세요.`,
+        confirmButtonText: "확인",
+        confirmButtonColor: "#85bd82",
+      });
+    }
+  }, [isKakaoLink]);
 
   const onChange = (e) => {
     const {
@@ -81,7 +113,8 @@ const Auth = () => {
       var filter = "win16|win32|win64|mac|macintel";
       if (filter.indexOf(navigator.platform.toLowerCase()) < 0) {
         // mobile 접속인 경우
-        // console.log("mobile");
+        console.log("모바일");
+
         await signInWithRedirect(authService, provider);
       } else {
         if (
