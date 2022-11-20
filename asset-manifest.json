@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/checks-cool/static/css/main.6a66c7a1.css",
-    "main.js": "/checks-cool/static/js/main.5612fd77.js",
+    "main.css": "/checks-cool/static/css/main.b02456a5.css",
+    "main.js": "/checks-cool/static/js/main.cf269007.js",
     "static/media/GowunDodum-Regular.ttf": "/checks-cool/static/media/GowunDodum-Regular.39c9a39c246c3c54c53e.ttf",
     "static/media/list.gif": "/checks-cool/static/media/list.8fffec1112ca3ad4d287.gif",
     "static/media/listMemo.gif": "/checks-cool/static/media/listMemo.9b1e9fbe144c9fd5c575.gif",
@@ -13,14 +13,13 @@
     "static/media/typingGif.gif": "/checks-cool/static/media/typingGif.c6d50ee9644c8a559f48.gif",
     "static/media/show.gif": "/checks-cool/static/media/show.f910c419a32315624f87.gif",
     "static/media/consultAdd.gif": "/checks-cool/static/media/consultAdd.88e54d44455fc22d2a09.gif",
+    "static/media/new_seatSetting.jpg": "/checks-cool/static/media/new_seatSetting.dfc436a7d36433c41e6a.jpg",
     "static/media/todayTodo.gif": "/checks-cool/static/media/todayTodo.538cb7bb82a6b9a8bd5c.gif",
     "static/media/excel-example.jpg": "/checks-cool/static/media/excel-example.66aceb798fc318121a7b.jpg",
-    "index.html": "/checks-cool/index.html",
-    "main.6a66c7a1.css.map": "/checks-cool/static/css/main.6a66c7a1.css.map",
-    "main.5612fd77.js.map": "/checks-cool/static/js/main.5612fd77.js.map"
+    "index.html": "/checks-cool/index.html"
   },
   "entrypoints": [
-    "static/css/main.6a66c7a1.css",
-    "static/js/main.5612fd77.js"
+    "static/css/main.b02456a5.css",
+    "static/js/main.cf269007.js"
   ]
 }
