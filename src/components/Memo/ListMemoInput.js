@@ -26,12 +26,20 @@ const ListMemoInput = (props) => {
         title: memoTitle,
         data: [],
       };
-      let memoInputAll = document.querySelectorAll(".memo");
+      //모든 텍스트area를 선택함.
+      let memoInputAll = document.querySelectorAll(`textarea`);
+
       //메모가 있는 항목들을 new_memo의 data에 추가함
       memoInputAll.forEach((inputTag) => {
         if (inputTag.value.trim() !== "") {
+          let student_name = students.filter(
+            (stu) => stu.num === inputTag.getAttribute("id")
+          )[0].name;
+          console.log(student_name);
+
           new_memo["data"].push({
             student_num: inputTag.id,
+            student_name,
             memo: inputTag.value,
           });
           // console.log(new_memo);
@@ -40,8 +48,8 @@ const ListMemoInput = (props) => {
 
       setStudentMemo((prev) => [...prev, new_memo]);
 
-      // console.log(new_memo);
-      // console.log(studentMemo);
+      console.log(new_memo);
+      console.log(studentMemo);
 
       props.saveItemHandler(new_memo, props.item.doc_id);
       props.onClose();
@@ -147,15 +155,14 @@ const ListMemoInput = (props) => {
               <Input
                 id={student.num}
                 myKey={"textArea" + student.num}
-                className={`${classes["memo-section"]} memo`}
+                className={"memo-section"}
                 label="inputData"
                 input={{
                   type: "textarea",
                 }}
                 defaultValue={
                   //자료가 있으면 length가 undefined가 나오고 없으면 0이 나옴. 자료 있을 때만 저장되어 있던거 보여주기
-                  studentMemo.length !== 0 &&
-                  studentMemo.data.filter(
+                  studentMemo?.data?.filter(
                     (data) => student.num === data.student_num
                   ).length > 0
                     ? studentMemo.data.filter(

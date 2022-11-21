@@ -41,3 +41,13 @@ input {
   padding: 10px;
   height: 26px;
 }
+
+.memo-section {
+  height: 25px;
+  width: 65%;
+  margin-left: 10px;
+  margin-bottom: 5px;
+  padding: 10px;
+  overflow-y: hidden;
+  resize: none;
+}

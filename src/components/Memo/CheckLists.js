@@ -205,14 +205,14 @@ const CheckLists = (props) => {
   //엑셀로 저장하기 함수
   const saveExcelHandler = () => {
     const book = utils.book_new();
-    console.log(listMemo);
+    // console.log(listMemo);
     listMemo.forEach((memo) => {
       const new_datas = [];
       memo.data.forEach((stud) => {
-        let data = [stud.student_num, stud.memo];
+        let data = [stud.student_num, stud.student_name, stud.memo];
         new_datas.push(data);
       });
-      new_datas.unshift(["번호", "기록내용"]);
+      new_datas.unshift(["번호", "이름", "기록내용"]);
       //새로운 가상 엑셀파일 생성
       const listMemo_datas = utils.aoa_to_sheet(new_datas);
       //셀의 넓이 지정

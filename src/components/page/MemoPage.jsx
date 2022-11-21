@@ -56,23 +56,19 @@ const MemoPage = (props) => {
       )}
 
       <div id="title-div">
-        <button id="title-btn" className="memo" onClick={exampleHandler}>
-          <i className="fa-regular fa-note-sticky"></i>
+        <button id="title-btn" className="title-memo" onClick={exampleHandler}>
           {showMemos && (
             <>
-              {">"}
               <i className="fa-regular fa-square-check"></i> 할거보소
             </>
           )}
           {showChecklists && (
             <>
-              {">"}
               <i className="fa-solid fa-clipboard-check"></i> 냄/안냄
             </>
           )}
           {showAchives && (
             <>
-              {">"}
               <i className="fa-solid fa-clipboard-list"></i> 개별기록
             </>
           )}
