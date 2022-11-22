@@ -3,7 +3,15 @@ import classes from "./SettingSeat.module.css";
 import Swal from "sweetalert2";
 import Button from "../../Layout/Button";
 import { dbService } from "../../../fbase";
-import { collection, setDoc, doc, updateDoc } from "firebase/firestore";
+import {
+  collection,
+  setDoc,
+  doc,
+  updateDoc,
+  query,
+  onSnapshot,
+  where,
+} from "firebase/firestore";
 
 const getDateHandler = (date) => {
   let year = date.getFullYear();
@@ -20,10 +28,14 @@ const SeatTable = (props) => {
   const [tableColumn, setTableColumn] = useState(props.rowColumn.split("-")[1]);
   const [items, setItems] = useState();
   const [tempStudent, setTempStudent] = useState({});
+  const [tempBeforeName, setTempBeforeName] = useState("");
   const [switchStudent, setSwitchStudent] = useState({});
   const [students, setStudents] = useState(props.students || []);
   const [startNum, setStartNum] = useState(1);
   const [endNum, setEndNum] = useState(startNum);
+  const [isNewPair, setIsNewPair] = useState(false);
+  const [seatLists, setSeatLists] = useState(null);
+  const [pairStudents, setPairStudents] = useState([]);
 
   useEffect(() => {
     //   가로의 칸 column 과 세로의 줄 row를 곱하고 그 개수만큼 item을 만들어서 칸을 만들어줌.
@@ -57,6 +69,67 @@ const SeatTable = (props) => {
       .style.setProperty("--rows", tableRow);
 
     setEndNum(students[students.length - 1]?.num);
+  }, []);
+
+  useEffect(() => {
+    let new_students = [...students];
+
+    //doc_id없는, 새로운 자리 데이터 추가할 때만 중복되는거 살펴봄. 지금까지 자리표 리스트 불러올 때는 실행하지 않음.
+    if (!props.doc_id) {
+      seatLists?.forEach((list) => {
+        list.students.forEach((stu_name, list_index) => {
+          //학생들 중에 먼저 현재 학생 찾고
+          let nowStudent = new_students.filter(
+            (student) => student.name === stu_name
+          )[0];
+          //현재 학생에 pair키가 없으면 키,값을 배열로 만들어두고
+          if (!("pair" in nowStudent)) {
+            nowStudent["pair"] = [];
+          }
+          //짝수면 다음학생 인덱스로 가져와서 짝에 추가하기
+          if (list_index % 2 === 0) {
+            //현재학생의 속성 pair, 했던 짝에 추가하기
+            nowStudent["pair"].push(list.students[list_index + 1]);
+          } else {
+            //홀수면 이전학생 인덱스로 가져와서 짝에 추가하기
+            nowStudent["pair"].push(list.students[list_index - 1]);
+          }
+          nowStudent["pair"] = [...new Set(nowStudent["pair"])];
+          // console.log(nowStudent);
+          //새로운 학생 목록에 추가하기
+        });
+        // console.log(new_students);
+        setPairStudents([...new_students]);
+      });
+    }
+  }, [seatLists]);
+
+  const getSeatsFromDb = () => {
+    let thisYear = String(new Date().getFullYear());
+    let queryWhere = query(
+      collection(dbService, "seats"),
+      where("writtenId", "==", props.userUid)
+    );
+
+    onSnapshot(queryWhere, (snapShot) => {
+      setSeatLists([]);
+      snapShot.docs.map((doc) => {
+        let itemObj = {
+          ...doc.data(),
+          doc_id: doc.id,
+        };
+
+        if (doc.data().saveDate.slice(0, 4) !== thisYear) {
+          return false;
+        }
+
+        return setSeatLists((prev) => [...prev, itemObj]);
+      });
+    });
+  };
+
+  useEffect(() => {
+    getSeatsFromDb();
   }, []);
 
   //뽑기함수 실행전, 가능한지 확인하는 함수
@@ -108,22 +181,56 @@ const SeatTable = (props) => {
   };
 
   //뽑기 함수, 뽑힌 학생을 뽑아서 temp에 저장함
-  const randomSeatHandler = (e) => {
-    // e.preventDefault();
+  const randomSeatHandler = () => {
     let selectedStudent = {};
+    let pair_students = [...pairStudents];
     let new_students = [...students];
+
+    //세팅한 숫자를 기준으로 랜덤값을 구해서 round 반올림
     const getRandomNum = () => {
-      //세팅한 숫자를 기준으로 랜덤값을 구해서 round 반올림
-      return Math.round(
-        Math.random() * (Number(endNum) - Number(startNum)) + Number(startNum)
-      );
+      const mathRandomNum = () => {
+        return Math.round(
+          Math.random() * (Number(endNum) - Number(startNum)) + Number(startNum)
+        );
+      };
+      let randomOn = true;
+      let randNum;
+      //만약 애초에 없는 번호일 경우 다시 뽑기
+      while (randomOn) {
+        randNum = mathRandomNum();
+        if (new_students.filter((stu) => +stu.num === randNum).length > 0) {
+          randomOn = false;
+        }
+      }
+      return randNum;
     };
 
     const removePickStudent = () => {
-      let randNum = getRandomNum();
+      // console.log(pairStudents);
+      const getRandStudent = () => {
+        let randNum = getRandomNum();
+        // console.log(randNum);
+        selectedStudent = pair_students.filter(
+          (stu) => +stu.num === randNum
+        )[0];
+      };
+      // console.log(selectedStudent);
+      getRandStudent();
+      // console.log(selectedStudent);
+
+      //짝이 중복되는걸 방지하는 설정이고 이전에 뽑혔던 학생과 짝을 했던 경우
+      while (isNewPair && selectedStudent?.pair.includes(tempBeforeName)) {
+        //다시뽑기..
+        getRandStudent();
+        //만약 남는 자리가 한자리라 무조건 중복되는 학생만 가능할 경우... 그냥 끝내기!
+        if (new_students.length === 1) break;
+      }
+
+      setTempBeforeName(selectedStudent.name);
+
+      //학생목록에서 뽑힌 학생 제거하기
       new_students.forEach((stu, index) => {
-        if (+stu.num === randNum) {
-          selectedStudent = stu;
+        if (stu.num === selectedStudent.num) {
           new_students.splice(index, 1);
         }
       });
@@ -236,7 +343,7 @@ const SeatTable = (props) => {
   };
 
   //뽑기 버튼 누르면 실행되는 전체 흐름
-  const randomPickHandler = (e) => {
+  const randomPickHandler = () => {
     if (!selectSeatCheck()) {
       errorSwal(`뽑힌 "${tempStudent.name}" 학생의 자리를 선택해주세요!`);
       return false;
@@ -247,7 +354,7 @@ const SeatTable = (props) => {
       errorSwal("범위의 모든 학생이 뽑혔어요! 범위를 새로 설정해주세요!");
       return false;
     }
-    randomSeatHandler(e);
+    randomSeatHandler();
   };
 
   //알아서 뽑고 알아서 자리에 넣어주는 함수
@@ -297,8 +404,8 @@ const SeatTable = (props) => {
         props.title?.length > 0 ? `items-${props.title}-div` : "items-div"
       )
       .childNodes.forEach((item) => items_students.push(item.innerText));
-    console.log(items_students);
-    console.log(props.rowColumn);
+    // console.log(items_students);
+    // console.log(props.rowColumn);
     const title = document.getElementById(
       !props.title ? "title-input" : `title-input${props.title}`
     );
@@ -362,14 +469,17 @@ const SeatTable = (props) => {
         </div>
       )}
 
-      <button
-        className={classes["seatsAdd-btn"]}
-        onClick={() => {
-          props.addNewCancel();
-        }}
-      >
-        <i className="fa-solid fa-xmark"></i>
-      </button>
+      {!props.doc_id && (
+        <button
+          className={classes["seatsAdd-btn"]}
+          onClick={() => {
+            props.addNewCancel();
+          }}
+        >
+          <i className="fa-solid fa-xmark"></i>
+        </button>
+      )}
+
       <div className={classes["mt--20"]}>
         {students.length > 0 ? (
           <>
@@ -444,8 +554,20 @@ const SeatTable = (props) => {
 
       {students.length > 0 && (
         <div className={classes["temp-name"]}>
-          <span>✋ </span>
-          {tempStudent.name}
+          <div>
+            <Button
+              id="newPairBtn"
+              onclick={() => {
+                setIsNewPair((prev) => !prev);
+              }}
+              className={"settingSeat-btn"}
+              name={isNewPair ? "to인생은랜덤" : "to새로운짝"}
+            />
+          </div>
+          <div>
+            <span>✋ </span>
+            {tempStudent.name}
+          </div>
         </div>
       )}
 

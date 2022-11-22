@@ -12,6 +12,7 @@ const SettingSeat = (props) => {
   const [rowColumn, setRowColumn] = useState("");
   const [randomSeat, setRandomSeat] = useState(false);
   const [students, setStudents] = useState();
+  const [seatLists, setSeatLists] = useState([]);
 
   useEffect(() => {
     setStudents(props.students);
@@ -83,12 +84,18 @@ const SettingSeat = (props) => {
             rowColumn={rowColumn}
             students={students}
             userUid={props.userUid}
+            addNewCancel={() => {
+              setAddNew(false);
+              setShowTable(false);
+              setInit(true);
+            }}
+            seatLists={seatLists}
           />
           <p className={classes[`gameMenu`]}>
-            * 뽑기버튼 or 번호클릭 👉 자리선택
+            * 1번 방법 - 새로운짝 / 인생은랜덤 👉 뽑기 / 번호클릭 👉 자리선택
           </p>
           <p className={classes[`gameMenu`]}>
-            * 알아서 버튼은 학생, 자리를 모두 랜덤으로 선택!
+            * 2번 방법 - 알아서 버튼으로 운에 맡기기
           </p>
           <p className={classes[`gameMenu`]}>
             * 모든 학생이 뽑힌 후에 학생을 차례로 선택하면, 선택한 두 학생의
