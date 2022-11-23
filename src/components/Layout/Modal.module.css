@@ -27,6 +27,10 @@
   overflow: auto;
 }
 
+.showCopyCal {
+  height: 85vh;
+}
+
 @media (min-width: 768px) {
   .modal {
     width: 42rem;

@@ -66,7 +66,7 @@ const EventItem = (props) => {
       <li
         key={keyId}
         id={keyId}
-        className={classes["event-area"]}
+        className={`${classes["event-area"]}`}
         style={{
           backgroundColor: props.fixIsShown === shownId && "bisque",
         }}
@@ -82,7 +82,7 @@ const EventItem = (props) => {
               display: props.fixIsShown !== shownId && "none",
             }}
           >
-            <div className={classes["datePick-area"]}>
+            <div className={`${classes["datePick-area"]}`}>
               <i className="fa-solid fa-circle-arrow-right"></i>
               <AttendCalendar
                 getDateValue={getDateHandler}
@@ -90,8 +90,8 @@ const EventItem = (props) => {
               />
             </div>
             {props.about.slice(0, 4) === "todo"
-              ? "*날짜  선택해서 행사 복사하기"
-              : "*날짜  선택해서 출결 복사하기"}
+              ? "행사복사(날짜선택-저장)"
+              : "출결복사(날짜선택-저장) "}
           </div>
 
           <span

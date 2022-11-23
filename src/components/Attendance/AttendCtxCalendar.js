@@ -335,7 +335,10 @@ const AttendCtxCalendar = (props) => {
   return (
     <>
       {dayEventIsShown && (
-        <Modal onClose={dayEventHideHandler}>
+        <Modal
+          onClose={dayEventHideHandler}
+          addStyle={fixIsShown !== "0" ? "showCopyCal" : null}
+        >
           <EventLists
             eventOnDay={eventOnDay}
             fixIsShown={fixIsShown}

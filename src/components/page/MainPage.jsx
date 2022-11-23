@@ -16,8 +16,10 @@ import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import ExampleModal from "./ExampleModal";
 import ocrGif from "../../assets/student/ocrGif.gif";
-import new_seatSetting from "../../assets/notice/new_seatSetting.jpg";
+import seatPairUpdate from "../../assets/notice/seatPairUpdate.jpg";
 
+const update_text =
+  "* 메뉴의 '잼잼' => '자리뽑기'에서 짝을 했던 학생들이 다시뽑히지 않도록 하는 기능을 선택하실 수 있어요!";
 //오늘 날짜 yyyy-mm-dd로 만들기
 const getDateHandler = (date, titleOrQuery) => {
   let year = date.getFullYear();
@@ -53,7 +55,7 @@ const MainPage = (props) => {
   const [hideClassTable, setHideClassTable] = useState(false);
   //업데이트 내용 보여주기 로컬스토리지에서 showNotice를 스트링으로 저장해서 확인 후에 이전에 봤으면 안보여주기
   const [showNotice, setShowNotice] = useState(
-    localStorage.getItem("showNotice") === "seatSetting" ? false : true
+    localStorage.getItem("showNotice") === "seatPair" ? false : true
   );
 
   let classLists = ["1", "2", "3", "4", "5", "6"];
@@ -386,10 +388,10 @@ const MainPage = (props) => {
       {showNotice && (
         <ExampleModal
           onClose={() => {
-            localStorage.setItem("showNotice", "seatSetting");
+            localStorage.setItem("showNotice", "seatPair");
             setShowNotice(false);
           }}
-          imgSrc={new_seatSetting}
+          imgSrc={seatPairUpdate}
           text={
             <>
               <p
@@ -401,9 +403,7 @@ const MainPage = (props) => {
               >
                 ==== 업 데 이 트 ====
               </p>
-              <p className={`${classes.p} ${classes.top}`}>
-                * 메뉴의 "잼잼" => "자리뽑기"에서 재미있게 자리를 뽑아보세요!
-              </p>
+              <p className={`${classes.p} ${classes.top}`}>{update_text}</p>
             </>
           }
           bottomText={
