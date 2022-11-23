@@ -74,7 +74,7 @@ const SeatTable = (props) => {
   useEffect(() => {
     let new_students = [...students];
 
-    //doc_id없는, 새로운 자리 데이터 추가할 때만 중복되는거 살펴봄. 지금까지 자리표 리스트 불러올 때는 실행하지 않음.
+    //doc_id없는, 새로운 자리 데이터 추가할 때만 중복되는거 살펴봄.
     if (!props.doc_id) {
       seatLists?.forEach((list) => {
         list.students.forEach((stu_name, list_index) => {
@@ -82,8 +82,11 @@ const SeatTable = (props) => {
           let nowStudent = new_students.filter(
             (student) => student.name === stu_name
           )[0];
+
+          //만약 빈칸(숫자)으로 저장되었을 경우
+          if (nowStudent === undefined) return;
           //현재 학생에 pair키가 없으면 키,값을 배열로 만들어두고
-          if (!("pair" in nowStudent)) {
+          if (!nowStudent?.hasOwnProperty("pair")) {
             nowStudent["pair"] = [];
           }
           //짝수면 다음학생 인덱스로 가져와서 짝에 추가하기
