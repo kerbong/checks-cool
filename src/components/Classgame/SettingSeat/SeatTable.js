@@ -52,7 +52,7 @@ const SeatTable = (props) => {
               ? `table-${props.title}-${item}`
               : `table-${item}`
           }
-          onClick={itemAddStudentHandler}
+          onClick={(e) => itemAddStudentHandler(e)}
         >
           {" "}
           {props.seatStudents?.length > 0
@@ -76,34 +76,37 @@ const SeatTable = (props) => {
 
     //doc_id없는, 새로운 자리 데이터 추가할 때만 중복되는거 살펴봄.
     if (!props.doc_id) {
-      seatLists?.forEach((list) => {
-        list.students.forEach((stu_name, list_index) => {
-          //학생들 중에 먼저 현재 학생 찾고
-          let nowStudent = new_students.filter(
-            (student) => student.name === stu_name
-          )[0];
+      if (seatLists?.length > 0) {
+        seatLists?.forEach((list) => {
+          list.students.forEach((stu_name, list_index) => {
+            //학생들 중에 먼저 현재 학생 찾고
+            let nowStudent = new_students.filter(
+              (student) => student.name === stu_name
+            )[0];
 
-          //만약 빈칸(숫자)으로 저장되었을 경우
-          if (nowStudent === undefined) return;
-          //현재 학생에 pair키가 없으면 키,값을 배열로 만들어두고
-          if (!nowStudent?.hasOwnProperty("pair")) {
-            nowStudent["pair"] = [];
-          }
-          //짝수면 다음학생 인덱스로 가져와서 짝에 추가하기
-          if (list_index % 2 === 0) {
-            //현재학생의 속성 pair, 했던 짝에 추가하기
-            nowStudent["pair"].push(list.students[list_index + 1]);
-          } else {
-            //홀수면 이전학생 인덱스로 가져와서 짝에 추가하기
-            nowStudent["pair"].push(list.students[list_index - 1]);
-          }
-          nowStudent["pair"] = [...new Set(nowStudent["pair"])];
-          // console.log(nowStudent);
-          //새로운 학생 목록에 추가하기
+            //만약 빈칸(숫자)으로 저장되었을 경우
+            if (nowStudent === undefined) return;
+            //현재 학생에 pair키가 없으면 키,값을 배열로 만들어두고
+            if (!nowStudent?.hasOwnProperty("pair")) {
+              nowStudent["pair"] = [];
+            }
+            //짝수면 다음학생 인덱스로 가져와서 짝에 추가하기
+            if (list_index % 2 === 0) {
+              //현재학생의 속성 pair, 했던 짝에 추가하기
+              nowStudent["pair"].push(list.students[list_index + 1]);
+            } else {
+              //홀수면 이전학생 인덱스로 가져와서 짝에 추가하기
+              nowStudent["pair"].push(list.students[list_index - 1]);
+            }
+            nowStudent["pair"] = [...new Set(nowStudent["pair"])];
+            // console.log(nowStudent);
+            //새로운 학생 목록에 추가하기
+          });
+          setPairStudents([...new_students]);
         });
-        // console.log(new_students);
+      } else {
         setPairStudents([...new_students]);
-      });
+      }
     }
   }, [seatLists]);
 
@@ -217,12 +220,13 @@ const SeatTable = (props) => {
           (stu) => +stu.num === randNum
         )[0];
       };
+
       // console.log(selectedStudent);
       getRandStudent();
       // console.log(selectedStudent);
 
       //짝이 중복되는걸 방지하는 설정이고 이전에 뽑혔던 학생과 짝을 했던 경우
-      while (isNewPair && selectedStudent?.pair.includes(tempBeforeName)) {
+      while (isNewPair && selectedStudent?.pair?.includes(tempBeforeName)) {
         //다시뽑기..
         getRandStudent();
         //만약 남는 자리가 한자리라 무조건 중복되는 학생만 가능할 경우... 그냥 끝내기!
@@ -250,8 +254,10 @@ const SeatTable = (props) => {
   };
 
   //자리를 누르면 실행되는 함수
-  const itemAddStudentHandler = (e) => {
-    let existItems = document.querySelectorAll(".item");
+  const itemAddStudentHandler = (event) => {
+    let clickedSeat = event.target;
+    // let existItems = document.querySelectorAll(".item");
+    let existItems = clickedSeat.parentNode.childNodes;
     let notSelectedSeats = existItems.length;
     existItems.forEach((item) => {
       if (isNaN(+item.innerText)) {
@@ -262,8 +268,33 @@ const SeatTable = (props) => {
     setStudents((prev) => {
       let new_students = [...prev];
 
-      if (new_students.length > 0 || notSelectedSeats !== 0) {
-        if (isNaN(+e.target.innerText)) {
+      // console.log(new_students);
+
+      //기존자료를 수정하는 거거나 안뽑힌 학생이 없으면 자리 교체실행
+      if (props.title?.length > 0 || new_students.length === 0) {
+        console.log(clickedSeat.innerText);
+        let clickedName = clickedSeat.innerText;
+        let clickedItemId = clickedSeat.getAttribute("id");
+
+        // 선택된 학생이 없으면 선택하고
+        setSwitchStudent((prev_stu) => {
+          if (Object.keys(prev_stu).length === 0) {
+            //선택한 학생을 노란색으로 표시하기
+            clickedSeat.style.backgroundColor = "#ebee3fbd";
+            return { ...{ name: clickedName, id: clickedItemId } };
+            //선택된 학생이 있으면 현재 학생과 스위치!
+          } else {
+            clickedSeat.innerText = prev_stu.name;
+            document.getElementById(prev_stu.id).innerText = clickedName;
+            document.getElementById(prev_stu.id).style.backgroundColor =
+              "#d4e8dcbd";
+            clickedSeat.style.backgroundColor = "#d4e8dcbd";
+            return { ...{} };
+          }
+        });
+        //아직 자리배치가 안된 학생이 남아있고 번호만 있는 자리가 있으면
+      } else {
+        if (isNaN(+clickedSeat.innerText)) {
           return [...prev];
         }
         //학생이름 넣어주기
@@ -281,34 +312,20 @@ const SeatTable = (props) => {
 
           //임시 학생이 뽑혀있는 경우에만 해당 칸에 이름 넣기
           if (Object.keys(student).length !== 0) {
-            e.target.innerText = student.name;
-            e.target.style.backgroundColor = "#d4e8dcbd";
+            clickedSeat.innerText = student.name;
+            clickedSeat.style.backgroundColor = "#d4e8dcbd";
           }
 
           return { ...temp };
         });
         document.getElementById("randomPickBtn")?.focus();
-      } else {
-        let clickedName = e.target.innerText;
-        let clickedItemId = e.target.getAttribute("id");
-
-        // 선택된 학생이 없으면 선택하고
-        setSwitchStudent((prev_stu) => {
-          if (Object.keys(prev_stu).length === 0) {
-            //선택한 학생을 노란색으로 표시하기
-            e.target.style.backgroundColor = "#ebee3fbd";
-            return { ...{ name: clickedName, id: clickedItemId } };
-            //선택된 학생이 있으면 현재 학생과 스위치!
-          } else {
-            e.target.innerText = prev_stu.name;
-            document.getElementById(prev_stu.id).innerText = clickedName;
-            document.getElementById(prev_stu.id).style.backgroundColor =
-              "#d4e8dcbd";
-            e.target.style.backgroundColor = "#d4e8dcbd";
-            return { ...{} };
-          }
-        });
       }
+
+      // if (new_students.length > 0 || notSelectedSeats !== 0) {
+
+      // } else {
+
+      // }
 
       return [...prev];
     });
