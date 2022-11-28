@@ -8,6 +8,7 @@ import {
   setDoc,
   doc,
   updateDoc,
+  deleteDoc,
   query,
   onSnapshot,
   where,
@@ -470,6 +471,37 @@ const SeatTable = (props) => {
     }
   };
 
+  //자리표 데이터 삭제 함수
+  const delteSeatsHandler = () => {
+    const deleteDocHandler = async () => {
+      await deleteDoc(doc(dbService, "seats", props.doc_id));
+    };
+
+    Swal.fire({
+      icon: "question",
+      title: "삭제할까요?",
+      text: `저장된 자리표 데이터를 삭제할까요?.`,
+      showDenyButton: true,
+      confirmButtonText: "삭제",
+      confirmButtonColor: "#db100cf2",
+      denyButtonColor: "#85bd82",
+      denyButtonText: `취소`,
+    }).then((result) => {
+      /* Read more about isConfirmed, isDenied below */
+      if (result.isConfirmed) {
+        Swal.fire({
+          icon: "success",
+          title: "삭제완료",
+          text: "자료가 삭제되었습니다.",
+          confirmButtonText: "확인",
+          confirmButtonColor: "#85bd82",
+          timer: 5000,
+        });
+        deleteDocHandler();
+      }
+    });
+  };
+
   return (
     <div id={props.title || "newSeats"}>
       {students.length === 0 && (
@@ -484,6 +516,11 @@ const SeatTable = (props) => {
           <Button
             name={"저장"}
             onclick={saveSeatsHandler}
+            className={"settingSeat-btn"}
+          />
+          <Button
+            name={"삭제"}
+            onclick={() => delteSeatsHandler()}
             className={"settingSeat-btn"}
           />
         </div>
