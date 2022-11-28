@@ -16,6 +16,7 @@
   align-items: center;
   justify-content: center;
   width: 90px;
+  height: 35px;
 }
 
 .span-expain {
@@ -73,7 +74,7 @@
 }
 
 .exampleImg {
-  width: 150px;
+  width: 250px;
 }
 
 .example {
@@ -115,4 +116,10 @@
 
 .explain {
   line-height: 2;
+  word-break: keep-all;
+}
+
+.womanBg {
+  background-color: #efcacf8c;
+  border-radius: 10px;
 }

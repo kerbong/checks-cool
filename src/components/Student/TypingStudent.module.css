@@ -70,3 +70,16 @@
   display: flex;
   flex-direction: column;
 }
+
+.genderExample {
+  display: inline-block;
+  background-color: #efcacf8c;
+  border-radius: 10px;
+  width: 100px;
+  margin: 20px 5px;
+}
+
+.deleteAll-div {
+  display: flex;
+  justify-content: center;
+}

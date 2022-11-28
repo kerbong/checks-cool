@@ -4,7 +4,7 @@ import classes from "./StudentLiWithDelete.module.css";
 import Button from "../Layout/Button";
 import Swal from "sweetalert2";
 
-import excelExample from "../../assets/student/excel-example.jpg";
+import excelExample from "../../assets/student/excel_gender_example.jpg";
 
 const StudentExcelUpload = (props) => {
   const fileInfoInput = useRef(null);
@@ -23,7 +23,9 @@ const StudentExcelUpload = (props) => {
             let new_rows = rows.map((row) => ({
               num: row["번호"],
               name: row["이름"],
+              woman: row["성별"] === "남" ? false : true,
             }));
+            console.log(new_rows);
             props.studentsInfoHandler(new_rows);
           });
         } catch (error) {
@@ -90,21 +92,16 @@ const StudentExcelUpload = (props) => {
 
         <hr className={classes["hr"]} />
         <span>
-          <span className={classes.accent}> 번호, 이름</span>이 입력된 엑셀 파일
-          추가(1)
+          <span className={classes.accent}> 번호, 성별, 이름</span>이 입력된
+          엑셀 파일 추가(1)
         </span>
         <span>
           <span className={classes.accent}>저장(2)</span>을 누르면 반영됩니다.
         </span>
         <hr className={classes["hr"]} />
         <span className={classes["explain"]}>
-          * 화면 왼쪽 상단의 보라색 [학생등록]
-          <br />
-          버튼을 누르시면 예시를 보실 수 있어요! <br />
-          * 수정은 "직접 입력"을 활용해주세요.
-          <br />* pc로 업로드가 더 편리할 수 있어요!
-          <br />
-          (kerbong.github.io/checks-cool)
+          * 수정이 필요하시면 저장하신 후에 "직접 입력"을 활용해주세요.
+          <br />* pc 업로드가 편리합니다! 👉 bit.ly/첵스쿨
         </span>
 
         <hr className={classes["hr"]} />

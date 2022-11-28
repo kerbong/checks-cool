@@ -38,6 +38,7 @@ const StudentInputByOcr = (props) => {
       .then((data) => {
         const ocrTexts = data.responses[0].fullTextAnnotation.text;
 
+        console.log(data.responses[0]);
         // 숫자가 아닌 것들 빈칸으로 만들었다가 지우고 배열로 만들기
         sumNum = ocrTexts
           .replace(/[^0-9]+/g, " ")
@@ -56,10 +57,11 @@ const StudentInputByOcr = (props) => {
           if (name === undefined) {
             name = "재입력";
           }
-          sumStudents.push({ num: num, name: name });
+          sumStudents.push({ num: num, name: name, woman: false });
         });
 
         setstudentsByOcr([...sumStudents]);
+        props.setAddStudentsInfo([...sumStudents]);
       })
 
       .catch((error) =>

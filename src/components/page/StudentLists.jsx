@@ -15,7 +15,7 @@ import excelGif from "../../assets/student/excelGif.gif";
 
 const StudentLists = (props) => {
   const [addStudentBy, setAddStudentBy] = useState(
-    props.students.length !== 0 ? "typing" : "imageFile"
+    props.students.length !== 0 ? "typing" : "excelFile"
   );
   const [studentsInfo, setStudentsInfo] = useState([]);
   const [showExample, setShowExample] = useState(false);
@@ -43,19 +43,19 @@ const StudentLists = (props) => {
 
   const submitStudentUploader = async () => {
     //변경된 값이 없으면 return.. 차집합으로 계산해서 완전 겹쳐지면.. 차집합 영역이 둘다 없으면 return
-    let differ1 = studentsInfo.filter((x) => !props.students.includes(x));
-    let differ2 = props.students.filter((x) => !studentsInfo.includes(x));
+    // let differ1 = studentsInfo.filter((x) => !props.students.includes(x));
+    // let differ2 = props.students.filter((x) => !studentsInfo.includes(x));
 
-    if (differ1.length === 0 && differ2.length === 0) {
-      Swal.fire({
-        icon: "error",
-        title: "저장에 실패했어요!",
-        html: "변경된 자료가 없어요! 확인해주세요!",
-        confirmButtonText: "확인",
-        confirmButtonColor: "#85bd82",
-      });
-      return;
-    }
+    // if (differ1.length === 0 && differ2.length === 0) {
+    //   Swal.fire({
+    //     icon: "error",
+    //     title: "저장에 실패했어요!",
+    //     html: "변경된 자료가 없어요! 확인해주세요!",
+    //     confirmButtonText: "확인",
+    //     confirmButtonColor: "#85bd82",
+    //   });
+    //   return;
+    // }
 
     //기존 자료에 덮어쓰기 됨을 알리기
     Swal.fire({
@@ -63,14 +63,23 @@ const StudentLists = (props) => {
       title: "저장할까요?",
       text: `번호나 이름이 중복되지 않았는지 확인해주세요.`,
       showDenyButton: true,
-      confirmButtonText: "저장하기",
+      confirmButtonText: "저장",
       confirmButtonColor: "#db100cf2",
       denyButtonColor: "#85bd82",
       denyButtonText: `취소`,
     }).then((result) => {
       // firestore에 저장하기
+      // 여자 설정을 안한 경우 남자로 모두 설정하기
+      let new_studentsInfo = [...studentsInfo];
+      new_studentsInfo.map((stu) => {
+        if (!stu.hasOwnProperty("woman")) {
+          stu["woman"] = false;
+        }
+        return stu;
+      });
+
       if (result.isConfirmed) {
-        const fixed_data = { studentDatas: sortNum(studentsInfo) };
+        const fixed_data = { studentDatas: sortNum(new_studentsInfo) };
         uploadStudents(fixed_data);
 
         Swal.fire({
@@ -105,6 +114,16 @@ const StudentLists = (props) => {
       let students = [...prev, studentData];
       return sortNum(students);
     });
+  };
+
+  const studentGenderChange = (student) => {
+    let new_studentsInfo = [...studentsInfo];
+    new_studentsInfo.forEach((stu, index) => {
+      if (stu.name === student.name) {
+        new_studentsInfo[index]["woman"] = student.woman;
+      }
+    });
+    setStudentsInfo([...new_studentsInfo]);
   };
 
   return (
@@ -243,6 +262,9 @@ const StudentLists = (props) => {
             setAddStudentsInfo={(studentData) =>
               setAddStudentsInfo(studentData)
             }
+            studentGenderChange={(student) => {
+              studentGenderChange(student);
+            }}
             deleteStudentHandler={(student) => deleteStudentHandler(student)}
             uploadStudentsInfo={submitStudentUploader}
             deleteAllHandler={() => {
@@ -274,6 +296,9 @@ const StudentLists = (props) => {
                   key={"key" + student.num + student.name}
                   myKey={student.num + student.name}
                   student={student}
+                  studentFixHandler={(student) => {
+                    studentGenderChange(student);
+                  }}
                   deleteStudentHandler={(student) => {
                     deleteStudentHandler(student);
                   }}

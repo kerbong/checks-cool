@@ -2,6 +2,7 @@ import React, { useRef, useState } from "react";
 import Button from "../Layout/Button";
 import classes from "./TypingStudent.module.css";
 import StudentLiWithDelete from "./StudentLiWithDelete";
+import Swal from "sweetalert2";
 
 const TypingStudent = (props) => {
   const [tempAutoNum, setTempAutoNum] = useState(1);
@@ -44,10 +45,33 @@ const TypingStudent = (props) => {
   //학생 전체 제거 함수
   const deleteAllHandler = () => {
     //학생 번호를 제외한 리스트 새로 만들어서 등록
-    props.deleteAllHandler();
+    Swal.fire({
+      icon: "question",
+      title: "삭제할까요?",
+      text: `학생정보를 모두 삭제할까요?.`,
+      showDenyButton: true,
+      confirmButtonText: "삭제",
+      confirmButtonColor: "#db100cf2",
+      denyButtonColor: "#85bd82",
+      denyButtonText: `취소`,
+    }).then((result) => {
+      /* Read more about isConfirmed, isDenied below */
+      if (result.isConfirmed) {
+        Swal.fire({
+          icon: "success",
+          title: "삭제완료",
+          text: `모든 학생정보가 삭제되었습니다.`,
+          confirmButtonText: "확인",
+          confirmButtonColor: "#85bd82",
+          timer: 4000,
+        });
+
+        props.deleteAllHandler();
+      }
+    });
   };
 
-  //학생자료 firebase upload함수
+  //학생자료 firebase upload함수 저장버튼
   const uploadStudentHandler = () => {
     props.uploadStudentsInfo();
   };
@@ -57,6 +81,8 @@ const TypingStudent = (props) => {
     numberRef.current.value = student.num;
     nameRef.current.value = student.name;
     setTempStudent({ ...student });
+    //성별 바꾸기 함수
+    props.studentGenderChange(student);
   };
 
   return (
@@ -110,6 +136,11 @@ const TypingStudent = (props) => {
           />
         </div>
 
+        <p>
+          {" "}
+          <span className={classes.genderExample}>여학생</span> / 이름 클릭하면
+          성별 변경
+        </p>
         <div className={classes.studentListArea}>
           {props.studentsInfo.map((student) => (
             <StudentLiWithDelete
@@ -124,8 +155,9 @@ const TypingStudent = (props) => {
               }}
             />
           ))}
-
-          {/* 전체삭제 버튼 */}
+        </div>
+        {/* 전체삭제 버튼 */}
+        <div className={classes["deleteAll-div"]}>
           {props.studentsInfo.length !== 0 && (
             <Button
               className="student-save"
