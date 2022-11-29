@@ -10,8 +10,8 @@ import Button from "../Layout/Button";
 import ExampleModal from "./ExampleModal";
 
 import ocrGif from "../../assets/student/ocrGif.gif";
-import typingGif from "../../assets/student/typingGif.gif";
-import excelGif from "../../assets/student/excelGif.gif";
+import typingGif from "../../assets/student/typing_new_upload.gif";
+import excelGif from "../../assets/student/excel_new_upload.gif";
 
 const StudentLists = (props) => {
   const [addStudentBy, setAddStudentBy] = useState(

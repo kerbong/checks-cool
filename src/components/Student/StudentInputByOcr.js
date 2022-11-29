@@ -1,5 +1,4 @@
 import React, { useRef, useState } from "react";
-import Button from "../Layout/Button";
 import imageCompression from "browser-image-compression";
 import classes from "./StudentLiWithDelete.module.css";
 import Swal from "sweetalert2";
@@ -111,14 +110,14 @@ const StudentInputByOcr = (props) => {
 
   return (
     <>
-      <div>
+      <div className={classes["btn-div"]}>
         <>
           <label
             id="imageFileLabel"
             htmlFor="imageFile"
             className={classes["image-upload-btn"]}
           >
-            1 <i className="fa-regular fa-file-image"></i>
+            <i className="fa-regular fa-file-image"></i> 업로드
           </label>
           <input
             type="file"
@@ -129,15 +128,6 @@ const StudentInputByOcr = (props) => {
             accept={".jpg,.jpeg"}
           />
         </>
-        <Button
-          className="student-save"
-          name={
-            <>
-              2 <i className="fa-solid fa-circle-arrow-up"></i>
-            </>
-          }
-          onclick={() => props.setAddStudentsInfo(studentsByOcr)}
-        />
       </div>
       <div className={classes["span-expain"]}>
         {studentsByOcr.length === 0 && (
@@ -155,12 +145,12 @@ const StudentInputByOcr = (props) => {
         </span>
 
         <span>
-          1번 버튼으로 파일 불러와서{" "}
-          <span className={classes["span-highlight"]}>내용 확인!</span>
+          업로드 버튼으로{" "}
+          <span className={classes["span-highlight"]}>파일 불러오기!</span>
         </span>
         <span>
-          2번 버튼으로 번호와 이름
-          <span className={classes["span-highlight"]}> 수정/저장</span>
+          내용 확인하고
+          <span className={classes["span-highlight"]}> 저장누르기</span>
         </span>
         <hr className={classes["hr"]} />
         <span className={classes["span-small"]}>

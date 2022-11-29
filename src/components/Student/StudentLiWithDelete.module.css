@@ -31,7 +31,6 @@
 .image-upload-btn {
   width: 60px;
   height: 50px;
-  margin-left: 20px;
   font-size: 1.1em;
   border-radius: 10px;
   border-width: 0;
@@ -122,4 +121,8 @@
 .womanBg {
   background-color: #efcacf8c;
   border-radius: 10px;
+}
+
+.btn-div {
+  margin: 20px 0 10px 0;
 }
