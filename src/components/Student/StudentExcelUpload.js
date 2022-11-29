@@ -25,7 +25,6 @@ const StudentExcelUpload = (props) => {
               name: row["이름"],
               woman: row["성별"] === "남" ? false : true,
             }));
-            console.log(new_rows);
             props.studentsInfoHandler(new_rows);
           });
         } catch (error) {
@@ -53,7 +52,7 @@ const StudentExcelUpload = (props) => {
           className={classes.fileUploadBtn}
           style={{
             height: "26px",
-            width: "28px",
+            width: "45px",
             padding: "12px",
             color: "#000000",
             backgroundColor: "#a66fc8b3",

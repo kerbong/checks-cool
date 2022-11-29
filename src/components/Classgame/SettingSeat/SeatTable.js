@@ -32,11 +32,10 @@ const SeatTable = (props) => {
   const [tempBeforeName, setTempBeforeName] = useState("");
   const [switchStudent, setSwitchStudent] = useState({});
   const [students, setStudents] = useState(props.students || []);
-  const [startNum, setStartNum] = useState(1);
-  const [endNum, setEndNum] = useState(startNum);
-  const [isNewPair, setIsNewPair] = useState(false);
+  const [isNewPair, setIsNewPair] = useState(true);
   const [seatLists, setSeatLists] = useState(null);
   const [pairStudents, setPairStudents] = useState([]);
+  const [randomJustStudent, setRandomJustStudent] = useState(true);
 
   useEffect(() => {
     //   가로의 칸 column 과 세로의 줄 row를 곱하고 그 개수만큼 item을 만들어서 칸을 만들어줌.
@@ -68,8 +67,6 @@ const SeatTable = (props) => {
     document
       .getElementById(props.title || "newSeats")
       .style.setProperty("--rows", tableRow);
-
-    setEndNum(students[students.length - 1]?.num);
   }, []);
 
   useEffect(() => {
@@ -139,29 +136,16 @@ const SeatTable = (props) => {
     getSeatsFromDb();
   }, []);
 
-  //뽑기함수 실행전, 가능한지 확인하는 함수
-  const randomIsPossible = () => {
+  //뽑기함수 실행전, 번호가 가능한지 확인하는 함수
+  //뽑기함수 실행 전 남, 혹은 여뽑기인 경우 확인하는 함수
+  const randomIsPossible = (isWoman) => {
     let isPossible = true;
     let new_students = [...students];
-    let studentsRangeArray = [...Array(+endNum)].map((v, i) => {
-      if (i >= +startNum - 1) {
-        i += 1;
-      } else {
-        return false;
-      }
-      return i;
-    });
 
-    let existNone = true;
-
-    studentsRangeArray.forEach((num) => {
-      let exist = new_students.filter((stu) => +stu.num === num);
-      if (exist.length !== 0) {
-        existNone = false;
-      }
-    });
-
-    if (existNone) {
+    //전체뽑기인경우는 함수 실행하지 않음
+    let exist = new_students.filter((stu) => stu.woman === isWoman);
+    //뽑을 수 있는 학생이 없으면
+    if (exist.length === 0) {
       isPossible = false;
     }
 
@@ -188,50 +172,41 @@ const SeatTable = (props) => {
   };
 
   //뽑기 함수, 뽑힌 학생을 뽑아서 temp에 저장함
-  const randomSeatHandler = () => {
+  const randomSeatHandler = (isWoman) => {
     let selectedStudent = {};
     let pair_students = [...pairStudents];
     let new_students = [...students];
+    //성별에 따라 새로운 배열 만들고
+    let gender_students = new_students.filter((stu) => stu.woman === isWoman);
+    if (isWoman === "all") {
+      gender_students = new_students;
+    }
 
-    //세팅한 숫자를 기준으로 랜덤값을 구해서 round 반올림
-    const getRandomNum = () => {
-      const mathRandomNum = () => {
-        return Math.round(
-          Math.random() * (Number(endNum) - Number(startNum)) + Number(startNum)
-        );
-      };
-      let randomOn = true;
-      let randNum;
-      //만약 애초에 없는 번호일 경우 다시 뽑기
-      while (randomOn) {
-        randNum = mathRandomNum();
-        if (new_students.filter((stu) => +stu.num === randNum).length > 0) {
-          randomOn = false;
-        }
-      }
-      return randNum;
+    //남뽑기 여뽑기 기준 새로운 로직
+    //남 혹은 여학생에서 학생 랜덤 뽑기
+    const selectRnStudent = () => {
+      let randNum = Math.floor(Math.random() * gender_students.length);
+      return gender_students[randNum];
     };
 
+    //학생을 옵션에 맞게 뽑고tempname에 이름 저장하고 학생목록에서 뽑힌 학생 제거하는 함수
     const removePickStudent = () => {
-      // console.log(pairStudents);
-      const getRandStudent = () => {
-        let randNum = getRandomNum();
-        // console.log(randNum);
+      //남뽑기 여뽑기 로직뉴뉴뉴
+      const getRnStudent = () => {
+        let randomStudent = selectRnStudent();
+        //짝 정보를 포함한 그 학생의 정보
         selectedStudent = pair_students.filter(
-          (stu) => +stu.num === randNum
+          (stu) => stu.name === randomStudent.name
         )[0];
       };
 
-      // console.log(selectedStudent);
-      getRandStudent();
-      // console.log(selectedStudent);
+      //selectedStudent에 랜덤 학생 넣기
+      getRnStudent();
 
-      //짝이 중복되는걸 방지하는 설정이고 이전에 뽑혔던 학생과 짝을 했던 경우
+      //만약 새로운짝 옵션상태고 짝을 했던 경우 다시 뽑기
       while (isNewPair && selectedStudent?.pair?.includes(tempBeforeName)) {
-        //다시뽑기..
-        getRandStudent();
-        //만약 남는 자리가 한자리라 무조건 중복되는 학생만 가능할 경우... 그냥 끝내기!
         if (new_students.length === 1) break;
+        getRnStudent();
       }
 
       setTempBeforeName(selectedStudent.name);
@@ -257,23 +232,28 @@ const SeatTable = (props) => {
   //자리를 누르면 실행되는 함수
   const itemAddStudentHandler = (event) => {
     let clickedSeat = event.target;
-    // let existItems = document.querySelectorAll(".item");
     let existItems = clickedSeat.parentNode.childNodes;
-    let notSelectedSeats = existItems.length;
+    let selectedSeats = 0;
+
     existItems.forEach((item) => {
+      //학생 이름이 저장되어 있으면
       if (isNaN(+item.innerText)) {
-        notSelectedSeats -= 1;
+        selectedSeats += 1;
       }
     });
+    console.log(students.length);
 
     setStudents((prev) => {
+      //남은학생
       let new_students = [...prev];
 
-      // console.log(new_students);
+      //이미저장된 기존 자료이거나
+      // 전체학생 - 안뽑힌학생 = 뽑힌자리 인 경우 뽑힌 학생 모두가 자리배치가 끝나 있으면 자리 바꾸기
 
-      //기존자료를 수정하는 거거나 안뽑힌 학생이 없으면 자리 교체실행
-      if (props.title?.length > 0 || new_students.length === 0) {
-        console.log(clickedSeat.innerText);
+      if (
+        props?.doc_id ||
+        selectedSeats === props.students.length - new_students.length
+      ) {
         let clickedName = clickedSeat.innerText;
         let clickedItemId = clickedSeat.getAttribute("id");
 
@@ -293,7 +273,6 @@ const SeatTable = (props) => {
             return { ...{} };
           }
         });
-        //아직 자리배치가 안된 학생이 남아있고 번호만 있는 자리가 있으면
       } else {
         if (isNaN(+clickedSeat.innerText)) {
           return [...prev];
@@ -319,14 +298,7 @@ const SeatTable = (props) => {
 
           return { ...temp };
         });
-        document.getElementById("randomPickBtn")?.focus();
       }
-
-      // if (new_students.length > 0 || notSelectedSeats !== 0) {
-
-      // } else {
-
-      // }
 
       return [...prev];
     });
@@ -364,22 +336,31 @@ const SeatTable = (props) => {
   };
 
   //뽑기 버튼 누르면 실행되는 전체 흐름
-  const randomPickHandler = () => {
+  const randomPickHandler = (isWoman) => {
     if (!selectSeatCheck()) {
       errorSwal(`뽑힌 "${tempStudent.name}" 학생의 자리를 선택해주세요!`);
       return false;
     }
-    if (!randomIsPossible()) {
-      setStartNum(students[0].num);
-      setEndNum(students[0].num);
-      errorSwal("범위의 모든 학생이 뽑혔어요! 범위를 새로 설정해주세요!");
-      return false;
+    // 전체뽑기가 아닌 경우에만
+    if (isWoman === true || isWoman === false) {
+      if (!randomIsPossible(isWoman)) {
+        //기존 숫자 로직
+        // setStartNum(students[0].num);
+        // setEndNum(students[0].num);
+        // errorSwal("범위의 모든 학생이 뽑혔어요! 범위를 새로 설정해주세요!");
+
+        //여뽑기 혹은 남뽑기로 불가능한 경우
+        errorSwal(`모든 ${isWoman ? "여" : "남"}학생이 뽑혔어요! `);
+
+        return false;
+      }
     }
-    randomSeatHandler();
+
+    randomSeatHandler(isWoman);
   };
 
   //알아서 뽑고 알아서 자리에 넣어주는 함수
-  const pickAndSeatHandler = () => {
+  const pickAndSeatHandler = (isWoman) => {
     const randomNum = (b) => {
       return Math.floor(Math.random() * Number(b));
     };
@@ -403,14 +384,18 @@ const SeatTable = (props) => {
     //뽑힌 모든 학생의 자리가 결정되었으면 새로 학생뽑고
     if (selectSeatCheck()) {
       //번호 범위에서 가능하지 않으면
-      if (!randomIsPossible()) {
-        setStartNum(students[0].num);
-        setEndNum(students[0].num);
-        errorSwal("범위의 모든 학생이 뽑혔어요! 범위를 새로 설정해주세요!");
-        return false;
+      // 전체뽑기가 아닌 경우에만
+      if (isWoman === true || isWoman === false) {
+        if (!randomIsPossible(isWoman)) {
+          errorSwal(`모든 ${isWoman ? "여" : "남"}학생이 뽑혔어요! `);
+
+          return false;
+        }
       }
 
-      randomSeatHandler();
+      //학생 뽑아서 temp에 저장함
+      randomSeatHandler(isWoman);
+
       setTempStudent((prev) => {
         seatHandler(prev.name);
         return { ...prev };
@@ -418,13 +403,33 @@ const SeatTable = (props) => {
     }
   };
 
+  //자리표 저장함수
   const saveSeatsHandler = async () => {
     let items_students = [];
+    let selectedSeats = 0;
     document
       .getElementById(
         props.title?.length > 0 ? `items-${props.title}-div` : "items-div"
       )
-      .childNodes.forEach((item) => items_students.push(item.innerText));
+      .childNodes.forEach((item) => {
+        if (isNaN(+item.innerText)) {
+          selectedSeats += 1;
+        }
+        items_students.push(item.innerText);
+      });
+
+    //새로운 자료 저장할 때 아직 자리 배치 안한 경우
+    if (selectedSeats !== props.students.length && props.doc_id === undefined) {
+      Swal.fire({
+        icon: "error",
+        title: "저장실패",
+        text: `마지막으로 뽑힌 학생의 자리를 배치해주세요.`,
+        confirmButtonText: "확인",
+        confirmButtonColor: "#85bd82",
+        timer: 5000,
+      });
+      return;
+    }
     // console.log(items_students);
     // console.log(props.rowColumn);
     const title = document.getElementById(
@@ -505,7 +510,7 @@ const SeatTable = (props) => {
   return (
     <div id={props.title || "newSeats"}>
       {students.length === 0 && (
-        <div>
+        <div className={classes["title-div"]}>
           <input
             className={classes["title-input"]}
             id={`title-input${props.title || ""}`}
@@ -518,11 +523,13 @@ const SeatTable = (props) => {
             onclick={saveSeatsHandler}
             className={"settingSeat-btn"}
           />
-          <Button
-            name={"삭제"}
-            onclick={() => delteSeatsHandler()}
-            className={"settingSeat-btn"}
-          />
+          {props.title?.length > 0 && (
+            <Button
+              name={"삭제"}
+              onclick={() => delteSeatsHandler()}
+              className={"settingSeat-btn"}
+            />
+          )}
         </div>
       )}
 
@@ -569,58 +576,77 @@ const SeatTable = (props) => {
       </div>
 
       {students.length > 0 && (
-        <div className={classes["remain-student-div"]}>
-          <input
-            id={"startNum-input"}
-            className={classes["num-input"]}
-            type="number"
-            min={students.length > 0 && students[0].num}
-            max={students.length > 0 && students[students.length - 1].num}
-            value={startNum}
-            onChange={(e) => {
-              setStartNum(e.target.value);
-              setEndNum(e.target.value);
-            }}
-          />
-          <span>~</span>
-          <input
-            className={classes["num-input"]}
-            id="endNum"
-            type="number"
-            min="1"
-            value={endNum}
-            onChange={(e) => {
-              setEndNum(e.target.value);
-            }}
-            max={students.length > 0 && students[students.length - 1].num}
-          />
-          <Button
-            id="randomPickBtn"
-            onclick={randomPickHandler}
-            className={"settingSeat-btn"}
-            name="뽑기"
-          />
-          <Button
-            id="randomSeatBtn"
-            onclick={pickAndSeatHandler}
-            className={"settingSeat-btn"}
-            name="알아서"
-          />
-        </div>
+        <>
+          <div className={classes["remain-student-div"]}>
+            <Button
+              id="justStudent"
+              onclick={() => {
+                setRandomJustStudent((prev) => !prev);
+              }}
+              className={"switch-random-btn"}
+              icon={<i className="fa-solid fa-repeat"></i>}
+              name={
+                randomJustStudent ? " to 자리까지 랜덤뽑기" : " to 학생만 뽑기"
+              }
+            />
+          </div>
+          <div className={classes["remain-student-div"]}>
+            <>
+              <div className={classes["margin-div"]}>
+                {randomJustStudent && (
+                  <>
+                    <Button
+                      id="newPairBtn"
+                      onclick={() => {
+                        setIsNewPair((prev) => !prev);
+                      }}
+                      className={"settingSeat-btn"}
+                      name={isNewPair ? "to 인생은랜덤" : "to 새로운짝"}
+                    />{" "}
+                    👉
+                  </>
+                )}
+              </div>
+
+              <div className={classes["randomPickBtn-div"]}>
+                <Button
+                  id="randomWomanPickBtn"
+                  onclick={() =>
+                    randomJustStudent
+                      ? randomPickHandler(true)
+                      : pickAndSeatHandler(true)
+                  }
+                  className={"settingSeat-btn"}
+                  name="여학생"
+                />
+                <Button
+                  id="randomManPickBtn"
+                  onclick={() =>
+                    randomJustStudent
+                      ? randomPickHandler(false)
+                      : pickAndSeatHandler(false)
+                  }
+                  className={"settingSeat-btn"}
+                  name="남학생"
+                />
+                <Button
+                  id="randomPickBtn"
+                  onclick={() =>
+                    randomJustStudent
+                      ? randomPickHandler("all")
+                      : pickAndSeatHandler("all")
+                  }
+                  className={"settingSeat-btn"}
+                  name="아무나"
+                />
+              </div>
+            </>
+          </div>
+        </>
       )}
 
       {students.length > 0 && (
         <div className={classes["temp-name"]}>
-          <div>
-            <Button
-              id="newPairBtn"
-              onclick={() => {
-                setIsNewPair((prev) => !prev);
-              }}
-              className={"settingSeat-btn"}
-              name={isNewPair ? "to인생은랜덤" : "to새로운짝"}
-            />
-          </div>
           <div>
             <span>✋ </span>
             {tempStudent.name}

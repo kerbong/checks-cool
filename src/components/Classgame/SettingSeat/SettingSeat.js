@@ -73,6 +73,7 @@ const SettingSeat = (props) => {
             setShowTable(false);
             setInit(true);
           }}
+          studentsNum={props.students.length}
         />
       )}
 

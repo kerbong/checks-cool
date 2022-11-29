@@ -23,11 +23,9 @@ const StudentLists = (props) => {
   //학생 제거 함수
   const deleteStudentHandler = (student) => {
     setStudentsInfo((prev) => {
-      let new_studentsInfo = JSON.parse(
-        `${JSON.stringify(prev).replace("]", ",]")}`
-          .replace(`${JSON.stringify(student)},`, "")
-          .replace(",]", "]")
-      );
+      //받은 데이터와 기존 등록된 학생이 같은 번호면 그거 다 지우기
+      let new_studentsInfo = prev.filter((stu) => stu.num !== student.num);
+
       return [...new_studentsInfo];
     });
   };

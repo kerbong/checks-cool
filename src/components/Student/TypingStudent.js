@@ -13,15 +13,12 @@ const TypingStudent = (props) => {
   //학생 추가/수정하기 함수
   const submitHandler = (e) => {
     e.preventDefault();
-
-    //기존값 수정할 경우 해당 값 지우기
-    if (Object.keys(tempStudent).length !== 0) {
-      props.deleteStudentHandler(tempStudent);
-    }
-
     //번호 이름 값가져오기
     let studentNumValue = numberRef.current.value;
     let studentNameValue = nameRef.current.value;
+
+    //같은 번호의 학생이 있을 경우 해당 값 지우기
+    props.deleteStudentHandler({ num: studentNumValue });
 
     //학생추가하기
     const studentData = { num: studentNumValue, name: studentNameValue };

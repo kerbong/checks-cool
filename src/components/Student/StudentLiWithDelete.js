@@ -34,7 +34,6 @@ const StudentLiWithDelete = (props) => {
   //번호와 이름을 누르면 수정 or 성별 변경 가능
   const studentFixHandler = () => {
     let woman = props.student.woman || false;
-    console.log(woman);
     //수정하는 기능
     props.studentFixHandler({
       num: props.student.num,

@@ -9,6 +9,20 @@ const RowColumn = (props) => {
     e.preventDefault();
     let row = document.querySelector("#row-input").value;
     let column = document.querySelector("#column-input").value;
+
+    //전체 학생수보다 자리가 적을경우 취소
+    if (+row * +column < props.studentsNum) {
+      Swal.fire({
+        icon: "error",
+        title: "자리부족",
+        text: "학생수보다 자리수가 적어요!",
+        confirmButtonText: "확인",
+        confirmButtonColor: "#85bd82",
+        timer: 5000,
+      });
+      return false;
+    }
+
     if (row.trim().length !== 0 && column.trim().length !== 0) {
       props.setRowColumn(row, column);
     } else {
