@@ -13,6 +13,7 @@ import {
   onSnapshot,
   where,
 } from "firebase/firestore";
+import { useNavigate } from "react-router-dom";
 
 const getDateHandler = (date) => {
   let year = date.getFullYear();
@@ -36,6 +37,34 @@ const SeatTable = (props) => {
   const [seatLists, setSeatLists] = useState(null);
   const [pairStudents, setPairStudents] = useState([]);
   const [randomJustStudent, setRandomJustStudent] = useState(true);
+
+  let navigate = useNavigate();
+
+  useEffect(() => {
+    let noSetGender = false;
+    students.forEach((stu) => {
+      if (!stu.hasOwnProperty("woman")) {
+        noSetGender = true;
+      }
+    });
+
+    //성별 설정이 없는경우
+    if (noSetGender) {
+      Swal.fire({
+        icon: "error",
+        title: "설정필요",
+        text: "학생들의 성별정보가 설정되지 않았습니다. [확인] 버튼을 눌러서 학생명부 화면으로 이동해주세요.",
+        confirmButtonText: "확인",
+        confirmButtonColor: "#85bd82",
+        showDenyButton: false,
+      }).then((result) => {
+        /* Read more about isConfirmed, isDenied below */
+        if (result.isConfirmed) {
+          navigate(`/student-manage`);
+        }
+      });
+    }
+  }, []);
 
   useEffect(() => {
     //   가로의 칸 column 과 세로의 줄 row를 곱하고 그 개수만큼 item을 만들어서 칸을 만들어줌.

@@ -15,7 +15,9 @@ const RowColumn = (props) => {
       Swal.fire({
         icon: "error",
         title: "자리부족",
-        text: "학생수보다 자리수가 적어요!",
+        text: `학생수(${props.studentsNum}명) 보다 자리수(${
+          +row * +column
+        }자리) 가 적어요!`,
         confirmButtonText: "확인",
         confirmButtonColor: "#85bd82",
         timer: 5000,
