@@ -16,7 +16,8 @@
 .title-p {
   font-size: 1.3rem;
   display: flex;
-  margin-left: 20px;
+  margin: 20px;
+  width: 280px;
 }
 
 .addImage-span {

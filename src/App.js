@@ -15,10 +15,11 @@ import Header from "./components/Layout/Header";
 import Profile from "./components/page/Profile";
 import Notice from "./components/page/Notice";
 
-import ConsultProvider from "./store/ConsultProvider";
 import Auth from "./components/page/Auth";
 import { authService } from "./fbase";
 import StudentLists from "./components/page/StudentLists";
+
+import { useNavigate } from "react-router-dom";
 
 function App() {
   const [init, setInit] = useState(false);
@@ -28,6 +29,7 @@ function App() {
   const [user, setUser] = useState(null);
   const [menuOnHead, setMenuOnHead] = useState(true);
   const [showMainExample, setShowMainExample] = useState();
+  let navigate = useNavigate();
 
   useEffect(() => {
     try {
@@ -42,6 +44,8 @@ function App() {
           setStudents([]);
         }
         setInit(true);
+        //로그인하면 심심해요 화면 먼저보여주기
+        navigate(`/classgame`);
       });
     } catch (error) {
       console.log(error);
@@ -89,81 +93,82 @@ function App() {
   return (
     <div>
       <div className={menuOnHead ? "App" : "App-bottom"}>
-        <ConsultProvider userUid={isLoggedIn ? userUid : ""}>
-          <Header
-            isLoggedIn={isLoggedIn}
-            user={isLoggedIn && user}
-            logOutHandler={logOutHandler}
-            setMenuHandler={setMenuHandler}
-            menuOnHead={menuOnHead}
-          />
-          <Routes>
-            {init && isLoggedIn ? (
-              <>
-                <Route
-                  index
-                  element={
-                    <MainPage
-                      userUid={userUid}
-                      showMainExample={showMainExample}
-                      students={students}
-                      setShowMainExample={() => setShowMainExample(false)}
-                    />
-                  }
-                />
+        <Header
+          isLoggedIn={isLoggedIn}
+          user={isLoggedIn && user}
+          logOutHandler={logOutHandler}
+          setMenuHandler={setMenuHandler}
+          menuOnHead={menuOnHead}
+        />
+        <Routes>
+          {init && isLoggedIn ? (
+            <>
+              <Route
+                index
+                path=""
+                element={
+                  <MainPage
+                    userUid={userUid}
+                    showMainExample={showMainExample}
+                    students={students}
+                    setShowMainExample={() => setShowMainExample(false)}
+                  />
+                }
+              />
 
-                <Route
-                  path="classgame"
-                  element={
-                    <ClassgamePage students={students} userUid={userUid} />
-                  }
-                />
+              <Route
+                path="classgame"
+                element={
+                  <ClassgamePage
+                    students={students}
+                    userUid={userUid}
+                    from="main"
+                  />
+                }
+              />
 
-                <Route
-                  path="attendance"
-                  element={
-                    <AttendancePage students={students} userUid={userUid} />
-                  }
-                />
+              <Route
+                path="attendance"
+                element={
+                  <AttendancePage students={students} userUid={userUid} />
+                }
+              />
 
-                <Route
-                  path="attendance/:studentNum"
-                  element={<NumAttendancePage />}
-                />
+              <Route
+                path="attendance/:studentNum"
+                element={<NumAttendancePage />}
+              />
 
-                <Route
-                  path="consulting"
-                  element={
-                    <ConsultingPage students={students} userUid={userUid} />
-                  }
-                />
+              <Route
+                path="consulting"
+                element={
+                  <ConsultingPage students={students} userUid={userUid} />
+                }
+              />
 
-                <Route
-                  path="memo"
-                  element={<MemoPage students={students} userUid={userUid} />}
-                />
+              <Route
+                path="memo"
+                element={<MemoPage students={students} userUid={userUid} />}
+              />
 
-                <Route path="todo" element={<TodoPage userUid={userUid} />} />
+              <Route path="todo" element={<TodoPage userUid={userUid} />} />
 
-                <Route
-                  path="student-manage"
-                  element={
-                    <StudentLists userUid={userUid} students={students} />
-                  }
-                />
+              <Route
+                path="student-manage"
+                element={<StudentLists userUid={userUid} students={students} />}
+              />
 
-                <Route path="profile" element={<Profile user={user} />} />
+              <Route path="profile" element={<Profile user={user} />} />
 
-                <Route path="notice" element={<Notice />} />
-              </>
-            ) : (
-              <>
-                <Route index element={<Auth />} />
-              </>
-            )}
-            <Route path="*" element={<Navigate replace to="/" />} />
-          </Routes>
-        </ConsultProvider>
+              <Route path="notice" element={<Notice />} />
+            </>
+          ) : (
+            <>
+              <Route index element={<Auth />} />
+            </>
+          )}
+          <Route path="*" element={<Navigate replace to="/" />} />
+        </Routes>
       </div>
     </div>
   );

@@ -16,10 +16,10 @@ import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import ExampleModal from "./ExampleModal";
 import ocrGif from "../../assets/student/ocrGif.gif";
-import seatPairUpdate from "../../assets/notice/seatPairUpdate.jpg";
+import publicSetting from "../../assets/todo/publicSetting.gif";
 
 const update_text =
-  "* 메뉴의 '잼잼' => '자리뽑기'에서 짝을 했던 학생들이 다시뽑히지 않도록 하는 기능을 선택하실 수 있어요!";
+  "*일정 탭에서 *설정 을 통해 학년 / 부장 / 학교의 일정을 입력해두고 함께 공유할 수 있어요!";
 //오늘 날짜 yyyy-mm-dd로 만들기
 const getDateHandler = (date, titleOrQuery) => {
   let year = date.getFullYear();
@@ -55,7 +55,7 @@ const MainPage = (props) => {
   const [hideClassTable, setHideClassTable] = useState(false);
   //업데이트 내용 보여주기 로컬스토리지에서 showNotice를 스트링으로 저장해서 확인 후에 이전에 봤으면 안보여주기
   const [showNotice, setShowNotice] = useState(
-    localStorage.getItem("showNotice") === "seatPair" ? false : true
+    localStorage.getItem("showNotice") === "todoPair" ? false : true
   );
 
   let classLists = ["1", "2", "3", "4", "5", "6"];
@@ -237,7 +237,6 @@ const MainPage = (props) => {
   };
 
   //firestore에서 개별 명렬표 기록 받아오기
-
   const getListMemoFromDb = () => {
     let listMemoQuery = query(
       collection(dbService, "listMemo"),
@@ -388,10 +387,10 @@ const MainPage = (props) => {
       {showNotice && (
         <ExampleModal
           onClose={() => {
-            localStorage.setItem("showNotice", "seatPair");
+            localStorage.setItem("showNotice", "todoPair");
             setShowNotice(false);
           }}
-          imgSrc={seatPairUpdate}
+          imgSrc={publicSetting}
           text={
             <>
               <p
@@ -401,7 +400,7 @@ const MainPage = (props) => {
                   margin: "5px",
                 }}
               >
-                ==== 업 데 이 트 ====
+                ==== 함께해주세요! ====
               </p>
               <p className={`${classes.p} ${classes.top}`}>{update_text}</p>
             </>
@@ -409,7 +408,7 @@ const MainPage = (props) => {
           bottomText={
             <>
               <p className={classes.p}>
-                * 화면 우측 상단의 <i className="fa-solid fa-user"></i> =>
+                * 화면 우측 상단의 <i className="fa-solid fa-user"></i> -
                 "공지사항"에 들어오시면 내용을 다시 보실 수 있어요.
               </p>
             </>

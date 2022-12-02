@@ -24,6 +24,8 @@ input {
   font-size: 1.3rem;
   padding: 15px;
   height: 47px;
+  overflow-y: hidden;
+  resize: none;
 }
 
 .class-memo {
@@ -43,6 +45,16 @@ input {
 }
 
 .memo-section {
+  height: 25px;
+  width: 65%;
+  margin-left: 10px;
+  margin-bottom: 5px;
+  padding: 10px;
+  overflow-y: hidden;
+  resize: none;
+}
+
+.simsimMain-input {
   height: 25px;
   width: 65%;
   margin-left: 10px;

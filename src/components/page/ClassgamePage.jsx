@@ -5,8 +5,9 @@ import classes from "../Classgame/SettingSeat/SettingSeat.module.css";
 import Simsim from "../Classgame/Simsim/Simsim";
 
 const ClassgamePage = (props) => {
-  const [gemgemMenu, setGemgemMenu] = useState("");
-  const [selectedMenu, setSelectedMenu] = useState("");
+  const [selectedMenu, setSelectedMenu] = useState(
+    props.from === "main" ? "simsim" : ""
+  );
 
   return (
     <>

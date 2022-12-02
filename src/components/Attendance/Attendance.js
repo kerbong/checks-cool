@@ -13,7 +13,7 @@ const Attendance = (props) => {
   };
 
   return (
-    <Modal onClose={props.onClose}>
+    <Modal onClose={props.onClose} addStyle="attendHeight">
       <div className={classes["student"]}>
         <span> {props.who} </span>
         <span className={classes.closeBtn} onClick={props.onClose}>

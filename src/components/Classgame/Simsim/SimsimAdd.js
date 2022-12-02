@@ -7,7 +7,7 @@ import Button from "../../Layout/Button";
 
 const SimsimAdd = (props) => {
   const [attachedFile, setAttachedFile] = useState("");
-  const [addImage, setAddImage] = useState(true);
+  const [addImage, setAddImage] = useState(false);
 
   //자료 최대글자수 제한 함수
   const handleOnInput = (e, maxlength) => {
@@ -32,6 +32,10 @@ const SimsimAdd = (props) => {
 
   return (
     <>
+      <p className={classes["title-p"]}>
+        {" "}
+        지금 혹은 최근, 학교에서 있었던 심심한 에피소드가 있으신가요?{" "}
+      </p>
       <form>
         <div className={classes["image-div"]}>
           <div className={classes["imageTitle-div"]}>

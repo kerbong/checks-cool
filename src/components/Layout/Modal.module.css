@@ -31,6 +31,10 @@
   height: 85vh;
 }
 
+.attendHeight {
+  height: 60vh;
+}
+
 @media (min-width: 768px) {
   .modal {
     width: 42rem;

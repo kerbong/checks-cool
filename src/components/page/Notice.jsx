@@ -1,24 +1,23 @@
 import React, { useEffect, useState } from "react";
 import { dbService } from "../../fbase";
-import {
-  collection,
-  query,
-  onSnapshot,
-  getDocs,
-  getDoc,
-  doc,
-  setDoc,
-} from "firebase/firestore";
+import { collection, getDocs, query, orderBy } from "firebase/firestore";
+
+import NoticeList from "components/Notice/NoticeList";
 
 const Notice = () => {
   const [noticeDatas, setNoticeDatas] = useState([]);
 
   const getNoticeFromDb = async () => {
-    let noticeSnapshot = await getDocs(collection(dbService, "notice"));
+    let noticeSnapshot = await getDocs(
+      query(collection(dbService, "notice"), orderBy("id", "desc"))
+    );
 
     setNoticeDatas([]);
     noticeSnapshot.forEach((doc) => {
-      const itemObj = { ...doc.data(), doc_id: doc.id };
+      const itemObj = {
+        ...doc.data(),
+        doc_id: doc.id,
+      };
       setNoticeDatas((prev) => [...prev, itemObj]);
     });
   };
@@ -29,12 +28,8 @@ const Notice = () => {
 
   return (
     <div>
-      <h2>공지사항</h2>
-      <ul>
-        {noticeDatas.map((notice) => (
-          <li>{notice.text}</li>
-        ))}
-      </ul>
+      <h1 style={{ margin: "15px" }}>공지사항</h1>
+      <NoticeList noticeDatas={noticeDatas} />
     </div>
   );
 };

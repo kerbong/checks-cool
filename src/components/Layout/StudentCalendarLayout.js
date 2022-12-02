@@ -88,7 +88,6 @@ const StudentCalendarLayout = (props) => {
           </div>
 
           <AttendCtxCalendar
-            Context={props.Context}
             selectOption={props.selectOption}
             about="attendance"
             students={props.students}
@@ -148,7 +147,6 @@ const StudentCalendarLayout = (props) => {
           who={student}
           date={new Date()}
           selectOption={props.selectOption}
-          Context={props.Context}
           userUid={props.userUid}
           about="attendance"
         />
