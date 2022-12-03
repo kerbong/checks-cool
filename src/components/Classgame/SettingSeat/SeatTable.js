@@ -23,7 +23,18 @@ const getDateHandler = (date) => {
   return year + "-" + month + "-" + day;
 };
 
-// const imageUrls = ["", "", "", "", "", "", ""];
+const imageUrls = [
+  "미니언즈박수",
+  "강아지너야너",
+  "강아지점프",
+  "개놀람1",
+  "개놀람2",
+  "개박수",
+  "곰돌축하",
+  "양떼박수",
+  "캐릭터들예스",
+  "하이파이브새",
+];
 
 const SeatTable = (props) => {
   const [tableRow, setTableRow] = useState(props.rowColumn.split("-")[0]);
@@ -346,14 +357,16 @@ const SeatTable = (props) => {
 
   const selectedSwal = (num, name) => {
     // Math.random() *
-    let backdropUrl = process.env.PUBLIC_URL + "/미니언즈박수.gif";
+    let randomImgNum = Math.floor(Math.random() * imageUrls.length);
+    let backdropUrl =
+      process.env.PUBLIC_URL + `/gif/${imageUrls[randomImgNum]}.gif`;
 
     Swal.fire({
       title: `${num}번 ${name}`,
       width: 600,
       padding: "3em",
       color: "#312b76",
-      background: `#fff url(/images/trees.png)`,
+      background: `#fff`,
       backdrop: `
         #00087ba1
             url(${backdropUrl})
@@ -583,6 +596,13 @@ const SeatTable = (props) => {
                   key={stu.name}
                   className={classes["remain-student"]}
                   onClick={() => {
+                    //선택한 학생의 자리 배치 확인
+                    if (!selectSeatCheck()) {
+                      errorSwal(
+                        `뽑힌 "${tempStudent.name}" 학생의 자리를 선택해주세요!`
+                      );
+                      return false;
+                    }
                     let new_students = [...students];
                     setStudents([
                       ...new_students.filter(

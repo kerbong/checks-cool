@@ -50,6 +50,7 @@ const Header = (props) => {
           <HeaderMenu
             icon={"fa-solid fa-gamepad"}
             path={"classgame"}
+            from={""}
             menuText={"잼잼"}
           />
         </ul>

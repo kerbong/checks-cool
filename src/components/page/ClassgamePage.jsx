@@ -3,10 +3,12 @@ import Button from "../Layout/Button";
 import SettingSeat from "../Classgame/SettingSeat/SettingSeat";
 import classes from "../Classgame/SettingSeat/SettingSeat.module.css";
 import Simsim from "../Classgame/Simsim/Simsim";
+import { useLocation } from "react-router-dom";
 
 const ClassgamePage = (props) => {
+  const { state } = useLocation();
   const [selectedMenu, setSelectedMenu] = useState(
-    props.from === "main" ? "simsim" : ""
+    state === "main" ? "simsim" : ""
   );
 
   return (

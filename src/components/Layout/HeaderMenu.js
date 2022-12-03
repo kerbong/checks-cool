@@ -6,7 +6,10 @@ const HeaderMenu = (props) => {
   let path = props.path;
   return (
     <>
-      <li className={classes.li} onClick={path && (() => navigate(`/${path}`))}>
+      <li
+        className={classes.li}
+        onClick={path && (() => navigate(`/${path}`, { from: props.from }))}
+      >
         <i className={props.icon}></i>
         <span className={classes.menuText}>{props.menuText}</span>
       </li>

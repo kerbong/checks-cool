@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import "./App.css";
 import { useState, useEffect } from "react";
 import { doc, onSnapshot } from "firebase/firestore";
@@ -18,8 +18,6 @@ import Notice from "./components/page/Notice";
 import Auth from "./components/page/Auth";
 import { authService } from "./fbase";
 import StudentLists from "./components/page/StudentLists";
-
-import { useNavigate } from "react-router-dom";
 
 function App() {
   const [init, setInit] = useState(false);
@@ -45,7 +43,7 @@ function App() {
         }
         setInit(true);
         //로그인하면 심심해요 화면 먼저보여주기
-        navigate(`/classgame`);
+        navigate(`/classgame`, { state: "main" });
       });
     } catch (error) {
       console.log(error);
@@ -119,11 +117,7 @@ function App() {
               <Route
                 path="classgame"
                 element={
-                  <ClassgamePage
-                    students={students}
-                    userUid={userUid}
-                    from="main"
-                  />
+                  <ClassgamePage students={students} userUid={userUid} />
                 }
               />
 
