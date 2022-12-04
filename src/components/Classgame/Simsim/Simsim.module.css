@@ -64,7 +64,7 @@
 
 .simsimAdd-btn {
   position: relative;
-  top: -45px;
+  top: -65px;
   right: -40%;
   padding: 10px;
   width: 45px;
@@ -107,4 +107,8 @@
   line-height: 35px;
   word-break: keep-all;
   text-align: left;
+}
+
+.nickName-div {
+  font-weight: bold;
 }

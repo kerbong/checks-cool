@@ -246,7 +246,7 @@
   width: auto;
   font-size: 1.1rem;
   padding: 12px;
-  margin: 0px 15px;
+  margin-left: 15px;
 
   background-color: #c3da9a;
   border-radius: 5px;
@@ -276,4 +276,24 @@
   background-color: #dac69a;
   border-radius: 5px;
   border-width: 0;
+}
+
+.missionEditBtn {
+  padding: 10px;
+  background-color: inherit;
+  border-width: 0;
+  color: #ff7920c2;
+  font-size: 1.2rem;
+}
+
+.replyAddBtn {
+  padding: 10px;
+  color: #ff7920c2;
+  background-color: inherit;
+  border-width: 0;
+  font-size: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 10px;
 }

@@ -1,15 +1,22 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Button from "../Layout/Button";
-import SettingSeat from "../Classgame/SettingSeat/SettingSeat";
 import classes from "../Classgame/SettingSeat/SettingSeat.module.css";
+import SettingSeat from "../Classgame/SettingSeat/SettingSeat";
 import Simsim from "../Classgame/Simsim/Simsim";
+import Mission from "../Classgame/Mission/Mission";
 import { useLocation } from "react-router-dom";
 
 const ClassgamePage = (props) => {
   const { state } = useLocation();
-  const [selectedMenu, setSelectedMenu] = useState(
-    state === "main" ? "simsim" : ""
-  );
+  const [selectedMenu, setSelectedMenu] = useState("");
+
+  useEffect(() => {
+    if (state === "main") {
+      setSelectedMenu("simsim");
+    } else if (state === "morning") {
+      setSelectedMenu("mission");
+    }
+  }, [state]);
 
   return (
     <>
@@ -31,6 +38,11 @@ const ClassgamePage = (props) => {
               <i className="fa-regular fa-square-check"></i> 심심해요
             </>
           )}
+          {selectedMenu === "mission" && (
+            <>
+              <i className="fa-solid fa-mug-saucer"></i> 아침미션
+            </>
+          )}
         </button>
 
         {/* 추가하기 버튼 */}
@@ -50,6 +62,11 @@ const ClassgamePage = (props) => {
             className={"settingSeat"}
             onclick={() => setSelectedMenu("simsim")}
           />
+          <Button
+            name={"아침미션"}
+            className={"settingSeat"}
+            onclick={() => setSelectedMenu("mission")}
+          />
           <p className={classes["gameMenu"]}>
             {" "}
             고민이 많아요... 사용하고 싶은 기능들을 추천해주세요! 심사숙고 후에
@@ -64,6 +81,8 @@ const ClassgamePage = (props) => {
         )}
 
         {selectedMenu === "simsim" && <Simsim userUid={props.userUid} />}
+
+        {selectedMenu === "mission" && <Mission userUid={props.userUid} />}
       </div>
     </>
   );

@@ -8,15 +8,17 @@ const LikeBtn = (props) => {
     <button
       className={classes["like-btn"]}
       onClick={() => {
-        if (!canClick) {
-          return;
-        }
-        setCanClick(false);
-        setTimeout(() => {
-          setCanClick(true);
-        }, "4000");
+        if (!props.likeNonClick) {
+          if (!canClick) {
+            return;
+          }
+          setCanClick(false);
+          setTimeout(() => {
+            setCanClick(true);
+          }, "4000");
 
-        props.changeLike();
+          props.changeLike();
+        }
       }}
     >
       {props?.like ? (
