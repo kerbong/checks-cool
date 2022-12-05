@@ -9,7 +9,6 @@ import {
   onSnapshot,
   where,
   doc,
-  updateDoc,
   getDoc,
   addDoc,
   getDocs,
@@ -21,10 +20,10 @@ import MissionInput from "./MissionInput";
 import Swal from "sweetalert2";
 
 const EXPLAINS = [
-  "* 아침 7시~9시 사이에만 글쓰기가 가능해요.",
-  "* 하루에 한 개의 미션만 올릴 수 있어요.",
+  "* 아침 7~9시에 글쓰기가 가능해요.",
+  "* 하루 한 개의 미션만 올릴 수 있어요.",
   "* 미션 당 하나의 댓글만 쓸 수 있어요.",
-  "* 여러 미션에 참여할 수 있어요.",
+  "* 여러 미션에 댓글을 달 수 있어요.",
   "* 오늘 올린 미션만 볼 수 있어요.",
   "* 미션은 수정, 삭제가 불가능해요!",
 ];
@@ -43,8 +42,19 @@ const Mission = (props) => {
   const [userState, setUserState] = useState("");
   const [showItem, setShowItem] = useState(false);
   const [showMission, setShowMission] = useState({});
+  const [is7to9, setIs7to9] = useState(null);
 
   let navigate = useNavigate();
+
+  useEffect(() => {
+    //7-9
+    const nowHour = +new Date().toTimeString().slice(0, 2);
+    if (nowHour >= 7 && nowHour <= 9) {
+      setIs7to9(true);
+    } else {
+      setIs7to9(false);
+    }
+  }, []);
 
   //오늘 날짜의 미션자료 받아오기
   const getMissionFromDb = () => {
@@ -67,15 +77,15 @@ const Mission = (props) => {
       setMissions([...new_missions]);
 
       //만약 자료가 변경되었는데 현재 팝업상태이면 보여지고 있는 showMission과 일치하는 걸 찾아서 새롭게 수정해주기..
-      if (showItem) {
-        let new_mission = new_missions.filter(
-          (mission) => mission.writtenId === showMission.writtenId
-        );
-        setShowMission({ ...new_mission[0] });
+      //   if (showItem) {
+      //     let new_mission = new_missions.filter(
+      //       (mission) => mission.writtenId === showMission.writtenId
+      //     );
+      //     setShowMission({ ...new_mission[0] });
 
-        // console.log(new_reply[0].reply);
-        setShowReply([...new_mission[0].reply]);
-      }
+      //     // console.log(new_reply[0].reply);
+      //     setShowReply([...new_mission[0].reply]);
+      //   }
     });
   };
 
@@ -87,40 +97,13 @@ const Mission = (props) => {
   const getNicknameDb = async () => {
     const userStateRef = doc(dbService, "user", props.userUid);
     const userStateDoc = await getDoc(userStateRef);
-
-    setUserState(userStateDoc.data());
+    console.log(userStateDoc.data());
+    setUserState({ ...userStateDoc.data() });
   };
 
   useEffect(() => {
     getNicknameDb();
   }, []);
-
-  //reply를 수정, 삭제, 추가하는 함수
-  const replyHandelr = async (mission, option, value) => {
-    const nowOnRef = doc(dbService, "mission", mission.doc_id);
-    const data_reply = (await getDoc(nowOnRef)).data().reply;
-
-    //새로운 댓글목록 배열 만들고
-    let new_data_reply = [];
-    //기존댓글목록에 이미 쓴게 있으면 빼고 새로운 댓글 목록에 저장
-    data_reply.forEach((reply) => {
-      if (reply.writtenId !== props.userUid) {
-        new_data_reply.push(reply);
-      }
-    });
-
-    //댓글 업데이트 혹은 새로쓰기면
-    if (option === "update") {
-      //데이터 새롭게 추가하고
-      new_data_reply.push({
-        text: value,
-        writtenId: props.userUid,
-        nickName: userState.nickName,
-      });
-    }
-    //업데이트 공통
-    await updateDoc(nowOnRef, { reply: new_data_reply });
-  };
 
   //프로필 없는거 알려주고 이동시키는 함수
   const profileErrorSwal = () => {};
@@ -234,13 +217,6 @@ const Mission = (props) => {
           <Reply
             userState={userState}
             mission={showMission}
-            showReply={showReply}
-            replyAddHandler={(value) => {
-              replyHandelr(showMission, "update", value);
-            }}
-            replyDelHandler={() => {
-              replyHandelr(showMission, "delete", "");
-            }}
             userUid={props.userUid}
           />
         </Modal>
@@ -270,11 +246,15 @@ const Mission = (props) => {
       )}
 
       {/* 아침미션 입력 7~9시에만 보이기 */}
-      <MissionInput
-        missionAddHandler={(title, text) => {
-          missionAddHandler(title, text);
-        }}
-      />
+      {is7to9 ? (
+        <MissionInput
+          missionAddHandler={(title, text) => {
+            missionAddHandler(title, text);
+          }}
+        />
+      ) : (
+        <span>매일 아침 7시 ~ 9시 사이에만 입력이 가능해요.</span>
+      )}
 
       {missions?.map((mission) => (
         <Item

@@ -4,7 +4,8 @@ import Button from "../../../components/Layout/Button";
 import ReplyInput from "./ReplyInput";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
-
+import { dbService } from "../../../fbase";
+import { onSnapshot, doc, updateDoc, getDoc } from "firebase/firestore";
 const Reply = (props) => {
   const [mission, setMission] = useState([]);
   const [replyAll, setReplyAll] = useState([]);
@@ -13,6 +14,35 @@ const Reply = (props) => {
   const [isEditting, setIsEditting] = useState(false);
 
   let navigate = useNavigate();
+
+  //현재 받은 미션자료 받아오고 댓글 담아두기
+  const getMissionFromDb = async (doc_id) => {
+    onSnapshot(doc(dbService, "mission", doc_id), (doc) => {
+      setMission({ ...doc.data(), doc_id: doc.id });
+      setReplyAll([...doc.data().reply]);
+    });
+  };
+
+  useEffect(() => {
+    getMissionFromDb(props.mission.doc_id);
+    console.log(mission);
+  }, [props.mission]);
+
+  //현재 유저가 썼던 댓글이 있으면
+  useEffect(() => {
+    let existNum = 0;
+    replyAll?.forEach((rep) => {
+      if (rep.writtenId === props.userUid) {
+        existNum += 1;
+      }
+    });
+    if (existNum > 0) {
+      setReplyExist(true);
+    } else {
+      setReplyExist(false);
+    }
+  }, [replyAll]);
+
   //프로필 없는거 알려주고 이동시키기
   const profileErrorSwal = () => {
     Swal.fire({
@@ -30,41 +60,35 @@ const Reply = (props) => {
     });
   };
 
-  useEffect(() => {
-    setMission(props.mission);
-    props.mission?.reply?.forEach((rep) => {
-      if (rep.writtenId === props.userUid) {
-        setReplyExist(true);
-      } else {
-        setReplyExist(false);
+  //댓글 삭제, 추가, 수정기능 함수
+  const replyHandler = async (value, option) => {
+    const nowOnRef = doc(dbService, "mission", mission.doc_id);
+    const data_reply = (await getDoc(nowOnRef)).data().reply;
+    //새로운 댓글목록 배열 만들고
+    let new_data_reply = [];
+    //기존댓글목록에 이미 쓴게 있으면 빼고 새로운 댓글 목록에 저장
+    data_reply?.forEach((reply) => {
+      if (reply.writtenId !== props.userUid) {
+        new_data_reply.push(reply);
       }
     });
-  }, [props.mission]);
 
-  useEffect(() => {
-    setReplyAll(props.showReply);
-    let existNum = 0;
-    props.showReply?.forEach((rep) => {
-      //현재 유저가 썼던 댓글이 있으면
-      if (rep.writtenId === props.userUid) {
-        existNum += 1;
-      }
-    });
-    if (existNum > 0) {
-      //   console.log("있었네!");
-      setReplyExist(true);
-    } else {
-      //   console.log("없었네!");
-      setReplyExist(false);
+    //댓글 업데이트 혹은 새로쓰기면
+    if (option === "update") {
+      //데이터 새롭게 추가하고
+      new_data_reply.push({
+        text: value,
+        writtenId: props.userUid,
+        nickName: props.userState.nickName,
+      });
     }
-  }, [props.showReply]);
-
-  const replyAddHandler = (value) => {
-    props.replyAddHandler(value);
+    //업데이트 공통
+    await updateDoc(nowOnRef, { reply: new_data_reply });
   };
 
   return (
     <div>
+      {/* 내가쓴 댓글이 없으면 입력창 보여주기 */}
       {!replyExist && (
         <ReplyInput
           replyAddHandler={(value) => {
@@ -75,16 +99,18 @@ const Reply = (props) => {
             ) {
               profileErrorSwal();
             }
-            replyAddHandler(value);
+            replyHandler(value, "update");
           }}
         />
       )}
 
+      {/* 전체 댓글들 보여주기 */}
       <div>
         {replyAll?.map((reply, index) => (
           <li key={`reply_${index}`} className={classes["reply-li"]}>
             {/* 닉네임, 댓글내용 부분 */}
             <div className={classes["replyNameText-div"]}>
+              {/* 수정중이 아니면 */}
               {!isEditting ? (
                 <>
                   <span className={classes["reply-nickName"]}>
@@ -93,10 +119,11 @@ const Reply = (props) => {
                   <span className={classes["reply-text"]}>{reply.text}</span>
                 </>
               ) : (
+                /* 수정중이면 */
                 <ReplyInput
                   existText={existText}
                   replyAddHandler={(value) => {
-                    replyAddHandler(value);
+                    replyHandler(value, "update");
                   }}
                   editting={true}
                 />
@@ -105,7 +132,7 @@ const Reply = (props) => {
 
             {/* 내가 작성한 댓글이면 수정, 삭제버튼 보이기 */}
             {reply.writtenId === props.userUid && (
-              <div>
+              <div className={classes["replyBtn-div"]}>
                 <Button
                   id={"edit" + mission.nickName}
                   className="missionEditBtn"
@@ -115,7 +142,7 @@ const Reply = (props) => {
                       let value =
                         document.getElementById("replyText-input").value;
 
-                      replyAddHandler(value);
+                      replyHandler(value, "update");
                       setIsEditting(false);
                     } else {
                       //기본값 전달하고 수정화면으로
@@ -144,7 +171,7 @@ const Reply = (props) => {
                       setIsEditting(false);
                     } else {
                       //삭제버튼 기능
-                      props.replyDelHandler();
+                      replyHandler("none", "delete");
                     }
                   }}
                   icon={
