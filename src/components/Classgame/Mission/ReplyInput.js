@@ -28,7 +28,7 @@ const ReplyInput = (props) => {
             if (value.trim() === "") {
               return false;
             }
-            props.replyAddHandler(value);
+            props.replyAddHandler(value, "add");
           }}
           className={"replyAddBtn"}
         />

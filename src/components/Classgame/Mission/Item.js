@@ -7,14 +7,21 @@ import { doc, updateDoc, arrayRemove, arrayUnion } from "firebase/firestore";
 
 const Item = (props) => {
   const [like, setLike] = useState(false);
+  const [userUid, setUserUid] = useState(props.userUid || "");
+  const [mission, setMission] = useState({});
 
-  let mission = props.mission;
+  useEffect(() => {
+    setUserUid(props.userUid);
+  }, [props.userUid]);
+  useEffect(() => {
+    setMission(props.mission);
+  }, [props.mission]);
 
   //like상태 불러와서 저장하기
   const checkSetLike = (mission) => {
-    let likeOrNot = mission.like?.filter(
-      (data) => data.writtenId === props.userUid
-    ).length;
+    let likeOrNot = mission?.like?.filter((data) => {
+      return data === userUid;
+    }).length;
 
     if (likeOrNot > 0) {
       setLike(true);
@@ -26,7 +33,6 @@ const Item = (props) => {
   useEffect(() => {
     checkSetLike(mission);
   }, [mission]);
-
   //라이크를 변경하는 함수, 값을 찾아서 업데이트
   const changeLikeHandler = async () => {
     // console.log(mission);
@@ -101,7 +107,7 @@ const Item = (props) => {
             changeLike={changeLikeHandler}
             likeNonClick={props.likeNonClick}
           />
-          {mission?.like?.length}
+          {props.mission?.like?.length}
           <div className={classes.replyDiv}>
             <span className={classes.replyIcon}>
               <i className="fa-solid fa-reply"></i>

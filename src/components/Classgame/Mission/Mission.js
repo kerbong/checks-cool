@@ -75,17 +75,6 @@ const Mission = (props) => {
       });
 
       setMissions([...new_missions]);
-
-      //만약 자료가 변경되었는데 현재 팝업상태이면 보여지고 있는 showMission과 일치하는 걸 찾아서 새롭게 수정해주기..
-      //   if (showItem) {
-      //     let new_mission = new_missions.filter(
-      //       (mission) => mission.writtenId === showMission.writtenId
-      //     );
-      //     setShowMission({ ...new_mission[0] });
-
-      //     // console.log(new_reply[0].reply);
-      //     setShowReply([...new_mission[0].reply]);
-      //   }
     });
   };
 
@@ -97,16 +86,12 @@ const Mission = (props) => {
   const getNicknameDb = async () => {
     const userStateRef = doc(dbService, "user", props.userUid);
     const userStateDoc = await getDoc(userStateRef);
-    console.log(userStateDoc.data());
     setUserState({ ...userStateDoc.data() });
   };
 
   useEffect(() => {
     getNicknameDb();
   }, []);
-
-  //프로필 없는거 알려주고 이동시키는 함수
-  const profileErrorSwal = () => {};
 
   //   미션 추가 함수
   const missionAddHandler = async (titleValue, textValue) => {
@@ -209,10 +194,11 @@ const Mission = (props) => {
           }}
         >
           <Item
+            userUid={props.userUid}
             mission={showMission}
             itemClickHandler={() => {}}
             onPopup={true}
-            userUid={props.userUid}
+            likeNonClick={false}
           />
           <Reply
             userState={userState}

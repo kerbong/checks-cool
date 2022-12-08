@@ -25,7 +25,6 @@ const Reply = (props) => {
 
   useEffect(() => {
     getMissionFromDb(props.mission.doc_id);
-    console.log(mission);
   }, [props.mission]);
 
   //현재 유저가 썼던 댓글이 있으면
@@ -74,7 +73,7 @@ const Reply = (props) => {
     });
 
     //댓글 업데이트 혹은 새로쓰기면
-    if (option === "update") {
+    if (option === "update" || option === "add") {
       //데이터 새롭게 추가하고
       new_data_reply.push({
         text: value,
@@ -82,6 +81,8 @@ const Reply = (props) => {
         nickName: props.userState.nickName,
       });
     }
+
+    console.log(new_data_reply);
     //업데이트 공통
     await updateDoc(nowOnRef, { reply: new_data_reply });
   };

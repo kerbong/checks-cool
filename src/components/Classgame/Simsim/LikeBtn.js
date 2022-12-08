@@ -1,8 +1,13 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import classes from "./LikeBtn.module.css";
 
 const LikeBtn = (props) => {
   const [canClick, setCanClick] = useState(true);
+  const [like, setLike] = useState(props.like || false);
+
+  useEffect(() => {
+    setLike(props.like);
+  }, [props?.like]);
 
   return (
     <button
@@ -21,7 +26,7 @@ const LikeBtn = (props) => {
         }
       }}
     >
-      {props?.like ? (
+      {like ? (
         <i className="fa-solid fa-heart"></i>
       ) : (
         <i className="fa-regular fa-heart"></i>
