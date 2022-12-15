@@ -459,6 +459,66 @@ const MainPage = (props) => {
           />
         </div>
 
+        {/* 시간표 */}
+        <div className={classes["event-div"]}>
+          <div className={classes["event-title"]}>
+            <span>🕘 시간표 </span>
+            <span
+              className={classes["event-title-dropdown"]}
+              onClick={() => setHideClassTable((prev) => !prev)}
+            >
+              {" "}
+              {hideClassTable ? (
+                <i className="fa-solid fa-chevron-down"></i>
+              ) : (
+                <i className="fa-solid fa-chevron-up"></i>
+              )}{" "}
+            </span>
+          </div>
+
+          <div
+            className={
+              hideClassTable
+                ? classes["eventContent-hide"]
+                : classes["eventContent-show"]
+            }
+          >
+            {titleDate.slice(-2, -1) !== "토" &&
+            titleDate.slice(-2, -1) !== "일" ? (
+              <>
+                <ul className={classes["ul-section"]}>
+                  {classLists.map((classNum, index) => (
+                    <ClassItem
+                      key={`item${classNum}`}
+                      myKey={`class${classNum}`}
+                      classNum={classNum}
+                      subject={
+                        todayClassTable.id.length !== 0
+                          ? todayClassTable.classMemo[index]["subject"]
+                          : ""
+                      }
+                      memo={
+                        todayClassTable.id.length !== 0
+                          ? todayClassTable.classMemo[index]["memo"]
+                          : ""
+                      }
+                    />
+                  ))}
+                </ul>
+                <div className={classes["eventSave-div"]}>
+                  <Button
+                    name={"저장"}
+                    className={"save-classItem-button"}
+                    onclick={saveClassMemoHandler}
+                  />
+                </div>
+              </>
+            ) : (
+              "주말에는 푹 쉬세요❤"
+            )}
+          </div>
+        </div>
+
         {/* 출결목록 */}
         <div
           className={classes["event-div"]}
@@ -586,66 +646,6 @@ const MainPage = (props) => {
               </span>
             </>
           )}
-        </div>
-
-        {/* 시간표 */}
-        <div className={classes["event-div"]}>
-          <div className={classes["event-title"]}>
-            <span>🕘 시간표 </span>
-            <span
-              className={classes["event-title-dropdown"]}
-              onClick={() => setHideClassTable((prev) => !prev)}
-            >
-              {" "}
-              {hideClassTable ? (
-                <i className="fa-solid fa-chevron-down"></i>
-              ) : (
-                <i className="fa-solid fa-chevron-up"></i>
-              )}{" "}
-            </span>
-          </div>
-
-          <div
-            className={
-              hideClassTable
-                ? classes["eventContent-hide"]
-                : classes["eventContent-show"]
-            }
-          >
-            {titleDate.slice(-2, -1) !== "토" &&
-            titleDate.slice(-2, -1) !== "일" ? (
-              <>
-                <ul className={classes["ul-section"]}>
-                  {classLists.map((classNum, index) => (
-                    <ClassItem
-                      key={`item${classNum}`}
-                      myKey={`class${classNum}`}
-                      classNum={classNum}
-                      subject={
-                        todayClassTable.id.length !== 0
-                          ? todayClassTable.classMemo[index]["subject"]
-                          : ""
-                      }
-                      memo={
-                        todayClassTable.id.length !== 0
-                          ? todayClassTable.classMemo[index]["memo"]
-                          : ""
-                      }
-                    />
-                  ))}
-                </ul>
-                <div className={classes["eventSave-div"]}>
-                  <Button
-                    name={"저장"}
-                    className={"save-classItem-button"}
-                    onclick={saveClassMemoHandler}
-                  />
-                </div>
-              </>
-            ) : (
-              "주말에는 푹 쉬세요❤"
-            )}
-          </div>
         </div>
       </div>
 
