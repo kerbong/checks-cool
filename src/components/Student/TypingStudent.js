@@ -135,8 +135,8 @@ const TypingStudent = (props) => {
 
         <p>
           {" "}
-          <span className={classes.genderExample}>여학생</span> / 이름 클릭하면
-          성별 변경
+          <span className={classes.genderExample}>여학생</span> |
+          &nbsp;&nbsp;&nbsp;남학생&nbsp;&nbsp;&nbsp;| 이름 클릭하면 성별 변경
         </p>
         <div className={classes.studentListArea}>
           {props.studentsInfo.map((student) => (

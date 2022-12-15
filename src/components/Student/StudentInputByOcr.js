@@ -11,6 +11,50 @@ const StudentInputByOcr = (props) => {
 
   //구글ocr
   const googleImageOcrHandler = async (base64Img) => {
+    //먼저 하루에 3번 가능한 ocr횟수를 넘었는지 확인하기
+    //로컬스토리지에 새로운 데이터 저장하기
+    const newLocalData = () => {
+      const item = {
+        value: 1,
+        dataWhen: new Date().getDate(),
+      };
+      localStorage.setItem("todayOcrTry", JSON.stringify(item));
+    };
+
+    //로컬에 저장된 밸류 가져오기
+    let ocrTry = localStorage.getItem("todayOcrTry") || "";
+    //로컬스토리지에서 기존에 저장된 데이터가 있으면
+    if (ocrTry.length > 0) {
+      //데이터를 가져와서
+      const item = JSON.parse(ocrTry);
+      //오늘 자료가 아니면
+      if (new Date().getDate() !== item.dataWhen) {
+        newLocalData();
+
+        //오늘 자료면
+      } else {
+        //이미 세번 시도한 경우 에러메세지
+        if (item.value > 3) {
+          Swal.fire({
+            icon: "error",
+            title: "인식불가",
+            text: "다른 선생님들을 위해서 하루에 3번까지만 OCR기능 활용이 가능합니다. 직접입력 / 엑셀파일 업로드 기능을 활용해주세요. 배려 감사합니다! ",
+          });
+          return false;
+          //세번까지는 안했으면 횟수 추가해서 스토리지에 저장하기
+        } else {
+          item.value += 1;
+
+          localStorage.setItem("todayOcrTry", JSON.stringify(item));
+        }
+      }
+
+      // 자료가 없는 경우
+    } else {
+      newLocalData();
+    }
+
+    //구글 ocr 자료 분석실행
     const API_KEY = process.env.REACT_APP_GOOGLE_OCR_API_KEY;
 
     let sumNum = [];
@@ -37,7 +81,7 @@ const StudentInputByOcr = (props) => {
       .then((data) => {
         const ocrTexts = data.responses[0].fullTextAnnotation.text;
 
-        console.log(data.responses[0]);
+        // console.log(data.responses[0]);
         // 숫자가 아닌 것들 빈칸으로 만들었다가 지우고 배열로 만들기
         sumNum = ocrTexts
           .replace(/[^0-9]+/g, " ")
@@ -94,7 +138,12 @@ const StudentInputByOcr = (props) => {
         googleImageOcrHandler(base64data.split(",")[1]);
       };
     } catch (error) {
-      console.log(error);
+      Swal.fire({
+        icon: "error",
+        title: "인식불가",
+        text: "파일 변환과정에서 오류가 생겼어요. 문제가 반복되시면 kerbong@gmail.com으로 알려주세요!",
+      });
+      // console.log(error);
     }
   };
 
