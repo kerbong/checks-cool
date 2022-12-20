@@ -271,6 +271,8 @@ const MainPage = (props) => {
   //firestore에서 오늘 시간표 관련 자료들 받아오기
   const getClassTableFromDb = async () => {
     let classTableRef = doc(dbService, "classTable", props.userUid);
+    setClassTable([]);
+    setTodayClassTable({});
 
     onSnapshot(classTableRef, (doc) => {
       setClassTable([...doc.data().datas]);
