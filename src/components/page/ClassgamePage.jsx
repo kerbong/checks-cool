@@ -4,6 +4,7 @@ import classes from "../Classgame/SettingSeat/SettingSeat.module.css";
 import SettingSeat from "../Classgame/SettingSeat/SettingSeat";
 import Simsim from "../Classgame/Simsim/Simsim";
 import Mission from "../Classgame/Mission/Mission";
+import Doit from "../Classgame/Doit/Doit";
 import { useLocation } from "react-router-dom";
 
 const ClassgamePage = (props) => {
@@ -43,6 +44,11 @@ const ClassgamePage = (props) => {
               <i className="fa-solid fa-mug-saucer"></i> 아침미션
             </>
           )}
+          {selectedMenu === "doThis" && (
+            <>
+              <i className="fa-solid fa-mug-saucer"></i> 이거해요
+            </>
+          )}
         </button>
 
         {/* 추가하기 버튼 */}
@@ -67,11 +73,11 @@ const ClassgamePage = (props) => {
             className={"settingSeat"}
             onclick={() => setSelectedMenu("mission")}
           />
-          <p className={classes["gameMenu"]}>
-            {" "}
-            고민이 많아요... 사용하고 싶은 기능들을 추천해주세요! 심사숙고 후에
-            빠르게 개발해보겠습니다! 👉 kerbong@gmail.com{" "}
-          </p>
+          <Button
+            name={"이거해요"}
+            className={"settingSeat"}
+            onclick={() => setSelectedMenu("doThis")}
+          />
         </div>
       )}
 
@@ -83,6 +89,8 @@ const ClassgamePage = (props) => {
         {selectedMenu === "simsim" && <Simsim userUid={props.userUid} />}
 
         {selectedMenu === "mission" && <Mission userUid={props.userUid} />}
+
+        {selectedMenu === "doThis" && <Doit userUid={props.userUid} />}
       </div>
     </>
   );
