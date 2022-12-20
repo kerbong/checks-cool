@@ -50,7 +50,7 @@ const Input = React.forwardRef((props, ref) => {
           onInput={props.onInput}
           ref={noteRef}
           {...props.input}
-          defaultValue={value}
+          value={value}
           onChange={changeHandler}
           placeholder={props.placeholder || ""}
         />

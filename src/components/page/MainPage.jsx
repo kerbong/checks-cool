@@ -271,22 +271,20 @@ const MainPage = (props) => {
   //firestore에서 오늘 시간표 관련 자료들 받아오기
   const getClassTableFromDb = async () => {
     let classTableRef = doc(dbService, "classTable", props.userUid);
-    let memoSnap = await getDoc(classTableRef);
 
-    if (memoSnap.exists()) {
-      onSnapshot(classTableRef, (doc) => {
-        setClassTable([...doc.data().datas]);
-        let todayClass = doc
-          .data()
-          .datas.filter((data) => data.id === todayYyyymmdd);
-        if (todayClass.length !== 0) {
-          setTodayClassTable({ ...todayClass[0] });
-          // console.log(todayClass[0]);
-        } else {
-          setTodayClassTable({ id: "", classMemo: [] });
-        }
-      });
-    }
+    onSnapshot(classTableRef, (doc) => {
+      setClassTable([...doc.data().datas]);
+      let todayClass = doc
+        .data()
+        .datas.filter((data) => data.id === todayYyyymmdd);
+      console.log(todayClass);
+      if (todayClass.length !== 0) {
+        setTodayClassTable({ ...todayClass[0] });
+        // console.log(todayClass[0]);
+      } else {
+        setTodayClassTable({ id: "", classMemo: [] });
+      }
+    });
   };
 
   //db에서 자료 받아오기 useEffect
@@ -334,6 +332,7 @@ const MainPage = (props) => {
 
     // console.log(classTable);
 
+    //최신 .. 클래스 테이블 전체 자료 가져오고
     const new_classTable = [...classTable];
     if (new_classTable.length !== 0) {
       new_classTable.forEach((data, index) => {
@@ -493,15 +492,9 @@ const MainPage = (props) => {
                       myKey={`class${classNum}`}
                       classNum={classNum}
                       subject={
-                        todayClassTable.id.length !== 0
-                          ? todayClassTable.classMemo[index]["subject"]
-                          : ""
+                        todayClassTable?.classMemo?.[index]?.subject || ""
                       }
-                      memo={
-                        todayClassTable.id.length !== 0
-                          ? todayClassTable.classMemo[index]["memo"]
-                          : ""
-                      }
+                      memo={todayClassTable?.classMemo?.[index]?.memo || ""}
                     />
                   ))}
                 </ul>
