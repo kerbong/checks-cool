@@ -1,7 +1,6 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+// import { getMessaging, getToken, onMessage } from "firebase/messaging";
 import { getAuth } from "firebase/auth";
 import {
   getFirestore,
@@ -76,3 +75,29 @@ export const dbDeleteData = async (collection_name, dataId, useId) => {
 export const authService = getAuth(firebaseApp);
 export const dbService = getFirestore(firebaseApp);
 export const storageService = getStorage(firebaseApp);
+// export const messaging = getMessaging(firebaseApp);
+
+// export const fcm_permission = async function requestPermission() {
+//   const messaging = getMessaging(firebaseApp);
+//   console.log("권한 요청 중...");
+
+//   const permission = await Notification.requestPermission();
+//   if (permission === "denied") {
+//     console.log("알림 권한 허용 안됨");
+//     return;
+//   }
+
+//   console.log("알림 권한이 허용됨");
+
+//   const token = await getToken(messaging, {
+//     vapidKey: process.env.REACT_APP_VAPID_KEY,
+//   });
+
+//   if (token) console.log("token: ", token);
+//   else console.log("Can not get Token");
+
+//   onMessage(messaging, (payload) => {
+//     console.log("메시지가 도착했습니다.", payload);
+//     // ...
+//   });
+// };

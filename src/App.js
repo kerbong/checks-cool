@@ -2,7 +2,11 @@ import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import "./App.css";
 import { useState, useEffect } from "react";
 import { doc, onSnapshot } from "firebase/firestore";
+// import { dbService, fcm_permission, messaging } from "./fbase";
 import { dbService } from "./fbase";
+// import { getFirebaseToken } from "./FirebaseInit";
+import "./fcm_messaging_init";
+// import "./fcm_messaging_init";
 
 import MainPage from "./components/page/MainPage";
 import AttendancePage from "./components/page/AttendancePage";
@@ -28,6 +32,10 @@ function App() {
   const [menuOnHead, setMenuOnHead] = useState(true);
   const [showMainExample, setShowMainExample] = useState();
   let navigate = useNavigate();
+
+  // useEffect(() => {
+  //   fcm_permission();
+  // }, []);
 
   useEffect(() => {
     try {
