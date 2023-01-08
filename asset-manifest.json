@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/checks-cool/static/css/main.cfd388b4.css",
-    "main.js": "/checks-cool/static/js/main.a647c272.js",
+    "main.js": "/checks-cool/static/js/main.a8a032a0.js",
     "static/media/GowunDodum-Regular.ttf": "/checks-cool/static/media/GowunDodum-Regular.39c9a39c246c3c54c53e.ttf",
     "static/media/list.gif": "/checks-cool/static/media/list.8fffec1112ca3ad4d287.gif",
     "static/media/listMemo.gif": "/checks-cool/static/media/listMemo.9b1e9fbe144c9fd5c575.gif",
@@ -14,12 +14,12 @@
     "static/media/show.gif": "/checks-cool/static/media/show.f910c419a32315624f87.gif",
     "static/media/consultAdd.gif": "/checks-cool/static/media/consultAdd.88e54d44455fc22d2a09.gif",
     "static/media/todayTodo.gif": "/checks-cool/static/media/todayTodo.538cb7bb82a6b9a8bd5c.gif",
-    "static/media/크리스마스선물.jpg": "/checks-cool/static/media/크리스마스선물.3e6f9ce9839ca4528585.jpg",
+    "static/media/boxes.jpg": "/checks-cool/static/media/boxes.b110ec0c46dbdab78d38.jpg",
     "static/media/excel_gender_example.jpg": "/checks-cool/static/media/excel_gender_example.f8ba40b1043a4a255572.jpg",
     "index.html": "/checks-cool/index.html"
   },
   "entrypoints": [
     "static/css/main.cfd388b4.css",
-    "static/js/main.a647c272.js"
+    "static/js/main.a8a032a0.js"
   ]
 }
