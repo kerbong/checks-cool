@@ -9,6 +9,8 @@ import submitMemo from "../../assets/memo/submitMemo.gif";
 import todayTodo from "../../assets/memo/todayTodo.gif";
 import listMemo from "../../assets/memo/listMemo.gif";
 
+const SHOW_WHAT = ["checkLists", "listMemo", "todayTodo"];
+
 const MemoPage = (props) => {
   const { state } = useLocation();
   const [showMemos, setShowMemos] = useState(
