@@ -6,16 +6,7 @@ import EventLists from "../Event/EventLists";
 import classes from "./AttendCtxCalendar.module.css";
 
 import { dbService } from "../../fbase";
-import {
-  collection,
-  query,
-  onSnapshot,
-  where,
-  addDoc,
-  setDoc,
-  deleteDoc,
-  doc,
-} from "firebase/firestore";
+import { onSnapshot, setDoc, doc } from "firebase/firestore";
 
 const thisMonth = () => {
   let today = new Date();
@@ -47,28 +38,18 @@ const AttendCtxCalendar = (props) => {
     //기존에 있던 events들도 다 지우기
     setEvents([]);
 
-    let queryWhere = query(
-      collection(dbService, "attend"),
-      where("writtenId", "==", props.userUid)
-    );
+    let attendRef = doc(dbService, "attend", props.userUid);
     // console.log(queryWhere);
 
-    onSnapshot(queryWhere, (snapShot) => {
-      snapShot.docs.map((doc) => {
-        const eventObj = {
-          ...doc.data(),
-          doc_id: doc.id,
-        };
-        return setEvents((prev) => {
-          prev.forEach((prev_data, index) => {
-            if (prev_data.id === eventObj.id) {
-              prev.splice(index, 1);
-            }
-          });
-
-          return [...prev, eventObj];
-        });
+    onSnapshot(attendRef, (doc) => {
+      // setEvents([]);
+      const new_attends = [];
+      doc?.data()?.attend_data?.forEach((data) => {
+        // if (data.id.slice(0, 7) === currentMonth.slice(0, 7)) {
+        new_attends.push(data);
+        // }
       });
+      setEvents([...new_attends]);
     });
   };
 
@@ -76,7 +57,7 @@ const AttendCtxCalendar = (props) => {
   useEffect(() => {
     //db에서 학년 자료 가져오기, showPublicEvent를 의존성으로 넣어두면 알아서 바뀔 때마다 실행됨. 이게 state의 변경상태에 따라 무언가를 실행하도록 하는 베스트인듯
     getAttendsFromDb();
-  }, []);
+  }, [currentMonth]);
 
   const getCurrentMonth = () => {
     const currentM = document
@@ -88,7 +69,19 @@ const AttendCtxCalendar = (props) => {
 
   const fixCurrentMonth = (date, num) => {
     let fixedMonth = String(Number(date.slice(-2)) + num).padStart(2, "0");
-    return date.slice(0, 5) + fixedMonth;
+    let new_year, new_month;
+    if (fixedMonth === "00") {
+      new_year = +date.slice(0, 4) - 1;
+      new_month = "12";
+    } else if (fixedMonth === "13") {
+      new_year = +date.slice(0, 4) + 1;
+      new_month = "01";
+    } else {
+      new_year = date.slice(0, 4);
+      new_month = fixedMonth;
+    }
+
+    return new_year + "-" + new_month;
   };
 
   const calEventDayToYMD = (eventTag) => {
@@ -160,8 +153,9 @@ const AttendCtxCalendar = (props) => {
 
             if (events.length !== 0) {
               // 기존 코드, eventByDays 자료에 지금 날짜와 같은 자료가 있는지 확인해서 새로운 배열에 넣기
+              // console.log(yyyymmdd.split("-")[2]);
               let new_eventOnDay = events.filter(
-                (event) => event["id"].slice(0, 10) === yyyymmdd
+                (event) => event.id.slice(8, 10) === yyyymmdd.split("-")[2]
               );
               //만약 오늘 날짜에 해당하는 게 있으면
               if (new_eventOnDay.length > 0) {
@@ -192,49 +186,52 @@ const AttendCtxCalendar = (props) => {
     };
 
     //캘린더에 이벤트 보여주기
-    const eventDrawOnCalendar = (month) => {
+    const eventDrawOnCalendar = () => {
       events.forEach(function (data) {
-        // 2022-08-03
+        //새로 업데이트한 로직(년 월 일 데이터에 따로 저장)
+        const day = "0" + data.id.slice(8, 10);
+
+        // // 2022-08-03
         const eventDate = data.id.slice(0, 10);
 
-        //이벤트 달과 현재 달력의 달이 같으면
-        if (eventDate.slice(0, 7) === month) {
-          // 날짜를 day 변수로 저장 0+03
-          const day = 0 + eventDate.slice(8);
+        // //이벤트 달과 현재 달력의 달이 같으면
+        // if (eventDate.slice(0, 7) === month) {
 
-          // 이벤트 날짜와 같은 날짜 클래스를 지닌 태그를 찾음
-          const eventDayTag = document.querySelectorAll(
-            `.react-datepicker__day--${day}`
-          );
+        //   // 날짜를 day 변수로 저장 0+03
+        //   const day = 0 + eventDate.slice(8);
 
-          //다음 달 날짜까지 두 개가 나올 수 있어서 각각을 forEach 반복함
-          eventDayTag.forEach(function (eventTag) {
-            //이벤트 태그의 날짜 yyyy-mm-dd로 바꾸기
-            let yyyy_mm_dd = calEventDayToYMD(eventTag);
+        // 이벤트 날짜와 같은 날짜 클래스를 지닌 태그를 찾음
+        const eventDayTag = document.querySelectorAll(
+          `.react-datepicker__day--${day}`
+        );
 
-            //기존에 이미 달력에 데이터로 그린 버튼(번호+이름) 있는지 확인
-            let existedBtn = document.querySelectorAll(
-              `button[id='${data.id}']`
-            )[0];
+        //다음 달 날짜까지 두 개가 나올 수 있어서 각각을 forEach 반복함
+        eventDayTag.forEach(function (eventTag) {
+          //이벤트 태그의 날짜 yyyy-mm-dd로 바꾸기
+          let yyyy_mm_dd = calEventDayToYMD(eventTag);
 
-            //만약 이벤트 태그의 번호와 anyContext의 개별 data의 이벤트 날짜가 같고, 이미 그려진 버튼이 없으면
-            if (yyyy_mm_dd === eventDate && !existedBtn) {
-              //달력날짜에 (번호+이름)의 버튼 추가하기
-              const btn = document.createElement("button");
-              btn.className = `${classes.eventData} eventBtn`;
-              btn.innerText = data.student_num + data.student_name;
-              btn.id = data.id;
-              eventTag.appendChild(btn);
-              eventTag.style.backgroundColor = "#d38c85";
-              eventTag.style.borderRadius = "5px";
-            }
-          }); //날짜가 anyContext와 같은 태그에 할 일 forEach 함수 끝
-        } //이벤트 달과 현재 달력의 달이 같을 떄 할일 함수 끝
+          //기존에 이미 달력에 데이터로 그린 버튼(번호+이름) 있는지 확인
+          let existedBtn = document.querySelectorAll(
+            `button[id='${data.id}']`
+          )[0];
+
+          //만약 이벤트 태그의 번호와 anyContext의 개별 data의 이벤트 날짜가 같고, 이미 그려진 버튼이 없으면
+          if (yyyy_mm_dd === eventDate && !existedBtn) {
+            //달력날짜에 (번호+이름)의 버튼 추가하기
+            const btn = document.createElement("button");
+            btn.className = `${classes.eventData} eventBtn`;
+            btn.innerText = data.student_num + data.student_name;
+            btn.id = data.id;
+            eventTag.appendChild(btn);
+            eventTag.style.backgroundColor = "#d38c85";
+            eventTag.style.borderRadius = "5px";
+          }
+        }); //날짜가 anyContext와 같은 태그에 할 일 forEach 함수 끝
       });
     }; // eventDrawOnCalendar 함수 끝
 
     showAllDayEvents(events);
-    eventDrawOnCalendar(currentMonth);
+    eventDrawOnCalendar();
   }, [currentMonth, events]);
 
   //달력에서 받은 date 형식을 바꾸기
@@ -255,9 +252,13 @@ const AttendCtxCalendar = (props) => {
 
   //firestore와 events 자료 추가 혹은 삭제 함수
   const fixEvents = async (data, eventDate, fixOrDel) => {
+    const attendTodoRef = doc(dbService, "attend", props.userUid);
     // events 자료 가져와서 수정하기
-    let new_events = JSON.parse(JSON.stringify(events));
 
+    let new_events = JSON.parse(JSON.stringify(events));
+    // console.log(events);
+    // console.log(new_events);
+    // console.log(data);
     //events가 있고
     if (new_events.length !== 0) {
       let event_index;
@@ -270,26 +271,36 @@ const AttendCtxCalendar = (props) => {
       });
 
       // let doc_id;
-
       //기존 자료인 경우
       if (existedEvent.length > 0) {
         if (fixOrDel === "fix") {
-          // console.log(data);
           // console.log(existedEvent[0].doc_id);
           // console.log(existedEvent[0].doc_id);
+          new_events[event_index] = data;
+          let new_data = [...new_events];
+          const fixed_data = { attend_data: new_data };
 
-          await setDoc(doc(dbService, "attend", existedEvent[0].doc_id), data);
+          await setDoc(attendTodoRef, fixed_data);
 
           const event = { ...data, eventDate: eventDate };
           new_events[event_index] = event;
           // console.log("이벤트바이데이즈에서 일치하는 자료 찾아서 수정함!");
         } else if (fixOrDel === "del") {
-          // console.log(data);
+          //혹시 해당 날짜에 지금 이벤트가 마지막 남은 이벤트인 경우 달력에 이벤트 있음을 표시하는 백그라운드 컬러 삭제
+          let modalChildLength = document?.getElementById(data.id)
+            ?.parentElement?.childNodes?.length;
+          //li태그가 하나 있으면 5, 즉 마지막이면
+          if (modalChildLength === 5) {
+            document.querySelector(
+              ".react-datepicker__day--selected"
+            ).style.backgroundColor = "";
+          }
+
           //splice(인덱스값을, 1이면 제거 0이면 추가)
           new_events.splice(event_index, 1);
+          const new_data = { attend_data: new_events };
+          await setDoc(attendTodoRef, new_data);
           // console.log("이벤트바이데이즈에서 일치하는 자료 찾아서 제거함!");
-
-          await deleteDoc(doc(dbService, "attend", existedEvent[0].doc_id));
         }
 
         // console.log(data);
@@ -297,7 +308,11 @@ const AttendCtxCalendar = (props) => {
         //자료들이 있었는데 새로운 자료인 경우
       } else {
         //firestore에 추가!
-        await addDoc(collection(dbService, "attend"), data);
+        new_events.push(data);
+        let new_data = [...new_events];
+        const fixed_data = { attend_data: new_data };
+        await setDoc(attendTodoRef, fixed_data);
+
         //events에도 추가!
         // console.log(data);
         let event = { ...data, eventDate: eventDate };
@@ -309,16 +324,17 @@ const AttendCtxCalendar = (props) => {
       // console.log("events에 처음 입력된 자료");
       // console.log(data);
       //firestore에 추가!
-      await addDoc(collection(dbService, "attend"), data);
+      const new_data = { attend_data: [data] };
+      await setDoc(attendTodoRef, new_data);
       //events에도 추가!
       let event = { ...data, eventDate: eventDate };
       new_events.push(event);
     }
-    setEvents([...new_events]);
+    // setEvents([...new_events]);
 
-    getAttendsFromDb();
+    // getAttendsFromDb();
 
-    return new_events;
+    // return new_events;
   };
 
   //EventLists에서 호출하는 수정버튼 함수,

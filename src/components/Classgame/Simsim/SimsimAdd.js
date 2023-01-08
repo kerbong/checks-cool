@@ -9,24 +9,51 @@ const SimsimAdd = (props) => {
   const [attachedFile, setAttachedFile] = useState("");
   const [addImage, setAddImage] = useState(false);
 
+  const errorSwal = (title, text) => {
+    Swal.fire({
+      icon: "error",
+      title: title,
+      text: text,
+      confirmButtonText: "확인",
+      confirmButtonColor: "#85bd82",
+      timer: 5000,
+    });
+  };
+
   //자료 최대글자수 제한 함수
   const handleOnInput = (e, maxlength) => {
     if (e.target.value.length > maxlength) {
       e.target.value = e.target.value.substr(0, maxlength);
-      Swal.fire({
-        icon: "error",
-        title: "입력 불가",
-        text: `글자수를 초과했어요! 내용을 ${maxlength}자 이내로 줄여주세요.`,
-        confirmButtonText: "확인",
-        confirmButtonColor: "#85bd82",
-        timer: 5000,
-      });
+      errorSwal(
+        "입력 불가",
+        `글자수를 초과했어요! 내용을 ${maxlength}자 이내로 줄여주세요.`
+      );
     }
   };
 
   //저장하면...
   const submitHandler = (e) => {
     e.preventDefault();
+    //메인내용 확인
+    let mainTextImg;
+    if (addImage) {
+      mainTextImg = attachedFile;
+    } else {
+      mainTextImg = document.getElementById("insteadText-input").value;
+    }
+
+    if (mainTextImg.trim().length === 0) {
+      errorSwal("저장 실패", "메인 텍스트/이미지를 등록해주세요!");
+      return;
+    }
+
+    //추가 설명 내용 확인
+    let descText = document.getElementById("descText-input").value;
+    if (descText.trim().length === 0) {
+      errorSwal("저장 실패", "추가 설명을 등록해주세요!");
+      return;
+    }
+
     props.addSimsimHandler(attachedFile);
   };
 

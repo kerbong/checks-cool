@@ -89,31 +89,15 @@ const MainPage = (props) => {
   const getAttendsFromDb = () => {
     setAttendEvents([]);
 
-    let attendQuery = query(
-      collection(dbService, "attend"),
-      where("writtenId", "==", props.userUid)
-    );
-
-    onSnapshot(attendQuery, (snapShot) => {
-      snapShot.docs.map((doc) => {
-        if (doc.data().id.slice(0, 10) !== todayYyyymmdd) {
-          return false;
+    let attendRef = query(doc(dbService, "attend", props.userUid));
+    onSnapshot(attendRef, (doc) => {
+      const new_attends = [];
+      doc?.data()?.attend_data?.forEach((data) => {
+        if (data.id.slice(0, 10) === todayYyyymmdd) {
+          new_attends.push(data);
         }
 
-        const attendObj = {
-          ...doc.data(),
-          doc_id: doc.id,
-        };
-
-        return setAttendEvents((prev) => {
-          prev.forEach((prev_data, index) => {
-            if (prev_data.id === attendObj.id) {
-              prev.splice(index, 1);
-            }
-          });
-
-          return [...prev, attendObj];
-        });
+        setAttendEvents([...new_attends]);
       });
     });
   };
@@ -122,61 +106,31 @@ const MainPage = (props) => {
   const getScheduleFromDb = () => {
     setSchedule([]);
 
-    let publicQuery = query(
-      collection(dbService, "todo"),
-      where("owner", "==", roomInfo)
-    );
+    let publicRef = doc(dbService, "todo", roomInfo);
 
-    let personalQuery = query(
-      collection(dbService, "todo"),
-      where("owner", "==", "personal"),
-      where("writtenId", "==", props.userUid)
-    );
+    let personalRef = doc(dbService, "todo", props.userUid);
 
-    onSnapshot(publicQuery, (snapShot) => {
-      snapShot.docs.map((doc) => {
-        if (doc.data().id.slice(0, 10) !== todayYyyymmdd) {
-          return false;
+    const new_schedule = [];
+
+    onSnapshot(publicRef, (doc) => {
+      doc?.data()?.todo_data?.forEach((data) => {
+        if (data.id.slice(0, 10) === todayYyyymmdd) {
+          const new_data = { ...data, public: true };
+          new_schedule.push(new_data);
         }
-
-        const pubSheduleObj = {
-          ...doc.data(),
-          doc_id: doc.id,
-        };
-        // console.log(pubSheduleObj);
-        return setSchedule((prev) => {
-          prev.forEach((prev_data, index) => {
-            if (prev_data.id === pubSheduleObj.id) {
-              prev.splice(index, 1);
-            }
-          });
-          return [...prev, pubSheduleObj];
-        });
       });
     });
 
-    onSnapshot(personalQuery, (snapShot) => {
-      snapShot.docs.map((doc) => {
-        if (doc.data().id.slice(0, 10) !== todayYyyymmdd) {
-          return false;
+    onSnapshot(personalRef, (doc) => {
+      doc?.data()?.todo_data?.forEach((data) => {
+        if (data.id.slice(0, 10) === todayYyyymmdd) {
+          const new_data = { ...data, public: false };
+          new_schedule.push(new_data);
         }
-
-        const personSheduleObj = {
-          ...doc.data(),
-          doc_id: doc.id,
-        };
-        // console.log(personSheduleObj);
-
-        return setSchedule((prev) => {
-          prev.forEach((prev_data, index) => {
-            if (prev_data.id === personSheduleObj.id) {
-              prev.splice(index, 1);
-            }
-          });
-          return [...prev, personSheduleObj];
-        });
       });
     });
+
+    setSchedule(new_schedule);
   };
 
   //firestore에서 오늘 할일 관련 자료들 받아오기
@@ -202,75 +156,33 @@ const MainPage = (props) => {
     }
   };
 
-  const getDateDiff = (d1, d2) => {
-    const date1 = new Date(d1);
-    const date2 = new Date(d2);
-
-    const diffDate = date1.getTime() - date2.getTime();
-
-    return Math.abs(diffDate / (1000 * 60 * 60 * 24));
-    // 밀리세컨 * 초 * 분 * 시 = 일
-  };
   //firestore에서 제출(냄 안냄) 받아오기
   const getCheckListsFromDb = () => {
-    let checkListsQuery = query(
-      collection(dbService, "checkLists"),
-      where("writtenId", "==", props.userUid)
-    );
-
-    onSnapshot(checkListsQuery, (snapShot) => {
-      snapShot.docs.map((doc) => {
-        const itemObj = {
-          ...doc.data(),
-          doc_id: doc.id,
-        };
-
-        //최근 7일 이내의 자료만 보여줌
-        if (getDateDiff(doc.data().id, todayYyyymmdd) < 7) {
-          return setCheckLists((prev) => {
-            prev.forEach((prev_data, index) => {
-              if (prev_data.doc_id === itemObj.doc_id) {
-                prev.splice(index, 1);
-              }
-            });
-            return [...prev, itemObj];
-          });
-        } else {
-          return false;
+    let checkListsRef = doc(dbService, "checkLists", props.userUid);
+    setCheckLists([]);
+    onSnapshot(checkListsRef, (doc) => {
+      const new_checkLists = [];
+      doc?.data()?.checkLists_data?.forEach((data) => {
+        if (data.id.slice(0, 10) === todayYyyymmdd) {
+          new_checkLists.push(data);
         }
       });
+      setCheckLists([...new_checkLists]);
     });
   };
 
   //firestore에서 개별 명렬표 기록 받아오기
   const getListMemoFromDb = () => {
-    let listMemoQuery = query(
-      collection(dbService, "listMemo"),
-      where("writtenId", "==", props.userUid)
-    );
-
-    onSnapshot(listMemoQuery, (snapShot) => {
-      snapShot.docs.map((doc) => {
-        const itemObj = {
-          ...doc.data(),
-          doc_id: doc.id,
-        };
-
-        //최근 7일 이내의 자료만 보여줌
-        if (getDateDiff(doc.data().id, todayYyyymmdd) < 7) {
-          return setListMemo((prev) => {
-            prev.forEach((prev_data, index) => {
-              if (prev_data.doc_id === itemObj.doc_id) {
-                prev.splice(index, 1);
-              }
-            });
-            return [...prev, itemObj];
-          });
-        } else {
-          return false;
+    let listMemoRef = doc(dbService, "listMemo", props.userUid);
+    setListMemo([]);
+    onSnapshot(listMemoRef, (doc) => {
+      const new_listMemo = [];
+      doc?.data()?.listMemo_data?.forEach((data) => {
+        if (data.id.slice(0, 10) === todayYyyymmdd) {
+          new_listMemo.push(data);
         }
       });
-      // console.log(listMemo);
+      setListMemo([...new_listMemo]);
     });
   };
 
@@ -535,7 +447,10 @@ const MainPage = (props) => {
             <li className={classes["main-li"]}>모두 출석!</li>
           ) : (
             attendEvents.map((event) => (
-              <li key={event.id} className={classes["main-li"]}>
+              <li
+                key={event.id + event.student_num}
+                className={classes["main-li"]}
+              >
                 {event.student_num}번 {event.student_name} /{" "}
                 {event.option.slice(1)} / {event.note || ""}
               </li>
@@ -553,9 +468,10 @@ const MainPage = (props) => {
             schedule.map((event) => (
               <li key={event.id} className={classes["main-li"]}>
                 <span>
+                  {event.public ? "공용) " : "개인) "}
                   {event.eventName}({event.option.slice(1)})
                 </span>
-                <span>/ {event.note || ""}</span>
+                <span> {event.note ? ` / ${event.note}` : ""}</span>
               </li>
             ))
           )}
@@ -575,7 +491,7 @@ const MainPage = (props) => {
           )}
         </div>
 
-        {/* 제출 냄안냄 목록 */}
+        {/* 제출 냄안냄 checklist 목록 */}
         <div
           className={classes["event-div"]}
           onClick={() => navigate(`/memo`, { state: "checkLists" })}
@@ -583,7 +499,7 @@ const MainPage = (props) => {
           <div className={classes["event-title"]}>👉 미제출</div>
 
           {checkLists.length === 0 ? (
-            <li className={classes["main-li"]}>* 7일 이내의 자료 없음</li>
+            <li className={classes["main-li"]}> 자료 없음</li>
           ) : (
             <>
               {checkLists.map(
@@ -591,28 +507,25 @@ const MainPage = (props) => {
                   event.unSubmitStudents.length !== 0 && (
                     <li key={event.id} className={classes["mainCheckLists-li"]}>
                       <span>
-                        {event.title} / 미제출 ({event.unSubmitStudents.length})
+                        {event.title} ({event.unSubmitStudents.length})
                       </span>
-                      {/* <span className={classes["mainCheckLists-students"]}>
+                      <span className={classes["mainCheckLists-students"]}>
                         {" "}
                         {event.unSubmitStudents.map((stu) => (
                           <span
                             key={stu.num + stu.name}
                             className={classes["mainCheckLists-student"]}
-                          >{`${stu.num}번 ${stu.name}`}</span>
+                          >{`${stu.num} ${stu.name}`}</span>
                         )) || ""}
-                      </span> */}
+                      </span>
                     </li>
                   )
               )}
-              <span className={classes["mainCheckLists-student"]}>
-                * 날짜를 기준으로 7일 이내의 자료입니다
-              </span>
             </>
           )}
         </div>
 
-        {/* 개별기록 목록 */}
+        {/* 개별기록 listmemo 목록 */}
         <div
           className={classes["event-div"]}
           onClick={() => navigate(`/memo`, { state: "listMemo" })}
@@ -620,14 +533,14 @@ const MainPage = (props) => {
           <div className={classes["event-title"]}>📑 개별기록</div>
 
           {listMemo.length === 0 ? (
-            <li className={classes["main-li"]}>* 7일 이내의 자료 없음</li>
+            <li className={classes["main-li"]}>* 자료 없음</li>
           ) : (
             <>
               {listMemo.map(
                 (event) =>
                   event.data.length !== props.students.length && (
                     <li key={event.id} className={classes["mainCheckLists-li"]}>
-                      <span className={classes["mainCheckLists-student"]}>
+                      <span>
                         {event.title} / 미입력 (
                         {
                           props.students.filter(
@@ -642,9 +555,6 @@ const MainPage = (props) => {
                     </li>
                   )
               )}
-              <span className={classes["mainCheckLists-student"]}>
-                * 날짜를 기준으로 7일 이내의 자료입니다
-              </span>
             </>
           )}
         </div>

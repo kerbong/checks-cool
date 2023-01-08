@@ -3,17 +3,19 @@ import classes from "./SettingSeat.module.css";
 import Swal from "sweetalert2";
 import Button from "../../Layout/Button";
 import { dbService } from "../../../fbase";
-import {
-  collection,
-  setDoc,
-  doc,
-  updateDoc,
-  deleteDoc,
-  query,
-  onSnapshot,
-  where,
-} from "firebase/firestore";
+import { setDoc, doc, onSnapshot } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
+
+const saveErrorSwal = (text) => {
+  Swal.fire({
+    icon: "error",
+    title: "저장실패",
+    text: text,
+    confirmButtonText: "확인",
+    confirmButtonColor: "#85bd82",
+    timer: 5000,
+  });
+};
 
 const getDateHandler = (date) => {
   let year = date.getFullYear();
@@ -45,9 +47,11 @@ const SeatTable = (props) => {
   const [switchStudent, setSwitchStudent] = useState({});
   const [students, setStudents] = useState(props.students || []);
   const [isNewPair, setIsNewPair] = useState(true);
+  const [allSeats, setAllSeats] = useState([]);
   const [seatLists, setSeatLists] = useState(null);
   const [pairStudents, setPairStudents] = useState([]);
   const [randomJustStudent, setRandomJustStudent] = useState(true);
+  const [titleValue, setTitleValue] = useState([]);
 
   let navigate = useNavigate();
 
@@ -112,8 +116,8 @@ const SeatTable = (props) => {
   useEffect(() => {
     let new_students = [...students];
 
-    //doc_id없는, 새로운 자리 데이터 추가할 때만 중복되는거 살펴봄.
-    if (!props.doc_id) {
+    //새로운 자리 데이터 추가할 때만 중복되는거 살펴봄.
+    if (!props.isExist) {
       if (seatLists?.length > 0) {
         seatLists?.forEach((list) => {
           list.students.forEach((stu_name, list_index) => {
@@ -149,32 +153,57 @@ const SeatTable = (props) => {
   }, [seatLists]);
 
   const getSeatsFromDb = () => {
-    let thisYear = String(new Date().getFullYear());
-    let queryWhere = query(
-      collection(dbService, "seats"),
-      where("writtenId", "==", props.userUid)
-    );
+    let seatsRef = doc(dbService, "seats", props.userUid);
 
-    onSnapshot(queryWhere, (snapShot) => {
-      setSeatLists([]);
-      snapShot.docs.map((doc) => {
-        let itemObj = {
-          ...doc.data(),
-          doc_id: doc.id,
-        };
+    onSnapshot(seatsRef, (doc) => {
+      const all_seats = [];
 
-        if (doc.data().saveDate.slice(0, 4) !== thisYear) {
-          return false;
-        }
-
-        return setSeatLists((prev) => [...prev, itemObj]);
+      doc?.data()?.seats_data?.forEach((data) => {
+        //저장할 때 사용할 전체 자료 저장
+        all_seats.push(data);
       });
+      //데이터 저장에 쓸 전체 자리표
+      setAllSeats([...all_seats]);
     });
   };
 
   useEffect(() => {
     getSeatsFromDb();
   }, []);
+
+  // useEffect(() => {
+  //   setTitleValue(props.title);
+  // }, [props.title]);
+
+  useEffect(() => {
+    setSeatLists([]);
+    //현재학년도 세팅
+    let now_date = getDateHandler(new Date());
+    let now_year = now_date.slice(0, 4);
+    let now_month = now_date.slice(5, 7);
+    if (+now_month <= 2) {
+      now_year = String(+now_year - 1);
+    }
+
+    const new_seats = [];
+    allSeats.forEach((data) => {
+      // let now_years
+      let data_month = data.saveDate.slice(5, 7);
+      let data_year = data.saveDate.slice(0, 4);
+
+      if (+data_month <= 2) {
+        data_year = String(+data_year - 1);
+      }
+
+      //현재 학년도와 자료의 년도가 일치하면
+      if (now_year === data_year) {
+        new_seats.push(data);
+      }
+    });
+
+    //비교에 쓸 현재학년도 자리표
+    setSeatLists([...new_seats]);
+  }, [allSeats]);
 
   //뽑기함수 실행전, 번호가 가능한지 확인하는 함수
   //뽑기함수 실행 전 남, 혹은 여뽑기인 경우 확인하는 함수
@@ -281,7 +310,7 @@ const SeatTable = (props) => {
         selectedSeats += 1;
       }
     });
-    console.log(students.length);
+    // console.log(students.length);
 
     setStudents((prev) => {
       //남은학생
@@ -291,7 +320,7 @@ const SeatTable = (props) => {
       // 전체학생 - 안뽑힌학생 = 뽑힌자리 인 경우 뽑힌 학생 모두가 자리배치가 끝나 있으면 자리 바꾸기
 
       if (
-        props?.doc_id ||
+        props?.isExist ||
         selectedSeats === props.students.length - new_students.length
       ) {
         let clickedName = clickedSeat.innerText;
@@ -461,15 +490,12 @@ const SeatTable = (props) => {
       });
 
     //새로운 자료 저장할 때 아직 자리 배치 안한 경우
-    if (selectedSeats !== props.students.length && props.doc_id === undefined) {
-      Swal.fire({
-        icon: "error",
-        title: "저장실패",
-        text: `마지막으로 뽑힌 학생의 자리를 배치해주세요.`,
-        confirmButtonText: "확인",
-        confirmButtonColor: "#85bd82",
-        timer: 5000,
-      });
+    if (
+      selectedSeats !== props.students.length &&
+      props.isExist === undefined
+    ) {
+      saveErrorSwal("마지막으로 뽑힌 학생의 자리를 배치해주세요.");
+
       return;
     }
     // console.log(items_students);
@@ -478,14 +504,35 @@ const SeatTable = (props) => {
       !props.title ? "title-input" : `title-input${props.title}`
     );
     if (title.value.trim().length === 0) {
-      Swal.fire({
-        icon: "error",
-        title: "저장실패",
-        text: `제목을 입력해주세요.`,
-        confirmButtonText: "확인",
-        confirmButtonColor: "#85bd82",
-        timer: 5000,
-      });
+      saveErrorSwal("제목을 입력해주세요.");
+
+      return;
+    }
+
+    //하루에 최대 5개까지만 저장 가능함.
+    let saved_today = 0;
+    let saved_month = 0;
+    const today_yyyymmdd = getDateHandler(new Date());
+    seatLists?.forEach((list) => {
+      //날짜가 같은 경우
+      if (list.saveDate.slice(0, 10) === today_yyyymmdd)
+        return (saved_today += 1);
+      //월이 같은 경우
+      if (list.saveDate.slice(0, 7) === today_yyyymmdd.slice(0, 7))
+        return (saved_month += 1);
+    });
+    //기존자료가 아니고
+    if (saved_today >= 5 && props.isExist === undefined) {
+      saveErrorSwal(
+        `하루에 최대 5개 까지만 자리표 저장이 가능해요! 불필요한 자료가 있다면 삭제해주세요!`
+      );
+      return;
+    }
+
+    if (saved_month >= 10 && props.isExist === undefined) {
+      saveErrorSwal(
+        `한 달에 최대 10개 까지만 자리표 저장이 가능해요! 불필요한 자료가 있다면 삭제해주세요!`
+      );
       return;
     }
 
@@ -493,8 +540,7 @@ const SeatTable = (props) => {
       students: items_students,
       title: title.value,
       rowColumn: props.rowColumn,
-      writtenId: props.userUid,
-      saveDate: getDateHandler(new Date()),
+      saveDate: today_yyyymmdd + title.value,
     };
 
     Swal.fire({
@@ -506,22 +552,57 @@ const SeatTable = (props) => {
       timer: 5000,
     });
 
+    const existRef = doc(dbService, "seats", props.userUid);
+    let new_allSeats = [...allSeats];
     //기존자료면 업데이트
-    if (props.doc_id) {
-      const existRef = doc(dbService, "seats", props.doc_id);
-      await updateDoc(existRef, data);
+    if (props.isExist) {
+      //기존자료 자리만 변경후 저장이면
+      const existData = new_allSeats?.filter(
+        (seat) => seat.saveDate === data.saveDate
+      );
+      if (existData.length > 0) {
+        //기존 자료를 제거하고
+        new_allSeats = new_allSeats?.filter(
+          (seat) => seat.saveDate !== data.saveDate
+        );
+      } else {
+        setTitleValue(props.title);
+      }
+      //새 자료 추가하기
+      new_allSeats.push(data);
 
-      //새로운 자료면 새롭게
+      //현재학년도 세팅
+      let now_year = data.saveDate.slice(0, 4);
+      let now_month = data.saveDate.slice(5, 7);
+      if (+now_month <= 2) {
+        now_year = String(+now_year - 1);
+      }
+      props.changeData(now_year);
+      //새로운 자리표 추가 중이면
     } else {
-      const newRef = doc(collection(dbService, "seats"));
-      await setDoc(newRef, data);
+      new_allSeats.push(data);
     }
+    setAllSeats([...new_allSeats]);
+    await setDoc(existRef, { seats_data: new_allSeats });
   };
 
   //자리표 데이터 삭제 함수
   const delteSeatsHandler = () => {
     const deleteDocHandler = async () => {
-      await deleteDoc(doc(dbService, "seats", props.doc_id));
+      let new_allSeats = allSeats?.filter(
+        (seat) => seat.saveDate !== props.saveDate
+      );
+      setAllSeats([...new_allSeats]);
+      await setDoc(doc(dbService, "seats", props.userUid), {
+        seats_data: new_allSeats,
+      });
+      //현재학년도 세팅
+      let now_year = props.saveDate.slice(0, 4);
+      let now_month = props.saveDate.slice(5, 7);
+      if (+now_month <= 2) {
+        now_year = String(+now_year - 1);
+      }
+      props.changeData(now_year);
     };
 
     Swal.fire({
@@ -557,9 +638,10 @@ const SeatTable = (props) => {
             className={classes["title-input"]}
             id={`title-input${props.title || ""}`}
             type="text"
-            placeholder="제목"
+            placeholder={"제목"}
             defaultValue={props.title || ""}
           />
+
           <Button
             name={"저장"}
             onclick={saveSeatsHandler}
@@ -575,7 +657,7 @@ const SeatTable = (props) => {
         </div>
       )}
 
-      {!props.doc_id && (
+      {!props.isExist && (
         <button
           className={classes["seatsAdd-btn"]}
           onClick={() => {

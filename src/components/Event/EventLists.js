@@ -156,7 +156,6 @@ const EventLists = (props) => {
       id: item.id,
       option: optionValue,
       note: noteValue,
-      writtenId: props.userUid,
     };
 
     // console.log(fixed_data);

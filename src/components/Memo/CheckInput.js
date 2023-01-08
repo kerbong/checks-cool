@@ -50,12 +50,27 @@ const CheckInput = (props) => {
 
   const saveCheckItem = () => {
     if (checkTitle) {
+      const tiemStamp = () => {
+        let today = new Date();
+        today.setHours(today.getHours() + 9);
+        return today.toISOString().replace("T", " ").substring(0, 19);
+      };
+
+      let item_id;
+      //기존의 아이템인 경우 기존 아이디 쓰고
+      if (props?.item?.id) {
+        item_id = props.item.id;
+      } else {
+        item_id = tiemStamp();
+      }
+
       const new_checkItem = {
         title: checkTitle,
         unSubmitStudents,
+        id: item_id,
         // fixOrNew,
       };
-      props.saveItemHandler(new_checkItem, props.item.doc_id);
+      props.saveItemHandler(new_checkItem);
       props.onClose();
       props.setItemNull();
     } else {
@@ -209,7 +224,7 @@ const CheckInput = (props) => {
             }
           }}
         />
-        {props.item.doc_id && (
+        {props.item.id && (
           <Button
             name={"삭제"}
             id={"del-checkItemBtn"}

@@ -90,7 +90,6 @@ const SettingSeat = (props) => {
               setShowTable(false);
               setInit(true);
             }}
-            seatLists={seatLists}
           />
           <p className={classes[`gameMenu`]}>
             * 1번 방법 - 새로운짝 / 인생은랜덤 👉 뽑기 / 번호클릭 👉 자리선택

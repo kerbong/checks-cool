@@ -1,10 +1,4 @@
-import React, {
-  useRef,
-  useCallback,
-  useContext,
-  useState,
-  useEffect,
-} from "react";
+import React, { useRef, useState, useEffect } from "react";
 import classes from "./AttendanceForm.module.css";
 import Input from "../Layout/Input";
 import Swal from "sweetalert2";
@@ -12,14 +6,7 @@ import AttendanceOption from "./AttendanceOption";
 import FileArea from "components/Layout/FileArea";
 
 import { dbService } from "../../fbase";
-import {
-  collection,
-  query,
-  onSnapshot,
-  where,
-  setDoc,
-  doc,
-} from "firebase/firestore";
+import { onSnapshot, setDoc, doc } from "firebase/firestore";
 
 const AttendanceForm = (props) => {
   const [attachedFile, setAttachedFile] = useState("");
@@ -29,29 +16,20 @@ const AttendanceForm = (props) => {
   const noteRef = useRef(null);
 
   const getAttendEventsFromDb = () => {
-    let queryWhere = query(
-      collection(dbService, "attend"),
-      where("writtenId", "==", props.userUid)
-    );
+    let attendRef = doc(dbService, "attend", props.userUid);
     // console.log(queryWhere);
 
-    onSnapshot(queryWhere, (snapShot) => {
-      snapShot.docs.map((doc) => {
-        const eventObj = {
-          ...doc.data(),
-          doc_id: doc.id,
-        };
-        return setAttendEvents((prev) => {
-          prev.forEach((prev_data, index) => {
-            if (prev_data.id === eventObj.id) {
-              prev.splice(index, 1);
-            }
-          });
-
-          return [...prev, eventObj];
-        });
+    onSnapshot(attendRef, (doc) => {
+      setAttendEvents([]);
+      const new_attends = [];
+      doc?.data()?.attend_data?.forEach((data) => {
+        // if (data.id.slice(0, 7) === currentMonth.slice(0, 7)) {
+        new_attends.push(data);
+        // }
       });
+      setAttendEvents([...new_attends]);
     });
+    // console.log(queryWhere);
   };
 
   useEffect(() => {
@@ -94,7 +72,7 @@ const AttendanceForm = (props) => {
     });
   };
 
-  const submitHandler = (e) => {
+  const submitHandler = async (e) => {
     e.preventDefault();
 
     const inputValue = document.getElementById("textArea").value;
@@ -141,7 +119,6 @@ const AttendanceForm = (props) => {
         student_name: studentInfo[1],
         option: option,
         note: inputValue,
-        writtenId: props.userUid,
       };
 
       //주말 제외한 날짜만 모아두기
@@ -169,15 +146,21 @@ const AttendanceForm = (props) => {
       }
 
       //저장가능한 날짜 중에 이미 저장된 데이터 있는지 확인하고 저장하기
-      weekDayEvents.forEach(async (data_id) => {
+      let new_attendEvents = JSON.parse(JSON.stringify(attendEvents));
+      weekDayEvents.forEach((data_id) => {
         let existAttend = attendEvents.filter((event) => event.id === data_id);
         //같은 날에 저장된 다른 자료가 없으면
         if (existAttend.length === 0) {
-          await setDoc(doc(collection(dbService, "attend")), {
+          //새로운 리스트에 추가해두기
+          new_attendEvents.push({
             ...data,
             id: data_id,
           });
         }
+      });
+      // 저장할 자료들이 추가된 리스트를 업로드하기
+      await setDoc(doc(dbService, "attend", props.userUid), {
+        attend_data: new_attendEvents,
       });
     }
 

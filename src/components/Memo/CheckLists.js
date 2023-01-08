@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import CheckInput from "./CheckInput";
 import ListMemoInput from "./ListMemoInput";
 import Modal from "../Layout/Modal";
@@ -8,28 +8,22 @@ import classes from "./CheckLists.module.css";
 import Swal from "sweetalert2";
 
 import { dbService } from "../../fbase";
-import {
-  collection,
-  query,
-  onSnapshot,
-  where,
-  setDoc,
-  deleteDoc,
-  doc,
-} from "firebase/firestore";
+import { onSnapshot, setDoc, doc, getDoc } from "firebase/firestore";
 import { utils, writeFile } from "xlsx";
 
 const CheckLists = (props) => {
   const [addCheckItem, setAddCheckItem] = useState(false);
   const [addListMemo, setAddListMemo] = useState(false);
   const [checkLists, setCheckLists] = useState([]);
+  const [nowOnCheckLists, setNowOnCheckLists] = useState([]);
   const [listMemo, setListMemo] = useState([]);
+  const [nowOnListMemo, setNowOnListMemo] = useState([]);
   const [unSubmitStudents, setUnSubmitStudents] = useState(props.students);
   const [item, setItem] = useState([]);
-  const [searchYear, setSearchYear] = useState(
-    String(new Date().getFullYear())
-  );
   const [dataYears, setDataYears] = useState([]);
+
+  const checkListsYear = useRef();
+  const listMemoYear = useRef();
 
   const sortList = (list) => {
     const sorted_lists = list.sort(function (a, b) {
@@ -42,72 +36,83 @@ const CheckLists = (props) => {
 
   //firestore에서 해당 이벤트 자료 받아오기
   const getDatasFromDb = () => {
-    let queryWhere;
-    let years = [];
+    let docRef;
     if (props.about === "checkLists") {
-      queryWhere = query(
-        collection(dbService, "checkLists"),
-        where("writtenId", "==", props.userUid)
-      );
+      docRef = doc(dbService, "checkLists", props.userUid);
 
-      onSnapshot(queryWhere, (snapShot) => {
-        setCheckLists([]);
-        snapShot.docs.map((doc) => {
-          let itemObj = {
-            ...doc.data(),
-            doc_id: doc.id,
-          };
-          years.push(doc.data().id.slice(0, 4));
-          if (doc.data().id.slice(0, 4) !== searchYear) {
-            return false;
+      onSnapshot(docRef, (doc) => {
+        const new_checkLists = [];
+        const years = [];
+        doc?.data()?.checkLists_data?.forEach((data) => {
+          let new_data = {};
+          let data_month = data.id.slice(5, 7);
+          let data_year = data.id.slice(0, 4);
+          if (+data_month >= 3) {
+            years.push(data_year);
+            //자료에 년도를 yearGroup으로 추가
+            new_data = { ...data, yearGroup: data_year };
+          } else if (+data_month <= 2) {
+            let fixed_year = String(+data_year - 1);
+            years.push(fixed_year);
+            new_data = { ...data, yearGroup: fixed_year };
           }
-
-          return setCheckLists((prev) => [...prev, itemObj]);
+          new_checkLists.push(new_data);
         });
+        //학년도 저장 및 체크리스트기록 저장
         setDataYears([...new Set(years)]);
+        setCheckLists([...new_checkLists]);
       });
     } else if (props.about === "listMemo") {
-      queryWhere = query(
-        collection(dbService, "listMemo"),
-        where("writtenId", "==", props.userUid)
-      );
+      docRef = doc(dbService, "listMemo", props.userUid);
 
-      onSnapshot(queryWhere, (snapShot) => {
-        setListMemo([]);
-        snapShot.docs.map((doc) => {
-          const itemObj = {
-            ...doc.data(),
-            doc_id: doc.id,
-          };
-          years.push(doc.data().id.slice(0, 4));
-          if (doc.data().id.slice(0, 4) !== searchYear) {
-            return false;
+      onSnapshot(docRef, (doc) => {
+        const new_listMemo = [];
+        const years = [];
+        doc?.data()?.listMemo_data?.forEach((data) => {
+          let new_data = {};
+          let data_month = data.id.slice(5, 7);
+          let data_year = data.id.slice(0, 4);
+          if (+data_month >= 3) {
+            years.push(data_year);
+            //자료에 년도를 yearGroup으로 추가
+            new_data = { ...data, yearGroup: data_year };
+          } else if (+data_month <= 2) {
+            let fixed_year = String(+data_year - 1);
+            years.push(fixed_year);
+            new_data = { ...data, yearGroup: fixed_year };
           }
-
-          return setListMemo((prev) => [...prev, itemObj]);
+          new_listMemo.push(new_data);
         });
+        //학년도 저장 및 체크리스트기록 저장
         setDataYears([...new Set(years)]);
+        setListMemo([...new_listMemo]);
       });
     }
   };
 
   useEffect(() => {
     getDatasFromDb();
-  }, [searchYear]);
+  }, []);
 
-  const saveItemHandler = async (item, doc_id) => {
-    const tiemStamp = () => {
-      let today = new Date();
-      today.setHours(today.getHours() + 9);
-      return today.toISOString().replace("T", " ").substring(0, 19);
-    };
+  //처음 보여줄 학년도 설정(올해 자료있으면 보여줌)
+  useEffect(() => {
+    let new_date = new Date();
+    //학년도 설정
+    let new_year = new_date.getFullYear();
+    if (new_date.getMonth() + 1 <= 2) {
+      new_year -= 1;
+    }
+    //데이터 중에 현재 학년도와 같은 데이터가 있으면 바로 보여줌.
+    let this_year_data = dataYears?.filter((year) => year === String(new_year));
+    if (this_year_data?.length > 0) {
+      searchYearHandler(this_year_data[0]);
+      props.about === "checkLists"
+        ? (checkListsYear.current.value = this_year_data[0])
+        : (listMemoYear.current.value = this_year_data[0]);
+    }
+  }, [dataYears]);
 
-    const save_item = {
-      ...item,
-      id: tiemStamp(),
-      writtenId: props.userUid,
-    };
-
+  const saveItemHandler = async (item) => {
     //자료 저장할 떄 실제로 실행되는 함수
     const dataSaved = async () => {
       Swal.fire({
@@ -118,26 +123,117 @@ const CheckLists = (props) => {
         confirmButtonColor: "#85bd82",
         timer: 5000,
       });
-      //새로운 자료
-      if (doc_id === undefined) {
-        //checkList 일경우
-        if (item.unSubmitStudents) {
-          const newCheckRef = doc(collection(dbService, "checkLists"));
-          await setDoc(newCheckRef, save_item);
-          //listMemo일 경우
+
+      //checkList 일경우
+      if (item.unSubmitStudents) {
+        //checklists자료 받아오기
+        const newCheckRef = doc(dbService, "checkLists", props.userUid);
+        const checkListsSnap = await getDoc(newCheckRef);
+        if (checkListsSnap.exists()) {
+          //현재 저장되는 자료와 중복되는거 제외하고 거기에 새 자료 추가함
+          let new_datas = [
+            ...checkListsSnap
+              .data()
+              .checkLists_data.filter((checkList) => checkList.id !== item.id),
+          ];
+          new_datas.push(item);
+          await setDoc(newCheckRef, {
+            checkLists_data: new_datas,
+          });
+          // 전체 데이터도 추가하기
+          setCheckLists((prev) => {
+            let new_datas = [...prev];
+            let data_index = undefined;
+            prev.forEach((data, index) => {
+              if (data.id === item.id) {
+                data_index = index;
+              }
+            });
+
+            if (data_index === undefined) {
+              new_datas.push(item);
+            } else {
+              new_datas[data_index] = item;
+            }
+            return new_datas;
+          });
+          //현재 보여주고 있는 학년도 자료에서 삭제하고 다시 추가
+          setNowOnCheckLists((prev) => {
+            let new_datas = [...prev];
+            let data_index = undefined;
+            prev.forEach((data, index) => {
+              if (data.id === item.id) {
+                data_index = index;
+              }
+            });
+            if (data_index === undefined) {
+              new_datas.push(item);
+            } else {
+              new_datas[data_index] = item;
+            }
+            return new_datas;
+          });
+          //처음 자료를 저장하는 경우
         } else {
-          const newMemoRef = doc(collection(dbService, "listMemo"));
-          await setDoc(newMemoRef, save_item);
+          await setDoc(newCheckRef, { checkLists_data: [item] });
+          setCheckLists([...item]);
+          setNowOnCheckLists([...item]);
         }
 
-        //기존자료 수정
+        //listMemo일 경우
       } else {
-        //checkList 일경우
-        if (item.unSubmitStudents) {
-          await setDoc(doc(dbService, "checkLists", doc_id), save_item);
-          //listMemo일 경우
+        //checklists자료 받아오기
+        const newListMemoRef = doc(dbService, "listMemo", props.userUid);
+        const listMemoSnap = await getDoc(newListMemoRef);
+        if (listMemoSnap.exists()) {
+          //현재 저장되는 자료와 중복되는거 제외하고 거기에 새 자료 추가함
+          let new_datas = [
+            ...listMemoSnap
+              .data()
+              .listMemo_data.filter((memo) => memo.id !== item.id),
+          ];
+          new_datas.push(item);
+          await setDoc(newListMemoRef, {
+            listMemo_data: new_datas,
+          });
+
+          // 전체 데이터도 추가하기
+          setListMemo((prev) => {
+            let new_datas = [...prev];
+            let data_index = undefined;
+            prev.forEach((data, index) => {
+              if (data.id === item.id) {
+                data_index = index;
+              }
+            });
+
+            if (data_index === undefined) {
+              new_datas.push(item);
+            } else {
+              new_datas[data_index] = item;
+            }
+            return new_datas;
+          });
+          //현재 보여주고 있는 학년도 자료에서 삭제하고 다시 추가
+          setNowOnListMemo((prev) => {
+            let new_datas = [...prev];
+            let data_index = undefined;
+            prev.forEach((data, index) => {
+              if (data.id === item.id) {
+                data_index = index;
+              }
+            });
+            if (data_index === undefined) {
+              new_datas.push(item);
+            } else {
+              new_datas[data_index] = item;
+            }
+            return new_datas;
+          });
         } else {
-          await setDoc(doc(dbService, "listMemo", doc_id), save_item);
+          await setDoc(newListMemoRef, { listMemo_data: [item] });
+          setListMemo([...item]);
+          setNowOnListMemo([...item]);
         }
       }
     }; // 자료 저장 실행 함수 끝
@@ -183,13 +279,24 @@ const CheckLists = (props) => {
     //checkLists 에서 중복되는거 없애기(순서가 중요함..! firestore전에)
     let new_datas;
     if (item.unSubmitStudents) {
-      new_datas = checkLists.filter((list) => list.doc_id !== item.doc_id);
+      new_datas = checkLists.filter((list) => list.id !== item.id);
       setCheckLists([...new_datas]);
-      await deleteDoc(doc(dbService, "checkLists", item.doc_id));
+      setNowOnCheckLists([
+        ...nowOnCheckLists.filter((list) => list.id !== item.id),
+      ]);
+      await setDoc(doc(dbService, "checkLists", props.userUid), {
+        checkLists_data: new_datas,
+      });
+      //listMemo 에서 중복되는거 없애기(순서가 중요함..! firestore전에)
     } else {
-      new_datas = listMemo.filter((list) => list.doc_id !== item.doc_id);
+      new_datas = listMemo.filter((list) => list.id !== item.id);
       setListMemo([...new_datas]);
-      await deleteDoc(doc(dbService, "listMemo", item.doc_id));
+      setNowOnListMemo([
+        ...nowOnListMemo.filter((list) => list.id !== item.id),
+      ]);
+      await setDoc(doc(dbService, "listMemo", props.userUid), {
+        listMemo_data: new_datas,
+      });
     }
   };
 
@@ -197,9 +304,17 @@ const CheckLists = (props) => {
     setItem([]);
   };
 
-  const searchYearHandler = (e) => {
-    const year = e.target.value;
-    setSearchYear(year);
+  const searchYearHandler = (value) => {
+    const year_group = value;
+    if (props.about === "checkLists") {
+      let list = [...checkLists]?.filter(
+        (data) => data.yearGroup === year_group
+      );
+      setNowOnCheckLists(list);
+    } else {
+      let list = [...listMemo]?.filter((data) => data.yearGroup === year_group);
+      setNowOnListMemo(list);
+    }
   };
 
   //엑셀로 저장하기 함수
@@ -221,7 +336,7 @@ const CheckLists = (props) => {
       utils.book_append_sheet(book, listMemo_datas, `${memo.title}`);
     });
 
-    writeFile(book, `개별기록(${searchYear}).xlsx`);
+    writeFile(book, `개별기록(${listMemoYear.current.value}학년도).xlsx`);
   };
 
   return (
@@ -233,8 +348,8 @@ const CheckLists = (props) => {
               <CheckInput
                 students={props.students}
                 onClose={() => setAddCheckItem(false)}
-                saveItemHandler={(item, doc_id) => {
-                  saveItemHandler(item, doc_id);
+                saveItemHandler={(item) => {
+                  saveItemHandler(item);
 
                   setAddCheckItem(false);
                 }}
@@ -255,15 +370,14 @@ const CheckLists = (props) => {
               marginTop: "5px",
             }}
             name="searchYear-selcet"
-            defaultValue={searchYear}
-            onChange={searchYearHandler}
+            ref={checkListsYear}
+            defaultValue={""}
+            onChange={(e) => searchYearHandler(e.target.value)}
           >
-            <option value="" disabled>
-              --년도--
-            </option>
+            <option value="">--학년도--</option>
             {dataYears.map((year) => (
               <option value={year} key={year}>
-                {year}년
+                {year}학년도
               </option>
             ))}
           </select>
@@ -281,8 +395,8 @@ const CheckLists = (props) => {
 
           <div>
             {/* 제출 미제출 체크리스트들 보여주기 */}
-            {checkLists &&
-              sortList(checkLists).map((item) => (
+            {nowOnCheckLists &&
+              sortList(nowOnCheckLists).map((item) => (
                 <li
                   key={item.id}
                   id={item.id}
@@ -330,8 +444,8 @@ const CheckLists = (props) => {
               <ListMemoInput
                 students={props.students}
                 onClose={() => setAddListMemo(false)}
-                saveItemHandler={(item, doc_id) => {
-                  saveItemHandler(item, doc_id);
+                saveItemHandler={(item) => {
+                  saveItemHandler(item);
                   setAddListMemo(false);
                 }}
                 item={item}
@@ -344,16 +458,15 @@ const CheckLists = (props) => {
           <div className={classes["listMemoBtn-div"]}>
             <select
               className={classes["listMemo-select"]}
+              ref={listMemoYear}
               name="searchYear-selcet"
-              defaultValue={searchYear}
-              onChange={searchYearHandler}
+              defaultValue={""}
+              onChange={(e) => searchYearHandler(e.target.value)}
             >
-              <option value="" disabled>
-                --년도--
-              </option>
+              <option value="">--학년도--</option>
               {dataYears.map((year) => (
                 <option value={year} key={year}>
-                  {year}년
+                  {year}학년도
                 </option>
               ))}
             </select>
@@ -375,8 +488,8 @@ const CheckLists = (props) => {
           </div>
           <div>
             {/* 명렬표에서 입력한 자료들도 보여주기 */}
-            {listMemo &&
-              sortList(listMemo).map((item) => (
+            {nowOnListMemo &&
+              sortList(nowOnListMemo).map((item) => (
                 <li
                   key={item.id}
                   id={item.id}

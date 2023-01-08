@@ -1,6 +1,5 @@
 import attendanceOption from "../../attendanceOption";
 import StudentCalendarLayout from "../Layout/StudentCalendarLayout";
-import ExampleModal from "./ExampleModal";
 
 const AttendancePage = (props) => {
   return (

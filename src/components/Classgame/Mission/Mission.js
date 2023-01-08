@@ -3,16 +3,7 @@ import classes from "./Mission.module.css";
 import Item from "./Item";
 import { useNavigate } from "react-router-dom";
 import { dbService } from "../../../fbase";
-import {
-  collection,
-  query,
-  onSnapshot,
-  where,
-  doc,
-  getDoc,
-  addDoc,
-  getDocs,
-} from "firebase/firestore";
+import { onSnapshot, doc, getDoc, setDoc } from "firebase/firestore";
 
 import Modal from "components/Layout/Modal";
 import Reply from "./Reply";
@@ -21,11 +12,11 @@ import Swal from "sweetalert2";
 
 const EXPLAINS = [
   "* 아침 7~9시에 글쓰기가 가능해요.",
-  "* 하루 한 개의 미션만 올릴 수 있어요.",
-  "* 미션 당 하나의 댓글만 쓸 수 있어요.",
-  "* 여러 미션에 댓글을 달 수 있어요.",
-  "* 오늘 올린 미션만 볼 수 있어요.",
-  "* 미션은 수정, 삭제가 불가능해요!",
+  "* 하루 한 개의 글만 올릴 수 있어요.",
+  "* 글에는 한 명당 하나의 댓글만 쓸 수 있어요.",
+  "* 여러 글에 댓글을 달 수 있어요.",
+  "* 오늘 올린 글만 볼 수 있어요.",
+  "* 글은 수정, 삭제가 불가능해요!",
 ];
 //   {/* <p>* 매주 월요일에는 지난주 핫미션이 나와요.</p> */}
 
@@ -58,20 +49,12 @@ const Mission = (props) => {
 
   //오늘 날짜의 미션자료 받아오기
   const getMissionFromDb = () => {
-    let q = query(
-      collection(dbService, "mission"),
-      where("date", "==", TODAYDATE)
-    );
+    let todayRef = doc(dbService, "mission", TODAYDATE);
 
-    onSnapshot(q, (snapShot) => {
+    onSnapshot(todayRef, (doc) => {
       const new_missions = [];
-      snapShot.docs.forEach((doc) => {
-        const itemObj = {
-          ...doc.data(),
-          doc_id: doc.id,
-        };
-
-        new_missions.push(itemObj);
+      doc?.data()?.mission_data?.forEach((data) => {
+        new_missions.push(data);
       });
 
       setMissions([...new_missions]);
@@ -101,7 +84,7 @@ const Mission = (props) => {
       Swal.fire({
         icon: "error",
         title: "작성 불가",
-        text: "프로필이 존재하지 않아서 글 작성이 불가능합니다. [확인] 버튼을 눌러 프로필 화면으로 이동해주세요. 잼잼-아침미션 으로 다시 오실 수 있습니다.",
+        text: "프로필이 존재하지 않아서 글 작성이 불가능합니다. [확인] 버튼을 눌러 프로필 화면으로 이동해주세요. 잼잼-아침한마디 로 다시 오실 수 있습니다.",
         confirmButtonText: "확인",
         confirmButtonColor: "#85bd82",
         showDenyButton: false,
@@ -114,7 +97,9 @@ const Mission = (props) => {
       return;
     }
 
-    //혹시 이미 올렸던 미션이 있으면 작동하지 않도록!
+    const todayData = await getDoc(doc(dbService, "mission", TODAYDATE));
+
+    //최종적으로 미션을 저장하는 함수
     const missionAddDoc = async () => {
       const data = {
         title: titleValue,
@@ -126,18 +111,18 @@ const Mission = (props) => {
         reply: [],
       };
 
-      await addDoc(collection(dbService, "mission"), data);
+      let new_datas = [...todayData?.data()?.mission_data];
+      new_datas.push(data);
+      await setDoc(doc(dbService, "mission", TODAYDATE), {
+        mission_data: new_datas,
+      });
     };
 
-    let q = query(
-      collection(dbService, "mission"),
-      where("date", "==", TODAYDATE)
-    );
+    //혹시 이미 올렸던 미션이 있으면 작동하지 않도록!
     //오늘 현재 유저가 올렸던게 있는지 확인
     let alreadyAdd = false;
-    const querySnapshot = await getDocs(q);
-    querySnapshot.forEach((doc) => {
-      if (doc.data().writtenId === props.userUid) {
+    todayData?.data()?.mission_data?.forEach((data) => {
+      if (data.writtenId === props.userUid) {
         alreadyAdd = true;
       }
     });
@@ -147,7 +132,7 @@ const Mission = (props) => {
       Swal.fire({
         icon: "error",
         title: "저장불가",
-        text: `이미 오늘 미션을 등록하셨네요!`,
+        text: `이미 오늘 아침한마디를 등록하셨네요!`,
         showDenyButton: false,
         confirmButtonText: "확인",
         confirmButtonColor: "#db100cf2",
@@ -172,7 +157,7 @@ const Mission = (props) => {
         Swal.fire({
           icon: "success",
           title: "저장완료",
-          text: "미션이 저장되었습니다.",
+          text: "아침한마디가 저장되었습니다.",
           confirmButtonText: "확인",
           confirmButtonColor: "#85bd82",
           timer: 5000,
@@ -209,7 +194,7 @@ const Mission = (props) => {
       )}
 
       <h1 className={classes.h1}>
-        🌞 오늘의 아침미션{" "}
+        🌞 오늘의 아침한마디{" "}
         <span
           className={classes.h1Span}
           onClick={() => setExplainOn((prev) => !prev)}

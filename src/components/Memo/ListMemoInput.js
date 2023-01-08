@@ -22,9 +22,24 @@ const ListMemoInput = (props) => {
 
   const saveMemo = () => {
     if (memoTitle) {
+      const tiemStamp = () => {
+        let today = new Date();
+        today.setHours(today.getHours() + 9);
+        return today.toISOString().replace("T", " ").substring(0, 19);
+      };
+
+      let item_id;
+      //기존의 아이템인 경우 기존 아이디 쓰고
+      if (props?.item?.id) {
+        item_id = props.item.id;
+      } else {
+        item_id = tiemStamp();
+      }
+
       let new_memo = {
         title: memoTitle,
         data: [],
+        id: item_id,
       };
       //모든 텍스트area를 선택함.
       let memoInputAll = document.querySelectorAll(`textarea`);
@@ -35,7 +50,6 @@ const ListMemoInput = (props) => {
           let student_name = students.filter(
             (stu) => stu.num === inputTag.getAttribute("id")
           )[0].name;
-          console.log(student_name);
 
           new_memo["data"].push({
             student_num: inputTag.id,
@@ -48,10 +62,10 @@ const ListMemoInput = (props) => {
 
       setStudentMemo((prev) => [...prev, new_memo]);
 
-      console.log(new_memo);
-      console.log(studentMemo);
+      // console.log(new_memo);
+      // console.log(studentMemo);
 
-      props.saveItemHandler(new_memo, props.item.doc_id);
+      props.saveItemHandler(new_memo);
       props.onClose();
       props.setItemNull();
     } else {

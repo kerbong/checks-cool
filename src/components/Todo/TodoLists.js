@@ -22,8 +22,8 @@ const TodoLists = (props) => {
     let eventName;
     //새로 추가하거나 바로 입력한 자료인 경우
     if (item["doc_id"] === undefined) {
-      eventName = document.querySelector("#todo-eventName");
-      let option = document.querySelector(`#option-select`);
+      eventName = document.getElementById("todo-eventName");
+      let option = document.getElementById(`option-select`);
       // console.log(eventName);
       // console.log(option);
       //새로운 자료(input)인 경우 있음
@@ -33,15 +33,15 @@ const TodoLists = (props) => {
       } else {
         // console.log(item);
         eventName = item.eventName;
-        optionValue = document.querySelector(
-          `#option-select${eventName.replace(/ /g, "")}`
+        optionValue = document.getElementById(
+          `option-select${eventName.replace(/ /g, "")}`
         ).value;
       }
       //업로드 되어있던 자료인 경우
     } else {
       eventName = item.eventName;
-      optionValue = document.querySelector(
-        `#option-select${eventName.replace(/ /g, "")}`
+      optionValue = document.getElementById(
+        `option-select${eventName.replace(/ /g, "")}`
       ).value;
     }
 
@@ -78,17 +78,17 @@ const TodoLists = (props) => {
     let noteValue;
     //새로운 이벤트일 경우 name없음.
     if (!item.eventName) {
-      eventName = document.querySelector(`#todo-eventName`).value;
-      optionValue = document.querySelector("#option-select").value;
-      noteValue = document.querySelector("#option-note").value;
+      eventName = document.getElementById(`todo-eventName`).value;
+      optionValue = document.getElementById("option-select").value;
+      noteValue = document.getElementById("option-note").value;
       //기존 이벤트인 경우
     } else {
       eventName = item.eventName;
-      optionValue = document.querySelector(
-        `#option-select${eventName.replace(/ /g, "")}`
+      optionValue = document.getElementById(
+        `option-select${eventName.replace(/ /g, "")}`
       ).value;
-      noteValue = document.querySelector(
-        `#option-note${eventName.replace(/ /g, "")}`
+      noteValue = document.getElementById(
+        `option-note${eventName.replace(/ /g, "")}`
       ).value;
     }
 
@@ -98,8 +98,6 @@ const TodoLists = (props) => {
       eventName: eventName,
       option: optionValue,
       note: noteValue,
-      owner: props.about.slice(4),
-      writtenId: props.userUid,
     };
 
     // console.log(item.eventDate);
@@ -133,8 +131,8 @@ const TodoLists = (props) => {
   //이미 있던 이벤트 수정할 때 화면 수정하는 함수
   const updateEventOnScreen = (data) => {
     // console.log(data.id);
-    let option = document.querySelector(
-      `#option-area${data.eventName.replace(/ /g, "")}`
+    let option = document.getElementById(
+      `option-area${data.eventName.replace(/ /g, "")}`
     );
     option.innerText = `${data.option.slice(1)} | ${data.note}`;
   };

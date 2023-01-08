@@ -16,15 +16,21 @@ const Reply = (props) => {
   let navigate = useNavigate();
 
   //현재 받은 미션자료 받아오고 댓글 담아두기
-  const getMissionFromDb = async (doc_id) => {
-    onSnapshot(doc(dbService, "mission", doc_id), (doc) => {
-      setMission({ ...doc.data(), doc_id: doc.id });
-      setReplyAll([...doc.data().reply]);
+  const getMissionFromDb = async (mission) => {
+    const missionRef = doc(dbService, "mission", mission.date);
+    onSnapshot(missionRef, (doc) => {
+      const allMission = doc.data().mission_data;
+      allMission.forEach((data) => {
+        if (data.writtenId === mission.writtenId) {
+          setMission({ ...data });
+          setReplyAll([...data.reply]);
+        }
+      });
     });
   };
 
   useEffect(() => {
-    getMissionFromDb(props.mission.doc_id);
+    getMissionFromDb(props.mission);
   }, [props.mission]);
 
   //현재 유저가 썼던 댓글이 있으면
@@ -61,16 +67,24 @@ const Reply = (props) => {
 
   //댓글 삭제, 추가, 수정기능 함수
   const replyHandler = async (value, option) => {
-    const nowOnRef = doc(dbService, "mission", mission.doc_id);
-    const data_reply = (await getDoc(nowOnRef)).data().reply;
-    //새로운 댓글목록 배열 만들고
-    let new_data_reply = [];
-    //기존댓글목록에 이미 쓴게 있으면 빼고 새로운 댓글 목록에 저장
-    data_reply?.forEach((reply) => {
-      if (reply.writtenId !== props.userUid) {
-        new_data_reply.push(reply);
+    const nowOnRef = doc(dbService, "mission", mission.date);
+    //오늘 미션 전체 데이터
+    let nowAllMission = await getDoc(nowOnRef).data().mission_data;
+    //오늘 미션 데이터 중 해당 글 데이터
+    let nowOnMission = {};
+    let nowOnIndex;
+    let data_reply = [];
+    nowAllMission.forEach((data, onIndex) => {
+      if (data.writtenId === mission.writtenId) {
+        data_reply = [...data.reply];
+        nowOnMission = { ...data };
+        nowOnIndex = onIndex;
       }
     });
+    //기존댓글목록에 이미 쓴게 있으면 빼고 새로운 댓글 목록에 저장
+    let new_data_reply = [
+      ...data_reply?.filter((reply) => reply.writtenId !== props.userUid),
+    ];
 
     //댓글 업데이트 혹은 새로쓰기면
     if (option === "update" || option === "add") {
@@ -81,10 +95,11 @@ const Reply = (props) => {
         nickName: props.userState.nickName,
       });
     }
-
-    console.log(new_data_reply);
+    nowOnMission.reply = [...new_data_reply];
+    nowAllMission[nowOnIndex] = { ...nowOnMission };
+    console.log(nowAllMission);
     //업데이트 공통
-    await updateDoc(nowOnRef, { reply: new_data_reply });
+    await updateDoc(nowOnRef, { mission_data: nowAllMission });
   };
 
   return (

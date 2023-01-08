@@ -3,7 +3,13 @@ import Button from "../../Layout/Button";
 import LikeBtn from "../Simsim/LikeBtn";
 import classes from "./Mission.module.css";
 import { dbService } from "../../../fbase";
-import { doc, updateDoc, arrayRemove, arrayUnion } from "firebase/firestore";
+import {
+  doc,
+  updateDoc,
+  arrayRemove,
+  arrayUnion,
+  getDoc,
+} from "firebase/firestore";
 
 const Item = (props) => {
   const [like, setLike] = useState(false);
@@ -37,20 +43,30 @@ const Item = (props) => {
   const changeLikeHandler = async () => {
     // console.log(mission);
     //만약 이전이 좋아요였으면 해제
-    const nowOnRef = doc(dbService, "mission", mission.doc_id);
+    const nowOnRef = doc(dbService, "mission", mission.date);
+    let nowAll = (await getDoc(nowOnRef)).data().mission_data;
+    let nowOnMission = {};
+    let nowIndex;
+    nowAll.forEach((data, index) => {
+      if (data.writtenId === mission.writtenId) {
+        nowOnMission = { ...data };
+        nowIndex = index;
+      }
+    });
     setLike((prev) => !prev);
     if (like) {
       //   console.log("삭제");
-      await updateDoc(nowOnRef, {
-        like: arrayRemove(props.userUid),
-      });
+      nowOnMission.like.filter((id) => id !== props.userUid);
+
       //만약 이전이 무응답이었으면 추가
     } else {
-      //   console.log("추가");
-      await updateDoc(nowOnRef, {
-        like: arrayUnion(props.userUid),
-      });
+      nowOnMission.like.push(props.userUid);
     }
+    nowAll[nowIndex] = nowOnMission;
+    // console.log(nowAll)
+    await updateDoc(nowOnRef, {
+      mission_data: nowAll,
+    });
   };
   return (
     <li

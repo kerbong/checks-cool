@@ -41,7 +41,7 @@ const ClassgamePage = (props) => {
           )}
           {selectedMenu === "mission" && (
             <>
-              <i className="fa-solid fa-mug-saucer"></i> 아침미션
+              <i className="fa-solid fa-mug-saucer"></i> 아침한마디
             </>
           )}
           {selectedMenu === "doThis" && (
@@ -69,7 +69,7 @@ const ClassgamePage = (props) => {
             onclick={() => setSelectedMenu("simsim")}
           />
           <Button
-            name={"아침미션"}
+            name={"아침한마디"}
             className={"settingSeat"}
             onclick={() => setSelectedMenu("mission")}
           />

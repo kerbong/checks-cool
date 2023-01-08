@@ -8,16 +8,7 @@ import ConsultLists from "../Consult/ConsultLists";
 import ExampleModal from "./ExampleModal";
 import consultAdd from "../../assets/consult/consultAdd.gif";
 import { dbService, storageService } from "../../fbase";
-import {
-  collection,
-  query,
-  onSnapshot,
-  where,
-  deleteDoc,
-  doc,
-  setDoc,
-  updateDoc,
-} from "firebase/firestore";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 
 import {
   deleteObject,
@@ -60,26 +51,50 @@ const ConsultingPage = (props) => {
       fileUrl = await getDownloadURL(response.ref);
     }
     //firebase에 firestore에 업로드, 데이터에서 같은게 있는지 확인
-    const new_data = { ...data, attachedFileUrl: fileUrl };
+    const new_data = {
+      ...data,
+      attachedFileUrl: fileUrl,
+    };
 
-    //기존데이터는 업데이트
-    if (data.doc_id) {
-      const consultRef = doc(dbService, "consult", data.doc_id);
-      await updateDoc(consultRef, new_data);
-      //새 자료는 저장
+    const consultRef = doc(dbService, "consult", props.userUid);
+    //상담자료 받아오기
+    const consultSnap = await getDoc(consultRef);
+    //만약 저장된 자료가 있었으면
+    if (consultSnap.exists()) {
+      //현재 저장되는 자료와 중복되는거 제외하고 거기에 새 자료 추가함
+      let new_datas = [
+        ...consultSnap
+          .data()
+          .consult_data.filter((consult) => consult.id !== new_data.id),
+      ];
+      new_datas.push(new_data);
+      await setDoc(consultRef, {
+        consult_data: new_datas,
+      });
     } else {
-      const newConsultRef = doc(collection(dbService, "consult"));
-      await setDoc(newConsultRef, { ...new_data, writtenId: props.userUid });
+      await setDoc(consultRef, { consult_data: [new_data] });
     }
   };
 
-  const deleteConsultHandler = async (docId, url) => {
+  const deleteConsultHandler = async (id, url) => {
     //storage에 저장된 파일 지우기
     if (url !== "") {
       await deleteObject(ref(storageService, url));
     }
+    //firestore자료 수정하기
+    const consultRef = doc(dbService, "consult", props.userUid);
+    //상담자료 받아오기
+    const consultSnap = await getDoc(consultRef);
 
-    await deleteDoc(doc(dbService, "consult", docId));
+    //현재 저장되는 자료와 중복되는거 제외하고 저장
+    let new_datas = [
+      ...consultSnap
+        ?.data()
+        ?.consult_data.filter((consult) => consult.id !== id),
+    ];
+    await setDoc(consultRef, {
+      consult_data: new_datas,
+    });
   };
 
   return (

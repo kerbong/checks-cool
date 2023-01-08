@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import Swal from "sweetalert2";
 import classes from "./ConsultLists.module.css";
 import Button from "components/Layout/Button";
 import ConsultEdit from "./ConsultEdit";
 import { dbService } from "../../fbase";
-import { collection, query, onSnapshot, where } from "firebase/firestore";
+import { onSnapshot, doc } from "firebase/firestore";
 import { utils, writeFile } from "xlsx";
 
 const ConsultLists = (props) => {
@@ -13,34 +13,36 @@ const ConsultLists = (props) => {
   const [showEditor, setShowEditor] = useState("");
   const [initTextareaHeight, setInitTextareaHeight] = useState("");
   const [showPastFirst, setShowPastFirst] = useState(false);
-  const [searchYear, setSearchYear] = useState(
-    String(new Date().getFullYear())
-  );
+
   const [dataYears, setDataYears] = useState([]);
   const [studentsOnConsults, setStudentsOnConsults] = useState([]);
 
+  const yearGroupRef = useRef();
+  const studentSelectRef = useRef();
+
   //상담자료 받아오기
   const getConsultFromDb = () => {
-    let q = query(
-      collection(dbService, "consult"),
-      where("writtenId", "==", props.userUid)
-    );
+    let consultRef = doc(dbService, "consult", props.userUid);
 
-    onSnapshot(q, (snapShot) => {
+    onSnapshot(consultRef, (doc) => {
       const new_consults = [];
       const years = [];
-      snapShot.docs.forEach((doc) => {
-        const itemObj = {
-          ...doc.data(),
-          doc_id: doc.id,
-        };
-        years.push(doc.data().id.slice(0, 4));
-        if (doc.data().id.slice(0, 4) !== searchYear) {
-          return false;
+      doc.data()?.consult_data?.forEach((data) => {
+        let new_data = {};
+        let data_month = data.id.slice(5, 7);
+        let data_year = data.id.slice(0, 4);
+        if (+data_month >= 3) {
+          years.push(data_year);
+          //자료에 년도를 yearGroup으로 추가
+          new_data = { ...data, yearGroup: data_year };
+        } else if (+data_month <= 2) {
+          let fixed_year = String(+data_year - 1);
+          years.push(fixed_year);
+          new_data = { ...data, yearGroup: fixed_year };
         }
-        new_consults.push(itemObj);
+        new_consults.push(new_data);
       });
-
+      //학년도 저장 및 상담기록 저장
       setDataYears([...new Set(years)]);
       setConsults([...new_consults]);
     });
@@ -48,17 +50,15 @@ const ConsultLists = (props) => {
 
   useEffect(() => {
     getConsultFromDb();
-  }, [searchYear]);
+  }, []);
 
   useEffect(() => {
-    setNowOnConsult([...consults]);
-    timeSortedHandler("up", true);
-  }, [consults]);
-
-  useEffect(() => {
-    setStudentsOnConsults([
-      ...new Set(consults.map((data) => data.student_name)),
-    ]);
+    if (
+      yearGroupRef.current.value === "" &&
+      yearGroupRef.current.value === ""
+    ) {
+      return;
+    }
   }, [consults]);
 
   function sortDate(consult, upOrDown) {
@@ -97,7 +97,16 @@ const ConsultLists = (props) => {
           timer: 5000,
         });
 
-        props.deleteConsult(consult.doc_id, consult.attachedFileUrl);
+        props.deleteConsult(consult.id, consult.attachedFileUrl);
+
+        //전체 베이스 자료에서 삭제
+        setConsults((prev) => {
+          return prev.filter((data) => data.id !== consult.id);
+        });
+        //현재 보여주고 있는 자료에서 삭제
+        setNowOnConsult((prev) => {
+          return prev.filter((data) => data.id !== consult.id);
+        });
       }
     });
   };
@@ -139,8 +148,14 @@ const ConsultLists = (props) => {
   };
 
   const searchYearHandler = (e) => {
-    const year = e.target.value;
-    setSearchYear(year);
+    const year_group = e.target.value;
+    const list = consults?.filter((data) => data.yearGroup === year_group);
+    setNowOnConsult(list);
+
+    //선택된 학생(셀렉트 태그)초기화
+    studentSelectRef.current.value = "";
+    //학생들 이름 세팅하기
+    setStudentsOnConsults([...new Set(list?.map((data) => data.student_name))]);
   };
 
   //엑셀로 저장하기 함수
@@ -178,7 +193,35 @@ const ConsultLists = (props) => {
     //시트에 작성한 데이터 넣기
     utils.book_append_sheet(book, consult_datas, "상담기록");
 
-    writeFile(book, `상담기록(${searchYear}).xlsx`);
+    writeFile(book, `상담기록(${yearGroupRef.current.value}).xlsx`);
+  };
+
+  const addDataHandler = (consult) => {
+    //전체 베이스 자료에서 삭제하고 다시 추가
+    setConsults((prev) => {
+      let new_datas = [...prev];
+      let data_index;
+      prev.forEach((data, index) => {
+        if (data.id === consult.id) {
+          data_index = index;
+        }
+      });
+      new_datas[data_index] = consult;
+      return new_datas;
+    });
+    //현재 보여주고 있는 자료에서 삭제하고 다시 추가
+    setNowOnConsult((prev) => {
+      let new_datas = [...prev];
+      let data_index;
+      prev.forEach((data, index) => {
+        if (data.id === consult.id) {
+          data_index = index;
+        }
+      });
+      new_datas[data_index] = consult;
+      return new_datas;
+    });
+    props.addData(consult);
   };
 
   return (
@@ -188,28 +231,33 @@ const ConsultLists = (props) => {
         <div className={classes["select-area"]}>
           <select
             name="searchYear-selcet"
-            defaultValue={props.searchYear}
+            ref={yearGroupRef}
+            defaultValue={""}
             onChange={searchYearHandler}
           >
-            <option value="" disabled>
-              --년도--
+            <option value="" defaultChecked>
+              --학년도--
             </option>
             {dataYears?.map((year) => (
               <option value={year} key={year}>
-                {year}년
+                {year}학년도
               </option>
             ))}
           </select>
           <select
             name="student-selcet"
+            ref={studentSelectRef}
             className={classes[`student-select`]}
-            defaultValue={"전체학생"}
+            defaultValue={""}
             onChange={consultsHandler}
           >
-            <option value="" disabled>
+            <option value="" defaultChecked>
               --학생--
             </option>
-            <option value="전체학생">전체보기</option>
+            {nowOnConsult.length > 0 && (
+              <option value="전체학생">전체보기</option>
+            )}
+
             {studentsOnConsults?.map((student) => (
               <option value={student} key={student}>
                 {student}
@@ -254,7 +302,7 @@ const ConsultLists = (props) => {
                   cancelEditor={() => setShowEditor("")}
                   context={props.context}
                   initTextareaHeight={initTextareaHeight}
-                  addData={(data) => props.addData(data)}
+                  addData={(data) => addDataHandler(data)}
                 />
               ) : (
                 <div key={consult.id + "item"}>

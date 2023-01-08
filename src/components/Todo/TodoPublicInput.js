@@ -63,7 +63,7 @@ const TodoPublicInput = (props) => {
         />
         <input
           type="text"
-          placeholder="비밀번호"
+          placeholder="비번 (예시)2023"
           id={"todo-publicPw"}
           className={classes["publicPw-area"]}
           autoFocus

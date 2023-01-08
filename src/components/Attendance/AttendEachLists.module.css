@@ -7,7 +7,8 @@
 }
 
 .student-select {
-  font-size: 1.1em;
+  font-size: 0.8rem;
+  margin: 5px;
 }
 
 .ul {
@@ -20,4 +21,13 @@
   align-items: center;
   flex-wrap: wrap;
   justify-content: flex-start;
+}
+
+.select-area {
+  display: flex;
+  justify-content: center;
+}
+
+.select-div {
+  width: 70%;
 }

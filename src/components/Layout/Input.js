@@ -34,7 +34,7 @@ const Input = React.forwardRef((props, ref) => {
           onKeyDown={() => handleResizeHeight(this)}
           onKeyUp={() => handleResizeHeight(this)}
           onClick={() => handleResizeHeight(this)}
-          value={value}
+          value={value || ""}
           onInput={props.onInput}
           required={props.required ? true : false}
           onChange={changeHandler}
@@ -50,7 +50,7 @@ const Input = React.forwardRef((props, ref) => {
           onInput={props.onInput}
           ref={noteRef}
           {...props.input}
-          value={value}
+          value={value || ""}
           onChange={changeHandler}
           placeholder={props.placeholder || ""}
         />

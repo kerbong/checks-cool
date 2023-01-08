@@ -10,16 +10,7 @@ import TodoPublicSetting from "../Todo/TodoPublicSetting";
 import publicSetting from "../../assets/todo/publicSetting.gif";
 
 import { dbService } from "../../fbase";
-import {
-  collection,
-  query,
-  onSnapshot,
-  where,
-  addDoc,
-  setDoc,
-  deleteDoc,
-  doc,
-} from "firebase/firestore";
+import { onSnapshot, setDoc, doc } from "firebase/firestore";
 import ExampleModal from "./ExampleModal";
 
 const thisMonth = () => {
@@ -73,42 +64,24 @@ const TodoPage = (props) => {
     setEvents([]);
 
     // let eventSnapshot = null;
-    let queryWhere;
+    let todoRef;
     // console.log(showPublicEvent);
 
     if (showPublicEvent) {
-      //이부분 수정하기(경기하남초622하남6 로컬스토리지에 저장.)
-      //"경기하남초-6-22하남6"
-      queryWhere = query(
-        collection(dbService, "todo"),
-        where("owner", "==", publicRoom)
-      );
+      //"경기초-6-2022"예시
+      //공용 자료는 공용문서전체 이름으로 문서id 저장
+      todoRef = doc(dbService, "todo", publicRoom);
     } else {
-      //이부분에서 왜 오류가 나는지 모르겄네... snapshot을 한 번 써서 그런가..
-      queryWhere = query(
-        collection(dbService, "todo"),
-        //순서가 중요하구나 ㅠ ==쿼리만 쓰는게 좋고...
-        where("owner", "==", "personal"),
-        where("writtenId", "==", props.userUid)
-      );
+      //유저 개인 자료는 자기 uid로 문서id 저장
+      todoRef = doc(dbService, "todo", props.userUid);
     }
-    // console.log(queryWhere);
 
-    onSnapshot(queryWhere, (snapShot) => {
-      snapShot.docs.map((doc) => {
-        const eventObj = {
-          ...doc.data(),
-          doc_id: doc.id,
-        };
-        return setEvents((prev) => {
-          prev.forEach((prev_data, index) => {
-            if (prev_data.id === eventObj.id) {
-              prev.splice(index, 1);
-            }
-          });
-          return [...prev, eventObj];
-        });
+    onSnapshot(todoRef, (doc) => {
+      const new_events = [];
+      doc?.data()?.todo_data?.forEach((data) => {
+        new_events.push(data);
       });
+      setEvents([...new_events]);
     });
   };
 
@@ -128,7 +101,19 @@ const TodoPage = (props) => {
 
   const fixCurrentMonth = (date, num) => {
     let fixedMonth = String(Number(date.slice(-2)) + num).padStart(2, "0");
-    return date.slice(0, 5) + fixedMonth;
+    let new_year, new_month;
+    if (fixedMonth === "00") {
+      new_year = +date.slice(0, 4) - 1;
+      new_month = "12";
+    } else if (fixedMonth === "13") {
+      new_year = +date.slice(0, 4) + 1;
+      new_month = "01";
+    } else {
+      new_year = date.slice(0, 4);
+      new_month = fixedMonth;
+    }
+
+    return new_year + "-" + new_month;
   };
 
   const calEventDayToYMD = (eventTag) => {
@@ -203,7 +188,8 @@ const TodoPage = (props) => {
             if (events.length !== 0) {
               // events는 [{할일},{할일}] events 자료에 지금 날짜와 같은 자료가 있는지 확인해서 새로운 배열에 넣기
               let new_eventOnDay = events.filter(
-                (event) => event["id"].slice(0, 10) === yyyymmdd
+                // (event) => event["id"].slice(0, 10) === yyyymmdd
+                (event) => event.id.slice(8, 10) === yyyymmdd.split("-")[2]
               );
               // 만약 오늘 날짜에 해당하는 게 있으면
               if (new_eventOnDay.length > 0) {
@@ -233,49 +219,45 @@ const TodoPage = (props) => {
     };
 
     //이벤트 요약해서 캘린더에 보여주기
-    const eventDrawOnCalendar = (month) => {
+    const eventDrawOnCalendar = () => {
       events.forEach(function (data) {
-        // 2022-08-03
+        //새로 업데이트한 로직(년 월 일 데이터에 따로 저장)
+        const day = "0" + data.id.slice(8, 10);
+
+        // // 2022-08-03
         const eventDate = data.id.slice(0, 10);
+        // 이벤트 날짜와 같은 날짜 클래스를 지닌 태그를 찾음
+        const eventDayTag = document.querySelectorAll(
+          `.react-datepicker__day--${day}`
+        );
 
-        //이벤트 달과 현재 달력의 달이 같으면
-        if (eventDate.slice(0, 7) === month) {
-          // 날짜를 day 변수로 저장 0+03
-          const day = 0 + eventDate.slice(8);
+        //다음 달 날짜까지 두 개가 나올 수 있어서 각각을 forEach 반복함
+        eventDayTag.forEach(function (eventTag) {
+          //이벤트 태그의 날짜 yyyy-mm-dd로 바꾸기
+          let ymd = calEventDayToYMD(eventTag);
 
-          // 이벤트 날짜와 같은 날짜 클래스를 지닌 태그를 찾음
-          const eventDayTag = document.querySelectorAll(
-            `.react-datepicker__day--${day}`
-          );
+          //기존에 이미 달력에 데이터로 그린 버튼(번호+이름) 있는지 확인
+          let existedBtn = document.querySelectorAll(
+            `button[id='${data.id}']`
+          )[0];
 
-          //다음 달 날짜까지 두 개가 나올 수 있어서 각각을 forEach 반복함
-          eventDayTag.forEach(function (eventTag) {
-            //이벤트 태그의 날짜 yyyy-mm-dd로 바꾸기
-            let ymd = calEventDayToYMD(eventTag);
-
-            //기존에 이미 달력에 데이터로 그린 버튼(번호+이름) 있는지 확인
-            let existedBtn = document.querySelectorAll(
-              `button[id='${data.id}']`
-            )[0];
-
-            //만약 이벤트 태그의 번호와 anyContext의 개별 data의 이벤트 날짜가 같고, 이미 그려진 버튼이 없으면
-            if (ymd === eventDate && !existedBtn) {
-              //달력날짜에 (번호+이름)의 버튼 추가하기
-              const btn = document.createElement("button");
-              btn.className = `${classes.eventData} eventBtn`;
-              btn.innerText = data.eventName;
-              btn.id = data.id;
-              eventTag.appendChild(btn);
-              eventTag.style.backgroundColor = "#d38c85";
-              eventTag.style.borderRadius = "5px";
-            }
-          }); //날짜가 events와 같은 태그에 할 일 forEach 함수 끝
-        } //이벤트 달과 현재 달력의 달이 같을 떄 할일 함수 끝
+          //만약 이벤트 태그의 번호와 anyContext의 개별 data의 이벤트 날짜가 같고, 이미 그려진 버튼이 없으면
+          if (ymd === eventDate && !existedBtn) {
+            //달력날짜에 (번호+이름)의 버튼 추가하기
+            const btn = document.createElement("button");
+            btn.className = `${classes.eventData} eventBtn`;
+            btn.innerText = data.eventName;
+            btn.id = data.id;
+            eventTag.appendChild(btn);
+            eventTag.style.backgroundColor = "#d38c85";
+            eventTag.style.borderRadius = "5px";
+          }
+        }); //날짜가 events와 같은 태그에 할 일 forEach 함수 끝
       }); //events 의 개별 data 함수 끝
     };
     //이벤트를 화면에 그리기
     showAllDayEvents(events);
-    eventDrawOnCalendar(currentMonth);
+    eventDrawOnCalendar();
   }, [currentMonth, events]);
 
   //달력에서 받은 date 형식을 바꾸기
@@ -296,6 +278,12 @@ const TodoPage = (props) => {
 
   //firestore와 events 자료 추가 혹은 삭제 함수
   const fixEvents = async (data, eventDate, fixOrDel) => {
+    let todoRef;
+    if (showPublicEvent) {
+      todoRef = doc(dbService, "todo", publicRoom);
+    } else {
+      todoRef = doc(dbService, "todo", props.userUid);
+    }
     // events 자료 가져와서 수정하기
     let new_events = JSON.parse(JSON.stringify(events));
     // console.log(new_events);
@@ -318,23 +306,34 @@ const TodoPage = (props) => {
       if (existedEvent.length > 0) {
         // console.log("기존에 events에 있던 자료");
         if (fixOrDel === "fix") {
-          // console.log(data);
-          // console.log(existedEvent[0].doc_id);
-          //events에서 id 속성이 같은거 찾고 그 doc_id를 넘겨서 update하기
-          await setDoc(doc(dbService, "todo", existedEvent[0].doc_id), data);
+          let fixed_event = { ...data, eventDate: eventDate };
 
-          const event = { ...data, eventDate: eventDate };
-          new_events[event_index] = event;
+          new_events.splice(event_index, 1);
+          new_events.push(fixed_event);
+          console.log(fixed_event);
+          delete new_events[new_events.length - 1].eventDate;
+          const fixed_data = { todo_data: new_events };
+          await setDoc(todoRef, fixed_data);
+          console.log(new_events);
           // console.log("이벤트바이데이즈에서 일치하는 자료 찾아서 수정함!");
         } else if (fixOrDel === "del") {
+          //혹시 해당 날짜에 지금 이벤트가 마지막 남은 이벤트인 경우 달력에 이벤트 있음을 표시하는 백그라운드 컬러 삭제
+          let modalChildLength = document?.getElementById(data.id)
+            ?.parentElement?.childNodes?.length;
+          //li태그가 하나 있으면 5, 즉 마지막이면
+          if (modalChildLength === 5) {
+            document.querySelector(
+              ".react-datepicker__day--selected"
+            ).style.backgroundColor = "";
+          }
+
           //splice(인덱스값을, 1이면 제거 0이면 추가)
           new_events.splice(event_index, 1);
-          // console.log("이벤트바이데이즈에서 일치하는 자료 찾아서 제거함!");
-
-          await deleteDoc(doc(dbService, "todo", existedEvent[0].doc_id));
-
-          //업데이트 해줘야 eventOnDay 날짜 클릭하면 나오는 모달에서도 사라짐
+          console.log(new_events);
           setEvents([...new_events]);
+          // console.log("이벤트바이데이즈에서 일치하는 자료 찾아서 제거함!");
+          const new_data = { todo_data: new_events };
+          await setDoc(todoRef, new_data);
 
           const deleteBtnLi = () => {
             let btn = document.getElementById(data.id);
@@ -342,7 +341,7 @@ const TodoPage = (props) => {
               btn.remove();
             }
           };
-          //item에 있는 li태그 지우고, 캘린더에 있는 btn도 지우고..
+          // 띄워진 모달에 있는 데이터 삭제
           deleteBtnLi();
           deleteBtnLi();
         }
@@ -350,10 +349,16 @@ const TodoPage = (props) => {
         //자료들이 있었는데 새로운 자료인 경우
       } else {
         //firestore에 추가!
-        await addDoc(collection(dbService, "todo"), data);
-        //events에도 추가!
-        let event = { ...data, eventDate: eventDate };
-        new_events.push(event);
+        new_events.push(data);
+        let new_data = [...new_events];
+        const fixed_data = { todo_data: new_data };
+        await setDoc(todoRef, fixed_data).then(() => {
+          //events에도 추가!
+          // console.log(data);
+          let event = { ...data, eventDate: eventDate };
+          new_events.push(event);
+          setEvents([...new_events]);
+        });
       }
 
       // 이벤트 자료가 아예 없는 경우
@@ -361,13 +366,13 @@ const TodoPage = (props) => {
       // console.log("events에 처음 입력된 자료");
 
       //firestore에 추가!
-      await addDoc(collection(dbService, "todo"), data);
+      const new_data = { todo_data: [data] };
+      await setDoc(todoRef, new_data);
       //events에도 추가!
       let event = { ...data, eventDate: eventDate };
       new_events.push(event);
+      setEvents([...new_events]);
     }
-
-    return new_events;
   };
 
   //EventLists에서 호출하는 event 수정버튼 함수,

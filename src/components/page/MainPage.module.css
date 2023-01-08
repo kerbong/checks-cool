@@ -104,15 +104,17 @@
 }
 
 .mainCheckLists-students {
-  margin: 10px 20px;
+  margin: 10px;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
+  line-height: 15px;
 }
 
 .mainCheckLists-student {
-  margin-right: 15px;
-  font-size: 0.9em;
+  margin-right: 8px;
+  font-size: 0.7rem;
+  letter-spacing: -1px;
 }
 
 .p {

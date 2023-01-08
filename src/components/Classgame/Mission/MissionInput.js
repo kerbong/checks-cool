@@ -54,7 +54,7 @@ const MissionInput = (props) => {
               ref={titleRef}
               id="missionTitle-input"
               type="text"
-              placeholder="하고 싶은 것"
+              placeholder="오늘 컨디션은 어떠세요?"
               className={classes["replyTitle-input"]}
               onInput={(e) => handleOnInput(e, 20)}
             />
@@ -65,7 +65,7 @@ const MissionInput = (props) => {
               ref={textRef}
               id="missionText-input"
               type="text"
-              placeholder="오늘 아침에 하고 싶은.."
+              placeholder="오늘 아침에 하고 싶은 건요?"
               className={classes["replyText-input"]}
               onInput={(e) => handleOnInput(e, 50)}
             />
@@ -78,7 +78,7 @@ const MissionInput = (props) => {
           className={"replyAddBtn"}
         />
       </form>
-      <span>*아침미션 옆 화살표로 규칙을 확인해보세요!</span>
+      <span>*아침한마디 옆 화살표로 규칙을 확인해보세요!</span>
     </>
   );
 };
