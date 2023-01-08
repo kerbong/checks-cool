@@ -1,6 +1,6 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
-// import { getMessaging, getToken, onMessage } from "firebase/messaging";
+import { getAnalytics, logEvent } from "firebase/analytics";
 import { getAuth } from "firebase/auth";
 import {
   getFirestore,
@@ -23,10 +23,12 @@ const firebaseConfig = {
   storageBucket: process.env.REACT_APP_STORAGE_BUCKET,
   messagingSenderId: process.env.REACT_APP_MESSAGING_SENDER_ID,
   appId: process.env.REACT_APP_APP_ID,
+  measurementId: process.env.REACT_APP_MEASUREMENT_ID,
 };
 
 const firebaseApp = initializeApp(firebaseConfig);
-
+const analytics = getAnalytics(firebaseApp);
+logEvent(analytics, "notification_received");
 const dbFirestore = getFirestore(firebaseApp);
 
 //firebase에 firestore에 데이터 업로드 하기, 데이터에서 같은게 있으면 덮어쓰기, 없으면 새로 만들기

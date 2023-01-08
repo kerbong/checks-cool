@@ -21,10 +21,9 @@ import ExampleModal from "./ExampleModal";
 import ocrGif from "../../assets/student/ocrGif.gif";
 import xmasGift from "../../assets/notice/크리스마스선물.jpg";
 
-const update_title = "당첨자/추후 업데이트 안내";
+const update_title = "== 업데이트 안내 ==";
 
-const update_text =
-  "총 4분께 이메일로 커피쿠폰을 발송해드렸습니다! 당첨되신 선생님들 축하드립니다~ 모두들 행복한 연말되세요!(방학기간에는 크게 전담버전, 알림 업데이트 예정입니다.)";
+const update_text = "";
 // "* 아, 이거 있으면 좋겠다! 하는 기능이 있으신가요? 내년에 사용해보고 싶은 기능을 추천해주세요! 가장 많은 추천을 받은 아이디어를 선정하여 추가할 계획입니다! '잼잼'-'이거해요' 에 적어주세요~ ";
 //오늘 날짜 yyyy-mm-dd로 만들기
 const getDateHandler = (date, titleOrQuery) => {
@@ -321,7 +320,10 @@ const MainPage = (props) => {
               >
                 {update_title}
               </p>
-              <p className={`${classes.p} ${classes.top}`}>{update_text}</p>
+              <p
+                className={`${classes.p} ${classes.top}`}
+                dangerouslySetInnerHTML={{ __html: update_text }}
+              ></p>
             </>
           }
           bottomText={
