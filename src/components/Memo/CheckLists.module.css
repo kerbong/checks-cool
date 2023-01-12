@@ -49,9 +49,9 @@
 }
 
 .memo-headerBtn {
-  margin-left: 15px;
   display: flex;
   flex-direction: column;
+  padding: 7px;
 }
 
 .listMemo-date {
@@ -108,4 +108,182 @@
   display: flex;
   align-items: flex-start;
   justify-content: space-evenly;
+  margin-top: 10px;
+}
+
+.budgetList-ul {
+  padding: 10px;
+}
+
+.budgetList-li {
+  list-style: none;
+  margin: 20px 10px;
+
+  padding: 15px 0;
+  border-radius: 10px;
+  background-color: #7b9cd266;
+  font-size: 1.2rem;
+}
+
+.budgetList-date {
+  font-size: 0.9rem;
+
+  text-align: left;
+  left: 10px;
+  margin-left: 20px;
+  line-height: 5px;
+}
+
+.budgetList-title {
+  display: flex;
+  flex-direction: column;
+}
+
+.budget-select {
+  width: 43%;
+  height: 60px;
+  font-size: 1.3rem;
+  font-weight: bold;
+  right: 45px;
+  position: relative;
+}
+
+.year-select {
+  right: 55px;
+  position: relative;
+  width: 22%;
+  height: 60px;
+}
+.budgetList-desc {
+  display: flex;
+  align-items: center;
+  width: 90vw;
+  justify-content: space-evenly;
+}
+
+.budgetList-note {
+  margin-top: 15px;
+}
+
+.budgetList-sum {
+  display: flex;
+  flex-direction: column;
+  margin: 15px 0;
+  line-height: 32px;
+  font-size: 1.2rem;
+  align-items: center;
+}
+
+.budgetList-desc p {
+  line-height: 0px;
+}
+
+.budgetList-desc + .budgetList-desc {
+  margin-top: 20px;
+}
+
+.budget-add,
+.budget-save,
+.budgetEdit-save,
+.budgetEdit-cancle {
+  width: 40px;
+  height: 40px;
+  border-width: 0;
+  border-radius: 50%;
+  background-color: #7b9cd23d;
+  position: absolute;
+  right: 58px;
+  top: 160px;
+}
+
+.budgetEdit-save,
+.budgetEdit-cancle {
+  position: relative;
+  top: -40px;
+  right: -27vw;
+}
+
+.budgetEdit-btns {
+  height: 8px;
+  margin-top: 8px;
+}
+
+.budgetEdit-save {
+  margin-right: 15px;
+}
+
+.budget-save {
+  right: 10px;
+}
+
+.budgetMenu-div {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.newBudget-title {
+  width: 50%;
+}
+
+.newBudget-site,
+.newBudget-each,
+.newBudget-amount {
+  width: 20%;
+}
+
+.newBudget-count {
+  width: 10%;
+}
+.newBudget-note {
+  width: 60%;
+}
+
+.budgetList-newdiv,
+.budgetList-dateNote {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.budgetList-dateNote {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 80vw;
+  margin: 15px;
+}
+
+.remain-p {
+  background-color: #cc7bd238;
+  padding: 10px;
+  border-radius: 15px;
+}
+
+.budgetList-edit,
+.budgetList-delete {
+  top: -35px;
+
+  position: relative;
+  left: 33%;
+  font-size: 1rem;
+  padding: 10px;
+  color: #00080533;
+  width: 40px;
+  height: 40px;
+  border-width: 0;
+  border-radius: 50%;
+  background-color: #ffffff7d;
+}
+
+.budgetList-delete {
+  left: 35%;
+  margin-left: 5px;
+}
+
+.budgetListEdit-div {
+  z-index: 10;
+  position: absolute;
+  width: 90vw;
 }

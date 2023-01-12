@@ -3,7 +3,7 @@ import MemoTodayTodoInput from "./MemoTodayTodoInput";
 import MemoTodayTodoItemList from "./MemoTodayTodoItemList";
 
 import { dbService } from "../../fbase";
-import { updateDoc, setDoc, onSnapshot, doc, getDoc } from "firebase/firestore";
+import { setDoc, onSnapshot, doc, getDoc } from "firebase/firestore";
 
 const MemoTodayTodo = (props) => {
   const [todoList, setTodoList] = useState([]);
@@ -16,10 +16,6 @@ const MemoTodayTodo = (props) => {
     if (memoSnap.exists()) {
       onSnapshot(memoRef, (doc) => setTodoList(doc.data().memoTodo));
     }
-
-    // const memoRef = onSnapshot(doc(dbService, "memo", props.userUid), (doc) =>
-    //   setTodoList(doc.data().memoTodo)
-    // );
   };
 
   useEffect(() => {

@@ -1,15 +1,28 @@
 import CheckLists from "components/Memo/CheckLists";
 import React, { useState, useEffect } from "react";
-import classes from "../Memo/CheckLists.module.css";
 import { useLocation } from "react-router";
 import MemoTodayTodo from "../Memo/MemoTodayTodo";
 import ExampleModal from "./ExampleModal";
+import TitleBtn from "../Memo/TitleBtn";
+import BudgetManage from "../Memo/BudgetManage";
 
 import submitMemo from "../../assets/memo/submitMemo.gif";
 import todayTodo from "../../assets/memo/todayTodo.gif";
 import listMemo from "../../assets/memo/listMemo.gif";
 
-const SHOW_WHAT = ["checkLists", "listMemo", "todayTodo"];
+const SHOW_WHAT = ["checkLists", "listMemo", "todayTodo", "budgetManage"];
+const MENU_NAME = {
+  checkLists: "제출<br/>ox",
+  listMemo: "개별<br/>기록",
+  todayTodo: "할일<br/>목록",
+  budgetManage: "예산<br/>관리",
+};
+const ICONS = [
+  <i className="fa-regular fa-square-check"></i>,
+  <i className="fa-solid fa-clipboard-check"></i>,
+  <i className="fa-solid fa-clipboard-list"></i>,
+  <i className="fa-solid fa-money-check-dollar"></i>,
+];
 
 const MemoPage = (props) => {
   const { state } = useLocation();
@@ -39,12 +52,9 @@ const MemoPage = (props) => {
     setShowExample(true);
   };
 
-  const memoTitle =
-    showWhatMemo === SHOW_WHAT[0]
-      ? "제출ox"
-      : showWhatMemo === SHOW_WHAT[1]
-      ? "개별기록"
-      : "할 일 메모";
+  const memoTitle = (showWhat) => {
+    return MENU_NAME[showWhat];
+  };
 
   return (
     <>
@@ -56,7 +66,9 @@ const MemoPage = (props) => {
               ? submitMemo
               : showWhatMemo === SHOW_WHAT[1]
               ? listMemo
-              : todayTodo
+              : showWhatMemo === SHOW_WHAT[1]
+              ? todayTodo
+              : ""
           }
           text={
             <>
@@ -67,7 +79,8 @@ const MemoPage = (props) => {
                   margin: "5px",
                 }}
               >
-                === {memoTitle} 예시 ===
+                === {memoTitle(showWhatMemo)?.replace("<br/>", "") || ""} 예시
+                ===
               </p>
               <p style={{ margin: "15px" }}>
                 * 화면 왼쪽 상단의 현재 페이지 타이틀을 클릭하시면 다시 보실 수
@@ -81,37 +94,33 @@ const MemoPage = (props) => {
       <div id="title-div">
         <button id="title-btn" className="title-memo" onClick={exampleHandler}>
           <>
-            <i className="fa-regular fa-square-check"></i> {memoTitle}
+            <i className="fa-regular fa-square-check"></i>{" "}
+            {memoTitle(showWhatMemo)?.replace("<br/>", "") || ""}
           </>
         </button>
-        <div style={{ height: "70px", display: "flex", alignItems: "center" }}>
-          <span
-            className={classes["memo-headerBtn"]}
-            onClick={() => {
-              setShowWhatMemo(SHOW_WHAT[2]);
-            }}
-          >
-            <i className="fa-regular fa-square-check"></i>
-            <span className={classes["headerBtn-text"]}> 할일</span>
-          </span>
-          <span
-            className={classes["memo-headerBtn"]}
-            onClick={() => {
-              setShowWhatMemo(SHOW_WHAT[0]);
-            }}
-          >
-            <i className="fa-solid fa-clipboard-check"></i>
-            <span className={classes["headerBtn-text"]}> 제출ox</span>
-          </span>
-          <span
-            className={classes["memo-headerBtn"]}
-            onClick={() => {
-              setShowWhatMemo(SHOW_WHAT[1]);
-            }}
-          >
-            <i className="fa-solid fa-clipboard-list"></i>
-            <span className={classes["headerBtn-text"]}> 개별기록</span>
-          </span>
+        <div
+          style={{
+            height: "70px",
+            display: "flex",
+            alignItems: "center",
+            width: "190px",
+            justifyContent: "flex-end",
+            lineHeight: "20px",
+            fontSize: "0.9rem",
+          }}
+        >
+          {/* 메뉴 선택하는 버튼들 */}
+          {SHOW_WHAT.map((what, index) => (
+            <TitleBtn
+              setShowWhatMemo={() => {
+                setShowWhatMemo(what);
+              }}
+              key={what}
+              icon={ICONS[index]}
+              what={what}
+              menu_name={MENU_NAME[what]}
+            />
+          ))}
         </div>
       </div>
 
@@ -131,6 +140,9 @@ const MemoPage = (props) => {
           userUid={props.userUid}
           about="listMemo"
         />
+      )}
+      {showWhatMemo === SHOW_WHAT[3] && (
+        <BudgetManage userUid={props.userUid} />
       )}
     </>
   );
