@@ -5,5 +5,9 @@
 }
 
 .class-section {
+  width: 40%;
+}
+
+.classNote-section {
   width: 60%;
 }

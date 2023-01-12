@@ -7,6 +7,7 @@ import {
   GoogleAuthProvider,
   signInWithPopup,
   signInWithRedirect,
+  sendEmailVerification,
 } from "firebase/auth";
 import { authService } from "../../fbase";
 import classes from "./Auth.module.css";
@@ -19,6 +20,7 @@ const Auth = () => {
   const [newAccount, setNewAccount] = useState(false);
   const [agreeTerms, setAgreeTerms] = useState(false);
   const [isKakaoLink, setIsKakaoLink] = useState(false);
+  const [showAgency, setShowAgency] = useState(false);
 
   useEffect(() => {
     const isKakao = navigator.userAgent.match("KAKAOTALK");
@@ -62,11 +64,11 @@ const Auth = () => {
     }
   };
 
-  const failLogIn = (text) => {
+  const failLogIn = (icon, title, text) => {
     Swal.fire({
-      icon: "error",
-      title: `${text}에 실패했어요.`,
-      text: "아이디/비밀번호를 확인해주세요! 문제가 지속될 경우 kerbong@gmail.com 으로 문의주세요.",
+      icon: icon,
+      title: `${title}`,
+      text: text,
       confirmButtonText: "확인",
       confirmButtonColor: "#85bd82",
       timer: 5000,
@@ -81,15 +83,45 @@ const Auth = () => {
     if (!newAccount) {
       try {
         data = await signInWithEmailAndPassword(auth, email, password);
+        //이메일 인증이 완료되지 않은 경우
+        if (!auth.currentUser.emailVerified) {
+          failLogIn(
+            "error",
+            "로그인 실패",
+            "이메일 인증이 완료되지 않았습니다! 문제가 지속될 경우 kerbong@gmail.com 으로 문의주세요."
+          );
+          auth.signOut();
+        }
       } catch (error) {
-        failLogIn("로그인");
+        failLogIn(
+          "error",
+          "로그인 실패",
+          "아이디/비밀번호를 확인해주세요! 문제가 지속될 경우 kerbong@gmail.com 으로 문의주세요."
+        );
         return;
       }
     } else {
       try {
         data = await createUserWithEmailAndPassword(auth, email, password);
+
+        try {
+          // send verification mail.
+          sendEmailVerification(auth.currentUser);
+          auth.signOut();
+          failLogIn(
+            "success",
+            "인증메일 발송완료",
+            "인증메일이 발송되었습니다. 인증메일 내부의 링크를 눌러 가입을 완료해주세요."
+          );
+        } catch {
+          console.log("에러");
+        }
       } catch (error) {
-        failLogIn("회원가입");
+        failLogIn(
+          "error",
+          "회원가입 실패",
+          "아이디/비밀번호를 확인해주세요! 문제가 지속될 경우 kerbong@gmail.com 으로 문의주세요."
+        );
         return;
       }
     }
@@ -155,11 +187,31 @@ const Auth = () => {
           onChange={onChange}
           className={classes["logInOut-input"]}
         />
-        <p>{!newAccount && <>* 이메일/연동 로그인 후 잠시 기다려주세요!</>}</p>
+        {!newAccount && (
+          <>
+            <p>* 이메일/연동 로그인 후 잠시 기다려주세요.</p>
+          </>
+        )}
 
         {newAccount && (
           <div>
-            <span>이용약관 및 개인정보제공동의(필수)</span>
+            <div style={{ margin: "10px 0" }}>
+              <span style={{ marginLeft: "10px" }}>
+                이용약관 및 개인정보제공동의
+              </span>
+              <span
+                style={{ margin: "0 10px", color: "gray" }}
+                onClick={() => {
+                  setShowAgency((prev) => !prev);
+                }}
+              >
+                {!showAgency ? (
+                  <i className="fa-solid fa-chevron-down"></i>
+                ) : (
+                  <i className="fa-solid fa-chevron-up"></i>
+                )}
+              </span>
+            </div>
             <p className={classes["terms-checkbox-area"]}>
               <input
                 type="checkbox"
@@ -172,19 +224,22 @@ const Auth = () => {
                   }
                 }}
               />
-              <span>약관에 모두 동의함</span>
+              <span> 동의함 </span>
             </p>
 
-            <div className={classes["terms-area"]}>
-              <div className={classes["terms-text"]}>
-                <AuthTerms />
+            {showAgency && (
+              <div className={classes["terms-area"]}>
+                <div className={classes["terms-text"]}>
+                  <AuthTerms />
+                </div>
               </div>
-            </div>
+            )}
           </div>
         )}
 
         <input
           type="submit"
+          style={{ width: "74%" }}
           value={newAccount ? "회원가입" : "로그인"}
           disabled={newAccount && !agreeTerms && true}
           className={classes["logInOut-SignUp"]}
@@ -198,17 +253,22 @@ const Auth = () => {
           className={classes["logInOut-SignUp"]}
         >
           <i className="fa-brands fa-google"></i>{" "}
-          {newAccount ? "Google로  가입하기" : "Google 로그인하기"}
+          {newAccount ? "Google로 가입" : "Google 로그인"}
         </button>
         <span>
           {newAccount && !agreeTerms && (
-            <>*약관 동의 후 회원가입이 가능합니다.</>
+            <>
+              <p>* 구글 연동가입이 아니면 이메일 인증이 진행됩니다.</p>
+              <p>* 약관 동의 후 회원가입이 가능합니다.</p>
+            </>
+          )}
+          {newAccount && agreeTerms && (
+            <>
+              <p>* 구글 연동가입이 아니면 이메일 인증이 진행됩니다.</p>
+              <p>* 회원가입 후 잠시 기다려주세요.</p>
+            </>
           )}
         </span>
-
-        {newAccount && agreeTerms && (
-          <p>* 회원가입 후 잠시 기다리시면 로그인이 됩니다!</p>
-        )}
       </div>
       <div className={classes["logInOut-SignUp-Change"]}>
         <hr />

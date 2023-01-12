@@ -19,17 +19,19 @@ const ClassItem = (props) => {
           />
         </div>
 
-        <Input
-          key={"memoInput"}
-          id={`classMemo-${props.classNum}`}
-          myKey={`classMemo-${props.classNum}`}
-          className={`class-memo`}
-          label="inputData"
-          input={{
-            type: "textarea",
-          }}
-          defaultValue={props.memo}
-        />
+        <div className={classes["classNote-section"]}>
+          <Input
+            key={"memoInput"}
+            id={`classMemo-${props.classNum}`}
+            myKey={`classMemo-${props.classNum}`}
+            className={`class-memo`}
+            label="inputData"
+            input={{
+              type: "textarea",
+            }}
+            defaultValue={props.memo}
+          />
+        </div>
       </li>
     </>
   );
