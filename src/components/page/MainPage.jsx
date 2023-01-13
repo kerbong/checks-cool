@@ -47,6 +47,7 @@ const MainPage = (props) => {
   const [classTable, setClassTable] = useState([]);
   const [checkLists, setCheckLists] = useState([]);
   const [listMemo, setListMemo] = useState([]);
+  const [classBasic, setClassBasic] = useState([]);
   const [todayYyyymmdd, setTodayYyyymmdd] = useState(
     getDateHandler(new Date())
   );
@@ -57,13 +58,24 @@ const MainPage = (props) => {
     id: "",
     classMemo: [],
   });
-  const [hideClassTable, setHideClassTable] = useState(false);
+  const [hideClassTable, setHideClassTable] = useState(true);
   //업데이트 내용 보여주기 로컬스토리지에서 showNotice를 스트링으로 저장해서 확인 후에 이전에 봤으면 안보여주기
   const [showNotice, setShowNotice] = useState(
     localStorage.getItem("showNotice") === "doThis" ? false : true
   );
 
-  let classLists = ["1", "2", "3", "4", "5", "6"];
+  const classLists = [
+    "아침",
+    "1교시",
+    "2교시",
+    "3교시",
+    "4교시",
+    "5교시",
+    "6교시",
+    "방과후",
+  ];
+
+  const WEEKDAYS = ["일", "월", "화", "수", "목", "금", "토"];
 
   let navigate = useNavigate();
 
@@ -189,6 +201,7 @@ const MainPage = (props) => {
   const getClassTableFromDb = async () => {
     let classTableRef = doc(dbService, "classTable", props.userUid);
     setClassTable([]);
+    setClassBasic([]);
     setTodayClassTable({});
 
     onSnapshot(classTableRef, (doc) => {
@@ -202,6 +215,13 @@ const MainPage = (props) => {
         // console.log(todayClass[0]);
       } else {
         setTodayClassTable({ id: "", classMemo: [] });
+      }
+
+      //오늘 요일설정
+      let today_weekday = new Date(todayYyyymmdd).getDay();
+      //기초 시간표 내용 넣기
+      if (today_weekday > 0 && today_weekday < 6) {
+        setClassBasic(doc.data()[WEEKDAYS[today_weekday]]);
       }
     });
   };
@@ -275,8 +295,11 @@ const MainPage = (props) => {
     await setDoc(classMemoRef, new_classData);
   };
 
+  //기초시간표 작성버튼 함수
+  const basicClassHandler = () => {};
+
   return (
-    <div style={{ marginTop: "0px" }}>
+    <div className={classes["whole-div"]}>
       {props.showMainExample && (
         <ExampleModal
           onClose={() => props.setShowMainExample()}
@@ -383,7 +406,7 @@ const MainPage = (props) => {
         {/* 시간표 */}
         <div className={classes["event-div"]}>
           <div className={classes["event-title"]}>
-            <span>🕘 시간표 </span>
+            🕘 시간표
             <span
               className={classes["event-title-dropdown"]}
               onClick={() => setHideClassTable((prev) => !prev)}
@@ -414,13 +437,20 @@ const MainPage = (props) => {
                       myKey={`class${classNum}`}
                       classNum={classNum}
                       subject={
-                        todayClassTable?.classMemo?.[index]?.subject || ""
+                        todayClassTable?.classMemo?.[index]?.subject ||
+                        classBasic[index] ||
+                        ""
                       }
                       memo={todayClassTable?.classMemo?.[index]?.memo || ""}
                     />
                   ))}
                 </ul>
                 <div className={classes["eventSave-div"]}>
+                  <Button
+                    name={"기초시간표"}
+                    className={"show-basicClass-button"}
+                    onclick={() => navigate(`/classTable`)}
+                  />
                   <Button
                     name={"저장"}
                     className={"save-classItem-button"}

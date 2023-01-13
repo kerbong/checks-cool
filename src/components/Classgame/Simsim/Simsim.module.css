@@ -80,9 +80,9 @@
 }
 
 .previewImg {
-  height: 70%;
+  height: 40vh;
   width: 90%;
-  object-fit: cover;
+  object-fit: contain;
   margin-bottom: 10px;
 }
 

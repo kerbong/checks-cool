@@ -219,16 +219,22 @@
   color: rgba(18, 2, 0, 0.951);
 }
 
-.save-classItem-button {
-  width: 35%;
-  margin: 5px;
-  font-size: 1.2em;
+.save-classItem-button,
+.show-basicClass-button {
+  width: 25%;
+  height: 6vh;
+  margin: 5px 10px;
+  font-size: 1rem;
   border-radius: 10px;
   border-width: 0;
-  letter-spacing: 7px;
-  padding: 1.5vh;
+  letter-spacing: 2px;
+  padding: 0.5vh;
   background-color: #9fd9dc;
   float: right;
+}
+
+.show-basicClass-button {
+  width: 35%;
 }
 
 .settingSeat {

@@ -2,12 +2,17 @@
   list-style: none;
   display: flex;
   align-items: flex-start;
+  width: 100%;
 }
 
 .class-section {
-  width: 40%;
+  width: 25%;
 }
 
 .classNote-section {
-  width: 60%;
+  width: 52%;
+}
+
+.title-section {
+  width: 23%;
 }

@@ -1,0 +1,47 @@
+.container {
+  display: grid;
+  padding: 10px;
+  grid-template-columns: repeat(5, 1fr);
+  grid-auto-rows: repeat(8, 1fr);
+  grid-gap: 10px;
+  width: 84%;
+}
+
+.item {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid #1818186b;
+  font-size: 1.1rem;
+  font-weight: bold;
+  letter-spacing: 3px;
+}
+
+.input-div {
+  width: 100%;
+}
+
+.input {
+  width: 70%;
+  text-align: center;
+}
+
+.title-weekday {
+  margin-top: 80px;
+  display: flex;
+  width: 84%;
+  justify-content: space-around;
+  padding: 10px;
+}
+
+.title-class-container {
+  display: flex;
+}
+
+.title-class {
+  width: 16%;
+  display: flex;
+  flex-direction: column;
+  padding: 10px 0;
+  justify-content: space-around;
+}

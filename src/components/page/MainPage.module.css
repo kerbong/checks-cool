@@ -128,3 +128,16 @@
   font-size: 1.1rem;
   text-align: center;
 }
+.whole-div {
+  width: 100%;
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+@media screen and (min-width: 1000px) {
+  /* .events,
+  .p {
+    max-width: 1000px;
+  } */
+}

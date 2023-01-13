@@ -7,7 +7,7 @@ import Button from "../../Layout/Button";
 
 const SimsimAdd = (props) => {
   const [attachedFile, setAttachedFile] = useState("");
-  const [addImage, setAddImage] = useState(false);
+  const [addImage, setAddImage] = useState(true);
 
   const errorSwal = (title, text) => {
     Swal.fire({

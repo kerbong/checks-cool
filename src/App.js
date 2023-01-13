@@ -18,6 +18,7 @@ import TodoPage from "./components/page/TodoPage";
 import Header from "./components/Layout/Header";
 import Profile from "./components/page/Profile";
 import Notice from "./components/page/Notice";
+import ClassTableBasic from "./components/page/ClassTableBasic";
 
 import Auth from "./components/page/Auth";
 import { authService } from "./fbase";
@@ -133,6 +134,11 @@ function App() {
                 element={
                   <ClassgamePage students={students} userUid={userUid} />
                 }
+              />
+
+              <Route
+                path="classTable"
+                element={<ClassTableBasic userUid={userUid} />}
               />
 
               <Route

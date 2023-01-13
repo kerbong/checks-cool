@@ -6,8 +6,8 @@ const ClassItem = (props) => {
   return (
     <>
       <li className={classes["li-section"]} key={props.myKey}>
+        <div className={classes["title-section"]}>{props.classNum}</div>
         <div className={classes["class-section"]}>
-          {props.classNum}교시
           <Input
             input={{
               id: `classSubject-${props.classNum}`,
