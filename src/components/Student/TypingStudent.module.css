@@ -75,8 +75,9 @@
   display: inline-block;
   background-color: #efcacf8c;
   border-radius: 10px;
-  width: 100px;
+  width: 70px;
   margin: 20px 5px;
+  height: 25px;
 }
 
 .deleteAll-div {

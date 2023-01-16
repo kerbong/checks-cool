@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import DatePicker from "react-datepicker";
 
 import "react-datepicker/dist/react-datepicker.css";
@@ -8,6 +8,12 @@ import { ko } from "date-fns/esm/locale";
 const AttendCalendar = (props) => {
   const [startDate, setStartDate] = useState(props.setStart || new Date());
   const [endDate, setEndDate] = useState(startDate);
+
+  useEffect(() => {
+    if (props.about === "main") {
+      setStartDate(props.setStart);
+    }
+  }, [props.setStart]);
 
   const isWeekday = (date) => {
     const day = date.getDay(date);
@@ -45,7 +51,7 @@ const AttendCalendar = (props) => {
         customInput={<ExampleCustomInput />}
         inline={props.inline}
         locale={ko}
-        dateFormat="yy년 MMMM d일"
+        dateFormat="yy년 MMMM d일(eee)"
       />
     </>
   );

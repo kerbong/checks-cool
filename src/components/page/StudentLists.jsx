@@ -40,21 +40,6 @@ const StudentLists = (props) => {
   };
 
   const submitStudentUploader = async () => {
-    //변경된 값이 없으면 return.. 차집합으로 계산해서 완전 겹쳐지면.. 차집합 영역이 둘다 없으면 return
-    // let differ1 = studentsInfo.filter((x) => !props.students.includes(x));
-    // let differ2 = props.students.filter((x) => !studentsInfo.includes(x));
-
-    // if (differ1.length === 0 && differ2.length === 0) {
-    //   Swal.fire({
-    //     icon: "error",
-    //     title: "저장에 실패했어요!",
-    //     html: "변경된 자료가 없어요! 확인해주세요!",
-    //     confirmButtonText: "확인",
-    //     confirmButtonColor: "#85bd82",
-    //   });
-    //   return;
-    // }
-
     //기존 자료에 덮어쓰기 됨을 알리기
     Swal.fire({
       icon: "question",
@@ -156,7 +141,7 @@ const StudentLists = (props) => {
                 >
                   === {addStudentBy === "imageFile" && "학생명부 업로드"}{" "}
                   {addStudentBy === "typing" && "직접 입력"}{" "}
-                  {addStudentBy === "excelFile" && "엑셀파일 업로드 "} 예시 ===
+                  {addStudentBy === "excelFile" && "엑셀 업로드 "} 예시 ===
                 </p>
                 <p style={{ margin: "15px" }}>
                   * 페이지의 왼쪽 상단, [보라색 학생등록]을 클릭하시면 다시 보실
@@ -174,7 +159,7 @@ const StudentLists = (props) => {
               className={"studentAddBtn"}
               name={
                 <>
-                  <span className="excel-upload-text">엑셀파일 업로드</span>{" "}
+                  <span className="excel-upload-text">엑셀 업로드</span>{" "}
                   <i className="fa-solid fa-file-arrow-up"></i>
                 </>
               }
@@ -242,7 +227,7 @@ const StudentLists = (props) => {
               className={"studentAddBtn"}
               name={
                 <>
-                  <span className="excel-upload-text">엑셀파일 업로드</span>{" "}
+                  <span className="excel-upload-text">엑셀 업로드</span>{" "}
                   <i className="fa-solid fa-file-arrow-up"></i>
                 </>
               }

@@ -1,12 +1,30 @@
 import React, { useEffect, useState } from "react";
 import Input from "../Layout/Input";
 import classes from "./ClassItem.module.css";
+import dayjs from "dayjs";
 
 const ClassItem = (props) => {
   return (
     <>
       <li className={classes["li-section"]} key={props.myKey}>
-        <div className={classes["title-section"]}>{props.classNum}</div>
+        <div className={classes["title-section"]}>
+          <div>{props.classNum}</div>
+          {/* 시간표시 09:00~09:40 */}
+          <div className={classes["fs-09"]}>
+            <div>
+              {props?.classStart
+                ? `${dayjs(props?.classStart).format("HH:mm")}`
+                : ""}
+            </div>
+            <div>
+              {props?.classStart
+                ? ` ~ ${dayjs(props?.classStart)
+                    .add(40, "minute")
+                    .format("HH:mm")}`
+                : ""}
+            </div>
+          </div>
+        </div>
         <div className={classes["class-section"]}>
           <Input
             input={{

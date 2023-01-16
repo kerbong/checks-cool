@@ -220,7 +220,10 @@
 }
 
 .save-classItem-button,
-.show-basicClass-button {
+.show-basicClass-button,
+.save-classTable-button,
+.reset-cl-button,
+.time-pm-button {
   width: 25%;
   height: 6vh;
   margin: 5px 10px;
@@ -232,9 +235,32 @@
   background-color: #9fd9dc;
   float: right;
 }
+.reset-cl-button {
+  width: 33%;
+}
 
 .show-basicClass-button {
   width: 35%;
+}
+
+.time-pm-button {
+  width: 50px;
+  border-radius: 25px;
+}
+
+.save-classTable-button {
+  width: 80px;
+  font-size: 1.1rem;
+  height: 50px;
+  margin: 20px 10px;
+  position: absolute;
+  top: 60px;
+  border-radius: 15px;
+}
+.reset-cl-button {
+  font-size: 1rem;
+  height: 6vh;
+  width: 45%;
 }
 
 .settingSeat {

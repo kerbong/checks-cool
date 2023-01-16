@@ -4,15 +4,7 @@ import { dbService, messaging } from "../../fbase";
 
 import { getToken } from "firebase/messaging";
 
-import {
-  collection,
-  query,
-  onSnapshot,
-  where,
-  getDoc,
-  doc,
-  setDoc,
-} from "firebase/firestore";
+import { query, onSnapshot, getDoc, doc, setDoc } from "firebase/firestore";
 import classes from "./MainPage.module.css";
 import ClassItem from "../Main/ClassItem";
 import { useNavigate } from "react-router-dom";
@@ -20,6 +12,8 @@ import Swal from "sweetalert2";
 import ExampleModal from "./ExampleModal";
 import ocrGif from "../../assets/student/ocrGif.gif";
 import xmasGift from "../../assets/notice/크리스마스선물.jpg";
+import dayjs from "dayjs";
+import AttendCalendar from "components/Attendance/AttendCalendar";
 
 const update_title = "== 업데이트 안내 ==";
 
@@ -59,6 +53,8 @@ const MainPage = (props) => {
     classMemo: [],
   });
   const [hideClassTable, setHideClassTable] = useState(true);
+  const [classStart, setClassStart] = useState([]);
+
   //업데이트 내용 보여주기 로컬스토리지에서 showNotice를 스트링으로 저장해서 확인 후에 이전에 봤으면 안보여주기
   const [showNotice, setShowNotice] = useState(
     localStorage.getItem("showNotice") === "doThis" ? false : true
@@ -94,6 +90,14 @@ const MainPage = (props) => {
     }
     setTodayYyyymmdd(getDateHandler(tOrY, "query"));
     setTitleDate(getDateHandler(tOrY, "title"));
+  };
+
+  const calDateHandler = (date) => {
+    let weekd = dayjs(date).format("d");
+    let weekDays = ["일", "월", "화", "수", "목", "금", "토"];
+
+    setTodayYyyymmdd(dayjs(date).format("YYYY-MM-DD"));
+    setTitleDate(dayjs(date).format(`YYYY년 MM월 DD일(${weekDays[weekd]})`));
   };
 
   //firestore에서 오늘 attend관련 자료들 받아오기
@@ -203,6 +207,7 @@ const MainPage = (props) => {
     setClassTable([]);
     setClassBasic([]);
     setTodayClassTable({});
+    setClassStart([]);
 
     onSnapshot(classTableRef, (doc) => {
       setClassTable([...doc.data().datas]);
@@ -222,6 +227,11 @@ const MainPage = (props) => {
       //기초 시간표 내용 넣기
       if (today_weekday > 0 && today_weekday < 6) {
         setClassBasic(doc.data()[WEEKDAYS[today_weekday]]);
+      }
+
+      //교시별 시작시간 세팅하기
+      if (doc.data().classStart) {
+        setClassStart([...doc.data().classStart]);
       }
     });
   };
@@ -295,9 +305,6 @@ const MainPage = (props) => {
     await setDoc(classMemoRef, new_classData);
   };
 
-  //기초시간표 작성버튼 함수
-  const basicClassHandler = () => {};
-
   return (
     <div className={classes["whole-div"]}>
       {props.showMainExample && (
@@ -361,7 +368,7 @@ const MainPage = (props) => {
       )}
 
       <div className={classes["events"]}>
-        <h2 className={classes["events-dateArea"]}>
+        <div className={classes["events-dateArea"]}>
           <span
             className={classes["events-dateMove"]}
             onClick={() => moveDateHandler("yesterday")}
@@ -375,7 +382,15 @@ const MainPage = (props) => {
                 : ""
             }
           >
-            {titleDate}
+            {/* {titleDate} */}
+            {/* 오늘 날짜 보여주는 부분 날짜 클릭하면 달력도 나옴 */}
+            <span className={classes["hide-cal"]}>
+              <AttendCalendar
+                getDateValue={calDateHandler}
+                about="main"
+                setStart={new Date(todayYyyymmdd)}
+              />
+            </span>
           </span>
           <span
             className={classes["events-dateMove"]}
@@ -383,7 +398,7 @@ const MainPage = (props) => {
           >
             <i className="fa-solid fa-chevron-right"></i>
           </span>
-        </h2>
+        </div>
 
         <div id="title-div">
           <Button
@@ -405,12 +420,12 @@ const MainPage = (props) => {
 
         {/* 시간표 */}
         <div className={classes["event-div"]}>
-          <div className={classes["event-title"]}>
+          <div
+            className={classes["event-title"]}
+            onClick={() => setHideClassTable((prev) => !prev)}
+          >
             🕘 시간표
-            <span
-              className={classes["event-title-dropdown"]}
-              onClick={() => setHideClassTable((prev) => !prev)}
-            >
+            <span className={classes["event-title-dropdown"]}>
               {" "}
               {hideClassTable ? (
                 <i className="fa-solid fa-chevron-down"></i>
@@ -436,9 +451,10 @@ const MainPage = (props) => {
                       key={`item${classNum}`}
                       myKey={`class${classNum}`}
                       classNum={classNum}
+                      classStart={classStart?.[index]}
                       subject={
                         todayClassTable?.classMemo?.[index]?.subject ||
-                        classBasic[index] ||
+                        classBasic?.[index] ||
                         ""
                       }
                       memo={todayClassTable?.classMemo?.[index]?.memo || ""}

@@ -3,17 +3,38 @@ import ExampleModal from "./ExampleModal";
 import classes from "./ClassTableBasic.module.css";
 import Button from "../Layout/Button";
 import Swal from "sweetalert2";
+import TimeTable from "../Main/TimeTable";
 import { dbService } from "../../fbase";
-
 import { doc, updateDoc, onSnapshot } from "firebase/firestore";
+import dayjs from "dayjs";
+const STARTBASE = [
+  "2022-01-13 08:20",
+  "2022-01-13 09:00",
+  "2022-01-13 09:50",
+  "2022-01-13 10:40",
+  "2022-01-13 11:30",
+  "2022-01-13 13:10",
+  "2022-01-13 14:00",
+  "2022-01-13 14:50",
+];
 
 const ClassTableBasic = (props) => {
   const [showExample, setShowExample] = useState(false);
   const [items, setItems] = useState(false);
   const [classBasic, setClassBasic] = useState([]);
+  const [classStart, setClassStart] = useState([]);
 
   const WEEKDAYS = ["월", "화", "수", "목", "금"];
-  const CLASSTIME = ["아침", "1", "2", "3", "4", "5", "6", "방과후"];
+  const CLASSTIME = [
+    "아침",
+    "1교시",
+    "2교시",
+    "3교시",
+    "4교시",
+    "5교시",
+    "6교시",
+    "방과후",
+  ];
   const itemsNumArray = [...Array(40).keys()].map((i) => i);
 
   //시간표의 인풋창들 만들기, 저장된 기존 기초시간표 자료가 있으면 재랜더링해서 값 넣어주기.
@@ -33,7 +54,7 @@ const ClassTableBasic = (props) => {
     );
   }, [classBasic]);
 
-  //기존에 저장했던 기초시간표 불러와서 넣어주기
+  //기존에 저장했던 기초시간표, 시작시각 불러와서 넣어주기
   useEffect(() => {
     let classTableRef = doc(dbService, "classTable", props.userUid);
 
@@ -47,6 +68,7 @@ const ClassTableBasic = (props) => {
         });
       });
       setClassBasic([...new_classBasic]);
+      setClassStart([...(doc.data()?.classStart || [...STARTBASE])]);
     });
     // console.log(new_classBasic);
   }, []);
@@ -60,14 +82,14 @@ const ClassTableBasic = (props) => {
     //빈칸을 기준으로 과목을 요일별로 저장함.
     const classBasicRef = doc(dbService, "classTable", props.userUid);
 
-    itemsNumArray.forEach(async (item) => {
+    itemsNumArray.forEach((item) => {
       // 월요일 자료
       if (+item % 5 === 0) {
         let subject = document.querySelectorAll(`input[id="table-${item}"]`)[0]
           .value;
         월.push(subject);
 
-        await updateDoc(classBasicRef, { 월: [...월] });
+        // await updateDoc(classBasicRef, { 월: [...월] });
       }
 
       // 화요일 자료
@@ -75,7 +97,7 @@ const ClassTableBasic = (props) => {
         let subject = document.querySelectorAll(`input[id="table-${item}"]`)[0]
           .value;
         화.push(subject);
-        await updateDoc(classBasicRef, { 화: [...화] });
+        // await updateDoc(classBasicRef, { 화: [...화] });
       }
 
       // 수요일 자료
@@ -83,7 +105,7 @@ const ClassTableBasic = (props) => {
         let subject = document.querySelectorAll(`input[id="table-${item}"]`)[0]
           .value;
         수.push(subject);
-        await updateDoc(classBasicRef, { 수: [...수] });
+        // await updateDoc(classBasicRef, { 수: [...수] });
       }
 
       // 목요일 자료
@@ -91,7 +113,7 @@ const ClassTableBasic = (props) => {
         let subject = document.querySelectorAll(`input[id="table-${item}"]`)[0]
           .value;
         목.push(subject);
-        await updateDoc(classBasicRef, { 목: [...목] });
+        // await updateDoc(classBasicRef, { 목: [...목] });
       }
 
       // 금요일 자료
@@ -99,8 +121,19 @@ const ClassTableBasic = (props) => {
         let subject = document.querySelectorAll(`input[id="table-${item}"]`)[0]
           .value;
         금.push(subject);
-        await updateDoc(classBasicRef, { 금: [...금] });
+        // await updateDoc(classBasicRef, { 금: [...금] });
       }
+    });
+
+    // 만약 모든 요일의 자료가 비어있고 시각도 변함이 없으면 저장 안되도록
+
+    await updateDoc(classBasicRef, {
+      월: [...월],
+      화: [...화],
+      수: [...수],
+      목: [...목],
+      금: [...금],
+      classStart: [...classStart],
     });
 
     Swal.fire({
@@ -110,6 +143,51 @@ const ClassTableBasic = (props) => {
       confirmButtonText: "확인",
       confirmButtonColor: "#85bd82",
       timer: 5000,
+    });
+  };
+
+  //시간표 시간 수정하는 함수
+  const classStartHandler = (what, plusMinus, minute) => {
+    let new_classStart = [];
+    classStart.forEach((cl, index) => {
+      //모두 변경이 아니고, what과 인덱스가 다르면 변경하지 않음
+      if (what !== "all" && +what !== index) {
+        new_classStart.push(cl);
+        return;
+      }
+      //더할까 뺄까?
+      if (plusMinus === "plus") {
+        new_classStart.push(
+          dayjs(cl).add(+minute, "minute").format("YYYY-MM-DD HH:mm")
+        );
+      } else {
+        new_classStart.push(
+          dayjs(cl).subtract(+minute, "minute").format("YYYY-MM-DD HH:mm")
+        );
+      }
+    });
+    console.log([...new_classStart]);
+    setClassStart([...new_classStart]);
+  };
+
+  //초기화 함수
+  const returnBaseHandler = () => {
+    Swal.fire({
+      icon: "info",
+      title: "초기화 할까요?",
+      text: "시간표 전체와 교시별 시간을 모두 초기화 할까요? (초기화 후 저장해주세요.)",
+      confirmButtonText: "확인",
+      confirmButtonColor: "#85bd82",
+      showDenyButton: true,
+      denyButtonText: "취소",
+      timer: 5000,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        //시간초기화
+        setClassStart([...STARTBASE]);
+        //교시별 과목 초기화
+        setClassBasic([]);
+      }
     });
   };
 
@@ -139,6 +217,7 @@ const ClassTableBasic = (props) => {
         />
       )}
       <div id="title-div">
+        {/* 화면 좌상단 타이틀 */}
         <button
           id="title-btn"
           className="consult"
@@ -147,28 +226,56 @@ const ClassTableBasic = (props) => {
           <i className="fa-solid fa-table"></i> 기초시간표
         </button>
       </div>
+
       <div className={classes["title-class-container"]}>
+        {/* 월화수목금 표시 */}
         <div className={classes["title-class"]}></div>
         <div className={classes["title-weekday"]}>
           {WEEKDAYS.map((day) => (
-            <span key={day}>{day}</span>
+            <span key={day} style={{ fontWeight: "bold" }}>
+              {day}
+            </span>
           ))}
         </div>
       </div>
+
       <div className={classes["title-class-container"]}>
+        {/* 아침~ 6교시, 방과후 표시 */}
         <div className={classes["title-class"]}>
-          {CLASSTIME.map((ct) => (
-            <span key={ct}>{ct}</span>
+          {CLASSTIME.map((ct, index) => (
+            <div key={ct}>
+              {/* 1교시 */}
+              <div style={{ fontWeight: "bold" }}>{ct}</div>
+              <div className={classes["timeRanges"]}>
+                {/* 시간표시 09:00~09:40 */}
+                <div className={classes["timeRange"]}>{`${dayjs(
+                  classStart[index]
+                ).format("HH:mm")} `}</div>
+                <div className={classes["timeRange"]}>{` ~ ${dayjs(
+                  classStart[index]
+                )
+                  .add(40, "minute")
+                  .format("HH:mm")}`}</div>
+              </div>
+            </div>
           ))}
         </div>
+        {/* 인풋창, 40개 */}
         <div className={classes["container"]}>{items}</div>
       </div>
-      <Button
-        name={"시간표 저장"}
-        className={"show-basicClass-button"}
-        onclick={saveClassBasicHandler}
+      <div className={classes["select-p-m"]}>
+        <Button
+          name={"저장"}
+          className={"save-classTable-button"}
+          onclick={saveClassBasicHandler}
+        />
+      </div>
+
+      <TimeTable
+        classStartHandler={classStartHandler}
+        classTime={CLASSTIME}
+        returnBaseHandler={returnBaseHandler}
       />
-      <div>1교시 시작</div>
     </>
   );
 };

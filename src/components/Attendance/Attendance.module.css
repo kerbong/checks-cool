@@ -41,6 +41,8 @@
   font-family: "GowunDodum";
   display: flex;
   justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
 }
 
 .form-section {
@@ -50,7 +52,8 @@
 
 .date {
   text-align: center;
-  font-size: 1.2em;
+  font-size: 1.1em;
+
   font-family: "GowunDodum";
   word-spacing: 10px;
   letter-spacing: 1px;

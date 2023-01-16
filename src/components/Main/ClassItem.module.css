@@ -7,12 +7,17 @@
 
 .class-section {
   width: 25%;
+  margin-top: 10px;
 }
 
 .classNote-section {
   width: 52%;
+  margin-top: 10px;
 }
 
 .title-section {
   width: 23%;
+}
+.fs-09 {
+  font-size: 0.9rem;
 }
