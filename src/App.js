@@ -1,12 +1,12 @@
 import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import "./App.css";
 import { useState, useEffect } from "react";
-import { doc, onSnapshot } from "firebase/firestore";
+import { doc, onSnapshot, getDoc } from "firebase/firestore";
 // import { dbService, fcm_permission, messaging } from "./fbase";
 import { dbService } from "./fbase";
 // import { getFirebaseToken } from "./FirebaseInit";
 import "./fcm_messaging_init";
-// import "./fcm_messaging_init";
+import Swal from "sweetalert2";
 
 import MainPage from "./components/page/MainPage";
 import AttendancePage from "./components/page/AttendancePage";
@@ -32,6 +32,8 @@ function App() {
   const [user, setUser] = useState(null);
   const [menuOnHead, setMenuOnHead] = useState(true);
   const [showMainExample, setShowMainExample] = useState();
+  const [profile, setProfile] = useState({});
+
   let navigate = useNavigate();
 
   // useEffect(() => {
@@ -39,6 +41,15 @@ function App() {
   // }, []);
 
   useEffect(() => {
+    const getProfile = async (user) => {
+      let userDocRef = doc(dbService, "user", user.uid);
+
+      const now_doc = await getDoc(userDocRef);
+      if (now_doc.exists()) {
+        setProfile({ ...now_doc.data() });
+      }
+    };
+
     try {
       authService.onAuthStateChanged((user) => {
         if (user) {
@@ -46,11 +57,14 @@ function App() {
           getStudents(user.uid);
           setUser(user);
           setIsLoggedIn(true);
+          getProfile(user);
         } else {
           setIsLoggedIn(false);
           setStudents([]);
+          setProfile({});
         }
         setInit(true);
+
         //로그인해서 7~9시면 아침미션 화면 먼저 보여주기
         const nowHour = +new Date().toTimeString().slice(0, 2);
         if (nowHour >= 7 && nowHour <= 9) {
@@ -64,6 +78,26 @@ function App() {
       console.log(error);
     }
   }, []);
+
+  useEffect(() => {
+    //로그인해서 프로필이 없으면, 프로필 화면으로 먼저 보내기
+    if (init && Object.keys(profile).length === 0) {
+      Swal.fire({
+        icon: "info",
+        title: "반갑습니다!",
+        text: "프로필을 설정한 후에 사용하실 수 있어요. [확인]을 누르시면 프로필 페이지로 이동합니다.",
+        confirmButtonText: "확인",
+        confirmButtonColor: "#85bd82",
+        showDenyButton: false,
+      }).then((result) => {
+        /* Read more about isConfirmed, isDenied below */
+        if (result.isConfirmed) {
+          navigate(`/profile`);
+        }
+      });
+      return;
+    }
+  }, [profile]);
 
   //저장된 학생명부 불러오는 snapshot 함수
   //참고 https://firebase.google.com/docs/firestore/query-data/listen?hl=ko
@@ -114,6 +148,7 @@ function App() {
           menuOnHead={menuOnHead}
         />
         <Routes>
+          {/* 초기화 되었고 로그인 상태 */}
           {init && isLoggedIn ? (
             <>
               <Route
@@ -132,7 +167,11 @@ function App() {
               <Route
                 path="classgame"
                 element={
-                  <ClassgamePage students={students} userUid={userUid} />
+                  <ClassgamePage
+                    students={students}
+                    userUid={userUid}
+                    isSubject={profile.isSubject}
+                  />
                 }
               />
 
@@ -144,32 +183,52 @@ function App() {
               <Route
                 path="attendance"
                 element={
-                  <AttendancePage students={students} userUid={userUid} />
+                  <AttendancePage
+                    students={students}
+                    userUid={userUid}
+                    isSubject={profile.isSubject}
+                  />
                 }
               />
 
-              <Route
+              {/* <Route
                 path="attendance/:studentNum"
                 element={<NumAttendancePage />}
-              />
+              /> */}
 
               <Route
                 path="consulting"
                 element={
-                  <ConsultingPage students={students} userUid={userUid} />
+                  <ConsultingPage
+                    students={students}
+                    userUid={userUid}
+                    isSubject={profile.isSubject}
+                  />
                 }
               />
 
               <Route
                 path="memo"
-                element={<MemoPage students={students} userUid={userUid} />}
+                element={
+                  <MemoPage
+                    students={students}
+                    userUid={userUid}
+                    isSubject={profile.isSubject}
+                  />
+                }
               />
 
               <Route path="todo" element={<TodoPage userUid={userUid} />} />
 
               <Route
                 path="student-manage"
-                element={<StudentLists userUid={userUid} students={students} />}
+                element={
+                  <StudentLists
+                    userUid={userUid}
+                    students={students}
+                    isSubject={profile.isSubject}
+                  />
+                }
               />
 
               <Route path="profile" element={<Profile user={user} />} />
@@ -177,6 +236,7 @@ function App() {
               <Route path="notice" element={<Notice />} />
             </>
           ) : (
+            // 초기화되었지만 로그인 되지 않은 상태
             <>
               <Route index element={<Auth />} />
             </>

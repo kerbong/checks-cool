@@ -25,11 +25,12 @@
 
 .stateMessage-textarea {
   width: 70%;
-  height: 130px;
+  height: 110px;
   font-size: 1.2em;
   overflow-y: hidden;
   resize: none;
   border-radius: 5px;
+  padding: 10px;
 }
 
 .explain-p {

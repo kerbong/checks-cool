@@ -209,11 +209,12 @@ const MainPage = (props) => {
     setTodayClassTable({});
     setClassStart([]);
 
-    onSnapshot(classTableRef, (doc) => {
-      setClassTable([...doc.data().datas]);
-      let todayClass = doc
-        .data()
-        .datas.filter((data) => data.id === todayYyyymmdd);
+    const now_doc = await getDoc(classTableRef);
+    if (now_doc.exists()) {
+      setClassTable([...now_doc?.data()?.datas]);
+      let todayClass = now_doc
+        ?.data()
+        ?.datas.filter((data) => data.id === todayYyyymmdd);
       // console.log(todayClass);
       if (todayClass.length !== 0) {
         setTodayClassTable({ ...todayClass[0] });
@@ -226,14 +227,14 @@ const MainPage = (props) => {
       let today_weekday = new Date(todayYyyymmdd).getDay();
       //기초 시간표 내용 넣기
       if (today_weekday > 0 && today_weekday < 6) {
-        setClassBasic(doc.data()[WEEKDAYS[today_weekday]]);
+        setClassBasic(now_doc.data()?.[WEEKDAYS[today_weekday]]);
       }
 
       //교시별 시작시간 세팅하기
-      if (doc.data().classStart) {
-        setClassStart([...doc.data().classStart]);
+      if (now_doc?.data()?.classStart) {
+        setClassStart([...now_doc?.data()?.classStart]);
       }
-    });
+    }
   };
 
   //db에서 자료 받아오기 useEffect

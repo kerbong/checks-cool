@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { dbService } from "../../fbase";
-import { onSnapshot, setDoc, doc } from "firebase/firestore";
+import { setDoc, doc, getDoc } from "firebase/firestore";
 import Button from "../Layout/Button";
 import classes from "./Profile.module.css";
 import Swal from "sweetalert2";
@@ -13,10 +13,11 @@ const Profile = (props) => {
   const getDatasFromDb = async () => {
     let userDocRef = doc(dbService, "user", props.user.uid);
 
-    onSnapshot(userDocRef, (doc) => {
-      setExistUserInfo({ ...doc.data() });
-      setUserInfo({ ...doc.data() });
-    });
+    const now_doc = await getDoc(userDocRef);
+    if (now_doc.exists()) {
+      setExistUserInfo({ ...now_doc.data() });
+      setUserInfo({ ...now_doc.data() });
+    }
   };
 
   useEffect(() => {
@@ -25,8 +26,9 @@ const Profile = (props) => {
 
   const objCompareSame = (obj1, obj2) => {
     if (
-      obj1.nickName.trim() === obj2.nickName.trim() &&
-      obj1.stateMessage.trim() === obj2.stateMessage.trim()
+      obj1?.nickName?.trim() === obj2?.nickName?.trim() &&
+      obj1?.stateMessage?.trim() === obj2?.stateMessage?.trim() &&
+      obj1?.isSubject === obj2?.isSubject
     ) {
       return true;
     }
@@ -76,8 +78,15 @@ const Profile = (props) => {
   const userInfoHandler = (e, nameOrState) => {
     if (nameOrState === "nickName") {
       setUserInfo((prev) => ({ ...prev, nickName: e.target.value }));
-    } else {
+    } else if (nameOrState === "stateMessage") {
       setUserInfo((prev) => ({ ...prev, stateMessage: e.target.value }));
+    } else {
+      if (e.target.checked) {
+        setUserInfo((prev) => ({
+          ...prev,
+          isSubject: true,
+        }));
+      }
     }
   };
 
@@ -108,6 +117,19 @@ const Profile = (props) => {
           defaultValue={userInfo["stateMessage"] || ""}
           maxLength={50}
         />
+        <div>
+          <h3>
+            <input
+              key={"isSub"}
+              onChange={(e) => userInfoHandler(e, "isSubject")}
+              value={userInfo?.["isSubject"] || ""}
+              checked={userInfo?.["isSubject"] ? true : false}
+              type="checkbox"
+              // defaultValue={}
+            />{" "}
+            전담교사 여부
+          </h3>
+        </div>
 
         <Button
           name={"저장"}

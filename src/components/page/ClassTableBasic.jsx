@@ -5,7 +5,7 @@ import Button from "../Layout/Button";
 import Swal from "sweetalert2";
 import TimeTable from "../Main/TimeTable";
 import { dbService } from "../../fbase";
-import { doc, updateDoc, onSnapshot } from "firebase/firestore";
+import { doc, updateDoc, onSnapshot, getDoc } from "firebase/firestore";
 import dayjs from "dayjs";
 const STARTBASE = [
   "2022-01-13 08:20",
@@ -56,20 +56,26 @@ const ClassTableBasic = (props) => {
 
   //기존에 저장했던 기초시간표, 시작시각 불러와서 넣어주기
   useEffect(() => {
-    let classTableRef = doc(dbService, "classTable", props.userUid);
+    const getClassTable = async () => {
+      let classTableRef = doc(dbService, "classTable", props.userUid);
+
+      const now_doc = await getDoc(classTableRef);
+
+      if (now_doc.exists()) {
+        let new_classBasic = [];
+        CLASSTIME.forEach((cl_title, cl_index) => {
+          WEEKDAYS.forEach((wd) => {
+            new_classBasic.push(now_doc.data()?.[wd]?.[cl_index]);
+          });
+        });
+        setClassBasic([...new_classBasic]);
+        setClassStart([...(now_doc.data()?.classStart || [...STARTBASE])]);
+      }
+    };
 
     setClassBasic([]);
 
-    onSnapshot(classTableRef, (doc) => {
-      let new_classBasic = [];
-      CLASSTIME.forEach((cl_title, cl_index) => {
-        WEEKDAYS.forEach((wd) => {
-          new_classBasic.push(doc.data()[wd][cl_index]);
-        });
-      });
-      setClassBasic([...new_classBasic]);
-      setClassStart([...(doc.data()?.classStart || [...STARTBASE])]);
-    });
+    getClassTable();
     // console.log(new_classBasic);
   }, []);
 
@@ -166,7 +172,6 @@ const ClassTableBasic = (props) => {
         );
       }
     });
-    console.log([...new_classStart]);
     setClassStart([...new_classStart]);
   };
 
