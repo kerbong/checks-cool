@@ -10,7 +10,6 @@ import Swal from "sweetalert2";
 
 import MainPage from "./components/page/MainPage";
 import AttendancePage from "./components/page/AttendancePage";
-import NumAttendancePage from "./components/page/NumAttendancePage";
 import ClassgamePage from "./components/page/ClassgamePage";
 import ConsultingPage from "./components/page/ConsultingPage";
 import MemoPage from "./components/page/MemoPage";
@@ -46,7 +45,9 @@ function App() {
 
       const now_doc = await getDoc(userDocRef);
       if (now_doc.exists()) {
-        setProfile({ ...now_doc.data() });
+        onSnapshot(userDocRef, (doc) => {
+          setProfile({ ...doc.data() });
+        });
       }
     };
 
@@ -54,10 +55,9 @@ function App() {
       authService.onAuthStateChanged((user) => {
         if (user) {
           setUserUid(user.uid);
-          getStudents(user.uid);
+          getProfile(user);
           setUser(user);
           setIsLoggedIn(true);
-          getProfile(user);
         } else {
           setIsLoggedIn(false);
           setStudents([]);
@@ -97,6 +97,10 @@ function App() {
       });
       return;
     }
+    if (userUid) {
+      //프로필이 있으면 학생정보 받아오기
+      getStudents(userUid);
+    }
   }, [profile]);
 
   //저장된 학생명부 불러오는 snapshot 함수
@@ -107,13 +111,22 @@ function App() {
     onSnapshot(docRef, (doc) => {
       if (doc.exists()) {
         setShowMainExample(false);
-        setShowMainExample(false);
+        // setShowMainExample(false);
         const sortNum = (students) => {
-          const sorted_students = students.sort(function (a, b) {
-            let a_num = `${a.num}`;
-            let b_num = `${b.num}`;
-            return a_num - b_num;
-          });
+          let sorted_students;
+          if (!profile.isSubject) {
+            sorted_students = students.sort(function (a, b) {
+              let a_num = `${a.num}`;
+              let b_num = `${b.num}`;
+              return a_num - b_num;
+            });
+          } else {
+            sorted_students = students.sort(function (a, b) {
+              let a_className = `${Object.keys(a)}`;
+              let b_className = `${Object.keys(b)}`;
+              return a_className > b_className ? 1 : -1;
+            });
+          }
 
           return sorted_students;
         };

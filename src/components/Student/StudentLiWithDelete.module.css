@@ -89,6 +89,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  margin: 20px 0;
 }
 
 .accent {
@@ -97,7 +98,8 @@
   font-weight: bold;
 }
 
-.fileUploadBtn {
+.fileUploadBtn,
+.excelfileUploadBtn {
   font-size: 1.1em;
   width: auto;
   padding: 17px;
@@ -107,6 +109,12 @@
   margin-left: 10px;
   border-radius: 15px;
   text-align: center;
+}
+
+.excelfileUploadBtn {
+  width: 160px;
+  margin: 0;
+  background-color: #7632d5;
 }
 
 .span-title {

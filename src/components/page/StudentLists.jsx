@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import TypingStudent from "../Student/TypingStudent";
 import { doc, setDoc } from "firebase/firestore";
 import { dbService } from "../../fbase";
@@ -12,27 +12,30 @@ import ExampleModal from "./ExampleModal";
 import ocrGif from "../../assets/student/ocrGif.gif";
 import typingGif from "../../assets/student/typing_new_upload.gif";
 import excelGif from "../../assets/student/excel_new_upload.gif";
+import classes from "../Student/TypingStudent.module.css";
 
 const StudentLists = (props) => {
   const [addStudentBy, setAddStudentBy] = useState(
     props.students.length !== 0 ? "typing" : "excelFile"
   );
+  const [wholeClass, setWholeClass] = useState([]);
   const [studentsInfo, setStudentsInfo] = useState([]);
   const [showExample, setShowExample] = useState(false);
+  const [nowClassName, setNowClassName] = useState("");
 
-  //학생 제거 함수
-  const deleteStudentHandler = (student) => {
-    setStudentsInfo((prev) => {
-      //받은 데이터와 기존 등록된 학생이 같은 번호면 그거 다 지우기
-      let new_studentsInfo = prev.filter((stu) => stu.num !== student.num);
-
-      return [...new_studentsInfo];
-    });
-  };
+  const selectRef = useRef();
 
   useEffect(() => {
-    setStudentsInfo(props.students);
-  }, [props.students]);
+    if (props.isSubject) {
+      if (props.students.length > 0) {
+        setWholeClass(sortWholeClass(props?.students));
+        setStudentsInfo(...Object.values(props.students[0]));
+        setNowClassName(Object.keys(props.students[0])[0]);
+      }
+    } else {
+      setStudentsInfo(props?.students);
+    }
+  }, [props.isSubject]);
 
   //저장버튼 누르면 현재 학생목록을 firestore에 저장하는 함수(덮어쓰기)
   const uploadStudents = async (data) => {
@@ -51,19 +54,42 @@ const StudentLists = (props) => {
       denyButtonColor: "#85bd82",
       denyButtonText: `취소`,
     }).then((result) => {
-      // firestore에 저장하기
-      // 여자 설정을 안한 경우 남자로 모두 설정하기
-      let new_studentsInfo = [...studentsInfo];
-      new_studentsInfo.map((stu) => {
-        if (!stu.hasOwnProperty("woman")) {
-          stu["woman"] = false;
-        }
-        return stu;
-      });
-
       if (result.isConfirmed) {
-        const fixed_data = { studentDatas: sortNum(new_studentsInfo) };
-        uploadStudents(fixed_data);
+        // firestore에 저장하기
+        // 여자 설정을 안한 경우 남자로 모두 설정하기
+        if (!props.isSubject) {
+          let new_studentsInfo = [...studentsInfo];
+          new_studentsInfo.map((stu) => {
+            if (!stu.hasOwnProperty("woman")) {
+              stu["woman"] = false;
+            }
+            return stu;
+          });
+
+          const fixed_data = { studentDatas: sortNum(new_studentsInfo) };
+          uploadStudents(fixed_data);
+
+          //전담용 로직
+        } else {
+          console.log(wholeClass);
+          let new_wholeClass = [...wholeClass];
+          new_wholeClass.map((cl) => {
+            //각반 학생들을 정렬하고 성별 속성 부여
+            sortNum(Object.values(cl)).map((stu) => {
+              if (!stu.hasOwnProperty("woman")) {
+                stu["woman"] = false;
+              }
+              return stu;
+            });
+            console.log(cl);
+            // new_wholeClass.push({`${Object.keys(cl)[0]}`:new_cl});
+            return cl;
+          });
+          const fixed_data = { studentDatas: new_wholeClass };
+
+          console.log(fixed_data);
+          uploadStudents(fixed_data);
+        }
 
         Swal.fire({
           icon: "success",
@@ -91,12 +117,51 @@ const StudentLists = (props) => {
     return sorted_students;
   };
 
-  const setAddStudentsInfo = (studentData) => {
-    setStudentsInfo((prev) => {
-      //새로 수정해서 저장하기
-      let students = [...prev, studentData];
-      return sortNum(students);
+  //전담인 경우 전체 반을 정렬하는 함수
+  const sortWholeClass = (whole) => {
+    const sorted_classes = whole.sort(function (a, b) {
+      let a_className = `${Object.keys(a)}`;
+      let b_className = `${Object.keys(b)}`;
+      return a_className > b_className ? 1 : -1;
     });
+
+    return sorted_classes;
+  };
+
+  useEffect(() => {
+    //현재 반 이름 세팅이 끝나면
+    if (props.isSubject && nowClassName !== "") {
+      // 현재 선택된 반만 학생 정보 수정하기
+      let new_wholeClass = [...wholeClass].map((cl) => {
+        let new_cl = cl;
+        if (Object.keys(cl)[0] === nowClassName) {
+          new_cl = { [nowClassName]: studentsInfo };
+        }
+        return new_cl;
+      });
+      //전체반 자료 업데이트
+      setWholeClass([...new_wholeClass]);
+    }
+  }, [studentsInfo]);
+
+  //학생 제거 함수
+  const deleteStudentHandler = (student) => {
+    let new_studentsInfo = [...studentsInfo].filter(
+      (stu) => stu.num !== student.num
+    );
+    console.log(new_studentsInfo);
+    setStudentsInfo([...new_studentsInfo]);
+
+    return new_studentsInfo;
+  };
+
+  const setAddStudentsInfo = (studentData) => {
+    //같은 번호 학생이 있으면 제거하고
+    let new_studentsInfo = deleteStudentHandler(studentData);
+    //새롭게 저장하기
+    new_studentsInfo.push(studentData);
+    console.log(new_studentsInfo);
+    setStudentsInfo(sortNum(new_studentsInfo));
   };
 
   const studentGenderChange = (student) => {
@@ -107,6 +172,33 @@ const StudentLists = (props) => {
       }
     });
     setStudentsInfo([...new_studentsInfo]);
+  };
+
+  //엑셀파일 업로드하기
+  const excelUploadHandler = (data) => {
+    //전담이면
+    if (props.isSubject) {
+      // setWholeClass([...data]);
+      setWholeClass(sortWholeClass(data));
+      setNowClassName(Object.keys(data[0])[0]);
+
+      setStudentsInfo(...Object.values(data[0]));
+      // 담임이면
+    } else {
+      setStudentsInfo([...data]);
+    }
+  };
+
+  //학급 선택시 실행되는 함수
+  const selectClassHandler = () => {
+    let className = selectRef.current.value;
+    //wholeClass에서 해당하는 학급 찾아서 studentsInfo에 저장
+    wholeClass.forEach((cl) => {
+      if (Object.keys(cl)[0] === className) {
+        setStudentsInfo(Object.values(cl)[0]);
+      }
+    });
+    setNowClassName(className);
   };
 
   return (
@@ -159,7 +251,7 @@ const StudentLists = (props) => {
               className={"studentAddBtn"}
               name={
                 <>
-                  <span className="excel-upload-text">엑셀 업로드</span>{" "}
+                  <span className="excel-upload-text">엑셀</span>{" "}
                   <i className="fa-solid fa-file-arrow-up"></i>
                 </>
               }
@@ -171,7 +263,7 @@ const StudentLists = (props) => {
               className={"studentAddBtn"}
               name={
                 <>
-                  <span className="excel-upload-text">명렬표 이미지</span>{" "}
+                  <span className="excel-upload-text">명렬표</span>{" "}
                   <i className="fa-regular fa-file-image"></i>
                 </>
               }
@@ -187,7 +279,7 @@ const StudentLists = (props) => {
               className={"studentAddBtn"}
               name={
                 <>
-                  <span className="excel-upload-text">직접 입력</span>{" "}
+                  <span className="excel-upload-text">직접</span>{" "}
                   <i className="fa-solid fa-circle-arrow-up"></i>
                 </>
               }
@@ -199,7 +291,7 @@ const StudentLists = (props) => {
               className={"studentAddBtn"}
               name={
                 <>
-                  <span className="excel-upload-text">명렬표 이미지</span>{" "}
+                  <span className="excel-upload-text">명렬표</span>{" "}
                   <i className="fa-regular fa-file-image"></i>
                 </>
               }
@@ -215,7 +307,7 @@ const StudentLists = (props) => {
               className={"studentAddBtn"}
               name={
                 <>
-                  <span className="excel-upload-text">직접 입력</span>{" "}
+                  <span className="excel-upload-text">직접</span>{" "}
                   <i className="fa-solid fa-circle-arrow-up"></i>
                 </>
               }
@@ -227,7 +319,7 @@ const StudentLists = (props) => {
               className={"studentAddBtn"}
               name={
                 <>
-                  <span className="excel-upload-text">엑셀 업로드</span>{" "}
+                  <span className="excel-upload-text">엑셀</span>{" "}
                   <i className="fa-solid fa-file-arrow-up"></i>
                 </>
               }
@@ -236,6 +328,34 @@ const StudentLists = (props) => {
           </>
         )}
       </div>
+
+      {/* 전담이면 반을 선택할 수 있는 셀렉트태그 보여주기 */}
+      {props.isSubject && addStudentBy !== "imageFile" && (
+        <div className={classes.addStudentInputs}>
+          <select
+            ref={selectRef}
+            onChange={selectClassHandler}
+            className={classes["class-select"]}
+            value={nowClassName}
+          >
+            <option value="">--학급--</option>
+            {wholeClass?.map((cl) => (
+              <option key={Object.keys(cl)} value={Object.keys(cl)}>
+                {Object.keys(cl)}
+              </option>
+            ))}
+          </select>
+          <Button
+            className="student-save"
+            name={
+              <>
+                <i className="fa-regular fa-floppy-disk"></i>
+              </>
+            }
+            onclick={submitStudentUploader}
+          />
+        </div>
+      )}
 
       {addStudentBy === "typing" && (
         // 직접 타이핑 하는 학생입력 화면
@@ -253,6 +373,7 @@ const StudentLists = (props) => {
             deleteAllHandler={() => {
               setStudentsInfo([]);
             }}
+            isSubject={props.isSubject}
           />
         </>
       )}
@@ -261,9 +382,10 @@ const StudentLists = (props) => {
         <>
           {/* 엑셀파일 업로드 & 업로드 파일에서 불러온 자료 */}
           <StudentExcelUpload
-            studentsInfoHandler={(rows) => setStudentsInfo([...rows])}
+            studentsInfoHandler={(data) => excelUploadHandler(data)}
             studentsInfo={studentsInfo}
             uploadStudentsInfo={submitStudentUploader}
+            isSubject={props.isSubject}
           />
           <div
             style={{
@@ -285,6 +407,7 @@ const StudentLists = (props) => {
                   deleteStudentHandler={(student) => {
                     deleteStudentHandler(student);
                   }}
+                  isSubject={props.isSubject}
                 />
               ))}
           </div>
@@ -298,6 +421,7 @@ const StudentLists = (props) => {
             setStudentsInfo([...studentData]);
             setAddStudentBy("typing");
           }}
+          isSubject={props.isSubject}
         />
       )}
 

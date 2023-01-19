@@ -86,6 +86,11 @@ const Profile = (props) => {
           ...prev,
           isSubject: true,
         }));
+      } else {
+        setUserInfo((prev) => ({
+          ...prev,
+          isSubject: false,
+        }));
       }
     }
   };

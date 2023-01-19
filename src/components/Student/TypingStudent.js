@@ -17,8 +17,8 @@ const TypingStudent = (props) => {
     let studentNumValue = numberRef.current.value;
     let studentNameValue = nameRef.current.value;
 
-    //같은 번호의 학생이 있을 경우 해당 값 지우기
-    props.deleteStudentHandler({ num: studentNumValue });
+    // //같은 번호의 학생이 있을 경우 해당 값 지우기
+    // props.deleteStudentHandler({ num: studentNumValue });
 
     //학생추가하기
     const studentData = { num: studentNumValue, name: studentNameValue };
@@ -110,6 +110,7 @@ const TypingStudent = (props) => {
                 autoFocus={true}
                 required={true}
               />
+              {/* 학생 추가 / 수정완료 버튼 */}
               <Button
                 className="student-add"
                 name={
@@ -122,20 +123,24 @@ const TypingStudent = (props) => {
               />
             </div>
           </form>
-          <Button
-            className="student-save"
-            name={
-              <>
-                <i className="fa-regular fa-floppy-disk"></i>
-              </>
-            }
-            onclick={uploadStudentHandler}
-          />
+
+          {/* 전체 저장버튼 전담버전에서는 나오지 않도록*/}
+          {!props.isSubject && (
+            <Button
+              className="student-save"
+              name={
+                <>
+                  <i className="fa-regular fa-floppy-disk"></i>
+                </>
+              }
+              onclick={uploadStudentHandler}
+            />
+          )}
         </div>
 
-        <p>
+        <p className={classes.studentBgColorInfo}>
           {" "}
-          <span className={classes.genderExample}>여학생</span> |
+          <span className={classes.genderExample}>여학생</span>
           &nbsp;&nbsp;&nbsp;남학생&nbsp;&nbsp;&nbsp;| 이름 클릭하면 성별 변경
         </p>
         <div className={classes.studentListArea}>

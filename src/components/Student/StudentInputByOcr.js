@@ -159,72 +159,82 @@ const StudentInputByOcr = (props) => {
 
   return (
     <>
-      <div className={classes["btn-div"]}>
+      {!props.isSubject ? (
         <>
-          <label
-            id="imageFileLabel"
-            htmlFor="imageFile"
-            className={classes["image-upload-btn"]}
-          >
-            <i className="fa-regular fa-file-image"></i> 업로드
-          </label>
-          <input
-            type="file"
-            id="imageFile"
-            ref={fileInfoInput}
-            onChange={imageFileHandler}
-            style={{ display: "none" }}
-            accept={".jpg,.jpeg"}
-          />
+          <div className={classes["btn-div"]}>
+            <>
+              <label
+                id="imageFileLabel"
+                htmlFor="imageFile"
+                className={classes["image-upload-btn"]}
+              >
+                <i className="fa-regular fa-file-image"></i> 업로드
+              </label>
+              <input
+                type="file"
+                id="imageFile"
+                ref={fileInfoInput}
+                onChange={imageFileHandler}
+                style={{ display: "none" }}
+                accept={".jpg,.jpeg"}
+              />
+            </>
+          </div>
+          <div className={classes["span-expain"]}>
+            {studentsByOcr.length === 0 && (
+              <>
+                <img src={imageOcrExample} alt="" />
+              </>
+            )}
+            <hr className={classes["hr"]} />
+            <span className={classes["span-title"]}>
+              명렬표 이미지로 학생등록
+            </span>
+            <hr className={classes["hr"]} />
+
+            <span>
+              <span className={classes["span-highlight"]}>번호, 이름만</span>{" "}
+              보이도록 명렬표 촬영 및 자르기
+            </span>
+
+            <span>
+              업로드 버튼으로{" "}
+              <span className={classes["span-highlight"]}>파일 불러오기!</span>
+            </span>
+            <span>
+              내용 확인하고
+              <span className={classes["span-highlight"]}> 저장누르기</span>
+            </span>
+            <hr className={classes["hr"]} />
+            <span className={classes["span-small"]}>
+              * 인쇄된 파일을 촬영하면 인식률이 높아집니다.
+              <br />
+              * 화면 왼쪽 상단의 보라색 [학생등록]
+              <br />
+              버튼을 누르시면 예시를 보실 수 있어요!
+            </span>
+            <hr className={classes["hr"]} />
+          </div>
+
+          {studentsByOcr.length !== 0 && (
+            <div className={classes.studentListArea}>
+              {studentsByOcr.map((stu) => (
+                <li
+                  key={stu.num + stu.name}
+                  id={stu.num}
+                  className={classes.inputStudentLi}
+                >
+                  <span className={classes.studentNumName}>
+                    {stu.num + " " + stu.name}
+                  </span>
+                </li>
+              ))}
+            </div>
+          )}
         </>
-      </div>
-      <div className={classes["span-expain"]}>
-        {studentsByOcr.length === 0 && (
-          <>
-            <img src={imageOcrExample} alt="" />
-          </>
-        )}
-        <hr className={classes["hr"]} />
-        <span className={classes["span-title"]}>명렬표 이미지로 학생등록</span>
-        <hr className={classes["hr"]} />
-
-        <span>
-          <span className={classes["span-highlight"]}>번호, 이름만</span>{" "}
-          보이도록 명렬표 촬영 및 자르기
-        </span>
-
-        <span>
-          업로드 버튼으로{" "}
-          <span className={classes["span-highlight"]}>파일 불러오기!</span>
-        </span>
-        <span>
-          내용 확인하고
-          <span className={classes["span-highlight"]}> 저장누르기</span>
-        </span>
-        <hr className={classes["hr"]} />
-        <span className={classes["span-small"]}>
-          * 인쇄된 파일을 촬영하면 인식률이 높아집니다.
-          <br />
-          * 화면 왼쪽 상단의 보라색 [학생등록]
-          <br />
-          버튼을 누르시면 예시를 보실 수 있어요!
-        </span>
-        <hr className={classes["hr"]} />
-      </div>
-
-      {studentsByOcr.length !== 0 && (
-        <div className={classes.studentListArea}>
-          {studentsByOcr.map((stu) => (
-            <li
-              key={stu.num + stu.name}
-              id={stu.num}
-              className={classes.inputStudentLi}
-            >
-              <span className={classes.studentNumName}>
-                {stu.num + " " + stu.name}
-              </span>
-            </li>
-          ))}
+      ) : (
+        <div className={classes["span-expain"]}>
+          전담선생님은 엑셀업로드 / 직접 입력을 활용해주세요!
         </div>
       )}
     </>
