@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/checks-cool/static/css/main.c38c7c24.css",
-    "main.js": "/checks-cool/static/js/main.a41d577f.js",
+    "main.css": "/checks-cool/static/css/main.9123ceb0.css",
+    "main.js": "/checks-cool/static/js/main.89a2a9fc.js",
     "static/media/GowunDodum-Regular.ttf": "/checks-cool/static/media/GowunDodum-Regular.39c9a39c246c3c54c53e.ttf",
     "static/media/list.gif": "/checks-cool/static/media/list.8fffec1112ca3ad4d287.gif",
     "static/media/listMemo.gif": "/checks-cool/static/media/listMemo.9b1e9fbe144c9fd5c575.gif",
@@ -19,7 +19,7 @@
     "index.html": "/checks-cool/index.html"
   },
   "entrypoints": [
-    "static/css/main.c38c7c24.css",
-    "static/js/main.a41d577f.js"
+    "static/css/main.9123ceb0.css",
+    "static/js/main.89a2a9fc.js"
   ]
 }
