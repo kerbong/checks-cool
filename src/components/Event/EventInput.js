@@ -219,6 +219,7 @@ const EventInput = (props) => {
                 <Student
                   students={props.students}
                   showOption={closeModalHandler}
+                  isSubject={props.isSubject}
                 />
               </Modal>
             )}

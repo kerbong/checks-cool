@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import AttendCalendar from "../Attendance/AttendCalendar";
 import Modal from "../Layout/Modal";
 
@@ -6,7 +6,7 @@ import EventLists from "../Event/EventLists";
 import classes from "./AttendCtxCalendar.module.css";
 
 import { dbService } from "../../fbase";
-import { onSnapshot, setDoc, doc } from "firebase/firestore";
+import { onSnapshot, setDoc, doc, updateDoc } from "firebase/firestore";
 
 const thisMonth = () => {
   let today = new Date();
@@ -19,13 +19,19 @@ const AttendCtxCalendar = (props) => {
   const [currentMonth, setCurrentMonth] = useState(thisMonth);
   const [dayEventIsShown, setDayEventIsShown] = useState(false);
   const [fixIsShown, setFixIsShown] = useState("0");
+  //전담용 전체 이벤트
+  const [wholeEvents, setWholeEvents] = useState([]);
+  //선택된 셀렉트 밸류
+  const [nowClassName, setNowClassName] = useState("");
   //전체 받아온 이벤트 저장하기
   const [events, setEvents] = useState([]);
   const [eventOnDay, setEventOnDay] = useState([]);
+  const [nowClStudents, setNowClStudents] = useState([]);
 
-  //firestore에서 해당 이벤트 자료 받아오기
-  const getAttendsFromDb = () => {
-    //db에서 attend DB가져오고 작성자가 현재 유저와 동일한지 확인하고 events에 추가하기
+  const selectRef = useRef();
+
+  //기존 화면의 이벤트들 지우기
+  const removeScreenEvents = () => {
     //기존에 있던 화면에 그려진 이벤트들 지워주기
     document.querySelectorAll(".eventBtn").forEach((btn) => {
       btn.remove();
@@ -34,30 +40,91 @@ const AttendCtxCalendar = (props) => {
     document
       .querySelectorAll(".react-datepicker__day[style]")
       .forEach((tag) => (tag.style.backgroundColor = ""));
+  };
 
-    //기존에 있던 events들도 다 지우기
-    setEvents([]);
+  //firestore에서 해당 이벤트 자료 받아오기
+  const getAttendsFromDb = () => {
+    //db에서 attend DB가져오고 작성자가 현재 유저와 동일한지 확인하고 events에 추가하기
 
     let attendRef = doc(dbService, "attend", props.userUid);
     // console.log(queryWhere);
 
     onSnapshot(attendRef, (doc) => {
       // setEvents([]);
-      const new_attends = [];
-      doc?.data()?.attend_data?.forEach((data) => {
-        // if (data.id.slice(0, 7) === currentMonth.slice(0, 7)) {
-        new_attends.push(data);
+      //기존에 있던 events들도 다 지우기
+      setEvents([]);
+      setWholeEvents([]);
+
+      if (props.isSubject) {
+        if (doc.exists()) {
+          let wholeE = doc?.data()?.attend_data;
+          setWholeEvents([...wholeE]);
+        }
+        // if (nowClassName === "") {
+        //   setNowClassName(Object.keys(props.students[0])[0]);
         // }
-      });
-      setEvents([...new_attends]);
+        // console.log(nowClassName);
+      } else {
+        const new_attends = [];
+        doc?.data()?.attend_data?.forEach((data) => {
+          // if (data.id.slice(0, 7) === currentMonth.slice(0, 7)) {
+          new_attends.push(data);
+          // }
+        });
+        setEvents([...new_attends]);
+      }
+    });
+  };
+
+  //학급 선택시 실행되는 함수
+  const selectClassHandler = () => {
+    let className = selectRef.current.value;
+    // console.log(className);
+    setNowClassName(className);
+  };
+
+  //선택된 학급이 바뀌면 event만 찾아서 등록하고 학생도 바꿔주기
+  const selectEvents = () => {
+    //만약 해당 반에 아직 데이터가 없으면 events빈배열로 설정 및 리무브 스크린 이벤트함수 실행
+    const existSelectClData = [...wholeEvents].filter(
+      (cl) => Object.keys(cl)[0] === nowClassName
+    );
+    if (existSelectClData.length === 0) {
+      removeScreenEvents();
+
+      setEvents([]);
+    }
+
+    //wholeEvents에서 해당하는 학급 찾아서 events에 저장
+    [...wholeEvents].forEach((cl) => {
+      if (Object.keys(cl)[0] === nowClassName) {
+        removeScreenEvents();
+
+        setEvents(Object.values(cl)[0]);
+      }
+    });
+    props.students?.forEach((cl) => {
+      if (Object.keys(cl)[0] === nowClassName) {
+        setNowClStudents(Object.values(cl)[0]);
+      }
     });
   };
 
   //db에서 자료 받아오기 useEffect
   useEffect(() => {
+    removeScreenEvents();
+  }, [currentMonth]);
+
+  //셀렉트 태그에서 값을 선택하면 해당 반의 자료만 화면에 보여주도록 events 상태 set하기
+  useEffect(() => {
+    // console.log(nowClassName);
+    selectEvents();
+  }, [nowClassName]);
+
+  useEffect(() => {
     //db에서 학년 자료 가져오기, showPublicEvent를 의존성으로 넣어두면 알아서 바뀔 때마다 실행됨. 이게 state의 변경상태에 따라 무언가를 실행하도록 하는 베스트인듯
     getAttendsFromDb();
-  }, [currentMonth]);
+  }, []);
 
   const getCurrentMonth = () => {
     const currentM = document
@@ -254,16 +321,20 @@ const AttendCtxCalendar = (props) => {
   const fixEvents = async (data, eventDate, fixOrDel) => {
     const attendTodoRef = doc(dbService, "attend", props.userUid);
     // events 자료 가져와서 수정하기
+    console.log(events);
+    let before_events = JSON.parse(JSON.stringify(events));
+    let new_events = before_events.map((evt) => {
+      delete evt.eventDate;
+      return { ...evt };
+    });
+    console.log(new_events);
 
-    let new_events = JSON.parse(JSON.stringify(events));
-    // console.log(events);
-    // console.log(new_events);
-    // console.log(data);
-    //events가 있고
+    //현재학급의 events가 있고
     if (new_events.length !== 0) {
       let event_index;
       const existedEvent = new_events.filter((event, index) => {
         if (event.id === data.id) {
+          console.log(event_index);
           //events에서 인덱스 저장해두기
           event_index = index;
         }
@@ -274,16 +345,40 @@ const AttendCtxCalendar = (props) => {
       //기존 자료인 경우
       if (existedEvent.length > 0) {
         if (fixOrDel === "fix") {
-          // console.log(existedEvent[0].doc_id);
-          // console.log(existedEvent[0].doc_id);
-          new_events[event_index] = data;
+          // console.log(event_index);
+          console.log(data);
+          // new_events[event_index] = data;
+          new_events.splice(event_index, 1, data);
+          // new_events.push(data);
+          console.log(new_events);
           let new_data = [...new_events];
-          const fixed_data = { attend_data: new_data };
+          if (!props.isSubject) {
+            const fixed_data = { attend_data: new_data };
 
-          await setDoc(attendTodoRef, fixed_data);
+            await setDoc(attendTodoRef, fixed_data);
+            // await setDoc(attendTodoRef, fixed_data).then(() => {
+            //   const event = { ...data, eventDate: eventDate };
+            //   new_events[new_events.length - 1] = event;
+            // });
 
-          const event = { ...data, eventDate: eventDate };
-          new_events[event_index] = event;
+            // const event = { ...data, eventDate: eventDate };
+            // new_events[event_index] = event;
+          } else {
+            let new_wholeEvents = [];
+            new_wholeEvents = [
+              ...wholeEvents.map((cl) => {
+                if (Object.keys(cl)[0] === nowClassName) {
+                  //반이름이 같으면 수정한 데이터 넣고
+                  return { [nowClassName]: new_data };
+                } else {
+                  return cl;
+                }
+              }),
+            ];
+            setWholeEvents(new_wholeEvents);
+            await updateDoc(attendTodoRef, { attend_data: new_wholeEvents });
+          }
+
           // console.log("이벤트바이데이즈에서 일치하는 자료 찾아서 수정함!");
         } else if (fixOrDel === "del") {
           //혹시 해당 날짜에 지금 이벤트가 마지막 남은 이벤트인 경우 달력에 이벤트 있음을 표시하는 백그라운드 컬러 삭제
@@ -295,11 +390,22 @@ const AttendCtxCalendar = (props) => {
               ".react-datepicker__day--selected"
             ).style.backgroundColor = "";
           }
-
           //splice(인덱스값을, 1이면 제거 0이면 추가)
           new_events.splice(event_index, 1);
           const new_data = { attend_data: new_events };
-          await setDoc(attendTodoRef, new_data);
+
+          if (!props.isSubject) {
+            await updateDoc(attendTodoRef, new_data);
+          } else {
+            let new_wholeEvents = [...wholeEvents].filter(
+              (cl) => Object.keys(cl)[0] !== nowClassName
+            );
+            if (new_events.length !== 0) {
+              new_wholeEvents.push({ [nowClassName]: new_events });
+            }
+            setWholeEvents(new_wholeEvents);
+            await updateDoc(attendTodoRef, { attend_data: new_wholeEvents });
+          }
           // console.log("이벤트바이데이즈에서 일치하는 자료 찾아서 제거함!");
         }
 
@@ -309,29 +415,70 @@ const AttendCtxCalendar = (props) => {
       } else {
         //firestore에 추가!
         new_events.push(data);
-        let new_data = [...new_events];
-        const fixed_data = { attend_data: new_data };
-        await setDoc(attendTodoRef, fixed_data);
+        let new_data = JSON.parse(JSON.stringify(new_events));
+        let fixed_data;
+        if (!props.isSubject) {
+          fixed_data = { attend_data: new_data };
 
-        //events에도 추가!
-        // console.log(data);
-        let event = { ...data, eventDate: eventDate };
-        new_events.push(event);
+          //events에도 추가!
+          // console.log(data);
+        } else {
+          //현재 반을 제외한 전체 반 자료에 현재반 자료를 더하기
+          let new_wholeEvents = [...wholeEvents].filter(
+            (cl) => Object.keys(cl)[0] !== nowClassName
+          );
+          new_wholeEvents.push({ [nowClassName]: new_data });
+          fixed_data = { attend_data: new_wholeEvents };
+          // console.log();
+          setWholeEvents(new_wholeEvents);
+        }
+        await updateDoc(attendTodoRef, fixed_data);
+        // await updateDoc(attendTodoRef, fixed_data).then(() => {
+        //   let event = { ...data, eventDate: eventDate };
+        //   new_events.push(event);
+        // });
+        // let event = { ...data, eventDate: eventDate };
+        // new_events.push(event);
       }
 
       // 이벤트 자료가 아예 없는 경우
     } else {
+      new_events = [];
+      new_events.push(data);
       // console.log("events에 처음 입력된 자료");
       // console.log(data);
       //firestore에 추가!
-      const new_data = { attend_data: [data] };
-      await setDoc(attendTodoRef, new_data);
-      //events에도 추가!
-      let event = { ...data, eventDate: eventDate };
-      new_events.push(event);
-    }
-    // setEvents([...new_events]);
+      let new_data;
+      if (!props.isSubject) {
+        new_data = { attend_data: [...new_events] };
+      } else {
+        // 다른반의 자료는 있는 경우
+        if (wholeEvents?.length > 0) {
+          let new_wholeEvents = [...wholeEvents];
 
+          new_wholeEvents.push({ [nowClassName]: [...new_events] });
+          new_data = { attend_data: new_wholeEvents };
+          setWholeEvents(new_wholeEvents);
+          console.log(new_wholeEvents);
+          //아예 자료가 없는 경우
+        } else {
+          new_data = {
+            attend_data: [{ [nowClassName]: [...new_events] }],
+          };
+          setWholeEvents([{ [nowClassName]: [...new_events] }]);
+        }
+      }
+      await setDoc(attendTodoRef, new_data);
+      // await setDoc(attendTodoRef, new_data).then(() => {
+      //   let event = { ...data, eventDate: eventDate };
+      //   new_events.push(event);
+      // });
+      //events에도 추가!
+      // let event = { ...data, eventDate: eventDate };
+      // new_events.push(event);
+    }
+    setEvents([...new_events]);
+    selectClassHandler();
     // getAttendsFromDb();
 
     // return new_events;
@@ -364,15 +511,41 @@ const AttendCtxCalendar = (props) => {
             selectOption={props.selectOption}
             about={props.about}
             dayEventHideHandler={dayEventHideHandler}
-            students={props.students}
+            students={!props.isSubject ? props.students : nowClStudents}
             userUid={props.userUid}
+            isSubject={props.isSubject}
           />
         </Modal>
       )}
 
+      {/* 전담교사만 보이는 학급 셀렉트 */}
+
+      {props.isSubject && (
+        <div className={classes["classSelect-div"]}>
+          <select
+            ref={selectRef}
+            onChange={selectClassHandler}
+            className={classes["class-select"]}
+            value={nowClassName}
+          >
+            <option value="">--학급--</option>
+            {props.students?.map((cl) => (
+              <option key={Object.keys(cl)} value={Object.keys(cl)}>
+                {Object.keys(cl)}
+              </option>
+            ))}
+          </select>
+          {selectRef?.current?.value === "" && "* 학급을 먼저 선택해주세요."}
+        </div>
+      )}
+
       <AttendCalendar inline={"true"} getDateValue={getDateHandler} />
 
-      <p>{"* 일정 기간 반복되는 출결은 명렬표 화면을 활용하시면 편리해요!"}</p>
+      {!props.isSubject && (
+        <p>
+          {"* 일정 기간 반복되는 출결은 명렬표 화면을 활용하시면 편리해요!"}
+        </p>
+      )}
 
       <p>
         * 문제가 지속되시면 kerbong@gmail.com으로 알려주세요. 최대한 빠르게

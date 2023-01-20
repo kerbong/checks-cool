@@ -106,14 +106,32 @@ const MainPage = (props) => {
 
     let attendRef = query(doc(dbService, "attend", props.userUid));
     onSnapshot(attendRef, (doc) => {
-      const new_attends = [];
-      doc?.data()?.attend_data?.forEach((data) => {
-        if (data.id.slice(0, 10) === todayYyyymmdd) {
-          new_attends.push(data);
-        }
-
-        setAttendEvents([...new_attends]);
-      });
+      let new_attends = [];
+      if (props.isSubject) {
+        doc?.data()?.attend_data?.forEach((cl) => {
+          let attends = [];
+          // new_attends.push(...Object.values(cl));
+          Object.values(cl).forEach((atd) => {
+            attends.push(...atd);
+          });
+          let new_data = [];
+          attends.forEach((atd) => {
+            // console.log(atd);
+            if (atd.id.slice(0, 10) === todayYyyymmdd) {
+              new_data.push({ ...atd, cl: Object.keys(cl)[0] });
+            }
+          });
+          new_attends.push(...new_data);
+        });
+      } else {
+        doc?.data()?.attend_data?.forEach((data) => {
+          if (data.id.slice(0, 10) === todayYyyymmdd) {
+            new_attends.push(data);
+          }
+        });
+      }
+      // console.log(new_attends);
+      setAttendEvents([...new_attends]);
     });
   };
 
@@ -497,10 +515,15 @@ const MainPage = (props) => {
           ) : (
             attendEvents.map((event) => (
               <li
-                key={event.id + event.student_num}
+                key={
+                  !props.isSubject
+                    ? event.id + event.student_num
+                    : event.cl + event.id + event.student_num
+                }
                 className={classes["main-li"]}
               >
-                {event.student_num}번 {event.student_name} /{" "}
+                {props.isSubject && event.cl + " "}
+                {event.student_num}번 - {event.student_name} /{" "}
                 {event.option.slice(1)} / {event.note || ""}
               </li>
             ))

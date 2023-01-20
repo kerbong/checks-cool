@@ -36,3 +36,18 @@ select {
     font-size: 0.7em;
   }
 }
+
+.class-select {
+  width: 130px;
+  height: 60px;
+  font-size: 1.3rem;
+  margin: 10px;
+}
+
+.classSelect-div {
+  display: flex;
+  align-items: center;
+  font-size: 1.2rem;
+  justify-content: center;
+  flex-direction: column;
+}

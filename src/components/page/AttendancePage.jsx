@@ -5,6 +5,7 @@ const AttendancePage = (props) => {
   return (
     <>
       <StudentCalendarLayout
+        isSubject={props.isSubject}
         selectOption={attendanceOption}
         students={props.students}
         userUid={props.userUid}

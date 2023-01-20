@@ -81,7 +81,7 @@ function App() {
 
   useEffect(() => {
     //로그인해서 프로필이 없으면, 프로필 화면으로 먼저 보내기
-    if (init && Object.keys(profile).length === 0) {
+    if (init && isLoggedIn && Object.keys(profile).length === 0) {
       Swal.fire({
         icon: "info",
         title: "반갑습니다!",
@@ -173,6 +173,7 @@ function App() {
                     showMainExample={showMainExample}
                     students={students}
                     setShowMainExample={() => setShowMainExample(false)}
+                    isSubject={profile.isSubject}
                   />
                 }
               />

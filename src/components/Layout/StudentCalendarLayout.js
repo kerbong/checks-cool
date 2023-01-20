@@ -79,9 +79,12 @@ const StudentCalendarLayout = (props) => {
             <button id="title-btn" onClick={() => setShowExample(true)}>
               <i className="fa-regular fa-address-book"></i> 다왔니?
             </button>
-            <button id="switch-btn" onClick={showStudentsListHandler}>
-              <i className="fa-solid fa-list-ol"></i> 명렬표
-            </button>
+            {!props.isSubject && (
+              <button id="switch-btn" onClick={showStudentsListHandler}>
+                <i className="fa-solid fa-list-ol"></i> 명렬표
+              </button>
+            )}
+
             <button id="switch-btn" onClick={showEachStudentHandler}>
               <i className="fa-solid fa-user"></i> 조회
             </button>
@@ -90,6 +93,7 @@ const StudentCalendarLayout = (props) => {
           <AttendCtxCalendar
             selectOption={props.selectOption}
             about="attendance"
+            isSubject={props.isSubject}
             students={props.students}
             userUid={props.userUid}
           />
@@ -103,9 +107,12 @@ const StudentCalendarLayout = (props) => {
             <button id="title-btn" onClick={() => setShowExample(true)}>
               <i className="fa-regular fa-address-book"></i> 모아보기
             </button>
-            <button id="switch-btn" onClick={showStudentsListHandler}>
-              <i className="fa-solid fa-list-ol"></i> 명렬표
-            </button>
+            {!props.isSubject && (
+              <button id="switch-btn" onClick={showStudentsListHandler}>
+                <i className="fa-solid fa-list-ol"></i> 명렬표
+              </button>
+            )}
+
             <button id="switch-btn" onClick={showCalHandler}>
               <i className="fa-regular fa-calendar-days"></i> 출결달력
             </button>
@@ -116,7 +123,8 @@ const StudentCalendarLayout = (props) => {
       )}
 
       {/* 전체 학생명부 에서 보여줄 버튼,내용 */}
-      {showStudentsList && (
+      {/* 전담교사는 반별 학생 명렬표로 기간동안 안나오는 걸 입력할 필요성이 낮으므로 제외 */}
+      {showStudentsList && !props.isSubject && (
         <>
           <div id="title-div">
             <button id="title-btn" onClick={() => setShowExample(true)}>
@@ -141,7 +149,7 @@ const StudentCalendarLayout = (props) => {
       )}
 
       {/* studentsList 학생명부에서 학생 클릭하면 출결옵션 화면 나오기 */}
-      {optionIsShown && (
+      {optionIsShown && !props.isSubject && (
         <Attendance
           onClose={hideOptionHandler}
           who={student}
