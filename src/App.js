@@ -173,7 +173,7 @@ function App() {
                     showMainExample={showMainExample}
                     students={students}
                     setShowMainExample={() => setShowMainExample(false)}
-                    isSubject={profile.isSubject}
+                    isSubject={profile.isSubject || false}
                   />
                 }
               />
@@ -184,7 +184,7 @@ function App() {
                   <ClassgamePage
                     students={students}
                     userUid={userUid}
-                    isSubject={profile.isSubject}
+                    isSubject={profile.isSubject || false}
                   />
                 }
               />
@@ -200,7 +200,7 @@ function App() {
                   <AttendancePage
                     students={students}
                     userUid={userUid}
-                    isSubject={profile.isSubject}
+                    isSubject={profile.isSubject || false}
                   />
                 }
               />
@@ -216,7 +216,7 @@ function App() {
                   <ConsultingPage
                     students={students}
                     userUid={userUid}
-                    isSubject={profile.isSubject}
+                    isSubject={profile.isSubject || false}
                   />
                 }
               />
@@ -227,7 +227,7 @@ function App() {
                   <MemoPage
                     students={students}
                     userUid={userUid}
-                    isSubject={profile.isSubject}
+                    isSubject={profile.isSubject || false}
                   />
                 }
               />
@@ -240,7 +240,7 @@ function App() {
                   <StudentLists
                     userUid={userUid}
                     students={students}
-                    isSubject={profile.isSubject}
+                    isSubject={profile.isSubject || false}
                   />
                 }
               />

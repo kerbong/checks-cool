@@ -7,7 +7,9 @@
 }
 
 .student-select {
-  font-size: 0.8rem;
+  font-size: 1.1rem;
+  width: auto;
+
   margin: 5px;
 }
 
@@ -29,5 +31,9 @@
 }
 
 .select-div {
-  width: 70%;
+  width: 100%;
+}
+
+.p {
+  font-size: 1.2rem;
 }

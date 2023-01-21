@@ -118,7 +118,11 @@ const StudentCalendarLayout = (props) => {
             </button>
           </div>
 
-          <AttendEachLists userUid={props.userUid} />
+          <AttendEachLists
+            userUid={props.userUid}
+            isSubject={props.isSubject}
+            students={props.students}
+          />
         </>
       )}
 
