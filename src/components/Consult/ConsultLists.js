@@ -54,8 +54,9 @@ const ConsultLists = (props) => {
 
   useEffect(() => {
     if (
-      yearGroupRef.current.value === "" &&
       yearGroupRef.current.value === ""
+      //  &&
+      // yearGroupRef.current.value === ""
     ) {
       return;
     }

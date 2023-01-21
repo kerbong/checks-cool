@@ -256,10 +256,10 @@ const AttendCtxCalendar = (props) => {
     const eventDrawOnCalendar = () => {
       events.forEach(function (data) {
         //새로 업데이트한 로직(년 월 일 데이터에 따로 저장)
-        const day = "0" + data.id.slice(8, 10);
+        const day = "0" + data?.id?.slice(8, 10);
 
         // // 2022-08-03
-        const eventDate = data.id.slice(0, 10);
+        const eventDate = data?.id?.slice(0, 10);
 
         // //이벤트 달과 현재 달력의 달이 같으면
         // if (eventDate.slice(0, 7) === month) {

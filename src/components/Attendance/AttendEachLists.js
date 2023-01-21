@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
 import classes from "./AttendEachLists.module.css";
 import Button from "../Layout/Button";
-
+import { utils, writeFile } from "xlsx";
 import { dbService } from "../../fbase";
 import { onSnapshot, doc } from "firebase/firestore";
+import dayjs from "dayjs";
 
 const AttendEachLists = (props) => {
   const [studentAttendList, setStudentAttendList] = useState([]);
@@ -18,7 +19,6 @@ const AttendEachLists = (props) => {
   //선택된 학급 이름
   const [nowClassName, setNowClassName] = useState("");
 
-  console.log(props.isSubject);
   const studentSelectRef = useRef();
   const selectClassRef = useRef();
 
@@ -66,8 +66,6 @@ const AttendEachLists = (props) => {
             addYearData(data, cl);
           });
         });
-        console.log(new_attends);
-        console.log(years);
       }
       //학년도를 저장해둠.
       setDataYears([...new Set(years)]);
@@ -121,7 +119,6 @@ const AttendEachLists = (props) => {
 
     if (!props.isSubject) {
       let studentsOnDatas = list.map((data) => data.student_name);
-      console.log(new Set(studentsOnDatas));
       setStudentLists([...new Set(studentsOnDatas)]);
     }
   };
@@ -166,13 +163,79 @@ const AttendEachLists = (props) => {
     }
   }, [nowClassName]);
 
+  //엑셀로 저장하기 함수
+  const saveExcelHandler = () => {
+    const new_datas = [];
+    yearAttendLists.forEach((atd) => {
+      let data = [
+        +atd.student_num,
+        atd.student_name,
+        atd.option.slice(1),
+        `${atd.id.slice(5, 7)}월`,
+        `${atd.id.slice(8, 10)}일`,
+        atd.note,
+      ];
+      if (props.isSubject) {
+        data.unshift(atd.clName);
+      }
+      new_datas.push(data);
+    });
+
+    if (!props.isSubject) {
+      new_datas.unshift([
+        "번호",
+        "이름",
+        "출결옵션",
+        "날짜(월)",
+        "날짜(일)",
+        "비고",
+      ]);
+    } else {
+      new_datas.unshift([
+        "반",
+        "번호",
+        "이름",
+        "출결옵션",
+        "날짜(월)",
+        "날짜(일)",
+        "비고",
+      ]);
+    }
+    //새로운 가상 엑셀파일 생성
+    const book = utils.book_new();
+    const attend_datas = utils.aoa_to_sheet(new_datas);
+    //셀의 넓이 지정
+    attend_datas["!cols"] = [
+      { wpx: 30 },
+      { wpx: 60 },
+      { wpx: 60 },
+      { wpx: 40 },
+      { wpx: 40 },
+      { wpx: 100 },
+    ];
+    if (props.isSubject) {
+      attend_datas["!cols"].unshift({ wpx: 30 });
+    }
+
+    //시트에 작성한 데이터 넣기
+    utils.book_append_sheet(book, attend_datas, "출결기록");
+
+    writeFile(
+      book,
+      `${
+        document.getElementById("year-select").value
+      }학년도 출결기록(${dayjs().format("YYYY-MM-DD")}).xlsx`
+    );
+  };
+
   return (
     <>
       <div className={classes["select-area"]}>
         <div className={classes["select-div"]}>
           {/* 년도 선택하는 부분 */}
           <select
-            name="year-selcet"
+            id="year-select"
+            name="year-select"
             className={classes[`student-select`]}
             required
             defaultValue={""}
@@ -250,6 +313,16 @@ const AttendEachLists = (props) => {
                 );
               })}
           </select>
+
+          {/* 년도를 선택해야 저장이 가능한 엑셀저장버튼 보임 */}
+          {yearAttendLists.length > 0 && (
+            <Button
+              id={"saveExcel"}
+              className={"sortBtn"}
+              name={"엑셀저장"}
+              onclick={saveExcelHandler}
+            />
+          )}
         </div>
       </div>
 
