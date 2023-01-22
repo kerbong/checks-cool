@@ -108,6 +108,11 @@ const AttendCtxCalendar = (props) => {
         setNowClStudents(Object.values(cl)[0]);
       }
     });
+
+    // --학급-- 을 누르면 학생을 초기화
+    if (nowClassName === "") {
+      setNowClStudents([]);
+    }
   };
 
   //db에서 자료 받아오기 useEffect

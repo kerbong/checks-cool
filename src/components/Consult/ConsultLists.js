@@ -12,13 +12,16 @@ const ConsultLists = (props) => {
   const [nowOnConsult, setNowOnConsult] = useState([]);
   const [showEditor, setShowEditor] = useState("");
   const [initTextareaHeight, setInitTextareaHeight] = useState("");
-  const [showPastFirst, setShowPastFirst] = useState(false);
+  // const [showPastFirst, setShowPastFirst] = useState(false);
 
   const [dataYears, setDataYears] = useState([]);
   const [studentsOnConsults, setStudentsOnConsults] = useState([]);
+  //선택된 학급 이름
+  const [nowClassName, setNowClassName] = useState("");
 
   const yearGroupRef = useRef();
   const studentSelectRef = useRef();
+  const selectClassRef = useRef();
 
   //상담자료 받아오기
   const getConsultFromDb = () => {
@@ -106,8 +109,25 @@ const ConsultLists = (props) => {
         });
         //현재 보여주고 있는 자료에서 삭제
         setNowOnConsult((prev) => {
-          return prev.filter((data) => data.id !== consult.id);
+          let new_nowOnConsult = prev.filter((data) => data.id !== consult.id);
+
+          return new_nowOnConsult;
         });
+
+        if (!props.isSubject) {
+          //학생들 이름 다시 세팅하기. 전체자료에서 현재학년도이면서 삭제한 자료가 아닌것 들로 학생들 이름 설정
+          setStudentsOnConsults([
+            ...new Set(
+              consults
+                .filter(
+                  (data) =>
+                    data.yearGroup === yearGroupRef.current.value &&
+                    data.id !== consult.id
+                )
+                .map((data) => data.student_name)
+            ),
+          ]);
+        }
       }
     });
   };
@@ -125,23 +145,27 @@ const ConsultLists = (props) => {
     return year + "년 " + month + "월 " + day + "일  ";
   };
 
-  const timeSortedHandler = (upOrDown, tOrF) => {
-    if (nowOnConsult.length === 1) {
-      return;
-    }
-    setNowOnConsult((prev) => sortDate(prev, upOrDown));
-    setShowPastFirst(tOrF);
-  };
+  // const timeSortedHandler = (upOrDown, tOrF) => {
+  //   if (nowOnConsult.length === 1) {
+  //     return;
+  //   }
+  //   setNowOnConsult((prev) => sortDate(prev, upOrDown));
+  //   setShowPastFirst(tOrF);
+  // };
 
   const consultsHandler = (e) => {
     const student = e.target.value;
     let list;
+    let consult_data = !props.isSubject
+      ? consults
+      : consults.filter((data) => data.clName === nowClassName);
     if (student === "전체학생") {
-      list = sortDate(consults, "up");
-      setShowPastFirst(false);
+      list = sortDate(consult_data, "up");
+
+      // setShowPastFirst(false);
     } else {
       list = sortDate(
-        consults?.filter((data) => data.student_name === student),
+        consult_data?.filter((data) => data.student_name === student),
         "up"
       );
     }
@@ -153,10 +177,18 @@ const ConsultLists = (props) => {
     const list = consults?.filter((data) => data.yearGroup === year_group);
     setNowOnConsult(list);
 
+    if (!props.isSubject) {
+      //학생들 이름 세팅하기
+      setStudentsOnConsults([
+        ...new Set(list?.map((data) => data.student_name)),
+      ]);
+    }
     //선택된 학생(셀렉트 태그)초기화
     studentSelectRef.current.value = "";
-    //학생들 이름 세팅하기
-    setStudentsOnConsults([...new Set(list?.map((data) => data.student_name))]);
+    //선택된 학급 초기화
+    if (props.isSubject && year_group === "") {
+      setNowClassName("");
+    }
   };
 
   //엑셀로 저장하기 함수
@@ -207,7 +239,10 @@ const ConsultLists = (props) => {
           data_index = index;
         }
       });
-      new_datas[data_index] = consult;
+
+      new_datas[data_index] = props.isSubject
+        ? { ...consult, clName: nowClassName }
+        : consult;
       return new_datas;
     });
     //현재 보여주고 있는 자료에서 삭제하고 다시 추가
@@ -219,11 +254,37 @@ const ConsultLists = (props) => {
           data_index = index;
         }
       });
-      new_datas[data_index] = consult;
+      new_datas[data_index] = props.isSubject
+        ? { ...consult, clName: nowClassName }
+        : consult;
       return new_datas;
     });
     props.addData(consult);
   };
+
+  //학급 선택시 학급 이름 설정하고 useEffect 실행
+  const selectClassHandler = () => {
+    let className = selectClassRef.current.value;
+    // console.log(className);
+    setNowClassName(className);
+  };
+
+  useEffect(() => {
+    if (consults.length > 0) {
+      //특정학급 선택하면
+
+      let new_nowOnConsult = consults.filter(
+        (data) => data.clName === nowClassName
+      );
+
+      setNowOnConsult(new_nowOnConsult);
+      //학생 선택하는 셀렉트 태그를 위한 값 설정
+      let studentsOnDatas = new_nowOnConsult.map((data) => data.student_name);
+      setStudentsOnConsults([...new Set(studentsOnDatas)]);
+
+      studentSelectRef.current.value = "";
+    }
+  }, [nowClassName]);
 
   return (
     <>
@@ -234,6 +295,7 @@ const ConsultLists = (props) => {
             name="searchYear-selcet"
             ref={yearGroupRef}
             defaultValue={""}
+            className={classes["select-year"]}
             onChange={searchYearHandler}
           >
             <option value="" defaultChecked>
@@ -245,6 +307,25 @@ const ConsultLists = (props) => {
               </option>
             ))}
           </select>
+
+          {/* 학급 선택부분 - 전담교사만 보임 */}
+          {props.isSubject && (
+            <select
+              ref={selectClassRef}
+              onChange={selectClassHandler}
+              className={classes[`student-select`]}
+              value={nowClassName}
+            >
+              <option value="">--학급--</option>
+
+              {props.students?.map((cl) => (
+                <option key={Object.keys(cl)} value={Object.keys(cl)}>
+                  {Object.keys(cl)}
+                </option>
+              ))}
+            </select>
+          )}
+
           <select
             name="student-selcet"
             ref={studentSelectRef}
@@ -266,25 +347,7 @@ const ConsultLists = (props) => {
             ))}
           </select>
         </div>
-        {!showPastFirst ? (
-          <Button
-            id={"past"}
-            className={"sortBtn"}
-            name={"과거순"}
-            onclick={() => {
-              timeSortedHandler("down", true);
-            }}
-          />
-        ) : (
-          <Button
-            id={"current"}
-            className={"sortBtn"}
-            name={"최신순"}
-            onclick={() => {
-              timeSortedHandler("up", false);
-            }}
-          />
-        )}
+
         <Button
           id={"saveExcel"}
           className={"sortBtn"}
@@ -301,7 +364,6 @@ const ConsultLists = (props) => {
                   selectOption={props.selectOption}
                   consult={consult}
                   cancelEditor={() => setShowEditor("")}
-                  context={props.context}
                   initTextareaHeight={initTextareaHeight}
                   addData={(data) => addDataHandler(data)}
                 />

@@ -78,12 +78,18 @@
 }
 
 .select-area {
-  width: 200px;
+  width: 78%;
   display: flex;
   justify-content: space-around;
 }
 
 .student-select {
-  width: 100px;
-  font-size: 0.9em;
+  width: auto;
+  font-size: 1.1rem;
+}
+
+.select-year {
+  font-size: 1.1rem;
+
+  width: auto;
 }
