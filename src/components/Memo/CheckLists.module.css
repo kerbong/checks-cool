@@ -287,3 +287,21 @@
   position: absolute;
   width: 90vw;
 }
+
+/* .classSelect-div {
+  height: 25px;
+} */
+.class-select {
+  width: auto;
+  text-align: center;
+  padding: 15px;
+  font-size: 1.3rem;
+  margin: 15px;
+}
+
+.searchYear-select {
+  position: absolute;
+  width: auto;
+  left: 15px;
+  margin-top: 15px;
+}

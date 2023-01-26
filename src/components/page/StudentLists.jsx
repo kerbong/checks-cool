@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import TypingStudent from "../Student/TypingStudent";
-import { doc, setDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 import { dbService } from "../../fbase";
 import StudentLiWithDelete from "../Student/StudentLiWithDelete";
 import StudentExcelUpload from "../Student/StudentExcelUpload";
@@ -8,6 +8,7 @@ import Swal from "sweetalert2";
 import StudentInputByOcr from "../Student/StudentInputByOcr";
 import Button from "../Layout/Button";
 import ExampleModal from "./ExampleModal";
+import dayjs from "dayjs";
 
 import ocrGif from "../../assets/student/ocrGif.gif";
 import typingGif from "../../assets/student/typing_new_upload.gif";
@@ -22,24 +23,69 @@ const StudentLists = (props) => {
   const [studentsInfo, setStudentsInfo] = useState([]);
   const [showExample, setShowExample] = useState(false);
   const [nowClassName, setNowClassName] = useState("");
+  const [nowYear, setNowYear] = useState("");
 
   const selectRef = useRef();
 
+  //학년도 설정함수
+  const setYear = () => {
+    let now = dayjs();
+    let yearGroup = "";
+    let now_month = now.format("MM");
+    let now_year = now.format("YYYY");
+
+    if (+now_month >= 3) {
+      yearGroup = now_year;
+    } else if (+now_month <= 1) {
+      yearGroup = String(+now_year - 1);
+    }
+    return yearGroup;
+  };
+
   useEffect(() => {
+    let now_year = setYear();
+    setNowYear(now_year);
+
+    //현재학년도 자료만 입력가능하고,, 불러오기
+    let nowStudents = props?.students?.filter(
+      (yearStd) => String(Object.keys(yearStd)[0]) === now_year
+    )?.[0]?.[now_year];
+
     if (props.isSubject) {
-      if (props.students.length > 0) {
-        setWholeClass(sortWholeClass(props?.students));
-        setStudentsInfo(...Object.values(props.students[0]));
-        setNowClassName(Object.keys(props.students[0])[0]);
+      if (nowStudents.length > 0) {
+        setWholeClass(sortWholeClass(nowStudents));
+        setStudentsInfo(...Object.values(nowStudents[0]));
+        setNowClassName(Object.keys(nowStudents[0])[0]);
       }
     } else {
-      setStudentsInfo(props?.students);
+      setStudentsInfo(nowStudents);
     }
   }, [props.isSubject]);
 
   //저장버튼 누르면 현재 학생목록을 firestore에 저장하는 함수(덮어쓰기)
   const uploadStudents = async (data) => {
-    await setDoc(doc(dbService, "students", props.userUid), data);
+    //현재학년도를 제외한 학생자료 만들어서 exceptNow 배열에 저장
+    const studentsRef = doc(dbService, "students", props.userUid);
+    const studentSnap = await getDoc(studentsRef);
+
+    let uploadData = [];
+    if (studentSnap.exists()) {
+      console.log(studentSnap.data());
+      let exceptNow = studentSnap
+        .data()
+        ?.studentDatas.filter(
+          (yearData) => Object.keys(yearData)[0] !== Object.keys(data)[0]
+        );
+      uploadData = exceptNow.push({ ...data });
+    } else {
+      uploadData = [{ ...data }];
+    }
+
+    //업로드할 데이터, 기존자료에 전달받은 학년도 자료 추가
+
+    await setDoc(doc(dbService, "students", props.userUid), {
+      studentDatas: uploadData,
+    });
   };
 
   const submitStudentUploader = async () => {
@@ -56,6 +102,7 @@ const StudentLists = (props) => {
     }).then((result) => {
       if (result.isConfirmed) {
         // firestore에 저장하기
+        // 담임교사
         // 여자 설정을 안한 경우 남자로 모두 설정하기
         if (!props.isSubject) {
           let new_studentsInfo = [...studentsInfo];
@@ -66,7 +113,9 @@ const StudentLists = (props) => {
             return stu;
           });
 
-          const fixed_data = { studentDatas: sortNum(new_studentsInfo) };
+          const fixed_data = {
+            [nowYear]: sortNum(new_studentsInfo),
+          };
           uploadStudents(fixed_data);
 
           //전담용 로직
@@ -85,7 +134,9 @@ const StudentLists = (props) => {
             // new_wholeClass.push({`${Object.keys(cl)[0]}`:new_cl});
             return cl;
           });
-          const fixed_data = { studentDatas: new_wholeClass };
+          const fixed_data = {
+            [nowYear]: new_wholeClass,
+          };
 
           console.log(fixed_data);
           uploadStudents(fixed_data);
@@ -94,7 +145,7 @@ const StudentLists = (props) => {
         Swal.fire({
           icon: "success",
           title: "저장되었어요!",
-          text: "수정/추가된 학생 명단이 저장되었습니다.",
+          text: `수정/추가된 학생 명단이 저장되었습니다.`,
           confirmButtonText: "확인",
           confirmButtonColor: "#85bd82",
           timer: 5000,

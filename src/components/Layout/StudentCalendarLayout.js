@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 import AttendCtxCalendar from "../Attendance/AttendCtxCalendar";
+import dayjs from "dayjs";
 import Attendance from "../Attendance/Attendance";
 import Student from "../Student/Student";
 import AttendEachLists from "../Attendance/AttendEachLists";
@@ -16,6 +17,42 @@ const StudentCalendarLayout = (props) => {
   const [student, setStudent] = useState("");
   const [showCalendar, setShowCalendar] = useState(true);
   const [showExample, setShowExample] = useState(false);
+  const [nowStudents, setNowStudents] = useState([]);
+  const [isSubject, setIsSubject] = useState(false);
+
+  //학년도 설정함수
+  const setYear = () => {
+    let now = dayjs();
+    let yearGroup = "";
+    let now_month = now.format("MM");
+    let now_year = now.format("YYYY");
+
+    if (+now_month >= 3) {
+      yearGroup = now_year;
+    } else if (+now_month <= 1) {
+      yearGroup = String(+now_year - 1);
+    }
+    return yearGroup;
+  };
+
+  useEffect(() => {
+    //해당학년도에 전담여부 확인
+    let data_year = setYear();
+    let isSubject = props.isSubject?.filter(
+      (yearData) => Object.keys(yearData)[0] === data_year
+    )?.[0]?.[data_year];
+    setIsSubject(isSubject);
+  }, [props.isSubject]);
+
+  useEffect(() => {
+    let now_year = setYear();
+    //현재학년도 자료만 입력가능하고,, 불러오기
+    let now_students = props?.students?.filter(
+      (yearStd) => String(Object.keys(yearStd)[0]) === now_year
+    )?.[0]?.[now_year];
+
+    setNowStudents(now_students);
+  }, [props.students]);
 
   const showOptionHandler = (e) => {
     setStudent(e.target.innerText);
@@ -79,7 +116,7 @@ const StudentCalendarLayout = (props) => {
             <button id="title-btn" onClick={() => setShowExample(true)}>
               <i className="fa-regular fa-address-book"></i> 다왔니?
             </button>
-            {!props.isSubject && (
+            {!isSubject && (
               <button id="switch-btn" onClick={showStudentsListHandler}>
                 <i className="fa-solid fa-list-ol"></i> 명렬표
               </button>
@@ -90,11 +127,12 @@ const StudentCalendarLayout = (props) => {
             </button>
           </div>
 
+          {/* 현재학년도 학생만 보내줌 */}
           <AttendCtxCalendar
             selectOption={props.selectOption}
             about="attendance"
-            isSubject={props.isSubject}
-            students={props.students}
+            isSubject={isSubject}
+            students={nowStudents}
             userUid={props.userUid}
           />
         </>
@@ -107,7 +145,8 @@ const StudentCalendarLayout = (props) => {
             <button id="title-btn" onClick={() => setShowExample(true)}>
               <i className="fa-regular fa-address-book"></i> 모아보기
             </button>
-            {!props.isSubject && (
+
+            {!isSubject && (
               <button id="switch-btn" onClick={showStudentsListHandler}>
                 <i className="fa-solid fa-list-ol"></i> 명렬표
               </button>
@@ -118,6 +157,7 @@ const StudentCalendarLayout = (props) => {
             </button>
           </div>
 
+          {/* 전체 학년도 학생목록 */}
           <AttendEachLists
             userUid={props.userUid}
             isSubject={props.isSubject}
@@ -128,7 +168,7 @@ const StudentCalendarLayout = (props) => {
 
       {/* 전체 학생명부 에서 보여줄 버튼,내용 */}
       {/* 전담교사는 반별 학생 명렬표로 기간동안 안나오는 걸 입력할 필요성이 낮으므로 제외 */}
-      {showStudentsList && !props.isSubject && (
+      {showStudentsList && !isSubject && (
         <>
           <div id="title-div">
             <button id="title-btn" onClick={() => setShowExample(true)}>
@@ -148,12 +188,12 @@ const StudentCalendarLayout = (props) => {
               <div>학생 명단을 먼저 입력해주세요!</div>
             </>
           )}
-          <Student students={props.students} showOption={showOptionHandler} />
+          <Student students={nowStudents} showOption={showOptionHandler} />
         </>
       )}
 
       {/* studentsList 학생명부에서 학생 클릭하면 출결옵션 화면 나오기 */}
-      {optionIsShown && !props.isSubject && (
+      {optionIsShown && !isSubject && (
         <Attendance
           onClose={hideOptionHandler}
           who={student}

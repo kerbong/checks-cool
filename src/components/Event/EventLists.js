@@ -17,9 +17,7 @@ const EventLists = (props) => {
   const removeCheckSwal = (data) => {
     Swal.fire({
       title: "자료를 지울까요?",
-      text: `${data.id.slice(0, 10)} | ${
-        data.student_name
-      } | ${data.option.slice(1)}`,
+      text: `${data.id.slice(0, 10)} | ${data.name} | ${data.option.slice(1)}`,
       showDenyButton: true,
       confirmButtonText: "삭제",
       confirmButtonColor: "#db100cf2",
@@ -55,7 +53,7 @@ const EventLists = (props) => {
 
   //이미 있던 이벤트 수정할 때 화면 수정하는 함수
   const updateEventOnScreen = (data) => {
-    let option = document.querySelector(`#option-area${data.student_name}`);
+    let option = document.querySelector(`#option-area${data.name}`);
     option.innerText = `${data.option.slice(1)} | ${data.note}`;
   };
 
@@ -85,9 +83,7 @@ const EventLists = (props) => {
       });
     };
     //새로 추가하기 옵션 셀렉트
-    let new_option = document.querySelector(
-      `#option-select${item.student_num}`
-    );
+    let new_option = document.querySelector(`#option-select${item.num}`);
     //새로추가하기인데 옵션 선택안해서 빈칸이면
     if (new_option) {
       if (new_option.value === "") {
@@ -95,7 +91,7 @@ const EventLists = (props) => {
         return false;
       }
 
-      if (!item.student_num || !item.student_name) {
+      if (!item.num || !item.name) {
         notEnough();
         return false;
       } else {
@@ -103,10 +99,8 @@ const EventLists = (props) => {
       }
       //기존자료인데
     } else {
-      let new_option = document.querySelector(
-        `#option-select${item.student_name}`
-      );
-      let new_note = document.querySelector(`#option-note${item.student_name}`);
+      let new_option = document.querySelector(`#option-select${item.name}`);
+      let new_note = document.querySelector(`#option-note${item.name}`);
 
       //옵션과 노트값이 기존과 같으면
       if (new_option.value === item.option && new_note === item.note) {
@@ -120,39 +114,29 @@ const EventLists = (props) => {
 
   //새로운/ 수정된 자료 저장함수
   const saveFixedData = (item) => {
-    let exist_option = document.querySelector(
-      `#option-select${item.student_name}`
-    );
+    let exist_option = document.querySelector(`#option-select${item.name}`);
     let optionValue;
     let noteValue;
 
     //새로운 출결 이벤트일경우
     if (!exist_option) {
-      optionValue = document.querySelector(
-        `#option-select${item.student_num}`
-      ).value;
-      noteValue = document.querySelector(
-        `#option-note${item.student_num}`
-      ).value;
+      optionValue = document.querySelector(`#option-select${item.num}`).value;
+      noteValue = document.querySelector(`#option-note${item.num}`).value;
 
       //기존 출결 이벤트의 경우
     } else {
       //출결 옵션 선택값
-      optionValue = document.querySelector(
-        `#option-select${item.student_name}`
-      ).value;
+      optionValue = document.querySelector(`#option-select${item.name}`).value;
 
       //비고 입력값
-      noteValue = document.querySelector(
-        `#option-note${item.student_name}`
-      ).value;
+      noteValue = document.querySelector(`#option-note${item.name}`).value;
     }
 
     //출결 이벤트 날짜
 
     const fixed_data = {
-      student_num: item.student_num,
-      student_name: item.student_name,
+      num: item.num,
+      name: item.name,
       id: item.id,
       option: optionValue,
       note: noteValue,
@@ -201,7 +185,7 @@ const EventLists = (props) => {
       {/* //addEvent false 상황이면 추가하기 버튼 */}
       <div className={classes["add-event-div"]}>
         <Button
-          name={"추가하기"}
+          name={"추가"}
           id={"add-checkItemBtn"}
           className={"add-event-button"}
           onclick={() => {
@@ -241,8 +225,8 @@ const EventLists = (props) => {
             item={event}
             key={event.id}
             keyId={event.id}
-            shownId={event.student_num}
-            text={event.student_name}
+            shownId={event.num}
+            text={event.name}
             note={event.note}
             option={event.option}
             selectOption={props.selectOption}

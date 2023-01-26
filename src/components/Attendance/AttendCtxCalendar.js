@@ -55,6 +55,7 @@ const AttendCtxCalendar = (props) => {
       setEvents([]);
       setWholeEvents([]);
 
+      //전담이면
       if (props.isSubject) {
         if (doc.exists()) {
           let wholeE = doc?.data()?.attend_data;
@@ -227,7 +228,7 @@ const AttendCtxCalendar = (props) => {
               // 기존 코드, eventByDays 자료에 지금 날짜와 같은 자료가 있는지 확인해서 새로운 배열에 넣기
               // console.log(yyyymmdd.split("-")[2]);
               let new_eventOnDay = events.filter(
-                (event) => event.id.slice(8, 10) === yyyymmdd.split("-")[2]
+                (event) => event?.id?.slice(5, 10) === yyyymmdd?.slice(5, 10)
               );
               //만약 오늘 날짜에 해당하는 게 있으면
               if (new_eventOnDay.length > 0) {
@@ -292,7 +293,7 @@ const AttendCtxCalendar = (props) => {
             //달력날짜에 (번호+이름)의 버튼 추가하기
             const btn = document.createElement("button");
             btn.className = `${classes.eventData} eventBtn`;
-            btn.innerText = data.student_num + data.student_name;
+            btn.innerText = data.num + data.name;
             btn.id = data.id;
             eventTag.appendChild(btn);
             eventTag.style.backgroundColor = "#d38c85";
@@ -326,20 +327,18 @@ const AttendCtxCalendar = (props) => {
   const fixEvents = async (data, eventDate, fixOrDel) => {
     const attendTodoRef = doc(dbService, "attend", props.userUid);
     // events 자료 가져와서 수정하기
-    console.log(events);
     let before_events = JSON.parse(JSON.stringify(events));
     let new_events = before_events.map((evt) => {
       delete evt.eventDate;
       return { ...evt };
     });
-    console.log(new_events);
 
     //현재학급의 events가 있고
     if (new_events.length !== 0) {
       let event_index;
       const existedEvent = new_events.filter((event, index) => {
         if (event.id === data.id) {
-          console.log(event_index);
+          // console.log(event_index);
           //events에서 인덱스 저장해두기
           event_index = index;
         }
@@ -351,11 +350,11 @@ const AttendCtxCalendar = (props) => {
       if (existedEvent.length > 0) {
         if (fixOrDel === "fix") {
           // console.log(event_index);
-          console.log(data);
+          // console.log(data);
           // new_events[event_index] = data;
           new_events.splice(event_index, 1, data);
           // new_events.push(data);
-          console.log(new_events);
+          // console.log(new_events);
           let new_data = [...new_events];
           if (!props.isSubject) {
             const fixed_data = { attend_data: new_data };
@@ -464,7 +463,7 @@ const AttendCtxCalendar = (props) => {
           new_wholeEvents.push({ [nowClassName]: [...new_events] });
           new_data = { attend_data: new_wholeEvents };
           setWholeEvents(new_wholeEvents);
-          console.log(new_wholeEvents);
+          // console.log(new_wholeEvents);
           //아예 자료가 없는 경우
         } else {
           new_data = {
@@ -483,7 +482,9 @@ const AttendCtxCalendar = (props) => {
       // new_events.push(event);
     }
     setEvents([...new_events]);
-    selectClassHandler();
+    if (props.isSubject) {
+      selectClassHandler();
+    }
     // getAttendsFromDb();
 
     // return new_events;
@@ -544,7 +545,11 @@ const AttendCtxCalendar = (props) => {
         </div>
       )}
 
-      <AttendCalendar inline={"true"} getDateValue={getDateHandler} />
+      <AttendCalendar
+        inline={"true"}
+        getDateValue={getDateHandler}
+        isSubject={true}
+      />
 
       {!props.isSubject && (
         <p>

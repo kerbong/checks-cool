@@ -4,6 +4,7 @@ import { setDoc, doc, getDoc } from "firebase/firestore";
 import Button from "../Layout/Button";
 import classes from "./Profile.module.css";
 import Swal from "sweetalert2";
+import dayjs from "dayjs";
 
 const Profile = (props) => {
   const [userInfo, setUserInfo] = useState({});
@@ -16,7 +17,14 @@ const Profile = (props) => {
     const now_doc = await getDoc(userDocRef);
     if (now_doc.exists()) {
       setExistUserInfo({ ...now_doc.data() });
-      setUserInfo({ ...now_doc.data() });
+      setUserInfo({
+        ...now_doc.data(),
+        isSubject: now_doc
+          .data()
+          ?.isSubject?.filter(
+            (yearData) => Object.keys(yearData)[0] === now_year()
+          )?.[0],
+      });
     }
   };
 
@@ -28,11 +36,18 @@ const Profile = (props) => {
     if (
       obj1?.nickName?.trim() === obj2?.nickName?.trim() &&
       obj1?.stateMessage?.trim() === obj2?.stateMessage?.trim() &&
-      obj1?.isSubject === obj2?.isSubject
+      obj1?.isSubject?.[now_year()] === obj2?.isSubject?.[now_year()]
     ) {
       return true;
     }
     return false;
+  };
+
+  const now_year = () => {
+    //2월부터는 새로운 학년도로 인식함
+    return +dayjs().format("MM") <= 1
+      ? String(+dayjs().format("YYYY") - 1)
+      : dayjs().format("YYYY");
   };
 
   const userInfoSaveHandler = async (e) => {
@@ -72,7 +87,34 @@ const Profile = (props) => {
       confirmButtonColor: "#85bd82",
       timer: 5000,
     });
-    await setDoc(doc(dbService, "user", props.user.uid), userInfo);
+
+    let profileRef = doc(dbService, "user", props.user.uid);
+
+    //전담이 아닌경우 자료 추가
+    if (!userInfo.isSubject) {
+      userInfo.isSubject = { [now_year()]: false };
+    }
+
+    //전담여부 배열자료에서 현재 학년도 자료 제거하고 새롭게 추가하기
+    let exceptNowData = existUserInfo?.isSubject?.filter(
+      (yearData) =>
+        Object.keys(yearData)[0] !== Object.keys(userInfo.isSubject)[0]
+    );
+
+    let new_isSubject;
+    // 만약 기존자료가 없으면
+    if (exceptNowData) {
+      new_isSubject = exceptNowData.push(userInfo.isSubject);
+    } else {
+      new_isSubject = [userInfo.isSubject];
+    }
+
+    let new_userInfo = {
+      ...userInfo,
+      isSubject: new_isSubject,
+    };
+
+    await setDoc(profileRef, new_userInfo);
   };
 
   const userInfoHandler = (e, nameOrState) => {
@@ -84,12 +126,12 @@ const Profile = (props) => {
       if (e.target.checked) {
         setUserInfo((prev) => ({
           ...prev,
-          isSubject: true,
+          isSubject: { [now_year()]: true },
         }));
       } else {
         setUserInfo((prev) => ({
           ...prev,
-          isSubject: false,
+          isSubject: { [now_year()]: false },
         }));
       }
     }
@@ -127,12 +169,12 @@ const Profile = (props) => {
             <input
               key={"isSub"}
               onChange={(e) => userInfoHandler(e, "isSubject")}
-              value={userInfo?.["isSubject"] || ""}
-              checked={userInfo?.["isSubject"] ? true : false}
+              value={userInfo?.["isSubject"]?.[now_year()] || ""}
+              checked={userInfo?.["isSubject"]?.[now_year()] ? true : false}
               type="checkbox"
               // defaultValue={}
             />{" "}
-            전담교사 여부
+            이번학년도 전담교사
           </h3>
         </div>
 

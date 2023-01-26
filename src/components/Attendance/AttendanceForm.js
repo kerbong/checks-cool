@@ -87,8 +87,8 @@ const AttendanceForm = (props) => {
       new_data_id = selectDate + selectDateTime + studentInfo[0];
 
       const new_data = {
-        student_num: studentInfo[0],
-        student_name: studentInfo[1],
+        num: studentInfo[0],
+        name: studentInfo[1],
         id: new_data_id,
         option: option,
         note: inputValue,
@@ -115,8 +115,8 @@ const AttendanceForm = (props) => {
 
       // 전체 날짜에서 개별적으로 작업하기
       let data = {
-        student_num: studentInfo[0],
-        student_name: studentInfo[1],
+        num: studentInfo[0],
+        name: studentInfo[1],
         option: option,
         note: inputValue,
       };

@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import consultingOption from "../../consultingOption";
 import Attendance from "../Attendance/Attendance";
 import Student from "../Student/Student";
-
+import dayjs from "dayjs";
 import ConsultLists from "../Consult/ConsultLists";
 import ExampleModal from "./ExampleModal";
 import consultAdd from "../../assets/consult/consultAdd.gif";
@@ -24,6 +24,8 @@ const ConsultingPage = (props) => {
   const [showExample, setShowExample] = useState(false);
   const [nowClassName, setNowClassName] = useState("");
   const [nowClStudents, setNowClStudents] = useState([]);
+  const [nowStudents, setNowStudents] = useState([]);
+  const [isSubject, setIsSubject] = useState(false);
 
   const selectRef = useRef();
 
@@ -59,8 +61,9 @@ const ConsultingPage = (props) => {
       attachedFileUrl: fileUrl,
     };
 
+    let data_year = setYear(data.id.slice(0, 10));
     //전담일 경우 학급만 추가하기
-    if (props.isSubject) {
+    if (changeSubjectHandler(data_year)) {
       new_data = {
         ...new_data,
         clName: nowClassName === "" ? new_data.clName : nowClassName,
@@ -142,7 +145,7 @@ const ConsultingPage = (props) => {
     //     setEvents(Object.values(cl)[0]);
     //   }
     // });
-    props.students?.forEach((cl) => {
+    nowStudents?.forEach((cl) => {
       if (Object.keys(cl)[0] === nowClassName) {
         setNowClStudents(Object.values(cl)[0]);
       }
@@ -153,6 +156,46 @@ const ConsultingPage = (props) => {
       setNowClStudents([]);
     }
   };
+
+  //학년도 설정함수
+  const setYear = (date) => {
+    let now = dayjs(date);
+    let yearGroup = "";
+    let now_month = now.format("MM");
+    let now_year = now.format("YYYY");
+
+    if (+now_month >= 3) {
+      yearGroup = now_year;
+    } else if (+now_month <= 1) {
+      yearGroup = String(+now_year - 1);
+    }
+    return yearGroup;
+  };
+
+  useEffect(() => {
+    let now_year = setYear();
+    //현재학년도 자료만 입력가능하고,, 불러오기
+    let now_students = props?.students?.filter(
+      (yearStd) => Object.keys(yearStd)[0] === now_year
+    )?.[0]?.[now_year];
+
+    setNowStudents(now_students);
+  }, [props.students]);
+
+  //해당학년도의 전담여부 확인해서 설정하는 함수
+  const changeSubjectHandler = (data_year) => {
+    let isSubject = props.isSubject?.filter(
+      (yearData) => Object.keys(yearData)[0] === data_year
+    )?.[0]?.[data_year];
+    return isSubject;
+  };
+
+  useEffect(() => {
+    //해당학년도에 전담여부 확인
+    let data_year = setYear();
+    let isSubject = changeSubjectHandler(data_year);
+    setIsSubject(isSubject);
+  }, [props.isSubject]);
 
   return (
     <>
@@ -211,6 +254,7 @@ const ConsultingPage = (props) => {
           addData={addDataHandler}
           about="consulting"
           userUid={props.userUid}
+          isSubject={true}
         />
       )}
       {props.students.length === 0 && (
@@ -225,7 +269,7 @@ const ConsultingPage = (props) => {
         <>
           {/* 전담교사만 보이는 학급 셀렉트 */}
 
-          {props.isSubject && (
+          {isSubject && (
             <div>
               <select
                 ref={selectRef}
@@ -238,7 +282,7 @@ const ConsultingPage = (props) => {
                 value={nowClassName}
               >
                 <option value="">--학급--</option>
-                {props.students?.map((cl) => (
+                {nowStudents?.map((cl) => (
                   <option key={Object.keys(cl)} value={Object.keys(cl)}>
                     {Object.keys(cl)}
                   </option>
@@ -249,7 +293,7 @@ const ConsultingPage = (props) => {
             </div>
           )}
           <Student
-            students={!props.isSubject ? props.students : nowClStudents}
+            students={!isSubject ? nowStudents : nowClStudents}
             showOption={showOptionHandler}
             isSubject={props.isSubject}
           />

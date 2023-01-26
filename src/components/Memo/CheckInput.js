@@ -70,6 +70,12 @@ const CheckInput = (props) => {
         id: item_id,
         // fixOrNew,
       };
+
+      //전담일경우 학급만 추가로 저장
+      if (props.isSubject) {
+        new_checkItem["clName"] = props.clName;
+      }
+
       props.saveItemHandler(new_checkItem);
       props.onClose();
       props.setItemNull();

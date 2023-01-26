@@ -56,11 +56,11 @@
   width: 20px;
   margin: 5px;
   font-size: 1.1em;
-  border-radius: 10px;
+  border-radius: 20px;
   border-width: 0;
   padding: 20px;
   height: 20px;
-  background-color: #c4c13f47;
+  background-color: #7ac43f2b;
 }
 
 .student-add {
@@ -97,7 +97,7 @@
   width: auto;
   margin: 15px 10px;
   font-size: 1.2em;
-  border-radius: 10px;
+  border-radius: 30px;
   border-width: 0;
   letter-spacing: 1px;
   padding: 2vh;
@@ -133,7 +133,7 @@
   border-width: 0;
   letter-spacing: -1px;
   padding: 1vh;
-  background-color: #da9a9a;
+  background-color: #da9a9a4a;
 }
 
 .del-checkItem-button {
@@ -148,7 +148,8 @@
   float: left;
 }
 
-.sortBtn {
+.sortBtn,
+.sortBtn-consult {
   width: auto;
   height: 50px;
   margin: 5px;
@@ -157,18 +158,22 @@
   border-width: 0;
   letter-spacing: -1px;
   padding: 10px;
-  background-color: #da9a9a;
+  background-color: #da9a9a3b;
+}
+
+.sortBtn-consult {
+  background-color: #eceab0;
 }
 
 .sortBtn-clicked {
   width: auto;
   margin: 5px;
-  font-size: 1.1em;
+  font-size: 1.3em;
   border-radius: 10px;
   border-width: 0;
   letter-spacing: -1px;
   padding: 15px;
-  background-color: #da9a9a;
+  background-color: #da9a9a9c;
 }
 
 .save-listMemo-button {

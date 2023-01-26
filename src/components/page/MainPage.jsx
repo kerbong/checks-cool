@@ -54,6 +54,7 @@ const MainPage = (props) => {
   });
   const [hideClassTable, setHideClassTable] = useState(true);
   const [classStart, setClassStart] = useState([]);
+  const [subjectYear, setSubjectYear] = useState(false);
 
   //업데이트 내용 보여주기 로컬스토리지에서 showNotice를 스트링으로 저장해서 확인 후에 이전에 봤으면 안보여주기
   const [showNotice, setShowNotice] = useState(
@@ -101,13 +102,13 @@ const MainPage = (props) => {
   };
 
   //firestore에서 오늘 attend관련 자료들 받아오기
-  const getAttendsFromDb = () => {
+  const getAttendsFromDb = (isSubject) => {
     setAttendEvents([]);
 
     let attendRef = query(doc(dbService, "attend", props.userUid));
     onSnapshot(attendRef, (doc) => {
       let new_attends = [];
-      if (props.isSubject) {
+      if (isSubject) {
         doc?.data()?.attend_data?.forEach((cl) => {
           let attends = [];
           // new_attends.push(...Object.values(cl));
@@ -257,11 +258,20 @@ const MainPage = (props) => {
 
   //db에서 자료 받아오기 useEffect
   useEffect(() => {
-    getAttendsFromDb();
+    //해당학년도에 전담여부 확인
+    let data_year =
+      +todayYyyymmdd.split("-")[1] <= 1
+        ? String(+todayYyyymmdd.split("-")[0] - 1)
+        : todayYyyymmdd.split("-")[0];
+    let isSubject = props.isSubject?.filter(
+      (yearData) => Object.keys(yearData)[0] === data_year
+    )?.[0]?.[data_year];
+
+    getAttendsFromDb(isSubject);
     getScheduleFromDb();
     getClassTableFromDb();
-    getCheckListsFromDb();
-    getListMemoFromDb();
+    getCheckListsFromDb(isSubject);
+    getListMemoFromDb(isSubject);
   }, [todayYyyymmdd]);
 
   useEffect(() => {
@@ -517,14 +527,14 @@ const MainPage = (props) => {
               <li
                 key={
                   !props.isSubject
-                    ? event.id + event.student_num
-                    : event.cl + event.id + event.student_num
+                    ? event.id + event.num
+                    : event.cl + event.id + event.num
                 }
                 className={classes["main-li"]}
               >
                 {props.isSubject && event.cl + " "}
-                {event.student_num}번 - {event.student_name} /{" "}
-                {event.option.slice(1)} / {event.note || ""}
+                {event.num}번 - {event.name} / {event.option.slice(1)} /{" "}
+                {event.note || ""}
               </li>
             ))
           )}
@@ -618,7 +628,7 @@ const MainPage = (props) => {
                           props.students.filter(
                             (stu) =>
                               !event.data
-                                .map((data) => data.student_num)
+                                .map((data) => data.num)
                                 .includes(stu.num)
                           ).length
                         }

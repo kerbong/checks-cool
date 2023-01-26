@@ -7,7 +7,7 @@ import { dbService } from "./fbase";
 // import { getFirebaseToken } from "./FirebaseInit";
 import "./fcm_messaging_init";
 import Swal from "sweetalert2";
-
+import dayjs from "dayjs";
 import MainPage from "./components/page/MainPage";
 import AttendancePage from "./components/page/AttendancePage";
 import ClassgamePage from "./components/page/ClassgamePage";
@@ -111,7 +111,6 @@ function App() {
     onSnapshot(docRef, (doc) => {
       if (doc.exists()) {
         setShowMainExample(false);
-        // setShowMainExample(false);
         const sortNum = (students) => {
           let sorted_students;
           if (!profile.isSubject) {
@@ -131,6 +130,7 @@ function App() {
           return sorted_students;
         };
 
+        //현재학년도 자료만 보내기
         setStudents([...sortNum(doc.data().studentDatas)]);
       } else {
         setShowMainExample(true);
@@ -148,6 +148,12 @@ function App() {
 
   const setMenuHandler = () => {
     setMenuOnHead((prev) => !prev);
+  };
+
+  const now_year = () => {
+    return +dayjs().format("MM") <= 1
+      ? String(+dayjs().format("YYYY") - 1)
+      : dayjs().format("YYYY");
   };
 
   return (
@@ -173,7 +179,7 @@ function App() {
                     showMainExample={showMainExample}
                     students={students}
                     setShowMainExample={() => setShowMainExample(false)}
-                    isSubject={profile.isSubject || false}
+                    isSubject={profile?.isSubject}
                   />
                 }
               />
@@ -200,7 +206,7 @@ function App() {
                   <AttendancePage
                     students={students}
                     userUid={userUid}
-                    isSubject={profile.isSubject || false}
+                    isSubject={profile.isSubject}
                   />
                 }
               />
@@ -234,13 +240,18 @@ function App() {
 
               <Route path="todo" element={<TodoPage userUid={userUid} />} />
 
+              {/* 전담여부 issubject를 올해 자료만 보냄. 어차피 올해자료만 입력/수정가능 */}
               <Route
                 path="student-manage"
                 element={
                   <StudentLists
                     userUid={userUid}
                     students={students}
-                    isSubject={profile.isSubject || false}
+                    isSubject={
+                      profile?.isSubject?.filter(
+                        (yearData) => Object.keys(yearData)[0] === now_year()
+                      )?.[0]?.[now_year()]
+                    }
                   />
                 }
               />

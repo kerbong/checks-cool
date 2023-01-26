@@ -22,7 +22,11 @@ const Attendance = (props) => {
       </div>
       <div className={classes["date"]}>
         {" "}
-        <AttendCalendar getDateValue={getDateHandler} about={props.about} />
+        <AttendCalendar
+          getDateValue={getDateHandler}
+          about={props.about}
+          isSubject={props.isSubject}
+        />
       </div>
       <div className={classes["datepick-explain"]}>
         {props.about === "attendance" && "*시작 날짜와 끝 날짜를 선택해주세요!"}

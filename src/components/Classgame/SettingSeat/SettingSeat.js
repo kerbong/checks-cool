@@ -24,7 +24,7 @@ const SettingSeat = (props) => {
         <>
           <div className={classes["input-div"]}>
             <Button
-              name={"추가하기"}
+              name={"추가"}
               className={"settingSeat"}
               onclick={() => {
                 setAddNew(true);

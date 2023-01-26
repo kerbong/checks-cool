@@ -18,7 +18,11 @@ const AttendEachLists = (props) => {
   const [dataYears, setDataYears] = useState([]);
   //선택된 학급 이름
   const [nowClassName, setNowClassName] = useState("");
+  const [nowClass, setNowClass] = useState([]);
+  const [dataCount, setDataCount] = useState("");
+  const [isSubject, setIsSubject] = useState(false);
 
+  const yearSelectRef = useRef();
   const studentSelectRef = useRef();
   const selectClassRef = useRef();
 
@@ -35,38 +39,37 @@ const AttendEachLists = (props) => {
         let data_year = data.id.slice(0, 4);
         let data_month = data.id.slice(5, 7);
         let new_data = {};
+        let subject;
         if (+data_month >= 3) {
           years.push(data_year);
           //자료에 년도를 yearGroup으로 추가해둠
           new_data = { ...data, yearGroup: data_year };
-        } else if (+data_month <= 2) {
+        } else if (+data_month <= 1) {
           let fixed_year = String(+data_year - 1);
           years.push(fixed_year);
           new_data = { ...data, yearGroup: fixed_year };
         }
-
         //전담일경우 학급도 데이터에 추가하기
-        if (props.isSubject) {
+        if (cl !== "none") {
           new_data = { ...new_data, clName: Object.keys(cl)[0] };
         }
         // console.log(new_attends);
         new_attends.push(new_data);
       };
 
-      if (!props.isSubject) {
-        doc?.data()?.attend_data?.forEach((data) => {
+      doc?.data()?.attend_data?.forEach((data) => {
+        // 담임교사용 로직
+        if (Object.keys(data).length !== 1) {
           addYearData(data, "none");
-        });
 
-        // 전담용 로직
-      } else {
-        doc?.data()?.attend_data?.forEach((cl) => {
-          //학급[1반] 의 []배열 요소인 학생 출결자료를 수정
-          cl[Object.keys(cl)[0]].forEach((data) => {
-            addYearData(data, cl);
+          // 전담교사용 로직
+        } else {
+          data?.[Object.keys(data)[0]]?.forEach((data2) => {
+            addYearData(data2, data);
           });
-        });
-      }
+        }
+      });
+
       //학년도를 저장해둠.
       setDataYears([...new Set(years)]);
       setAttendLists([...new_attends]);
@@ -76,6 +79,54 @@ const AttendEachLists = (props) => {
   useEffect(() => {
     getAttendListsFromDb();
   }, []);
+
+  useEffect(() => {
+    let count;
+
+    if (!props.isSubject) {
+      count = document
+        ?.getElementById(`whole전체학생`)
+        ?.innerText?.split("(")?.[1]
+        ?.slice(0, 1);
+      if (showAttendOption !== "") {
+        count = document
+          ?.getElementById(`${showAttendOption}`)
+          ?.innerText?.split("(")?.[1]
+          ?.slice(0, 1);
+      }
+    } else {
+      count = document?.querySelectorAll(`.data-p`)?.length;
+    }
+
+    setDataCount(count);
+  }, [showAttendOption]);
+
+  useEffect(() => {
+    if (props.isSubject) {
+      let count = document?.querySelectorAll(`.data-p`)?.length;
+      setDataCount(count);
+    }
+  }, [studentAttendList]);
+
+  //해당학년도의 전담여부 확인해서 설정하는 함수
+  const changeSubjectHandler = (data_year) => {
+    let isSubject = props.isSubject?.filter(
+      (yearData) => Object.keys(yearData)[0] === data_year
+    )?.[0]?.[data_year];
+    return isSubject;
+  };
+
+  //학년도 값 변경시 실행
+  useEffect(() => {
+    let yearValue = yearSelectRef?.current?.value;
+    let new_isSubject = changeSubjectHandler(yearValue);
+    setIsSubject(new_isSubject);
+    let now_class = props?.students?.filter(
+      (yearStd) => String(Object.keys(yearStd)[0]) === yearValue
+    )?.[0]?.[yearValue];
+
+    setNowClass(now_class?.map((cl) => Object.keys(cl)));
+  }, [yearSelectRef?.current?.value]);
 
   const sortList = (list, upOrDown) => {
     const sorted_lists = list.sort(function (a, b) {
@@ -90,15 +141,20 @@ const AttendEachLists = (props) => {
     return sorted_lists;
   };
 
+  //학생선택 셀렉트 태그 함수
   const studentAttendListHandler = (e) => {
     const student = e.target.value;
     setStudentOn(student);
     if (student === "전체학생") {
-      setStudentAttendList(yearAttendLists);
+      if (!isSubject) {
+        setStudentAttendList(yearAttendLists);
+      } else {
+        setStudentAttendList(
+          yearAttendLists.filter((data) => data.clName === nowClassName)
+        );
+      }
     } else {
-      const list = yearAttendLists.filter(
-        (data) => data.student_name === student
-      );
+      const list = yearAttendLists.filter((data) => data.name === student);
       setStudentAttendList(list);
     }
     //출결옵션부분도 초기화
@@ -117,8 +173,9 @@ const AttendEachLists = (props) => {
     setShowAttendOption("");
     setStudentAttendList([]);
 
-    if (!props.isSubject) {
-      let studentsOnDatas = list.map((data) => data.student_name);
+    //전담이 아닌경우
+    if (!changeSubjectHandler(year_group)) {
+      let studentsOnDatas = list.map((data) => data.name);
       setStudentLists([...new Set(studentsOnDatas)]);
     }
   };
@@ -147,7 +204,7 @@ const AttendEachLists = (props) => {
       if (nowClassName === "전체학급") {
         setStudentAttendList([...yearAttendLists]);
         //학생 선택하는 셀렉트 태그를 위한 값 설정
-        let studentsOnDatas = yearAttendLists.map((data) => data.student_name);
+        let studentsOnDatas = yearAttendLists.map((data) => data.name);
         setStudentLists([...new Set(studentsOnDatas)]);
 
         //특정학급 선택하면
@@ -157,9 +214,13 @@ const AttendEachLists = (props) => {
         );
         setStudentAttendList(new_attends);
         //학생 선택하는 셀렉트 태그를 위한 값 설정
-        let studentsOnDatas = new_attends.map((data) => data.student_name);
+        let studentsOnDatas = new_attends.map((data) => data.name);
         setStudentLists([...new Set(studentsOnDatas)]);
       }
+    }
+    //학생이 선택되지 않았으면 세팅
+    if (nowClassName === "" || studentSelectRef.current.value === "") {
+      setStudentOn("no");
     }
   }, [nowClassName]);
 
@@ -168,8 +229,8 @@ const AttendEachLists = (props) => {
     const new_datas = [];
     yearAttendLists.forEach((atd) => {
       let data = [
-        +atd.student_num,
-        atd.student_name,
+        +atd.num,
+        atd.name,
         atd.option.slice(1),
         `${atd.id.slice(5, 7)}월`,
         `${atd.id.slice(8, 10)}일`,
@@ -234,6 +295,7 @@ const AttendEachLists = (props) => {
         <div className={classes["select-div"]}>
           {/* 년도 선택하는 부분 */}
           <select
+            ref={yearSelectRef}
             id="year-select"
             name="year-select"
             className={classes[`student-select`]}
@@ -253,7 +315,7 @@ const AttendEachLists = (props) => {
           </select>
 
           {/* 학급 선택부분 - 전담교사만 보임 */}
-          {props.isSubject && (
+          {isSubject && (
             <select
               ref={selectClassRef}
               onChange={selectClassHandler}
@@ -266,9 +328,9 @@ const AttendEachLists = (props) => {
                   {"전체학급"}
                 </option>
               )}
-              {props.students?.map((cl) => (
-                <option key={Object.keys(cl)} value={Object.keys(cl)}>
-                  {Object.keys(cl)}
+              {nowClass?.map((cl) => (
+                <option key={cl} value={cl}>
+                  {cl}
                 </option>
               ))}
             </select>
@@ -287,14 +349,14 @@ const AttendEachLists = (props) => {
             <option value="" defaultChecked>
               -- 학생 --
             </option>
-            {yearAttendLists.length > 0 && !props.isSubject && (
+            {yearAttendLists.length > 0 && (
               <option value={"전체학생"} key={"전체학생"}>
                 {"전체학생"}
               </option>
             )}
 
             {/* 전담이 아닐경우 학생 보여주기 */}
-            {!props.isSubject &&
+            {!isSubject &&
               studentLists?.map((student) => (
                 <option value={student} key={student}>
                   {student}
@@ -382,6 +444,13 @@ const AttendEachLists = (props) => {
         )}
       </div>
 
+      {/* 자료의 전체 개수 알려주기 */}
+      <h2>
+        {" "}
+        총 {dataCount}
+        개의 자료가 있습니다.
+      </h2>
+
       {studentAttendList.length > 0 && (
         <ul className={classes.ul}>
           {showAttendOption === ""
@@ -389,12 +458,12 @@ const AttendEachLists = (props) => {
               studentAttendList.map((data) => (
                 <div key={data.id}>
                   <li className={classes.li}>
-                    <p className={classes.p}>
+                    <p className={`${classes.p} data-p`}>
                       📅
                       {yearMonthDay(data.id.slice(0, 10))}
-                      {` | ${
-                        props.isSubject === false ? "" : data.clName + " - "
-                      } ${data.student_name}`}
+                      {` | ${isSubject === false ? "" : data.clName + " - "} ${
+                        data.name
+                      }`}
                     </p>
                     <p>
                       <span>{` ${data.option.slice(1)}`}</span>{" "}
@@ -410,12 +479,12 @@ const AttendEachLists = (props) => {
                 .map((data) => (
                   <div key={data.id}>
                     <li className={classes.li}>
-                      <p className={classes.p}>
+                      <p className={`${classes.p} data-p`}>
                         📅
                         {yearMonthDay(data.id.slice(0, 10))}
                         {` | ${
-                          props.isSubject === false ? "" : data.clName + " - "
-                        }  ${data.student_name}`}
+                          isSubject === false ? "" : data.clName + " - "
+                        }  ${data.name}`}
                       </p>
                       <p>
                         <span>{` ${data.option.slice(1)}`}</span>{" "}

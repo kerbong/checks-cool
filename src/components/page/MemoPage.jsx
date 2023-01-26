@@ -129,6 +129,7 @@ const MemoPage = (props) => {
           students={props.students}
           userUid={props.userUid}
           about="checkLists"
+          isSubject={props.isSubject}
         />
       )}
       {showWhatMemo === SHOW_WHAT[2] && (
@@ -139,6 +140,7 @@ const MemoPage = (props) => {
           students={props.students}
           userUid={props.userUid}
           about="listMemo"
+          isSubject={props.isSubject}
         />
       )}
       {showWhatMemo === SHOW_WHAT[3] && (

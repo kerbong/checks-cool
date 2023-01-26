@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import CheckInput from "./CheckInput";
 import ListMemoInput from "./ListMemoInput";
 import Modal from "../Layout/Modal";
-
+import dayjs from "dayjs";
 import Button from "../Layout/Button";
 import classes from "./CheckLists.module.css";
 import Swal from "sweetalert2";
@@ -18,12 +18,23 @@ const CheckLists = (props) => {
   const [nowOnCheckLists, setNowOnCheckLists] = useState([]);
   const [listMemo, setListMemo] = useState([]);
   const [nowOnListMemo, setNowOnListMemo] = useState([]);
-  const [unSubmitStudents, setUnSubmitStudents] = useState(props.students);
+  const [unSubmitStudents, setUnSubmitStudents] = useState([]);
   const [item, setItem] = useState([]);
   const [dataYears, setDataYears] = useState([]);
+  //학년도별 학생 목록
+  const [studentsYear, setStudentsYear] = useState([]);
+  //선택한 학년도/학급의 최종 학생 목록
+  const [students, setStudents] = useState([]);
+  //선택된 셀렉트 밸류
+  const [nowClassName, setNowClassName] = useState("");
+  const [isSubject, setIsSubject] = useState(false);
+
+  //인풋에 전달할 학생정보
+  const [inputStudents, setInputStudents] = useState([]);
 
   const checkListsYear = useRef();
   const listMemoYear = useRef();
+  const selectRef = useRef();
 
   const sortList = (list) => {
     const sorted_lists = list.sort(function (a, b) {
@@ -59,8 +70,21 @@ const CheckLists = (props) => {
           new_checkLists.push(new_data);
         });
         //학년도 저장 및 체크리스트기록 저장
-        setDataYears([...new Set(years)]);
+        if (years.length > 0) {
+          setDataYears([...new Set(years)]);
+
+          // 자료가 없으면 현재 학년도로 세팅
+        } else {
+          setDataYears([
+            +dayjs().format("MM") <= 2
+              ? String(+dayjs().format("YYYY") - 1)
+              : dayjs().format("YYYY"),
+          ]);
+        }
         setCheckLists([...new_checkLists]);
+
+        // //학년도별 학생명단 저장
+        // setStudentsYear(doc?.data()?.students_year);
       });
     } else if (props.about === "listMemo") {
       docRef = doc(dbService, "listMemo", props.userUid);
@@ -84,7 +108,18 @@ const CheckLists = (props) => {
           new_listMemo.push(new_data);
         });
         //학년도 저장 및 체크리스트기록 저장
-        setDataYears([...new Set(years)]);
+        // setDataYears([...new Set(years)]);
+        if (years.length > 0) {
+          setDataYears([...new Set(years)]);
+
+          // 자료가 없으면 현재 학년도로 세팅
+        } else {
+          setDataYears([
+            +dayjs().format("MM") <= 2
+              ? String(+dayjs().format("YYYY") - 1)
+              : dayjs().format("YYYY"),
+          ]);
+        }
         setListMemo([...new_listMemo]);
       });
     }
@@ -106,9 +141,11 @@ const CheckLists = (props) => {
     let this_year_data = dataYears?.filter((year) => year === String(new_year));
     if (this_year_data?.length > 0) {
       searchYearHandler(this_year_data[0]);
-      props.about === "checkLists"
-        ? (checkListsYear.current.value = this_year_data[0])
-        : (listMemoYear.current.value = this_year_data[0]);
+      if (props.about === "checkLists") {
+        checkListsYear.current.value = this_year_data[0];
+      } else {
+        listMemoYear.current.value = this_year_data[0];
+      }
     }
   }, [dataYears]);
 
@@ -124,6 +161,7 @@ const CheckLists = (props) => {
         timer: 5000,
       });
 
+      // console.log(item);
       //checkList 일경우
       if (item.unSubmitStudents) {
         //checklists자료 받아오기
@@ -175,9 +213,27 @@ const CheckLists = (props) => {
           });
           //처음 자료를 저장하는 경우
         } else {
-          await setDoc(newCheckRef, { checkLists_data: [item] });
-          setCheckLists([...item]);
-          setNowOnCheckLists([...item]);
+          // if (!isSubject) {
+          await setDoc(
+            newCheckRef,
+            { checkLists_data: [item] }
+            // { students_year: [{ [item.yearGroup]: props.students }] }
+          );
+          // setCheckLists([item]);
+          // setNowOnCheckLists([item]);
+          // } else {
+          // await setDoc(
+          //   newCheckRef,
+          //   { checkLists_data: [item] },
+          // {
+          //   students_year: [
+          //     { [item.yearGroup]: props.students[item.clName] },
+          //   ],
+          // }
+          // );
+          setCheckLists([item]);
+          setNowOnCheckLists([item]);
+          // }
         }
 
         //listMemo일 경우
@@ -304,16 +360,39 @@ const CheckLists = (props) => {
     setItem([]);
   };
 
+  //학년도 셀렉트 실행 함수
   const searchYearHandler = (value) => {
     const year_group = value;
+
+    //선택학 학년도에 전담이었는지 확인하기
+    let isSubject = props.isSubject?.filter(
+      (yearData) => Object.keys(yearData)[0] === year_group
+    )?.[0]?.[year_group];
+    setIsSubject(isSubject);
+
     if (props.about === "checkLists") {
       let list = [...checkLists]?.filter(
         (data) => data.yearGroup === year_group
       );
-      setNowOnCheckLists(list);
+      //담임만 바로 보여줄 자료 세팅
+      if (!isSubject) {
+        setNowOnCheckLists(list);
+      }
     } else {
       let list = [...listMemo]?.filter((data) => data.yearGroup === year_group);
       setNowOnListMemo(list);
+    }
+
+    //학년도에 해당하는 학생 목록 설정하기
+    let now_students = props.students?.filter(
+      (yearStd) => Object.keys(yearStd)[0] === year_group
+    )?.[0]?.[year_group];
+
+    //
+    if (!isSubject) {
+      setStudents(now_students);
+    } else {
+      setStudentsYear(now_students);
     }
   };
 
@@ -324,7 +403,7 @@ const CheckLists = (props) => {
     listMemo.forEach((memo) => {
       const new_datas = [];
       memo.data.forEach((stud) => {
-        let data = [stud.student_num, stud.student_name, stud.memo];
+        let data = [stud.num, stud.name, stud.memo];
         new_datas.push(data);
       });
       new_datas.unshift(["번호", "이름", "기록내용"]);
@@ -339,6 +418,76 @@ const CheckLists = (props) => {
     writeFile(book, `개별기록(${listMemoYear.current.value}학년도).xlsx`);
   };
 
+  //전담만 나오는, 학급 셀렉트 선택시 실행되는 함수
+  const selectClassHandler = () => {
+    let className = selectRef.current.value;
+    // console.log(className);
+    setNowClassName(className);
+  };
+
+  const nowYear = () => {
+    return +dayjs().format("MM") <= 2
+      ? String(+dayjs().format("YYYY") - 1)
+      : dayjs().format("YYYY");
+  };
+
+  //전담의 경우 학급 선택하면 최종 학생명단 세팅
+  const setStudentsHandler = () => {
+    // 학년도별 학생자료에서 키값이 현재세팅 학년도와 같은거 찾고, 그거 밸류들 중에 현재 세팅된 학급과 같은걸 최종 학생으로 설정
+    let now_students = studentsYear?.filter(
+      (cl) => Object.keys(cl)[0] === nowClassName
+    )?.[0]?.[nowClassName];
+
+    // 만약 학년도별 학생자료가 없으면, 아직 자료 입력 전이면 받아온 students에서 골라서 세팅
+    setStudents(now_students);
+
+    //보여줄 자료 중에서도 clName이 현재 학급 밸류가 같은 자료만 보여주기
+
+    let list;
+    // 만약 전체 학급의 자료인 경우... 볼수만 있도록!
+    if (nowClassName === "whole") {
+      list = [...checkLists]?.filter(
+        (data) => data.yearGroup === checkListsYear.current.value
+      );
+      // 각반인 경우
+    } else {
+      list = [...checkLists]?.filter(
+        (data) =>
+          data.yearGroup === checkListsYear.current.value &&
+          data.clName === nowClassName
+      );
+    }
+
+    //보여줄 자료 세팅
+    setNowOnCheckLists(list);
+  };
+
+  //학급 선택하면 최종 학생명단 세팅
+  useEffect(() => {
+    if (props.isSubject) {
+      setStudentsHandler();
+    }
+  }, [nowClassName]);
+
+  //해당 학년도에 전담인 경우? 리스트의 요소를 선택했을 때 해당학년도의 학생명부를 불러와주는 로직
+  const inputStudentsHandler = (item) => {
+    if (isSubject) {
+      let now_students = [];
+      props.students?.forEach((yearStd) => {
+        //해당학년도가 자료의 학년도와 일치하고
+        if (Object.keys(yearStd)[0] === item.yearGroup) {
+          yearStd?.[item.yearGroup]?.forEach((cl) => {
+            //해당학년도의 학급의 정보가 같을 때
+            if (Object.keys(cl)[0] === item.clName) {
+              now_students = [...Object.values(cl)[0]];
+            }
+          });
+        }
+      });
+      setInputStudents(now_students);
+    }
+  };
+
   return (
     <>
       {props.about === "checkLists" && (
@@ -346,7 +495,8 @@ const CheckLists = (props) => {
           {addCheckItem && (
             <Modal onClose={() => setAddCheckItem(false)}>
               <CheckInput
-                students={props.students}
+                // 전담이 아니면 년도별에 따라 받아온거 보냄
+                students={!isSubject ? students : inputStudents}
                 onClose={() => setAddCheckItem(false)}
                 saveItemHandler={(item) => {
                   saveItemHandler(item);
@@ -354,49 +504,95 @@ const CheckLists = (props) => {
                   setAddCheckItem(false);
                 }}
                 unSubmitStudents={
-                  item.length !== 0 ? unSubmitStudents : props.students
+                  item.length !== 0
+                    ? unSubmitStudents
+                    : !isSubject
+                    ? students
+                    : inputStudents
                 }
                 item={item}
                 removeData={removeData}
                 setItemNull={setItemNull}
+                isSubject={props.isSubject}
+                clName={props.isSubject ? nowClassName : ""}
               />
             </Modal>
           )}
+
+          {/* checkLists 학년도 설정 셀렉트태그 */}
           <select
-            style={{
-              position: "absolute",
-              width: "80px",
-              left: "15px",
-              marginTop: "5px",
-            }}
-            name="searchYear-selcet"
+            className={classes["searchYear-select"]}
+            name="searchYear-select"
             ref={checkListsYear}
-            defaultValue={""}
-            onChange={(e) => searchYearHandler(e.target.value)}
+            // defaultValue={""}
+            onChange={(e) => {
+              searchYearHandler(e.target.value);
+            }}
           >
             <option value="">--학년도--</option>
+
             {dataYears.map((year) => (
               <option value={year} key={year}>
                 {year}학년도
               </option>
             ))}
           </select>
-          <div>
-            <Button
-              name={"추가하기"}
-              id={"add-checkItemBtn"}
-              className={"add-event-button"}
-              onclick={() => {
-                setUnSubmitStudents([]);
-                setAddCheckItem(true);
-              }}
-            />
-          </div>
+
+          {/* 전담교사만 보이는 학급 셀렉트 */}
+
+          {isSubject && (
+            <select
+              ref={selectRef}
+              onChange={selectClassHandler}
+              className={classes["class-select"]}
+              value={nowClassName}
+            >
+              <option value="">--학급--</option>
+              <option value="whole">전체학급</option>
+
+              {studentsYear?.map((cl) => (
+                <option key={Object.keys(cl)[0]} value={Object.keys(cl)[0]}>
+                  {Object.keys(cl)[0]}
+                </option>
+              ))}
+            </select>
+          )}
+          {/* <div className={classes["classSelect-div"]}></div> */}
+
+          {/* 담임인 경우 현재 학년도 자료에만 추가 버튼이 보임 */}
+          {!isSubject && checkListsYear?.current?.value === nowYear() && (
+            <div>
+              <Button
+                name={"추가"}
+                id={"add-checkItemBtn"}
+                className={"add-event-button"}
+                onclick={() => {
+                  setUnSubmitStudents([]);
+                  setAddCheckItem(true);
+                }}
+              />
+            </div>
+          )}
+
+          {/* 전담버전에서는 학급을 선택하거나 전체학급이 아닐경우에만 보임 */}
+          {isSubject && nowClassName !== "" && nowClassName !== "whole" && (
+            <div>
+              <Button
+                name={"추가"}
+                id={"add-checkItemBtn"}
+                className={"add-event-button"}
+                onclick={() => {
+                  setUnSubmitStudents([]);
+                  setAddCheckItem(true);
+                }}
+              />
+            </div>
+          )}
 
           <div>
             {/* 제출 미제출 체크리스트들 보여주기 */}
             {nowOnCheckLists &&
-              sortList(nowOnCheckLists).map((item) => (
+              sortList(nowOnCheckLists)?.map((item) => (
                 <li
                   key={item.id}
                   id={item.id}
@@ -404,6 +600,7 @@ const CheckLists = (props) => {
                   onClick={() => {
                     setUnSubmitStudents(item.unSubmitStudents);
                     setItem([]);
+                    inputStudentsHandler(item);
                     setItem(item);
                     setAddCheckItem(true);
                   }}
@@ -471,7 +668,7 @@ const CheckLists = (props) => {
               ))}
             </select>
             <Button
-              name={"추가하기"}
+              name={"추가"}
               id={"add-listMemoBtn"}
               className={"add-event-button"}
               onclick={() => {
@@ -510,9 +707,7 @@ const CheckLists = (props) => {
                     {
                       props.students.filter(
                         (stu) =>
-                          !item.data
-                            .map((data) => data.student_num)
-                            .includes(stu.num)
+                          !item.data.map((data) => data.num).includes(stu.num)
                       ).length
                     }
                     {")"}
@@ -523,9 +718,7 @@ const CheckLists = (props) => {
 
                       .filter(
                         (stu) =>
-                          !item.data
-                            .map((data) => data.student_num)
-                            .includes(stu.num)
+                          !item.data.map((data) => data.num).includes(stu.num)
                       )
                       .map((data) => (
                         <Button
@@ -543,7 +736,7 @@ const CheckLists = (props) => {
       )}
       {
         <>
-          <p>
+          <p style={{ marginTop: "65px" }}>
             * 입력한 자료가 안 보이면 메뉴를 다시 클릭해주시거나 다시
             로그인해주세요!
           </p>

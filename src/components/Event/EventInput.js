@@ -136,8 +136,8 @@ const EventInput = (props) => {
     if (props.about !== "todo") {
       new_data = {
         eventDate: eventDate,
-        student_num: student.split(" ")[0],
-        student_name: student.split(" ")[1],
+        num: student.split(" ")[0],
+        name: student.split(" ")[1],
         id: new_data_id,
       };
     } else {

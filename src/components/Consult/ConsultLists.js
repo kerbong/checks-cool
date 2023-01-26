@@ -6,6 +6,7 @@ import ConsultEdit from "./ConsultEdit";
 import { dbService } from "../../fbase";
 import { onSnapshot, doc } from "firebase/firestore";
 import { utils, writeFile } from "xlsx";
+import dayjs from "dayjs";
 
 const ConsultLists = (props) => {
   const [consults, setConsults] = useState([]);
@@ -16,8 +17,10 @@ const ConsultLists = (props) => {
 
   const [dataYears, setDataYears] = useState([]);
   const [studentsOnConsults, setStudentsOnConsults] = useState([]);
+  const [students, setStudents] = useState([]);
   //선택된 학급 이름
   const [nowClassName, setNowClassName] = useState("");
+  const [isSubject, setIsSubject] = useState(false);
 
   const yearGroupRef = useRef();
   const studentSelectRef = useRef();
@@ -82,7 +85,7 @@ const ConsultLists = (props) => {
     Swal.fire({
       title: "자료를 지울까요?",
       text: `${consult.id.slice(0, 10)} | ${
-        consult.student_name
+        consult.name
       } | ${consult.option.slice(1)}`,
       showDenyButton: true,
       confirmButtonText: "삭제",
@@ -114,7 +117,7 @@ const ConsultLists = (props) => {
           return new_nowOnConsult;
         });
 
-        if (!props.isSubject) {
+        if (!isSubject) {
           //학생들 이름 다시 세팅하기. 전체자료에서 현재학년도이면서 삭제한 자료가 아닌것 들로 학생들 이름 설정
           setStudentsOnConsults([
             ...new Set(
@@ -124,7 +127,7 @@ const ConsultLists = (props) => {
                     data.yearGroup === yearGroupRef.current.value &&
                     data.id !== consult.id
                 )
-                .map((data) => data.student_name)
+                .map((data) => data.name)
             ),
           ]);
         }
@@ -156,7 +159,7 @@ const ConsultLists = (props) => {
   const consultsHandler = (e) => {
     const student = e.target.value;
     let list;
-    let consult_data = !props.isSubject
+    let consult_data = !isSubject
       ? consults
       : consults.filter((data) => data.clName === nowClassName);
     if (student === "전체학생") {
@@ -165,30 +168,37 @@ const ConsultLists = (props) => {
       // setShowPastFirst(false);
     } else {
       list = sortDate(
-        consult_data?.filter((data) => data.student_name === student),
+        consult_data?.filter((data) => data.name === student),
         "up"
       );
     }
     setNowOnConsult(list);
   };
 
+  //학년도 선택 함수
   const searchYearHandler = (e) => {
     const year_group = e.target.value;
     const list = consults?.filter((data) => data.yearGroup === year_group);
     setNowOnConsult(list);
+    let isSubject = changeSubjectHandler(year_group);
 
-    if (!props.isSubject) {
+    if (!isSubject) {
+      setIsSubject(false);
       //학생들 이름 세팅하기
-      setStudentsOnConsults([
-        ...new Set(list?.map((data) => data.student_name)),
-      ]);
+      setStudentsOnConsults([...new Set(list?.map((data) => data.name))]);
+    } else {
+      setIsSubject(true);
+      setNowClassName("");
+      //받아온 props.students에서 학년도에 맞는 것만 students변수에 넣기
+      let now_students = props.students?.filter(
+        (yearStd) => Object.keys(yearStd)[0] === year_group
+      )?.[0]?.[year_group];
+
+      setStudents(now_students);
     }
     //선택된 학생(셀렉트 태그)초기화
     studentSelectRef.current.value = "";
     //선택된 학급 초기화
-    if (props.isSubject && year_group === "") {
-      setNowClassName("");
-    }
   };
 
   //엑셀로 저장하기 함수
@@ -196,8 +206,8 @@ const ConsultLists = (props) => {
     const new_datas = [];
     consults.forEach((consult) => {
       let data = [
-        consult.student_num,
-        consult.student_name,
+        consult.num,
+        consult.name,
         consult.option.slice(1),
         `${consult.id.slice(0, 10)} ${consult.id.slice(10, 15)}`,
         consult.note,
@@ -240,7 +250,7 @@ const ConsultLists = (props) => {
         }
       });
 
-      new_datas[data_index] = props.isSubject
+      new_datas[data_index] = isSubject
         ? { ...consult, clName: nowClassName }
         : consult;
       return new_datas;
@@ -254,7 +264,7 @@ const ConsultLists = (props) => {
           data_index = index;
         }
       });
-      new_datas[data_index] = props.isSubject
+      new_datas[data_index] = isSubject
         ? { ...consult, clName: nowClassName }
         : consult;
       return new_datas;
@@ -279,12 +289,42 @@ const ConsultLists = (props) => {
 
       setNowOnConsult(new_nowOnConsult);
       //학생 선택하는 셀렉트 태그를 위한 값 설정
-      let studentsOnDatas = new_nowOnConsult.map((data) => data.student_name);
+      let studentsOnDatas = new_nowOnConsult.map((data) => data.name);
       setStudentsOnConsults([...new Set(studentsOnDatas)]);
 
       studentSelectRef.current.value = "";
     }
   }, [nowClassName]);
+
+  //학년도 설정함수
+  const setYear = () => {
+    let now = dayjs();
+    let yearGroup = "";
+    let now_month = now.format("MM");
+    let now_year = now.format("YYYY");
+
+    if (+now_month >= 3) {
+      yearGroup = now_year;
+    } else if (+now_month <= 1) {
+      yearGroup = String(+now_year - 1);
+    }
+    return yearGroup;
+  };
+
+  //해당학년도의 전담여부 확인해서 설정하는 함수
+  const changeSubjectHandler = (data_year) => {
+    let isSubject = props.isSubject?.filter(
+      (yearData) => Object.keys(yearData)[0] === data_year
+    )?.[0]?.[data_year];
+    return isSubject;
+  };
+
+  useEffect(() => {
+    //해당학년도에 전담여부 확인
+    let data_year = setYear();
+    let isSubject = changeSubjectHandler(data_year);
+    setIsSubject(isSubject);
+  }, [props.isSubject]);
 
   return (
     <>
@@ -309,7 +349,7 @@ const ConsultLists = (props) => {
           </select>
 
           {/* 학급 선택부분 - 전담교사만 보임 */}
-          {props.isSubject && (
+          {isSubject && (
             <select
               ref={selectClassRef}
               onChange={selectClassHandler}
@@ -318,7 +358,7 @@ const ConsultLists = (props) => {
             >
               <option value="">--학급--</option>
 
-              {props.students?.map((cl) => (
+              {students?.map((cl) => (
                 <option key={Object.keys(cl)} value={Object.keys(cl)}>
                   {Object.keys(cl)}
                 </option>
@@ -326,6 +366,7 @@ const ConsultLists = (props) => {
             </select>
           )}
 
+          {/* 학생 선택하는 셀렉트 태그 */}
           <select
             name="student-selcet"
             ref={studentSelectRef}
@@ -350,7 +391,7 @@ const ConsultLists = (props) => {
 
         <Button
           id={"saveExcel"}
-          className={"sortBtn"}
+          className={"sortBtn-consult"}
           name={"엑셀저장"}
           onclick={saveExcelHandler}
         />
@@ -377,7 +418,7 @@ const ConsultLists = (props) => {
                       {yearMonthDay(consult.id.slice(0, 10))}
                     </p>
                     <span className={classes.nameSpan} id={"1" + consult.id}>
-                      {`${consult.student_name} | ${consult.option.slice(1)}`}
+                      {`${consult.name} | ${consult.option.slice(1)}`}
                     </span>
                   </div>
 

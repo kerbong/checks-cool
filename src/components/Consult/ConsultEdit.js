@@ -72,7 +72,7 @@ const ConsultEdit = (props) => {
           <i className="fa-regular fa-id-badge"></i>
         </span>
         <span className={classes.nameSpan}>
-          {consult.student_name} {" | "}
+          {consult.name} {" | "}
           {props.selectOption && (
             <select
               name="consult-option"

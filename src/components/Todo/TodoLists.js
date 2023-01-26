@@ -201,7 +201,7 @@ const TodoLists = (props) => {
       {/* //addEvent false 상황이면 추가하기 버튼 */}
       <div className={classes["add-event-div"]}>
         <Button
-          name={"추가하기"}
+          name={"추가"}
           className={"add-event-button"}
           onclick={() => {
             setAddEvent(true);

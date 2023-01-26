@@ -105,7 +105,7 @@ const StudentExcelUpload = (props) => {
 
       <div className={classes.example}>
         {/* 학생자료 없을 때 설명 화면 */}
-        {props.studentsInfo.length === 0 && (
+        {props.studentsInfo?.length === 0 && (
           <img src={excelExample} alt="" className={classes.exampleImg} />
         )}
         <hr className={classes["hr"]} />
