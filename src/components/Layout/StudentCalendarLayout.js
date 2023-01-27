@@ -38,10 +38,12 @@ const StudentCalendarLayout = (props) => {
   useEffect(() => {
     //해당학년도에 전담여부 확인
     let data_year = setYear();
-    let isSubject = props.isSubject?.filter(
-      (yearData) => Object.keys(yearData)[0] === data_year
-    )?.[0]?.[data_year];
-    setIsSubject(isSubject);
+    if (props.isSubject) {
+      let isSubject = props?.isSubject?.filter(
+        (yearData) => Object.keys(yearData)?.[0] === data_year
+      )?.[0]?.[data_year];
+      setIsSubject(isSubject);
+    }
   }, [props.isSubject]);
 
   useEffect(() => {

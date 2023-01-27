@@ -184,9 +184,12 @@ const ConsultingPage = (props) => {
 
   //해당학년도의 전담여부 확인해서 설정하는 함수
   const changeSubjectHandler = (data_year) => {
-    let isSubject = props.isSubject?.filter(
-      (yearData) => Object.keys(yearData)[0] === data_year
-    )?.[0]?.[data_year];
+    let isSubject;
+    if (props.isSubject) {
+      isSubject = props.isSubject?.filter(
+        (yearData) => Object.keys(yearData)[0] === data_year
+      )?.[0]?.[data_year];
+    }
     return isSubject;
   };
 

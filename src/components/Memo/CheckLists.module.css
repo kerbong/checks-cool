@@ -62,8 +62,14 @@
   margin-left: 10px;
 }
 
-.listMemo-title {
+.listMemo-title,
+.listMemo-title-sub {
   margin-top: 15px;
+  display: grid;
+}
+
+.listMemo-title-sub {
+  grid-template-columns: 1fr 2fr 1fr;
 }
 
 .headerBtn-text {
@@ -104,11 +110,21 @@
   width: auto;
 }
 
-.listMemoBtn-div {
+.listMemoBtn-div,
+.listMemoBtn2-div {
   display: flex;
-  align-items: flex-start;
-  justify-content: space-evenly;
+  align-items: center;
+  justify-content: center;
   margin-top: 10px;
+}
+
+.listMemoSelect-div {
+  display: flex;
+  width: 65%;
+}
+
+.listMemoBtn2-div {
+  justify-content: flex-end;
 }
 
 .budgetList-ul {
@@ -291,17 +307,18 @@
 /* .classSelect-div {
   height: 25px;
 } */
-.class-select {
-  width: auto;
+.class-select,
+.searchYear-select {
+  width: 115px;
+  letter-spacing: -1px;
+  height: 54px;
   text-align: center;
-  padding: 15px;
+  padding: 10px;
+
   font-size: 1.3rem;
-  margin: 15px;
+  margin: 5px;
 }
 
 .searchYear-select {
-  position: absolute;
-  width: auto;
-  left: 15px;
-  margin-top: 15px;
+  font-size: 1rem;
 }

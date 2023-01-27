@@ -4,6 +4,7 @@ import RowColumn from "./RowColumn";
 import SeatTable from "./SeatTable";
 import SeatLists from "./SeatLists";
 import Button from "../../Layout/Button";
+import dayjs from "dayjs";
 
 const SettingSeat = (props) => {
   const [init, setInit] = useState(true);
@@ -12,11 +13,45 @@ const SettingSeat = (props) => {
   const [rowColumn, setRowColumn] = useState("");
   const [randomSeat, setRandomSeat] = useState(false);
   const [students, setStudents] = useState();
+  // 자리표에 보내는 최종 학생명단
+  const [seatStudents, setSeatStudents] = useState();
   const [seatLists, setSeatLists] = useState([]);
 
+  //학년도 설정함수
+  const setYear = () => {
+    let now = dayjs();
+    let yearGroup = "";
+    let now_month = now.format("MM");
+    let now_year = now.format("YYYY");
+
+    if (+now_month >= 3) {
+      yearGroup = now_year;
+    } else if (+now_month <= 1) {
+      yearGroup = String(+now_year - 1);
+    }
+    return yearGroup;
+  };
+
   useEffect(() => {
-    setStudents(props.students);
+    let now_year = setYear();
+    //현재학년도 자료만 입력가능하고,, 불러오기
+    let now_students = props?.students?.filter(
+      (yearStd) => Object.keys(yearStd)[0] === now_year
+    )?.[0]?.[now_year];
+
+    setStudents(now_students);
   }, [props.students]);
+
+  //최종 자리에 앉는 학생 세팅
+  const seatStudentsHandler = (clName) => {
+    if (clName === "") {
+      setSeatStudents(students);
+    } else {
+      setSeatStudents(
+        students?.filter((cl) => Object.keys(cl)[0] === clName)?.[0]?.[clName]
+      );
+    }
+  };
 
   return (
     <>
@@ -24,7 +59,7 @@ const SettingSeat = (props) => {
         <>
           <div className={classes["input-div"]}>
             <Button
-              name={"추가"}
+              name={"추가하기"}
               className={"settingSeat"}
               onclick={() => {
                 setAddNew(true);
@@ -64,16 +99,17 @@ const SettingSeat = (props) => {
 
       {addNew && !showTable && (
         <RowColumn
-          setRowColumn={(col, row) => {
+          setRowColumn={(col, row, clName) => {
             setShowTable(true);
             setRowColumn(`${row}-${col}`);
+            seatStudentsHandler(clName);
           }}
           addNewCancel={() => {
             setAddNew(false);
             setShowTable(false);
             setInit(true);
           }}
-          studentsNum={props.students.length}
+          students={students}
         />
       )}
 
@@ -83,7 +119,7 @@ const SettingSeat = (props) => {
 
           <SeatTable
             rowColumn={rowColumn}
-            students={students}
+            students={seatStudents}
             userUid={props.userUid}
             addNewCancel={() => {
               setAddNew(false);

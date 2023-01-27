@@ -14,6 +14,8 @@ const ListMemoInput = (props) => {
     return `${month}월 ${day}일(${weekDays[weekd]})`;
   };
 
+  console.log(props.students);
+
   const [students, setStudents] = useState(props.students);
   const [studentMemo, setStudentMemo] = useState(props.item || []);
   const [memoTitle, setMemoTitle] = useState(
@@ -41,6 +43,12 @@ const ListMemoInput = (props) => {
         data: [],
         id: item_id,
       };
+
+      //전담일 경우에만 clName 추가함
+      if (props.isSubject) {
+        new_memo["clName"] = props.item?.clName || props.clName;
+      }
+
       //모든 텍스트area를 선택함.
       let memoInputAll = document.querySelectorAll(`textarea`);
 
@@ -109,6 +117,8 @@ const ListMemoInput = (props) => {
     });
   };
 
+  console.log(props.students);
+
   return (
     <>
       <h2 className={classes["title-section"]}>
@@ -143,11 +153,11 @@ const ListMemoInput = (props) => {
           id={"add-checkItemBtn"}
           className={"save-listMemo-button"}
           onclick={() => {
-            if (props.students.length === 0) {
+            if (props.students?.length === 0 || props.students === undefined) {
               Swal.fire({
                 icon: "error",
                 title: "저장에 실패했어요!",
-                text: "메뉴의 곰돌이를 눌러서 학생명단을 먼저 입력해주세요.",
+                text: "메뉴의 곰돌이를 눌러서 학생명부를 먼저 입력해주세요.",
                 confirmButtonText: "확인",
                 confirmButtonColor: "#85bd82",
                 timer: 5000,
@@ -160,8 +170,8 @@ const ListMemoInput = (props) => {
         />
       </h2>
       <ul className={classes["ul-section"]}>
-        {students.length > 0 &&
-          students.map((student) => (
+        {students?.length > 0 &&
+          students?.map((student) => (
             <li className={classes["li-section"]} key={student.num}>
               <div className={classes["num-section"]}>{student.num}</div>
               <div className={classes["name-section"]}>{student.name}</div>

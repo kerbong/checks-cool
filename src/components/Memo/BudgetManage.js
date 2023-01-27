@@ -20,6 +20,7 @@ const BudgetManage = (props) => {
   const [dataYears, setDataYears] = useState([]);
   const [nowOnBudget, setNowOnBudget] = useState([]);
   const [showInput, setShowInput] = useState(false);
+  const [showExplain, setShowExplain] = useState(false);
 
   const budgetSelectRef = useRef();
   const budgetYearRef = useRef();
@@ -243,6 +244,43 @@ const BudgetManage = (props) => {
         budget={nowOnBudget}
         deleteHandler={(budget) => deleteHandler(budget)}
       />
+
+      <div
+        onClick={() => setShowExplain((prev) => !prev)}
+        className={classes["budgetMenu-div"]}
+        style={{ color: "darkgray" }}
+      >
+        <h2>
+          사용 설명서{" "}
+          {showExplain ? (
+            <i className="fa-solid fa-chevron-up"></i>
+          ) : (
+            <i className="fa-solid fa-chevron-down"></i>
+          )}
+        </h2>
+      </div>
+
+      {showExplain && (
+        <div>
+          <p>
+            <h3>* 예산을 추가하고 싶을 때 *</h3>
+          </p>
+          <p>1. 예산명을 선택하지 않고 + 클릭</p>
+          <p>2. 예산명, 기한, 금액 등을 입력</p>
+          <p>
+            3. <i className="fa-regular fa-floppy-disk"></i> 버튼 클릭해서 저장
+          </p>
+
+          <p>
+            <h3>* 품목을 추가하고 싶을 때 *</h3>
+          </p>
+          <p>1. 년도와 예산명 선택 후 + 클릭</p>
+          <p>2. 품목명, 사이트 금액 등 입력</p>
+          <p>
+            3. <i className="fa-regular fa-floppy-disk"></i> 버튼 클릭해서 저장
+          </p>
+        </div>
+      )}
     </div>
   );
 };

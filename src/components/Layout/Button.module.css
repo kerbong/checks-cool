@@ -93,16 +93,27 @@
   background-color: #7632d591;
 }
 
-.add-event-button {
+.add-event-button,
+.check-memo-button {
   width: auto;
-  margin: 15px 10px;
+  margin: 10px 5px;
+  word-break: keep-all;
   font-size: 1.2em;
   border-radius: 30px;
   border-width: 0;
   letter-spacing: 1px;
-  padding: 2vh;
+  padding: 1.6vh;
   background-color: #ffbec7;
   box-shadow: 3px 5px 0 #d2877b;
+}
+
+.check-memo-button {
+  width: 50px;
+  margin: 10px 6px;
+  display: flex;
+  justify-content: center;
+  height: 42px;
+  align-items: center;
 }
 
 .add-event-button:active {

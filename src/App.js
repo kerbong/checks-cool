@@ -206,7 +206,7 @@ function App() {
                   <AttendancePage
                     students={students}
                     userUid={userUid}
-                    isSubject={profile.isSubject}
+                    isSubject={profile.isSubject || false}
                   />
                 }
               />

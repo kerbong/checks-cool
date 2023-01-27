@@ -16,8 +16,8 @@ const CheckInput = (props) => {
     props.unSubmitStudents
   );
   const [submitStudents, setSubmitStudents] = useState(
-    students.filter(
-      (stu1) => !unSubmitStudents.some((stu2) => stu1.num === stu2.num)
+    students?.filter(
+      (stu1) => !unSubmitStudents?.some((stu2) => stu1.num === stu2.num)
     )
   );
 
@@ -127,6 +127,8 @@ const CheckInput = (props) => {
     //바꾸기 버튼 수정 필요함...
   };
 
+  console.log(students);
+
   return (
     <>
       <div className={classes.div}>
@@ -196,7 +198,7 @@ const CheckInput = (props) => {
         <h3 className={classes.h3}> 제 출 </h3>
 
         <div className={classes.div}>
-          {submitStudents.map((stu) => (
+          {submitStudents?.map((stu) => (
             <StudentBtn
               className={"checklist-student"}
               name={stu.name}
@@ -216,11 +218,11 @@ const CheckInput = (props) => {
           id={"add-checkItemBtn"}
           className={"save-checkItem-button"}
           onclick={() => {
-            if (props.students.length === 0) {
+            if (props.students?.length === 0 || props.students === undefined) {
               Swal.fire({
                 icon: "error",
                 title: "저장에 실패했어요!",
-                text: "메뉴의 곰돌이를 눌러서 학생명단을 먼저 입력해주세요.",
+                text: "메뉴의 곰돌이를 눌러서 학생명부를 먼저 입력해주세요.",
                 confirmButtonText: "확인",
                 confirmButtonColor: "#85bd82",
                 timer: 5000,
