@@ -67,6 +67,12 @@
   width: 95%;
 }
 
+.mr-underline {
+  margin-right: 15px;
+  display: inline;
+  box-shadow: inset 0 -10px #e9e93a66;
+}
+
 .eventSave-div {
   display: flex;
   width: 100%;
@@ -105,7 +111,7 @@
 }
 
 .mainCheckLists-students {
-  margin: 10px;
+  margin: 8px 0px 8px 4px;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
@@ -114,7 +120,7 @@
 
 .mainCheckLists-student {
   margin-right: 8px;
-  font-size: 0.7rem;
+  font-size: 0.9rem;
   letter-spacing: -1px;
 }
 

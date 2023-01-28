@@ -66,7 +66,7 @@ const SeatLists = (props) => {
   };
 
   return (
-    <div>
+    <>
       <select
         className={classes["select"]}
         name="searchYear-selcet"
@@ -82,6 +82,8 @@ const SeatLists = (props) => {
           </option>
         ))}
       </select>
+      <div className={classes["listSpace-div"]}></div>
+      <hr />
       <div>
         {yearSeatLists &&
           sortList(yearSeatLists).map((item) => (
@@ -106,12 +108,13 @@ const SeatLists = (props) => {
                 changeData={(year) => {
                   setChangeData(year);
                 }}
+                clName={item.clName}
               />
               <hr />
             </li>
           ))}
       </div>
-    </div>
+    </>
   );
 };
 

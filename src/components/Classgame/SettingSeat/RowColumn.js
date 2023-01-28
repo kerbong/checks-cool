@@ -102,7 +102,7 @@ const RowColumn = (props) => {
       {showRowColumn && (
         <form onSubmit={submitHandler}>
           <div className={classes["input-div"]}>
-            <span style={{ marginTop: "-60px" }}>
+            <span>
               <span className={classes["input-span"]}>가로</span>
               <Input
                 input={{

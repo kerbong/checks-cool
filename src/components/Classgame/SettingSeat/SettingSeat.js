@@ -11,11 +11,10 @@ const SettingSeat = (props) => {
   const [showTable, setShowTable] = useState(false);
   const [addNew, setAddNew] = useState();
   const [rowColumn, setRowColumn] = useState("");
-  const [randomSeat, setRandomSeat] = useState(false);
+  const [nowClassName, setNowClassName] = useState("");
   const [students, setStudents] = useState();
   // 자리표에 보내는 최종 학생명단
   const [seatStudents, setSeatStudents] = useState();
-  const [seatLists, setSeatLists] = useState([]);
 
   //학년도 설정함수
   const setYear = () => {
@@ -51,6 +50,7 @@ const SettingSeat = (props) => {
         students?.filter((cl) => Object.keys(cl)[0] === clName)?.[0]?.[clName]
       );
     }
+    setNowClassName(clName);
   };
 
   return (
@@ -115,7 +115,7 @@ const SettingSeat = (props) => {
 
       {addNew && showTable && (
         <>
-          <div className={`${classes["title-div"]} ${classes["mt--20"]}`}></div>
+          <div className={`${classes["title-div"]} ${classes["mt--25"]}`}></div>
 
           <SeatTable
             rowColumn={rowColumn}
@@ -126,6 +126,7 @@ const SettingSeat = (props) => {
               setShowTable(false);
               setInit(true);
             }}
+            nowClassName={nowClassName}
           />
           <p className={classes[`gameMenu`]}>
             * 1번 방법 - 새로운짝 / 인생은랜덤 👉 뽑기 / 번호클릭 👉 자리선택

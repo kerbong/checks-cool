@@ -43,7 +43,7 @@ const AttendCtxCalendar = (props) => {
   };
 
   //firestore에서 해당 이벤트 자료 받아오기
-  const getAttendsFromDb = () => {
+  const getAttendsFromDb = async () => {
     //db에서 attend DB가져오고 작성자가 현재 유저와 동일한지 확인하고 events에 추가하기
 
     let attendRef = doc(dbService, "attend", props.userUid);
@@ -55,7 +55,7 @@ const AttendCtxCalendar = (props) => {
       setEvents([]);
       setWholeEvents([]);
 
-      //전담이면
+      //올해 전담이면
       if (props.isSubject) {
         if (doc.exists()) {
           let wholeE = doc?.data()?.attend_data;
@@ -86,6 +86,14 @@ const AttendCtxCalendar = (props) => {
 
   //선택된 학급이 바뀌면 event만 찾아서 등록하고 학생도 바꿔주기
   const selectEvents = () => {
+    //wholeEvents에서 해당하는 학급 찾아서 events에 저장
+    [...wholeEvents].forEach((cl) => {
+      if (Object.keys(cl)[0] === nowClassName) {
+        removeScreenEvents();
+        setEvents(Object.values(cl)[0]);
+      }
+    });
+
     //만약 해당 반에 아직 데이터가 없으면 events빈배열로 설정 및 리무브 스크린 이벤트함수 실행
     const existSelectClData = [...wholeEvents].filter(
       (cl) => Object.keys(cl)[0] === nowClassName
@@ -96,14 +104,6 @@ const AttendCtxCalendar = (props) => {
       setEvents([]);
     }
 
-    //wholeEvents에서 해당하는 학급 찾아서 events에 저장
-    [...wholeEvents].forEach((cl) => {
-      if (Object.keys(cl)[0] === nowClassName) {
-        removeScreenEvents();
-
-        setEvents(Object.values(cl)[0]);
-      }
-    });
     props.students?.forEach((cl) => {
       if (Object.keys(cl)[0] === nowClassName) {
         setNowClStudents(Object.values(cl)[0]);
@@ -130,7 +130,7 @@ const AttendCtxCalendar = (props) => {
   useEffect(() => {
     //db에서 학년 자료 가져오기, showPublicEvent를 의존성으로 넣어두면 알아서 바뀔 때마다 실행됨. 이게 state의 변경상태에 따라 무언가를 실행하도록 하는 베스트인듯
     getAttendsFromDb();
-  }, []);
+  }, [props.isSubject]);
 
   const getCurrentMonth = () => {
     const currentM = document

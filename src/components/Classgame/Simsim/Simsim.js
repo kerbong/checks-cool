@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import classes from "./Simsim.module.css";
+import dayjs from "dayjs";
 import { dbService, storageService } from "../../../fbase";
 import { ref, uploadString, getDownloadURL } from "firebase/storage";
 import { v4 } from "uuid";
@@ -12,7 +13,7 @@ import {
   getDoc,
   onSnapshot,
   query,
-  addDoc,
+  setDoc,
   orderBy,
 } from "firebase/firestore";
 
@@ -34,19 +35,18 @@ const Simsim = (props) => {
   let navigate = useNavigate();
 
   const getSimsimFromDb = () => {
-    let queryWhere = query(
-      collection(dbService, "simsim"),
-      orderBy("id", "desc")
-    );
-    onSnapshot(queryWhere, (snapShot) => {
-      setSimsim([]);
-      snapShot.docs.map((doc) => {
-        let itemObj = {
-          ...doc.data(),
-          doc_id: doc.id,
-        };
-        return setSimsim((prev) => [...prev, itemObj]);
+    //이번달 자료 가져오기
+    let now_month = dayjs().format("YYYY-MM");
+
+    let simsimRef = doc(dbService, "simsim", now_month);
+
+    setSimsim([]);
+    onSnapshot(simsimRef, (doc) => {
+      const new_simsim = [];
+      doc?.data()?.simsim_data?.forEach((data) => {
+        new_simsim.push(data);
       });
+      setSimsim(new_simsim);
     });
   };
 
@@ -191,17 +191,6 @@ const Simsim = (props) => {
     });
   };
 
-  //id만들기용 yyyy-mm-dd-h-m
-  const yyyymmddhm = (date) => {
-    let year = date.getFullYear();
-    let month = ("0" + (date.getMonth() + 1)).slice(-2);
-    let day = ("0" + date.getDate()).slice(-2);
-    let hours = ("0" + date.getHours()).slice(-2);
-    let minutes = ("0" + date.getMinutes()).slice(-2);
-
-    return `${year}-${month}-${day}-${hours}:${minutes}`;
-  };
-
   //새로운 심심데이터 추가하기
   const addSimsimHandler = async (file) => {
     let descText = document.getElementById("descText-input")?.value;
@@ -234,13 +223,13 @@ const Simsim = (props) => {
     }
 
     const new_data = {
-      id: yyyymmddhm(new Date()),
+      id: dayjs().format("DD-HH:mm:ss"),
       descText,
       insteadText,
       image,
       like: [],
       nickName: userInfo.nickName,
-      stateMessage: userInfo.stateMessage,
+      stateMessage: userInfo.stateMessage || "",
       writtenId: props.userUid,
     };
 
@@ -256,7 +245,16 @@ const Simsim = (props) => {
     });
 
     //firestore에 저장
-    await addDoc(collection(dbService, "simsim"), new_data);
+    const simsimRef = doc(dbService, "simsim", dayjs().format("YYYY-MM"));
+    //기존 자료 목록 받아오고 거기에 추가하기
+
+    let existData = [new_data];
+    const simsimDoc = await getDoc(simsimRef);
+    if (simsimDoc.exists()) {
+      simsimDoc?.data()?.simsim_data.forEach((data) => existData.push(data));
+    }
+
+    await setDoc(simsimRef, { simsim_data: existData });
 
     insteadText = "";
     descText = "";

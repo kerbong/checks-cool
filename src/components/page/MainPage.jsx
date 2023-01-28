@@ -54,7 +54,8 @@ const MainPage = (props) => {
   });
   const [hideClassTable, setHideClassTable] = useState(true);
   const [classStart, setClassStart] = useState([]);
-  const [subjectYear, setSubjectYear] = useState(false);
+  // const [subjectYear, setSubjectYear] = useState(false);
+  const [isSubject, setIsSubject] = useState(false);
 
   //업데이트 내용 보여주기 로컬스토리지에서 showNotice를 스트링으로 저장해서 확인 후에 이전에 봤으면 안보여주기
   const [showNotice, setShowNotice] = useState(
@@ -126,7 +127,7 @@ const MainPage = (props) => {
         });
       } else {
         doc?.data()?.attend_data?.forEach((data) => {
-          if (data.id.slice(0, 10) === todayYyyymmdd) {
+          if (data?.id?.slice(0, 10) === todayYyyymmdd) {
             new_attends.push(data);
           }
         });
@@ -259,20 +260,27 @@ const MainPage = (props) => {
   //db에서 자료 받아오기 useEffect
   useEffect(() => {
     //해당학년도에 전담여부 확인
-    let data_year =
-      +todayYyyymmdd.split("-")[1] <= 1
-        ? String(+todayYyyymmdd.split("-")[0] - 1)
-        : todayYyyymmdd.split("-")[0];
-    let isSubject = props.isSubject?.filter(
-      (yearData) => Object.keys(yearData)[0] === data_year
-    )?.[0]?.[data_year];
+    let year = todayYyyymmdd.slice(0, 4);
+    let month = todayYyyymmdd.slice(5, 7);
+
+    if (+month <= 1) {
+      year = String(+year - 1);
+    }
+
+    let isSubject = false;
+    props.isSubject?.forEach((yearData) => {
+      if (Object.keys(yearData)?.[0] === year) {
+        setIsSubject(yearData[year]);
+        isSubject = yearData[year];
+      }
+    });
 
     getAttendsFromDb(isSubject);
     getScheduleFromDb();
     getClassTableFromDb();
-    getCheckListsFromDb(isSubject);
-    getListMemoFromDb(isSubject);
-  }, [todayYyyymmdd]);
+    getCheckListsFromDb();
+    getListMemoFromDb();
+  }, [todayYyyymmdd, props.isSubject]);
 
   useEffect(() => {
     getTodoListsFromDb();
@@ -526,13 +534,15 @@ const MainPage = (props) => {
             attendEvents.map((event) => (
               <li
                 key={
-                  !props.isSubject
+                  !isSubject
                     ? event.id + event.num
                     : event.cl + event.id + event.num
                 }
                 className={classes["main-li"]}
               >
-                {props.isSubject && event.cl + " "}
+                {isSubject && (
+                  <span className={classes["mr-underline"]}>{event.cl}</span>
+                )}
                 {event.num}번 - {event.name} / {event.option.slice(1)} /{" "}
                 {event.note || ""}
               </li>
@@ -589,6 +599,11 @@ const MainPage = (props) => {
                   event.unSubmitStudents.length !== 0 && (
                     <li key={event.id} className={classes["mainCheckLists-li"]}>
                       <span>
+                        {isSubject && (
+                          <span className={classes["mr-underline"]}>
+                            {event.clName}
+                          </span>
+                        )}
                         {event.title} ({event.unSubmitStudents.length})
                       </span>
                       <span className={classes["mainCheckLists-students"]}>
@@ -597,7 +612,7 @@ const MainPage = (props) => {
                           <span
                             key={stu.num + stu.name}
                             className={classes["mainCheckLists-student"]}
-                          >{`${stu.num} ${stu.name}`}</span>
+                          >{`${stu.name}`}</span>
                         )) || ""}
                       </span>
                     </li>
@@ -623,6 +638,11 @@ const MainPage = (props) => {
                   event.data.length !== props.students.length && (
                     <li key={event.id} className={classes["mainCheckLists-li"]}>
                       <span>
+                        {isSubject && (
+                          <span className={classes["mr-underline"]}>
+                            {event.clName}
+                          </span>
+                        )}
                         {event.title} / 미입력 (
                         {
                           props.students.filter(

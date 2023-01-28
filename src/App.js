@@ -69,10 +69,11 @@ function App() {
         const nowHour = +new Date().toTimeString().slice(0, 2);
         if (nowHour >= 7 && nowHour <= 9) {
           navigate(`/classgame`, { state: "morning" });
-        } else {
-          //로그인하면 심심해요 화면 먼저보여주기
-          navigate(`/classgame`, { state: "main" });
         }
+        // else {
+        //   //로그인하면 심심해요 화면 먼저보여주기
+        //   navigate(`/classgame`, { state: "main" });
+        // }
       });
     } catch (error) {
       console.log(error);
@@ -103,6 +104,25 @@ function App() {
     }
   }, [profile]);
 
+  const sortNum = (students) => {
+    let sorted_students;
+    if (!profile.isSubject) {
+      sorted_students = students.sort(function (a, b) {
+        let a_num = `${a.num}`;
+        let b_num = `${b.num}`;
+        return a_num - b_num;
+      });
+    } else {
+      sorted_students = students.sort(function (a, b) {
+        let a_className = `${Object.keys(a)}`;
+        let b_className = `${Object.keys(b)}`;
+        return a_className > b_className ? 1 : -1;
+      });
+    }
+
+    return sorted_students;
+  };
+
   //저장된 학생명부 불러오는 snapshot 함수
   //참고 https://firebase.google.com/docs/firestore/query-data/listen?hl=ko
   const getStudents = async (uid) => {
@@ -111,27 +131,8 @@ function App() {
     onSnapshot(docRef, (doc) => {
       if (doc.exists()) {
         setShowMainExample(false);
-        const sortNum = (students) => {
-          let sorted_students;
-          if (!profile.isSubject) {
-            sorted_students = students.sort(function (a, b) {
-              let a_num = `${a.num}`;
-              let b_num = `${b.num}`;
-              return a_num - b_num;
-            });
-          } else {
-            sorted_students = students.sort(function (a, b) {
-              let a_className = `${Object.keys(a)}`;
-              let b_className = `${Object.keys(b)}`;
-              return a_className > b_className ? 1 : -1;
-            });
-          }
-
-          return sorted_students;
-        };
-
         //현재학년도 자료만 보내기
-        setStudents([...sortNum(doc.data().studentDatas)]);
+        setStudents([...sortNum(doc?.data()?.studentDatas)]);
       } else {
         setShowMainExample(true);
       }

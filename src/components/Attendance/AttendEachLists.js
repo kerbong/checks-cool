@@ -39,7 +39,7 @@ const AttendEachLists = (props) => {
         let data_year = data.id.slice(0, 4);
         let data_month = data.id.slice(5, 7);
         let new_data = {};
-        let subject;
+
         if (+data_month >= 3) {
           years.push(data_year);
           //자료에 년도를 yearGroup으로 추가해둠
@@ -146,12 +146,17 @@ const AttendEachLists = (props) => {
     const student = e.target.value;
     setStudentOn(student);
     if (student === "전체학생") {
+      console.log(yearAttendLists);
       if (!isSubject) {
         setStudentAttendList(yearAttendLists);
       } else {
-        setStudentAttendList(
-          yearAttendLists.filter((data) => data.clName === nowClassName)
-        );
+        if (nowClassName === "전체학급") {
+          setStudentAttendList(yearAttendLists);
+        } else {
+          setStudentAttendList(
+            yearAttendLists.filter((data) => data.clName === nowClassName)
+          );
+        }
       }
     } else {
       const list = yearAttendLists.filter((data) => data.name === student);
@@ -495,7 +500,7 @@ const AttendEachLists = (props) => {
                   </div>
                 ))}
           <span>
-            *학생별 출결 확인탭 입니다. <br />
+            * 출결확인 및 엑셀저장 화면입니다. <br />
             내용의 수정 변경은 달력, 명렬표를 활용해주세요.
           </span>
         </ul>

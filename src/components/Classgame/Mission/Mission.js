@@ -17,6 +17,7 @@ const EXPLAINS = [
   "* 여러 글에 댓글을 달 수 있어요.",
   "* 오늘 올린 글만 볼 수 있어요.",
   "* 글은 수정, 삭제가 불가능해요!",
+  "* 글을 한 번이상 올리면 다른 글을 볼 수 있어요.",
 ];
 //   {/* <p>* 매주 월요일에는 지난주 핫미션이 나와요.</p> */}
 
@@ -34,6 +35,9 @@ const Mission = (props) => {
   const [showItem, setShowItem] = useState(false);
   const [showMission, setShowMission] = useState({});
   const [is7to9, setIs7to9] = useState(null);
+  const [isWritten, setIsWritten] = useState(
+    localStorage.getItem("isWritten") || false
+  );
 
   let navigate = useNavigate();
 
@@ -105,14 +109,17 @@ const Mission = (props) => {
         title: titleValue,
         text: textValue,
         writtenId: props.userUid,
-        date: TODAYDATE,
         like: [],
         nickName: userState.nickName,
         reply: [],
       };
 
-      let new_datas = [...todayData?.data()?.mission_data];
-      new_datas.push(data);
+      let new_datas = [data];
+
+      if (todayData.exists()) {
+        todayData?.data()?.mission_data.forEach((data) => new_datas.push(data));
+      }
+
       await setDoc(doc(dbService, "mission", TODAYDATE), {
         mission_data: new_datas,
       });
@@ -164,6 +171,7 @@ const Mission = (props) => {
         });
 
         missionAddDoc();
+        localStorage.setItem("isWritten", true);
       }
     });
   };
@@ -217,28 +225,31 @@ const Mission = (props) => {
       )}
 
       {/* 아침미션 입력 7~9시에만 보이기 */}
-      {is7to9 ? (
+      {is7to9 && (
         <MissionInput
           missionAddHandler={(title, text) => {
             missionAddHandler(title, text);
           }}
         />
-      ) : (
-        <span>매일 아침 7시 ~ 9시 사이에만 입력이 가능해요.</span>
       )}
 
-      {missions?.map((mission) => (
-        <Item
-          likeNonClick={true}
-          key={mission.nickName}
-          mission={mission}
-          itemClickHandler={(mission) => {
-            setShowItem(true);
-            setShowMission(mission);
-            setShowReply(mission.reply);
-          }}
-        />
-      ))}
+      {/* 글을 하나라도 쓴 사람만 보이기기 */}
+      {isWritten ? (
+        missions?.map((mission) => (
+          <Item
+            likeNonClick={true}
+            key={mission.nickName}
+            mission={mission}
+            itemClickHandler={(mission) => {
+              setShowItem(true);
+              setShowMission(mission);
+              setShowReply(mission.reply);
+            }}
+          />
+        ))
+      ) : (
+        <h2>* 한 개 이상의 글을 작성해주세요.</h2>
+      )}
     </div>
   );
 };

@@ -7,17 +7,20 @@
 .image-div {
   display: flex;
   flex-direction: column;
+  align-items: center;
 }
 .imageTitle-div {
   display: flex;
   justify-content: space-between;
+  width: 95%;
 }
 
 .title-p {
   font-size: 1.3rem;
   display: flex;
   margin: 20px;
-  width: 280px;
+  width: 230px;
+  word-break: keep-all;
 }
 
 .addImage-span {

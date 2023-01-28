@@ -543,6 +543,11 @@ const SeatTable = (props) => {
       saveDate: today_yyyymmdd + title.value,
     };
 
+    // 전담인경우 학급명을 추가해서 저장.
+    if (props.nowClassName !== "") {
+      data["clName"] = props.nowClassName;
+    }
+
     Swal.fire({
       icon: "success",
       title: "저장완료",
@@ -584,6 +589,11 @@ const SeatTable = (props) => {
     }
     setAllSeats([...new_allSeats]);
     await setDoc(existRef, { seats_data: new_allSeats });
+
+    //만약 새로운 자료 추가인 경우 처음화면으로 되돌아가기
+    if (props.title === undefined) {
+      props.addNewCancel();
+    }
   };
 
   //자리표 데이터 삭제 함수
@@ -634,6 +644,11 @@ const SeatTable = (props) => {
     <div id={props.title || "newSeats"}>
       {students.length === 0 && (
         <div className={classes["title-div"]}>
+          {/* 전담의 경우 반 정보 보여주기 */}
+          {props.clName && (
+            <span className={classes["clname-span"]}>{props.clName}</span>
+          )}
+          {/* 제목 입력창 */}
           <input
             className={classes["title-input"]}
             id={`title-input${props.title || ""}`}
@@ -648,13 +663,19 @@ const SeatTable = (props) => {
             className={"settingSeat-btn"}
           />
           {props.title?.length > 0 && (
-            <Button
-              name={"삭제"}
-              onclick={() => delteSeatsHandler()}
-              className={"settingSeat-btn"}
-            />
+            <>
+              <Button
+                name={"삭제"}
+                onclick={() => delteSeatsHandler()}
+                className={"settingSeat-btn"}
+              />
+            </>
           )}
         </div>
+      )}
+
+      {props.title?.length > 0 && (
+        <p>* 제목을 변경하고 저장하시면 새로 저장됩니다.</p>
       )}
 
       {!props.isExist && (
@@ -668,7 +689,7 @@ const SeatTable = (props) => {
         </button>
       )}
 
-      <div className={classes["mt--20"]}>
+      <div className={classes["mt--25"]}>
         {students.length > 0 ? (
           <>
             남은학생 ({students.length})

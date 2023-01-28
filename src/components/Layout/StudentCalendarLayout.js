@@ -23,27 +23,23 @@ const StudentCalendarLayout = (props) => {
   //학년도 설정함수
   const setYear = () => {
     let now = dayjs();
-    let yearGroup = "";
     let now_month = now.format("MM");
     let now_year = now.format("YYYY");
 
-    if (+now_month >= 3) {
-      yearGroup = now_year;
-    } else if (+now_month <= 1) {
-      yearGroup = String(+now_year - 1);
+    if (+now_month <= 1) {
+      now_year = String(+now_year - 1);
     }
-    return yearGroup;
+    return now_year;
   };
 
   useEffect(() => {
     //해당학년도에 전담여부 확인
     let data_year = setYear();
-    if (props.isSubject) {
-      let isSubject = props?.isSubject?.filter(
-        (yearData) => Object.keys(yearData)?.[0] === data_year
-      )?.[0]?.[data_year];
-      setIsSubject(isSubject);
-    }
+
+    let isSubject = props.isSubject?.filter(
+      (yearData) => Object.keys(yearData)?.[0] === data_year
+    )?.[0]?.[data_year];
+    setIsSubject(isSubject);
   }, [props.isSubject]);
 
   useEffect(() => {
