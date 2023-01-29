@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { dbService } from "../../fbase";
-import { setDoc, doc, getDoc } from "firebase/firestore";
+import { setDoc, doc, getDoc, updateDoc } from "firebase/firestore";
 import Button from "../Layout/Button";
 import classes from "./Profile.module.css";
 import Swal from "sweetalert2";
@@ -32,17 +32,6 @@ const Profile = (props) => {
     getDatasFromDb();
   }, []);
 
-  const objCompareSame = (obj1, obj2) => {
-    if (
-      obj1?.nickName?.trim() === obj2?.nickName?.trim() &&
-      obj1?.stateMessage?.trim() === obj2?.stateMessage?.trim() &&
-      obj1?.isSubject?.[now_year()] === obj2?.isSubject?.[now_year()]
-    ) {
-      return true;
-    }
-    return false;
-  };
-
   const now_year = () => {
     //2월부터는 새로운 학년도로 인식함
     return +dayjs().format("MM") <= 1
@@ -52,6 +41,17 @@ const Profile = (props) => {
 
   const userInfoSaveHandler = async (e) => {
     e.preventDefault();
+    let existUserInfo;
+    let isNew = false;
+    let profileRef = doc(dbService, "user", props.user.uid);
+    const now_doc = await getDoc(profileRef);
+    if (now_doc.exists()) {
+      existUserInfo = now_doc.data();
+    } else {
+      existUserInfo = {};
+      isNew = true;
+    }
+
     //존재하는지 확인하기
     if (Object.values(userInfo).length === 0) {
       Swal.fire({
@@ -64,15 +64,12 @@ const Profile = (props) => {
       return false;
     }
 
-    //기존내용이 존재하는데 변경된게 없으면
-    if (
-      Object.values(existUserInfo).length !== 0 &&
-      objCompareSame(existUserInfo, userInfo)
-    ) {
+    //닉네임은 필수저장!
+    if (userInfo.nickName?.trim().length === 0) {
       Swal.fire({
         icon: "error",
         title: "저장에 실패했어요!",
-        html: "변경된 내용이 없습니다. 확인해주세요!",
+        html: "닉네임은 필수 입력 사항입니다! 확인해주세요.",
         confirmButtonText: "확인",
         confirmButtonColor: "#85bd82",
       });
@@ -88,33 +85,39 @@ const Profile = (props) => {
       timer: 5000,
     });
 
-    let profileRef = doc(dbService, "user", props.user.uid);
-
     //전담이 아닌경우 자료 추가
     if (!userInfo.isSubject) {
       userInfo.isSubject = { [now_year()]: false };
     }
 
     //전담여부 배열자료에서 현재 학년도 자료 제거하고 새롭게 추가하기
-    let exceptNowData = existUserInfo?.isSubject?.filter(
-      (yearData) =>
-        Object.keys(yearData)[0] !== Object.keys(userInfo.isSubject)[0]
-    );
+    let exceptNowData = [];
+    existUserInfo?.isSubject?.forEach((yearData) => {
+      if (Object.keys(yearData)[0] !== Object.keys(userInfo.isSubject)[0]) {
+        exceptNowData.push(yearData);
+      }
+    });
 
-    let new_isSubject;
-    // 만약 기존자료가 없으면
-    if (exceptNowData) {
-      new_isSubject = exceptNowData.push(userInfo.isSubject);
+    // 만약 기존자료가 없거나 같은 해의 자료면
+    if (exceptNowData === undefined || exceptNowData?.length === 0) {
+      exceptNowData = [userInfo.isSubject];
     } else {
-      new_isSubject = [userInfo.isSubject];
+      exceptNowData.push(userInfo.isSubject);
     }
+    let new_isSubject = exceptNowData;
 
     let new_userInfo = {
       ...userInfo,
       isSubject: new_isSubject,
     };
 
-    await setDoc(profileRef, new_userInfo);
+    if (isNew) {
+      await setDoc(profileRef, new_userInfo);
+    } else {
+      await updateDoc(profileRef, new_userInfo);
+    }
+
+    props.profileHandler();
   };
 
   const userInfoHandler = (e, nameOrState) => {
@@ -176,6 +179,25 @@ const Profile = (props) => {
             />{" "}
             이번학년도 전담교사
           </h3>
+          {/* 첫 프로필이면... */}
+          {Object.keys(existUserInfo).length === 0 && (
+            <h3 className={classes["loginEmail-div"]}>
+              {" "}
+              * 프로필이 존재해야 서비스 이용이 가능합니다. 내용을 입력하시고
+              [저장]해주세요!
+            </h3>
+          )}
+          {/* 프로필은 있는데 올해 전담 여부 자료가 없으면 */}
+          {Object.keys(existUserInfo).length !== 0 &&
+            existUserInfo?.isSubject?.filter(
+              (yearData) => Object.keys(yearData)[0] === now_year()
+            )?.length === 0 && (
+              <h3 className={classes["loginEmail-div"]}>
+                {" "}
+                * 2월부터 새로운 학년도로 인식됩니다. 이번학년도의 전담교사
+                여부를 확인하시고 [저장]해주세요!
+              </h3>
+            )}
         </div>
 
         <Button

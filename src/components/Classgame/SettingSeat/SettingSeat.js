@@ -5,6 +5,7 @@ import SeatTable from "./SeatTable";
 import SeatLists from "./SeatLists";
 import Button from "../../Layout/Button";
 import dayjs from "dayjs";
+import Swal from "sweetalert2";
 
 const SettingSeat = (props) => {
   const [init, setInit] = useState(true);
@@ -62,9 +63,20 @@ const SettingSeat = (props) => {
               name={"추가하기"}
               className={"settingSeat"}
               onclick={() => {
-                setAddNew(true);
-                setShowTable(false);
-                setInit(false);
+                if (students !== undefined) {
+                  setAddNew(true);
+                  setShowTable(false);
+                  setInit(false);
+                } else {
+                  Swal.fire({
+                    icon: "error",
+                    title: "자리뽑기 불가",
+                    text: "먼저 메뉴의 곰돌이를 눌러서 학생명부를 입력해주세요.",
+                    confirmButtonText: "확인",
+                    confirmButtonColor: "#85bd82",
+                    timer: 5000,
+                  });
+                }
               }}
             />
             <Button

@@ -5,7 +5,7 @@ import { doc, onSnapshot, getDoc } from "firebase/firestore";
 // import { dbService, fcm_permission, messaging } from "./fbase";
 import { dbService } from "./fbase";
 // import { getFirebaseToken } from "./FirebaseInit";
-import "./fcm_messaging_init";
+// import "./fcm_messaging_init";
 import Swal from "sweetalert2";
 import dayjs from "dayjs";
 import MainPage from "./components/page/MainPage";
@@ -39,23 +39,24 @@ function App() {
   //   fcm_permission();
   // }, []);
 
+  const getProfile = async (uid) => {
+    let userDocRef = doc(dbService, "user", uid);
+
+    const now_doc = await getDoc(userDocRef);
+    if (now_doc.exists()) {
+      onSnapshot(userDocRef, (doc) => {
+        setProfile({ ...doc.data() });
+      });
+    }
+  };
+
   useEffect(() => {
-    const getProfile = async (user) => {
-      let userDocRef = doc(dbService, "user", user.uid);
-
-      const now_doc = await getDoc(userDocRef);
-      if (now_doc.exists()) {
-        onSnapshot(userDocRef, (doc) => {
-          setProfile({ ...doc.data() });
-        });
-      }
-    };
-
     try {
       authService.onAuthStateChanged((user) => {
+        // console.log("실행");
         if (user) {
           setUserUid(user.uid);
-          getProfile(user);
+          getProfile(user.uid);
           setUser(user);
           setIsLoggedIn(true);
         } else {
@@ -86,23 +87,23 @@ function App() {
       Swal.fire({
         icon: "info",
         title: "반갑습니다!",
-        text: "프로필을 설정한 후에 사용하실 수 있어요. [확인]을 누르시면 프로필 페이지로 이동합니다.",
+        text: "프로필을 설정하신 후에 사용하실 수 있어요. 프로필 페이지로 이동합니다.",
         confirmButtonText: "확인",
         confirmButtonColor: "#85bd82",
         showDenyButton: false,
       }).then((result) => {
-        /* Read more about isConfirmed, isDenied below */
-        if (result.isConfirmed) {
-          navigate(`/profile`);
-        }
+        navigate(`/profile`);
       });
       return;
-    }
-    if (userUid) {
-      //프로필이 있으면 학생정보 받아오기
+    } else if (userUid) {
       getStudents(userUid);
     }
   }, [profile]);
+
+  // useEffect(() => {
+  //   //프로필이 있으면 학생정보 받아오기
+  //   getStudents(userUid);
+  // }, [userUid]);
 
   const sortNum = (students) => {
     let sorted_students;
@@ -128,6 +129,7 @@ function App() {
   const getStudents = async (uid) => {
     //db에서 studnets 콜렉션 DB가져오고 doc id가 현재 유저인 doc 가져오기
     const docRef = doc(dbService, "students", uid);
+
     onSnapshot(docRef, (doc) => {
       if (doc.exists()) {
         setShowMainExample(false);
@@ -157,6 +159,10 @@ function App() {
       : dayjs().format("YYYY");
   };
 
+  const profileHandler = () => {
+    getProfile(userUid);
+  };
+
   return (
     <div>
       <div className={menuOnHead ? "App" : "App-bottom"}>
@@ -168,8 +174,37 @@ function App() {
           menuOnHead={menuOnHead}
         />
         <Routes>
+          {init &&
+            isLoggedIn &&
+            (Object.keys(profile)?.length === 0 ||
+              profile?.isSubject?.filter(
+                (yearData) => Object.keys(yearData)[0] === now_year()
+              )?.length === 0) && (
+              <Route
+                index
+                element={
+                  <Profile user={user} profileHandler={profileHandler} />
+                }
+              />
+            )}
+
+          {/* {profile?.isSubject?.filter(
+            (yearData) => Object.keys(yearData)[0] === now_year()
+          )?.length === 0 && (
+            <Route
+              index
+              element={<Profile user={user} profileHandler={profileHandler} />}
+            />
+          )} */}
+
           {/* 초기화 되었고 로그인 상태 */}
-          {init && isLoggedIn ? (
+          {/* {init && Object.keys(profile)?.length !== 0 && isLoggedIn ? ( */}
+          {init &&
+          Object.keys(profile)?.length !== 0 &&
+          profile?.isSubject?.filter(
+            (yearData) => Object.keys(yearData)[0] === now_year()
+          )?.length !== 0 &&
+          isLoggedIn ? (
             <>
               <Route
                 index
@@ -191,7 +226,7 @@ function App() {
                   <ClassgamePage
                     students={students}
                     userUid={userUid}
-                    isSubject={profile.isSubject || false}
+                    isSubject={profile.isSubject || []}
                   />
                 }
               />
@@ -207,15 +242,10 @@ function App() {
                   <AttendancePage
                     students={students}
                     userUid={userUid}
-                    isSubject={profile.isSubject || false}
+                    isSubject={profile?.isSubject || []}
                   />
                 }
               />
-
-              {/* <Route
-                path="attendance/:studentNum"
-                element={<NumAttendancePage />}
-              /> */}
 
               <Route
                 path="consulting"
@@ -223,7 +253,7 @@ function App() {
                   <ConsultingPage
                     students={students}
                     userUid={userUid}
-                    isSubject={profile.isSubject || false}
+                    isSubject={profile.isSubject || []}
                   />
                 }
               />
@@ -234,7 +264,7 @@ function App() {
                   <MemoPage
                     students={students}
                     userUid={userUid}
-                    isSubject={profile.isSubject || false}
+                    isSubject={profile.isSubject || []}
                   />
                 }
               />
@@ -257,7 +287,12 @@ function App() {
                 }
               />
 
-              <Route path="profile" element={<Profile user={user} />} />
+              <Route
+                path="profile"
+                element={
+                  <Profile user={user} profileHandler={profileHandler} />
+                }
+              />
 
               <Route path="notice" element={<Notice />} />
             </>

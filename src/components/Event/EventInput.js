@@ -166,9 +166,10 @@ const EventInput = (props) => {
                 className="choose-studentBtn"
                 name={student || "학생선택"}
                 onclick={function () {
-                  if (props.students.length !== 0) {
-                    setShowStudent(!showStudent);
-                  } else {
+                  if (
+                    props.students === undefined ||
+                    props.students?.length === 0
+                  ) {
                     Swal.fire({
                       icon: "error",
                       title: "선택 불가",
@@ -177,6 +178,8 @@ const EventInput = (props) => {
                       confirmButtonColor: "#85bd82",
                       timer: 5000,
                     });
+                  } else {
+                    setShowStudent(!showStudent);
                   }
                 }}
               />

@@ -82,6 +82,13 @@ const MainPage = (props) => {
     roomInfo = "--";
   }
 
+  //프로필이 없으면 무조건 프로필 화면으로 이동시킴
+  // useEffect(() => {
+  //   if (Object.values(props.profile).length === 0) {
+  //     console.log("실행");
+  //   }
+  // }, [props.profile]);
+
   const moveDateHandler = (tomoOrYester) => {
     let now = new Date(todayYyyymmdd);
     let tOrY;
