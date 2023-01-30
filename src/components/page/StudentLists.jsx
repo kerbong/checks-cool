@@ -76,7 +76,8 @@ const StudentLists = (props) => {
         ?.studentDatas.filter(
           (yearData) => Object.keys(yearData)[0] !== Object.keys(data)[0]
         );
-      uploadData = exceptNow.push({ ...data });
+      exceptNow.push({ ...data });
+      uploadData = exceptNow;
     } else {
       uploadData = [{ ...data }];
     }
@@ -309,17 +310,20 @@ const StudentLists = (props) => {
               onclick={() => setAddStudentBy("excelFile")}
             />
 
-            <Button
-              id="imageFile"
-              className={"studentAddBtn"}
-              name={
-                <>
-                  <span className="excel-upload-text">명렬표</span>{" "}
-                  <i className="fa-regular fa-file-image"></i>
-                </>
-              }
-              onclick={() => setAddStudentBy("imageFile")}
-            />
+            {/* 전담이 아닐 때만 보여줌 */}
+            {!props.isSubject && (
+              <Button
+                id="imageFile"
+                className={"studentAddBtn"}
+                name={
+                  <>
+                    <span className="excel-upload-text">명렬표</span>{" "}
+                    <i className="fa-regular fa-file-image"></i>
+                  </>
+                }
+                onclick={() => setAddStudentBy("imageFile")}
+              />
+            )}
           </>
         )}
 
@@ -336,22 +340,24 @@ const StudentLists = (props) => {
               }
               onclick={() => setAddStudentBy("typing")}
             />
-
-            <Button
-              id="imageFile"
-              className={"studentAddBtn"}
-              name={
-                <>
-                  <span className="excel-upload-text">명렬표</span>{" "}
-                  <i className="fa-regular fa-file-image"></i>
-                </>
-              }
-              onclick={() => setAddStudentBy("imageFile")}
-            />
+            {/* 전담이 아닐 때만 보여줌 */}
+            {!props.isSubject && (
+              <Button
+                id="imageFile"
+                className={"studentAddBtn"}
+                name={
+                  <>
+                    <span className="excel-upload-text">명렬표</span>{" "}
+                    <i className="fa-regular fa-file-image"></i>
+                  </>
+                }
+                onclick={() => setAddStudentBy("imageFile")}
+              />
+            )}
           </>
         )}
 
-        {addStudentBy === "imageFile" && (
+        {addStudentBy === "imageFile" && !props.isSubject && (
           <>
             <Button
               id="typing"

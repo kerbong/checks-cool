@@ -144,7 +144,7 @@ const TypingStudent = (props) => {
           &nbsp;&nbsp;&nbsp;남학생&nbsp;&nbsp;&nbsp;| 이름 클릭하면 성별 변경
         </p>
         <div className={classes.studentListArea}>
-          {props.studentsInfo.map((student) => (
+          {props.studentsInfo?.map((student) => (
             <StudentLiWithDelete
               key={student.num + student.name}
               myKey={student.num + student.name}
@@ -160,7 +160,7 @@ const TypingStudent = (props) => {
         </div>
         {/* 전체삭제 버튼 */}
         <div className={classes["deleteAll-div"]}>
-          {props.studentsInfo.length !== 0 && (
+          {props.studentsInfo?.length !== 0 && (
             <Button
               className="student-save"
               name={

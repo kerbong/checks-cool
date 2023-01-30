@@ -100,13 +100,13 @@ function App() {
   const sortNum = (students) => {
     let sorted_students;
     if (!profile.isSubject) {
-      sorted_students = students.sort(function (a, b) {
+      sorted_students = students?.sort(function (a, b) {
         let a_num = `${a.num}`;
         let b_num = `${b.num}`;
         return a_num - b_num;
       });
     } else {
-      sorted_students = students.sort(function (a, b) {
+      sorted_students = students?.sort(function (a, b) {
         let a_className = `${Object.keys(a)}`;
         let b_className = `${Object.keys(b)}`;
         return a_className > b_className ? 1 : -1;

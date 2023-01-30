@@ -437,12 +437,6 @@ const AttendCtxCalendar = (props) => {
           setWholeEvents(new_wholeEvents);
         }
         await updateDoc(attendTodoRef, fixed_data);
-        // await updateDoc(attendTodoRef, fixed_data).then(() => {
-        //   let event = { ...data, eventDate: eventDate };
-        //   new_events.push(event);
-        // });
-        // let event = { ...data, eventDate: eventDate };
-        // new_events.push(event);
       }
 
       // 이벤트 자료가 아예 없는 경우
@@ -473,13 +467,6 @@ const AttendCtxCalendar = (props) => {
         }
       }
       await setDoc(attendTodoRef, new_data);
-      // await setDoc(attendTodoRef, new_data).then(() => {
-      //   let event = { ...data, eventDate: eventDate };
-      //   new_events.push(event);
-      // });
-      //events에도 추가!
-      // let event = { ...data, eventDate: eventDate };
-      // new_events.push(event);
     }
     setEvents([...new_events]);
     if (props.isSubject) {

@@ -181,7 +181,7 @@ const StudentInputByOcr = (props) => {
             </>
           </div>
           <div className={classes["span-expain"]}>
-            {studentsByOcr.length === 0 && (
+            {studentsByOcr?.length === 0 && (
               <>
                 <img src={imageOcrExample} alt="" />
               </>
@@ -216,9 +216,9 @@ const StudentInputByOcr = (props) => {
             <hr className={classes["hr"]} />
           </div>
 
-          {studentsByOcr.length !== 0 && (
+          {studentsByOcr?.length !== 0 && (
             <div className={classes.studentListArea}>
-              {studentsByOcr.map((stu) => (
+              {studentsByOcr?.map((stu) => (
                 <li
                   key={stu.num + stu.name}
                   id={stu.num}
