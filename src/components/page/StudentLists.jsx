@@ -52,7 +52,7 @@ const StudentLists = (props) => {
     )?.[0]?.[now_year];
 
     if (props.isSubject) {
-      if (nowStudents.length > 0) {
+      if (nowStudents?.length > 0) {
         setWholeClass(sortWholeClass(nowStudents));
         setStudentsInfo(...Object.values(nowStudents[0]));
         setNowClassName(Object.keys(nowStudents[0])[0]);

@@ -181,10 +181,11 @@ const Profile = (props) => {
           </h3>
           {/* 첫 프로필이면... */}
           {Object.keys(existUserInfo).length === 0 && (
-            <h3 className={classes["loginEmail-div"]}>
+            <h3 className={classes["explain-h3"]}>
               {" "}
-              * 프로필이 존재해야 서비스 이용이 가능합니다. 내용을 입력하시고
-              [저장]해주세요!
+              * 프로필을 입력하신 후에 <br /> 서비스 이용이 가능합니다. <br />
+              <br />
+              내용을 입력하시고 [저장]해주세요!
             </h3>
           )}
           {/* 프로필은 있는데 올해 전담 여부 자료가 없으면 */}
@@ -192,10 +193,13 @@ const Profile = (props) => {
             existUserInfo?.isSubject?.filter(
               (yearData) => Object.keys(yearData)[0] === now_year()
             )?.length === 0 && (
-              <h3 className={classes["loginEmail-div"]}>
+              <h3 className={classes["explain-h3"]}>
                 {" "}
-                * 2월부터 새로운 학년도로 인식됩니다. 이번학년도의 전담교사
-                여부를 확인하시고 [저장]해주세요!
+                * 2월부터 새로운 학년도로 인식됩니다. <br />
+                이번학년도 전담교사 여부를 확인하시고 <br />
+                [저장] 해주세요!
+                <br />
+                <br />* 전담이 아니신 경우 그냥 [저장] 해주세요!
               </h3>
             )}
         </div>

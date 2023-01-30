@@ -35,10 +35,6 @@ function App() {
 
   let navigate = useNavigate();
 
-  // useEffect(() => {
-  //   fcm_permission();
-  // }, []);
-
   const getProfile = async (uid) => {
     let userDocRef = doc(dbService, "user", uid);
 
@@ -50,6 +46,7 @@ function App() {
     }
   };
 
+  // 처음 렌더링 할 때 로그인 되었는지 확인하고 유저 정보 프로필 정보 받아오는 함수
   useEffect(() => {
     try {
       authService.onAuthStateChanged((user) => {
@@ -81,8 +78,8 @@ function App() {
     }
   }, []);
 
+  //로그인해서 프로필이 없으면, 프로필 화면으로 먼저 보내기
   useEffect(() => {
-    //로그인해서 프로필이 없으면, 프로필 화면으로 먼저 보내기
     if (init && isLoggedIn && Object.keys(profile).length === 0) {
       Swal.fire({
         icon: "info",
@@ -99,11 +96,6 @@ function App() {
       getStudents(userUid);
     }
   }, [profile]);
-
-  // useEffect(() => {
-  //   //프로필이 있으면 학생정보 받아오기
-  //   getStudents(userUid);
-  // }, [userUid]);
 
   const sortNum = (students) => {
     let sorted_students;
@@ -149,10 +141,12 @@ function App() {
     setUser(null);
   };
 
+  //메뉴 위 / 아래 이동 기능
   const setMenuHandler = () => {
     setMenuOnHead((prev) => !prev);
   };
 
+  //현재 학년도 정보 반환하는 함수
   const now_year = () => {
     return +dayjs().format("MM") <= 1
       ? String(+dayjs().format("YYYY") - 1)
@@ -174,6 +168,7 @@ function App() {
           menuOnHead={menuOnHead}
         />
         <Routes>
+          {/* 초기화 로그인 되어 있는데, 프로필이 없거나 프로필에 올해 전담여부가 없으면 */}
           {init &&
             isLoggedIn &&
             (Object.keys(profile)?.length === 0 ||
@@ -188,17 +183,7 @@ function App() {
               />
             )}
 
-          {/* {profile?.isSubject?.filter(
-            (yearData) => Object.keys(yearData)[0] === now_year()
-          )?.length === 0 && (
-            <Route
-              index
-              element={<Profile user={user} profileHandler={profileHandler} />}
-            />
-          )} */}
-
           {/* 초기화 되었고 로그인 상태 */}
-          {/* {init && Object.keys(profile)?.length !== 0 && isLoggedIn ? ( */}
           {init &&
           Object.keys(profile)?.length !== 0 &&
           profile?.isSubject?.filter(

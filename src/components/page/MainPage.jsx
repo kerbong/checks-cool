@@ -11,13 +11,13 @@ import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import ExampleModal from "./ExampleModal";
 import ocrGif from "../../assets/student/ocrGif.gif";
-import xmasGift from "../../assets/notice/크리스마스선물.jpg";
+import new2023 from "../../assets/notice/2023new.jpg";
 import dayjs from "dayjs";
 import AttendCalendar from "components/Attendance/AttendCalendar";
 
-const update_title = "== 업데이트 안내 ==";
+const update_title = `2월 3일(금) New Open`;
 
-const update_text = "";
+const update_text = `안녕하세요! 첵스-쿨 운영자 말랑한 거봉입니다!🍇 안정적인 무료 운영을 위한 <b>데이터베이스 개선 및 대규모 업데이트!!(전담교사 기능, 예산 기능 등)</b>가 마지막 테스트 중입니다.🎉 <br/> <b><u>기존 데이터는 2월 2일(목) 20:00에 모두 삭제</b></u> 됩니다. 불편하시겠지만 새롭게 회원가입 및 사용을 부탁드립니다! 2023년에도 많은 선생님들께 도움이 되었으면 합니다. 새해 복 많이 받으세요!😄`;
 // "* 아, 이거 있으면 좋겠다! 하는 기능이 있으신가요? 내년에 사용해보고 싶은 기능을 추천해주세요! 가장 많은 추천을 받은 아이디어를 선정하여 추가할 계획입니다! '잼잼'-'이거해요' 에 적어주세요~ ";
 //오늘 날짜 yyyy-mm-dd로 만들기
 const getDateHandler = (date, titleOrQuery) => {
@@ -59,7 +59,7 @@ const MainPage = (props) => {
 
   //업데이트 내용 보여주기 로컬스토리지에서 showNotice를 스트링으로 저장해서 확인 후에 이전에 봤으면 안보여주기
   const [showNotice, setShowNotice] = useState(
-    localStorage.getItem("showNotice") === "doThis" ? false : true
+    localStorage.getItem("showNotice") === "2023new" ? false : true
   );
 
   const classLists = [
@@ -379,21 +379,19 @@ const MainPage = (props) => {
       {showNotice && (
         <ExampleModal
           onClose={() => {
-            localStorage.setItem("showNotice", "doThis");
+            // localStorage.setItem("showNotice", "2023new");
             setShowNotice(false);
           }}
-          imgSrc={xmasGift}
+          imgSrc={new2023}
           text={
             <>
-              <p
+              <h1
                 style={{
-                  fontSize: "1.3em",
-                  textAlign: "center",
-                  margin: "5px",
+                  margin: "10px 0 25px 0",
                 }}
-              >
-                {update_title}
-              </p>
+                dangerouslySetInnerHTML={{ __html: update_title }}
+              ></h1>
+              <hr style={{ margin: "20px 15px" }} />
               <p
                 className={`${classes.p} ${classes.top}`}
                 dangerouslySetInnerHTML={{ __html: update_text }}
@@ -457,7 +455,11 @@ const MainPage = (props) => {
           <Button
             name={" 학생명부"}
             path={"student-manage"}
-            className="main-studentPage"
+            className={
+              props.students.length !== 0
+                ? `main-studentPage`
+                : `main-noStudentPage`
+            }
             icon={<i className="fa-solid fa-user-plus"></i>}
           />
         </div>

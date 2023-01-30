@@ -223,16 +223,20 @@
   background-color: #ffbec7;
 }
 
-.main-studentPage {
+.main-studentPage,
+.main-noStudentPage {
   width: auto;
   margin: 10px 5px;
   font-size: 1.1em;
-  border-radius: 10px;
   border-width: 0;
   letter-spacing: 1px;
   padding: 1vh;
   background-color: inherit;
   color: rgba(18, 2, 0, 0.951);
+}
+
+.main-noStudentPage {
+  box-shadow: inset 0px -5px #e3371d66;
 }
 
 .save-classItem-button,
