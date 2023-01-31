@@ -44,3 +44,16 @@
   padding: 20px;
   border-radius: 15px;
 }
+
+/* 지워줄 부분 */
+.p {
+  margin: 10px;
+  line-height: 35px;
+  word-break: keep-all;
+}
+
+.top {
+  font-size: 1.1rem;
+  text-align: center;
+}
+/* 지워줄 부분 */

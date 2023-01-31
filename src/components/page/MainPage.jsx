@@ -4,20 +4,27 @@ import { dbService, messaging } from "../../fbase";
 
 import { getToken } from "firebase/messaging";
 
-import { query, onSnapshot, getDoc, doc, setDoc } from "firebase/firestore";
+import {
+  query,
+  onSnapshot,
+  getDoc,
+  doc,
+  setDoc,
+  updateDoc,
+} from "firebase/firestore";
 import classes from "./MainPage.module.css";
 import ClassItem from "../Main/ClassItem";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import ExampleModal from "./ExampleModal";
-import ocrGif from "../../assets/student/ocrGif.gif";
+import ocrGif from "../../assets/student/teacher-typing.gif";
 import new2023 from "../../assets/notice/2023new.jpg";
 import dayjs from "dayjs";
 import AttendCalendar from "components/Attendance/AttendCalendar";
 
 const update_title = `2월 3일(금) New Open`;
 
-const update_text = `안녕하세요! 첵스-쿨 운영자 말랑한 거봉입니다!🍇 안정적인 무료 운영을 위한 <b>데이터베이스 개선 및 대규모 업데이트!!(전담교사 기능, 예산 기능 등)</b>가 마지막 테스트 중입니다.🎉 <br/> <b><u>기존 데이터는 2월 2일(목) 20:00에 모두 삭제</b></u> 됩니다. 불편하시겠지만 새롭게 회원가입 및 사용을 부탁드립니다! 2023년에도 많은 선생님들께 도움이 되었으면 합니다. 새해 복 많이 받으세요!😄`;
+const update_text = `안녕하세요! 첵스-쿨 운영자 말랑한 거봉입니다!🍇 안정적인 무료 운영을 위한 <b>데이터베이스 개선 및 대규모 업데이트!!(전담교사 기능, 예산 기능 등)</b>가 마지막 테스트 중입니다.🎉 <br/> <b><u>기존 데이터는 2월 2일(목) 20:00에 모두 삭제</b></u> 됩니다. 불편하시겠지만 2월 3일(금)에 새롭게 회원가입 및 사용을 부탁드립니다! 2023년에도 많은 선생님들께 도움이 되었으면 합니다. 새해 복 많이 받으세요!😄`;
 // "* 아, 이거 있으면 좋겠다! 하는 기능이 있으신가요? 내년에 사용해보고 싶은 기능을 추천해주세요! 가장 많은 추천을 받은 아이디어를 선정하여 추가할 계획입니다! '잼잼'-'이거해요' 에 적어주세요~ ";
 //오늘 날짜 yyyy-mm-dd로 만들기
 const getDateHandler = (date, titleOrQuery) => {
@@ -124,9 +131,9 @@ const MainPage = (props) => {
             attends.push(...atd);
           });
           let new_data = [];
-          attends.forEach((atd) => {
+          attends?.forEach((atd) => {
             // console.log(atd);
-            if (atd.id.slice(0, 10) === todayYyyymmdd) {
+            if (atd?.id?.slice(0, 10) === todayYyyymmdd) {
               new_data.push({ ...atd, cl: Object.keys(cl)[0] });
             }
           });
@@ -231,23 +238,31 @@ const MainPage = (props) => {
   //firestore에서 오늘 시간표 관련 자료들 받아오기
   const getClassTableFromDb = async () => {
     let classTableRef = doc(dbService, "classTable", props.userUid);
+    //입력한 개별날짜 시간표들
     setClassTable([]);
+    // 기초시간표 내용
     setClassBasic([]);
+    // 오늘 시간표 내용
     setTodayClassTable({});
+    // 시작 시간 모음
     setClassStart([]);
 
     const now_doc = await getDoc(classTableRef);
     if (now_doc.exists()) {
-      setClassTable([...now_doc?.data()?.datas]);
-      let todayClass = now_doc
-        ?.data()
-        ?.datas.filter((data) => data.id === todayYyyymmdd);
-      // console.log(todayClass);
-      if (todayClass.length !== 0) {
-        setTodayClassTable({ ...todayClass[0] });
-        // console.log(todayClass[0]);
-      } else {
-        setTodayClassTable({ id: "", classMemo: [] });
+      // 저장된 각 날짜의 시간표 데이터가 있으면
+      if (now_doc?.data()?.datas) {
+        setClassTable([...now_doc?.data()?.datas]);
+
+        let todayClass = now_doc
+          ?.data()
+          ?.datas?.filter((data) => data.id === todayYyyymmdd);
+        // console.log(todayClass);
+        if (todayClass.length !== 0) {
+          setTodayClassTable({ ...todayClass[0] });
+          // console.log(todayClass[0]);
+        } else {
+          setTodayClassTable({ id: "", classMemo: [] });
+        }
       }
 
       //오늘 요일설정
@@ -346,7 +361,12 @@ const MainPage = (props) => {
     // console.log(new_classData);
 
     const classMemoRef = doc(dbService, "classTable", props.userUid);
-    await setDoc(classMemoRef, new_classData);
+    const now_doc = await getDoc(classMemoRef);
+    if (now_doc.exists()) {
+      await updateDoc(classMemoRef, new_classData);
+    } else {
+      await setDoc(classMemoRef, new_classData);
+    }
   };
 
   return (

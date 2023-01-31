@@ -173,7 +173,7 @@ const AttendCtxCalendar = (props) => {
       ".react-datepicker__navigation"
     );
 
-    moveMonth[0].addEventListener("click", () => {
+    moveMonth[0]?.addEventListener("click", () => {
       // console.log("이전달 클릭");
       //이전 노드에서 가져와서 반영하니까.. 보정함
       let currentM = getCurrentMonth();
@@ -182,7 +182,7 @@ const AttendCtxCalendar = (props) => {
       setCurrentMonth(fixedM);
     });
 
-    moveMonth[1].addEventListener("click", () => {
+    moveMonth[1]?.addEventListener("click", () => {
       // console.log("다음달 클릭");
       let currentM = getCurrentMonth();
       let fixedM = fixCurrentMonth(currentM, +1);

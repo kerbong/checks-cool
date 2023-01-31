@@ -14,7 +14,7 @@ const ListMemoInput = (props) => {
     return `${month}월 ${day}일(${weekDays[weekd]})`;
   };
 
-  console.log(props.students);
+  // console.log(props.students);
 
   const [students, setStudents] = useState(props.students);
   const [studentMemo, setStudentMemo] = useState(props.item || []);
@@ -117,7 +117,7 @@ const ListMemoInput = (props) => {
     });
   };
 
-  console.log(props.students);
+  // console.log(props.students);
 
   return (
     <>

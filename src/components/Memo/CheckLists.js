@@ -62,7 +62,7 @@ const CheckLists = (props) => {
             years.push(data_year);
             //자료에 년도를 yearGroup으로 추가
             new_data = { ...data, yearGroup: data_year };
-          } else if (+data_month <= 2) {
+          } else if (+data_month <= 1) {
             let fixed_year = String(+data_year - 1);
             years.push(fixed_year);
             new_data = { ...data, yearGroup: fixed_year };
@@ -76,7 +76,7 @@ const CheckLists = (props) => {
           // 자료가 없으면 현재 학년도로 세팅
         } else {
           setDataYears([
-            +dayjs().format("MM") <= 2
+            +dayjs().format("MM") <= 1
               ? String(+dayjs().format("YYYY") - 1)
               : dayjs().format("YYYY"),
           ]);
@@ -100,7 +100,7 @@ const CheckLists = (props) => {
             years.push(data_year);
             //자료에 년도를 yearGroup으로 추가
             new_data = { ...data, yearGroup: data_year };
-          } else if (+data_month <= 2) {
+          } else if (+data_month <= 1) {
             let fixed_year = String(+data_year - 1);
             years.push(fixed_year);
             new_data = { ...data, yearGroup: fixed_year };
@@ -115,7 +115,7 @@ const CheckLists = (props) => {
           // 자료가 없으면 현재 학년도로 세팅
         } else {
           setDataYears([
-            +dayjs().format("MM") <= 2
+            +dayjs().format("MM") <= 1
               ? String(+dayjs().format("YYYY") - 1)
               : dayjs().format("YYYY"),
           ]);
@@ -134,7 +134,7 @@ const CheckLists = (props) => {
     let new_date = new Date();
     //학년도 설정
     let new_year = new_date.getFullYear();
-    if (new_date.getMonth() + 1 <= 2) {
+    if (new_date.getMonth() + 1 <= 1) {
       new_year -= 1;
     }
     //데이터 중에 현재 학년도와 같은 데이터가 있으면 바로 보여줌.
@@ -267,7 +267,7 @@ const CheckLists = (props) => {
             } else {
               new_datas[data_index] = item;
             }
-            console.log(new_datas);
+            // console.log(new_datas);
             return new_datas;
           });
           //현재 보여주고 있는 학년도 자료에서 삭제하고 다시 추가
@@ -286,7 +286,7 @@ const CheckLists = (props) => {
             } else {
               new_datas[data_index] = item;
             }
-            console.log(new_datas);
+            // console.log(new_datas);
             return new_datas;
           });
         } else {
@@ -436,7 +436,6 @@ const CheckLists = (props) => {
   //전담만 나오는, 학급 셀렉트 선택시 실행되는 함수
   const selectClassHandler = () => {
     let className = selectRef.current.value;
-    console.log(className);
     setNowClassName(className);
   };
 
@@ -448,7 +447,7 @@ const CheckLists = (props) => {
   }, [nowClassName]);
 
   const nowYear = () => {
-    return +dayjs().format("MM") <= 2
+    return +dayjs().format("MM") <= 1
       ? String(+dayjs().format("YYYY") - 1)
       : dayjs().format("YYYY");
   };
@@ -462,7 +461,7 @@ const CheckLists = (props) => {
 
     // 만약 학년도별 학생자료가 없으면, 아직 자료 입력 전이면 받아온 students에서 골라서 세팅
     setStudents(now_students);
-    console.log(now_students);
+    // console.log(now_students);
 
     //보여줄 자료 중에서도 clName이 현재 학급 밸류가 같은 자료만 보여주기
 
@@ -493,7 +492,7 @@ const CheckLists = (props) => {
   //해당 학년도에 전담인 경우? 리스트의 요소를 선택했을 때 해당학년도의 학생명부를 불러와주는 로직
   const inputStudentsHandler = (item) => {
     let now_students = [];
-    console.log(isSubject);
+    // console.log(isSubject);
     if (isSubject) {
       props.students?.forEach((yearStd) => {
         //해당학년도가 자료의 학년도와 일치하고
@@ -506,7 +505,7 @@ const CheckLists = (props) => {
           });
         }
       });
-      console.log(now_students);
+      // console.log(now_students);
       setInputStudents(now_students);
     }
   };

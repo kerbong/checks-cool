@@ -1,0 +1,25 @@
+{
+  "files": {
+    "main.css": "/checks-cool/static/css/main.da04f222.css",
+    "main.js": "/checks-cool/static/js/main.22caf4b9.js",
+    "static/media/GowunDodum-Regular.ttf": "/checks-cool/static/media/GowunDodum-Regular.39c9a39c246c3c54c53e.ttf",
+    "static/media/list.gif": "/checks-cool/static/media/list.8fffec1112ca3ad4d287.gif",
+    "static/media/listMemo.gif": "/checks-cool/static/media/listMemo.9b1e9fbe144c9fd5c575.gif",
+    "static/media/ocrGif.gif": "/checks-cool/static/media/ocrGif.1da86140729cd1568be6.gif",
+    "static/media/submitMemo.gif": "/checks-cool/static/media/submitMemo.5b9d6e3778a36e41c81f.gif",
+    "static/media/calendar.gif": "/checks-cool/static/media/calendar.e17bf16bb05e90afebae.gif",
+    "static/media/excel_new_upload.gif": "/checks-cool/static/media/excel_new_upload.7233ce2dc2ac0ae61af6.gif",
+    "static/media/publicSetting.gif": "/checks-cool/static/media/publicSetting.cf440eee432059747a1b.gif",
+    "static/media/typing_new_upload.gif": "/checks-cool/static/media/typing_new_upload.bddd6795816356768774.gif",
+    "static/media/show.gif": "/checks-cool/static/media/show.f910c419a32315624f87.gif",
+    "static/media/consultAdd.gif": "/checks-cool/static/media/consultAdd.88e54d44455fc22d2a09.gif",
+    "static/media/todayTodo.gif": "/checks-cool/static/media/todayTodo.538cb7bb82a6b9a8bd5c.gif",
+    "static/media/2023new.jpg": "/checks-cool/static/media/2023new.013ef0564dd416cdac3e.jpg",
+    "static/media/excel_gender_example.jpg": "/checks-cool/static/media/excel_gender_example.f8ba40b1043a4a255572.jpg",
+    "index.html": "/checks-cool/index.html"
+  },
+  "entrypoints": [
+    "static/css/main.da04f222.css",
+    "static/js/main.22caf4b9.js"
+  ]
+}

@@ -3,7 +3,7 @@ import imageCompression from "browser-image-compression";
 import classes from "./StudentLiWithDelete.module.css";
 import Swal from "sweetalert2";
 
-import imageOcrExample from "../../assets/student/image-ocr-example.jpg";
+import ocrImgExample from "../../assets/student/ocr-img-example.jpg";
 
 const StudentInputByOcr = (props) => {
   const fileInfoInput = useRef(null);
@@ -34,19 +34,19 @@ const StudentInputByOcr = (props) => {
         //오늘 자료면
       } else {
         //이미 세번 시도한 경우 에러메세지
-        if (item.value > 3) {
-          Swal.fire({
-            icon: "error",
-            title: "인식불가",
-            text: "다른 선생님들을 위해서 하루에 3번까지만 OCR기능 활용이 가능합니다. 직접입력 / 엑셀파일 업로드 기능을 활용해주세요. 배려 감사합니다! ",
-          });
-          return false;
-          //세번까지는 안했으면 횟수 추가해서 스토리지에 저장하기
-        } else {
-          item.value += 1;
+        // if (item.value > 3) {
+        //   Swal.fire({
+        //     icon: "error",
+        //     title: "인식불가",
+        //     text: "다른 선생님들을 위해서 하루에 3번까지만 OCR기능 활용이 가능합니다. 직접입력 / 엑셀파일 업로드 기능을 활용해주세요. 배려 감사합니다! ",
+        //   });
+        //   return false;
+        //   //세번까지는 안했으면 횟수 추가해서 스토리지에 저장하기
+        // } else {
+        item.value += 1;
 
-          localStorage.setItem("todayOcrTry", JSON.stringify(item));
-        }
+        localStorage.setItem("todayOcrTry", JSON.stringify(item));
+        // }
       }
 
       // 자료가 없는 경우
@@ -81,13 +81,16 @@ const StudentInputByOcr = (props) => {
       .then((data) => {
         const ocrTexts = data.responses[0].fullTextAnnotation.text;
 
-        // console.log(data.responses[0]);
+        console.log(data.responses[0]);
         // 숫자가 아닌 것들 빈칸으로 만들었다가 지우고 배열로 만들기
         sumNum = ocrTexts
           .replace(/[^0-9]+/g, " ")
           .trim(" ")
-          .split(" ")
-          .sort((a, b) => a - b);
+          .split(" ");
+        //마지막 요소의 값으로 새롭게 배열 만들기. 중간에 인식되지 않는 번호가 있을 수 있음..
+        let lastNum = sumNum?.[sumNum.length - 1];
+        sumNum = [...Array(+lastNum)].map((v, i) => i + 1);
+
         //한글이 아닌 것들 빈칸으로 만들었다가 배열로 만들기
         sumName = ocrTexts
           .replace(/[^ㄱ-ㅎ가-힣]+/g, " ")
@@ -183,7 +186,7 @@ const StudentInputByOcr = (props) => {
           <div className={classes["span-expain"]}>
             {studentsByOcr?.length === 0 && (
               <>
-                <img src={imageOcrExample} alt="" />
+                <img src={ocrImgExample} alt="" />
               </>
             )}
             <hr className={classes["hr"]} />
@@ -194,7 +197,7 @@ const StudentInputByOcr = (props) => {
 
             <span>
               <span className={classes["span-highlight"]}>번호, 이름만</span>{" "}
-              보이도록 명렬표 촬영 및 자르기
+              보이도록 명렬표 촬영하기
             </span>
 
             <span>
@@ -202,7 +205,7 @@ const StudentInputByOcr = (props) => {
               <span className={classes["span-highlight"]}>파일 불러오기!</span>
             </span>
             <span>
-              내용 확인하고
+              성별 입력 및 내용확인 후
               <span className={classes["span-highlight"]}> 저장누르기</span>
             </span>
             <hr className={classes["hr"]} />

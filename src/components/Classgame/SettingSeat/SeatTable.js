@@ -181,7 +181,7 @@ const SeatTable = (props) => {
     let now_date = getDateHandler(new Date());
     let now_year = now_date.slice(0, 4);
     let now_month = now_date.slice(5, 7);
-    if (+now_month <= 2) {
+    if (+now_month <= 1) {
       now_year = String(+now_year - 1);
     }
 
@@ -191,7 +191,7 @@ const SeatTable = (props) => {
       let data_month = data.saveDate.slice(5, 7);
       let data_year = data.saveDate.slice(0, 4);
 
-      if (+data_month <= 2) {
+      if (+data_month <= 1) {
         data_year = String(+data_year - 1);
       }
 
@@ -579,7 +579,7 @@ const SeatTable = (props) => {
       //현재학년도 세팅
       let now_year = data.saveDate.slice(0, 4);
       let now_month = data.saveDate.slice(5, 7);
-      if (+now_month <= 2) {
+      if (+now_month <= 1) {
         now_year = String(+now_year - 1);
       }
       props.changeData(now_year);
@@ -609,7 +609,7 @@ const SeatTable = (props) => {
       //현재학년도 세팅
       let now_year = props.saveDate.slice(0, 4);
       let now_month = props.saveDate.slice(5, 7);
-      if (+now_month <= 2) {
+      if (+now_month <= 1) {
         now_year = String(+now_year - 1);
       }
       props.changeData(now_year);

@@ -10,7 +10,7 @@ import TodoPublicSetting from "../Todo/TodoPublicSetting";
 import publicSetting from "../../assets/todo/publicSetting.gif";
 
 import { dbService } from "../../fbase";
-import { onSnapshot, setDoc, doc } from "firebase/firestore";
+import { onSnapshot, setDoc, doc, getDoc } from "firebase/firestore";
 import ExampleModal from "./ExampleModal";
 
 const thisMonth = () => {
@@ -284,10 +284,11 @@ const TodoPage = (props) => {
     } else {
       todoRef = doc(dbService, "todo", props.userUid);
     }
+    console.log(events);
     // events 자료 가져와서 수정하기
-    let new_events = JSON.parse(JSON.stringify(events));
-    // console.log(new_events);
-
+    // let new_events = JSON.parse(JSON.stringify(events));
+    let now_data = await getDoc(todoRef);
+    let new_events = now_data.data()?.todo_data;
     //만약 events가 있었으면,
     if (new_events.length !== 0) {
       //학교 공용 이벤트 todo에서는 무조건 새롭게 저장함. 기존꺼 지우고.
@@ -307,10 +308,12 @@ const TodoPage = (props) => {
         // console.log("기존에 events에 있던 자료");
         if (fixOrDel === "fix") {
           let fixed_event = { ...data, eventDate: eventDate };
+          console.log(fixed_event);
 
           new_events.splice(event_index, 1);
+          console.log(new_events);
           new_events.push(fixed_event);
-          console.log(fixed_event);
+          console.log(new_events);
           delete new_events[new_events.length - 1].eventDate;
           const fixed_data = { todo_data: new_events };
           await setDoc(todoRef, fixed_data);

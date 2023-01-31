@@ -41,7 +41,7 @@ const ConsultLists = (props) => {
           years.push(data_year);
           //자료에 년도를 yearGroup으로 추가
           new_data = { ...data, yearGroup: data_year };
-        } else if (+data_month <= 2) {
+        } else if (+data_month <= 1) {
           let fixed_year = String(+data_year - 1);
           years.push(fixed_year);
           new_data = { ...data, yearGroup: fixed_year };

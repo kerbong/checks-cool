@@ -10,9 +10,10 @@ import Button from "../Layout/Button";
 import ExampleModal from "./ExampleModal";
 import dayjs from "dayjs";
 
-import ocrGif from "../../assets/student/ocrGif.gif";
-import typingGif from "../../assets/student/typing_new_upload.gif";
-import excelGif from "../../assets/student/excel_new_upload.gif";
+import teacherOcr from "../../assets/student/teacher-ocr.gif";
+import teacherTyping from "../../assets/student/teacher-typing.gif";
+import teacherExcel from "../../assets/student/teacher-excel.gif";
+import subjectExcel from "../../assets/student/subject-excel.gif";
 import classes from "../Student/TypingStudent.module.css";
 
 const StudentLists = (props) => {
@@ -23,28 +24,44 @@ const StudentLists = (props) => {
   const [studentsInfo, setStudentsInfo] = useState([]);
   const [showExample, setShowExample] = useState(false);
   const [nowClassName, setNowClassName] = useState("");
-  const [nowYear, setNowYear] = useState("");
+  const [gifImg, setGifImg] = useState("");
 
   const selectRef = useRef();
 
+  //이미지 설정함수
+  const gifImgHandler = () => {
+    let now_gifImg;
+    //담임이면
+    if (!props.isSubject) {
+      now_gifImg =
+        addStudentBy === "imageFile"
+          ? teacherOcr
+          : addStudentBy === "typing"
+          ? teacherTyping
+          : teacherExcel;
+
+      //전담이면
+    } else {
+      now_gifImg = addStudentBy === "typing" ? teacherTyping : subjectExcel;
+    }
+    setGifImg(now_gifImg);
+  };
+
+  //초기 렌더링 및 클릭해서 화면 세팅이 바뀌면 예시 이미지 설정하기
+  useEffect(() => {
+    gifImgHandler();
+  }, [addStudentBy]);
+
   //학년도 설정함수
   const setYear = () => {
-    let now = dayjs();
-    let yearGroup = "";
-    let now_month = now.format("MM");
-    let now_year = now.format("YYYY");
-
-    if (+now_month >= 3) {
-      yearGroup = now_year;
-    } else if (+now_month <= 1) {
-      yearGroup = String(+now_year - 1);
-    }
-    return yearGroup;
+    //2월부터는 새로운 학년도로 인식함
+    return +dayjs().format("MM") <= 1
+      ? String(+dayjs().format("YYYY") - 1)
+      : dayjs().format("YYYY");
   };
 
   useEffect(() => {
     let now_year = setYear();
-    setNowYear(now_year);
 
     //현재학년도 자료만 입력가능하고,, 불러오기
     let nowStudents = props?.students?.filter(
@@ -115,7 +132,7 @@ const StudentLists = (props) => {
           });
 
           const fixed_data = {
-            [nowYear]: sortNum(new_studentsInfo),
+            [setYear()]: sortNum(new_studentsInfo),
           };
           uploadStudents(fixed_data);
 
@@ -136,7 +153,7 @@ const StudentLists = (props) => {
             return cl;
           });
           const fixed_data = {
-            [nowYear]: new_wholeClass,
+            [setYear()]: new_wholeClass,
           };
 
           console.log(fixed_data);
@@ -267,13 +284,7 @@ const StudentLists = (props) => {
         {showExample && (
           <ExampleModal
             onClose={() => setShowExample(false)}
-            imgSrc={
-              addStudentBy === "imageFile"
-                ? ocrGif
-                : addStudentBy === "typing"
-                ? typingGif
-                : excelGif
-            }
+            imgSrc={gifImg}
             text={
               <>
                 <p

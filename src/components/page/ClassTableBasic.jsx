@@ -5,7 +5,7 @@ import Button from "../Layout/Button";
 import Swal from "sweetalert2";
 import TimeTable from "../Main/TimeTable";
 import { dbService } from "../../fbase";
-import { doc, updateDoc, onSnapshot, getDoc } from "firebase/firestore";
+import { doc, updateDoc, setDoc, getDoc } from "firebase/firestore";
 import dayjs from "dayjs";
 const STARTBASE = [
   "2022-01-13 08:20",
@@ -61,7 +61,7 @@ const ClassTableBasic = (props) => {
 
       const now_doc = await getDoc(classTableRef);
 
-      if (now_doc.exists()) {
+      if (now_doc?.data()?.classStart) {
         let new_classBasic = [];
         CLASSTIME.forEach((cl_title, cl_index) => {
           WEEKDAYS.forEach((wd) => {
@@ -69,7 +69,10 @@ const ClassTableBasic = (props) => {
           });
         });
         setClassBasic([...new_classBasic]);
-        setClassStart([...(now_doc.data()?.classStart || [...STARTBASE])]);
+        setClassStart([...now_doc.data()?.classStart]);
+      } else {
+        setClassBasic([]);
+        setClassStart([...STARTBASE]);
       }
     };
 
@@ -133,14 +136,26 @@ const ClassTableBasic = (props) => {
 
     // 만약 모든 요일의 자료가 비어있고 시각도 변함이 없으면 저장 안되도록
 
-    await updateDoc(classBasicRef, {
-      월: [...월],
-      화: [...화],
-      수: [...수],
-      목: [...목],
-      금: [...금],
-      classStart: [...classStart],
-    });
+    const now_doc = await getDoc(classBasicRef);
+    if (now_doc.exists()) {
+      await updateDoc(classBasicRef, {
+        월: [...월],
+        화: [...화],
+        수: [...수],
+        목: [...목],
+        금: [...금],
+        classStart: [...classStart],
+      });
+    } else {
+      await setDoc(classBasicRef, {
+        월: [...월],
+        화: [...화],
+        수: [...수],
+        목: [...목],
+        금: [...금],
+        classStart: [...classStart],
+      });
+    }
 
     Swal.fire({
       icon: "success",
