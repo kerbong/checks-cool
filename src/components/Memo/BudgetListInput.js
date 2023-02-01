@@ -2,6 +2,7 @@ import React, { useState, useRef } from "react";
 import Swal from "sweetalert2";
 import classes from "./CheckLists.module.css";
 import AttendCalendar from "../Attendance/AttendCalendar";
+import dayjs from "dayjs";
 
 const BudgetListInput = (props) => {
   const [attendDate, setAttendDate] = useState(new Date());
@@ -108,6 +109,7 @@ const BudgetListInput = (props) => {
               <AttendCalendar
                 getDateValue={getDateHandler}
                 about={props.about}
+                setStart={new Date(dayjs().format("YYYY") + "-12-01")}
               />
             </div>
           </span>

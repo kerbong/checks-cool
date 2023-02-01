@@ -201,7 +201,8 @@
 .budget-add,
 .budget-save,
 .budgetEdit-save,
-.budgetEdit-cancle {
+.budgetEdit-cancle,
+.budget-del {
   width: 40px;
   height: 40px;
   border-width: 0;
@@ -210,6 +211,9 @@
   position: absolute;
   right: 58px;
   top: 160px;
+}
+.budget-del {
+  right: 10px;
 }
 
 .budgetEdit-save,
@@ -285,12 +289,12 @@
   left: 33%;
   font-size: 1rem;
   padding: 10px;
-  color: #00080533;
+  color: #0008054f;
   width: 40px;
   height: 40px;
   border-width: 0;
   border-radius: 50%;
-  background-color: #ffffff7d;
+  background-color: #ffffffd9;
 }
 
 .budgetList-delete {
@@ -302,6 +306,10 @@
   z-index: 10;
   position: absolute;
   width: 90vw;
+}
+
+.newBudget-date {
+  font-size: 1rem;
 }
 
 /* .classSelect-div {

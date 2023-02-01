@@ -19,17 +19,9 @@ const SettingSeat = (props) => {
 
   //학년도 설정함수
   const setYear = () => {
-    let now = dayjs();
-    let yearGroup = "";
-    let now_month = now.format("MM");
-    let now_year = now.format("YYYY");
-
-    if (+now_month >= 3) {
-      yearGroup = now_year;
-    } else if (+now_month <= 1) {
-      yearGroup = String(+now_year - 1);
-    }
-    return yearGroup;
+    return +dayjs().format("MM") <= 1
+      ? String(+dayjs().format("YYYY") - 1)
+      : dayjs().format("YYYY");
   };
 
   useEffect(() => {
@@ -39,6 +31,10 @@ const SettingSeat = (props) => {
       (yearStd) => Object.keys(yearStd)[0] === now_year
     )?.[0]?.[now_year];
 
+    console.log(
+      props?.students?.filter((yearStd) => Object.keys(yearStd)[0] === now_year)
+    );
+    console.log(now_students);
     setStudents(now_students);
   }, [props.students]);
 

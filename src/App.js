@@ -211,7 +211,7 @@ function App() {
                   <ClassgamePage
                     students={students}
                     userUid={userUid}
-                    isSubject={profile.isSubject || []}
+                    isSubject={profile?.isSubject || []}
                   />
                 }
               />

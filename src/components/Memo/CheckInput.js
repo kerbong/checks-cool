@@ -127,8 +127,6 @@ const CheckInput = (props) => {
     //바꾸기 버튼 수정 필요함...
   };
 
-  console.log(students);
-
   return (
     <>
       <div className={classes.div}>

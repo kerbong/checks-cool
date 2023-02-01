@@ -8,10 +8,12 @@ import {
   updateDoc,
   deleteDoc,
 } from "firebase/firestore";
+import Swal from "sweetalert2";
 import classes from "./CheckLists.module.css";
 import BudgetInput from "./BudgetInput";
 import BudgetListInput from "./BudgetListInput";
 import BudgetList from "./BudgetList";
+import dayjs from "dayjs";
 
 const BudgetManage = (props) => {
   const [budgets, setBudgets] = useState([]);
@@ -37,6 +39,7 @@ const BudgetManage = (props) => {
   const getBudgetsFromDb = async () => {
     //db에서 todo DB가져오고 작성자가 현재 유저와 동일한지 확인하고 events에 추가하기
     setBudgets([]);
+    setDataYears([]);
     let budgetRef = doc(dbService, "budgets", props.userUid);
     let budgetSnap = await getDoc(budgetRef);
 
@@ -57,6 +60,10 @@ const BudgetManage = (props) => {
         //학년도 저장
         setDataYears([...new Set(years)]);
       });
+
+      //자료가 없으면 현재년도로 세팅
+    } else {
+      setDataYears([dayjs().format("YYYY")]);
     }
   };
 
@@ -111,7 +118,7 @@ const BudgetManage = (props) => {
     }
   };
 
-  //firestore에 예산 품목 저장하기
+  //firestore에 예산 품목 저장 / 수정하기
   const saveBudgetHandler = async (item) => {
     let budgetRef = doc(dbService, "budgets", props.userUid);
 
@@ -125,10 +132,17 @@ const BudgetManage = (props) => {
         budget_index = index;
       }
     });
+    //수정일 수도 있으므로, 같은 날짜에 같은 타이틀이 있으면 삭제한 후에 추가하기
+    new_onBudget.useLists?.filter(
+      (list) => list.title === item.title && list.date !== item.date
+    );
+
+    //그냥, 수정 없이 무조건 복사됩니당!
 
     new_onBudget.useLists.push(item);
     new_budgets[budget_index] = new_onBudget;
     setBudgets([...new_budgets]);
+    setNowOnBudget(new_onBudget);
 
     await updateDoc(budgetRef, { budgets_data: new_budgets });
   };
@@ -169,6 +183,59 @@ const BudgetManage = (props) => {
     selectBudgetHandler(budget.budget_name);
     await setDoc(doc(dbService, "budgets", props.userUid), {
       budgets_data: [...new_budgets],
+    });
+  };
+
+  //예산 자체를 삭제하는 함수
+  const deleteBugetHandler = async () => {
+    const numberComma = (num) => {
+      return num?.toString()?.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    };
+
+    // //기존에 들어있던 예산 전체 삭제
+    const delBudget = async () => {
+      let new_budgets = budgets.filter(
+        (data) =>
+          data.budget_name + data.until !==
+          nowOnBudget.budget_name + nowOnBudget.until
+      );
+      setBudgets([...new_budgets]);
+      setNowOnBudget({});
+      await setDoc(doc(dbService, "budgets", props.userUid), {
+        budgets_data: [...new_budgets],
+      });
+    };
+
+    Swal.fire({
+      icon: "warning",
+      title: "예산 삭제 확인",
+      text: `[  ${nowOnBudget.budget_name} / 기한 ${
+        nowOnBudget.until
+      } / 총 ${numberComma(
+        nowOnBudget.totalAmount
+      )}원 ] 의 예산을 삭제할까요? 삭제하시면 예산에 기록되어 있던 모든 품목들도 삭제됩니다.`,
+      showDenyButton: true,
+      confirmButtonText: "삭제",
+      confirmButtonColor: "#db100cf2",
+      denyButtonColor: "#85bd82",
+      denyButtonText: `취소`,
+    }).then((result) => {
+      /* Read more about isConfirmed, isDenied below */
+      //저장버튼 누르면
+      if (result.isConfirmed) {
+        Swal.fire({
+          icon: "success",
+          title: "자료가 삭제되었어요.",
+          text: "5초 후에 창이 사라집니다.",
+          confirmButtonText: "확인",
+          confirmButtonColor: "#85bd82",
+          timer: 5000,
+        });
+        delBudget();
+        //취소누르면 그냥 반환
+      } else {
+        return;
+      }
     });
   };
 
@@ -219,6 +286,18 @@ const BudgetManage = (props) => {
             <i className="fa-solid fa-plus"></i>
           )}
         </button>
+
+        {/* 예산이 선택된 경우 삭제할 수 있는 버튼  */}
+        {!showInput && budgetSelectRef?.current?.value !== "" && (
+          <button
+            className={classes["budget-del"]}
+            onClick={() => {
+              deleteBugetHandler();
+            }}
+          >
+            <i className="fa-solid fa-trash-can"></i>
+          </button>
+        )}
       </div>
       {/* 예산목록 입력 */}
       {showInput && budgetSelectRef.current.value === "" && (
@@ -243,6 +322,7 @@ const BudgetManage = (props) => {
       <BudgetList
         budget={nowOnBudget}
         deleteHandler={(budget) => deleteHandler(budget)}
+        saveBudgetHandler={saveBudgetHandler}
       />
 
       <div

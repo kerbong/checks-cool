@@ -66,7 +66,7 @@ const MemoPage = (props) => {
               ? submitMemo
               : showWhatMemo === SHOW_WHAT[1]
               ? listMemo
-              : showWhatMemo === SHOW_WHAT[1]
+              : showWhatMemo === SHOW_WHAT[2]
               ? todayTodo
               : ""
           }

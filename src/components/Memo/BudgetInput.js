@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import Swal from "sweetalert2";
 import classes from "./CheckLists.module.css";
 import AttendCalendar from "../Attendance/AttendCalendar";
+import dayjs from "dayjs";
 
 const BudgetInput = (props) => {
   const [attendDate, setAttendDate] = useState(new Date());
@@ -23,11 +24,7 @@ const BudgetInput = (props) => {
   };
 
   const getYyyymmdd = (date) => {
-    let year = date.getFullYear();
-    let month = ("0" + (date.getMonth() + 1)).slice(-2);
-    let day = ("0" + date.getDate()).slice(-2);
-
-    return year + "-" + month + "-" + day;
+    return dayjs(date).format("YYYY-MM-DD HH:mm");
   };
 
   const titleRef = useRef();
@@ -210,6 +207,15 @@ const BudgetInput = (props) => {
             />
             원
           </div>
+
+          {props.about === "edit" && (
+            <>
+              <br />
+              <div className={classes["newBudget-date"]}>
+                * 저장버튼을 누르시면 자료가 복사됩니다.
+              </div>
+            </>
+          )}
         </span>
       </li>
     </>

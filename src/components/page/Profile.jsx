@@ -6,14 +6,6 @@ import classes from "./Profile.module.css";
 import Swal from "sweetalert2";
 import dayjs from "dayjs";
 
-// 지워줄 부분
-import ExampleModal from "./ExampleModal";
-import new2023 from "../../assets/notice/2023new.jpg";
-const update_title = `2월 3일(금) New Open`;
-
-const update_text = `안녕하세요! 첵스-쿨 운영자 말랑한 거봉입니다!🍇 안정적인 운영을 위한 <b>데이터베이스 개선 및 대규모 업데이트!!(전담교사 기능, 예산 기능 등)</b>가 마지막 테스트 중입니다.🎉 <br/> <b>기존 데이터는 2월 2일(목) 20:00에 모두 삭제</b> 됩니다. <br/>불편하시겠지만 <b><u>2월 3일(금)부터 새롭게 회원가입 및 사이트 이용</u></b>을 부탁드립니다! 2023년에도 많은 선생님들께 도움이 되었으면 합니다. 새해 복 많이 받으세요!😄`;
-//지워줄 부분
-
 const Profile = (props) => {
   const [userInfo, setUserInfo] = useState({});
   const [existUserInfo, setExistUserInfo] = useState({});
@@ -150,29 +142,6 @@ const Profile = (props) => {
 
   return (
     <div>
-      {/* 지워줄 부분 */}
-      <ExampleModal
-        onClose={() => {
-          // localStorage.setItem("showNotice", "2023new");
-        }}
-        imgSrc={new2023}
-        text={
-          <>
-            <h1
-              style={{
-                margin: "10px 0 25px 0",
-              }}
-              dangerouslySetInnerHTML={{ __html: update_title }}
-            ></h1>
-            <hr style={{ margin: "20px 15px" }} />
-            <p
-              className={`${classes.p} ${classes.top}`}
-              dangerouslySetInnerHTML={{ __html: update_text }}
-            ></p>
-          </>
-        }
-      />
-      {/* 지워줄 부분 */}
       <div className={classes["loginEmail-div"]}>
         <p className={classes["loginEmail-p"]}>현재 로그인 아이디</p>
         <p className={classes["loginEmail-p"]}>{props.user.email}</p>

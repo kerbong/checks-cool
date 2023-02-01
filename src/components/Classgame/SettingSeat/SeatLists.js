@@ -20,11 +20,11 @@ const SeatLists = (props) => {
       const new_seats = [];
       const years = [];
       doc?.data()?.seats_data?.forEach((data) => {
-        //22.3.1~23.2.28까지 년도로 묶음
+        //22.2.1~23.1.31까지 년도로 묶음
         let data_year = data.saveDate.slice(0, 4);
         let data_month = data.saveDate.slice(5, 7);
         let new_data = {};
-        if (+data_month >= 3) {
+        if (+data_month >= 2) {
           years.push(data_year);
           //자료에 년도를 yearGroup으로 추가해둠
           new_data = { ...data, yearGroup: data_year };

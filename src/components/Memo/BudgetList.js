@@ -126,7 +126,7 @@ const BudgetList = (props) => {
                               className={classes["budgetList-edit"]}
                               onClick={() => setShowEdit(list.title)}
                             >
-                              <i className="fa-solid fa-pencil"></i>
+                              <i className="fa-regular fa-copy"></i>
                             </button>
                             {/* 삭제버튼 */}
                             <button
@@ -167,6 +167,10 @@ const BudgetList = (props) => {
                     budget={list}
                     key={"edit" + list.title}
                     cancleHandler={() => setShowEdit("")}
+                    saveBudgetHandler={(item) => {
+                      props.saveBudgetHandler(item);
+                      setShowEdit("");
+                    }}
                   />
                 )
               )}
