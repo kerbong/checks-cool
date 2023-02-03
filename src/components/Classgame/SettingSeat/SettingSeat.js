@@ -31,10 +31,6 @@ const SettingSeat = (props) => {
       (yearStd) => Object.keys(yearStd)[0] === now_year
     )?.[0]?.[now_year];
 
-    console.log(
-      props?.students?.filter((yearStd) => Object.keys(yearStd)[0] === now_year)
-    );
-    console.log(now_students);
     setStudents(now_students);
   }, [props.students]);
 

@@ -17,14 +17,14 @@ import ClassItem from "../Main/ClassItem";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import ExampleModal from "./ExampleModal";
-import ocrGif from "../../assets/student/teacher-typing.gif";
-import new2023 from "../../assets/notice/2023new.jpg";
+import byExcel from "../../assets/student/teacher-excel.gif";
+import notePenImg from "../../assets/notice/new_start_note_pen.jpg";
 import dayjs from "dayjs";
 import AttendCalendar from "components/Attendance/AttendCalendar";
 
-const update_title = `2월 3일(금) New Open`;
+const update_title = `반가워요 선생님!🎆`;
 
-const update_text = `안녕하세요! 첵스-쿨 운영자 말랑한 거봉입니다!🍇 안정적인 무료 운영을 위한 <b>데이터베이스 개선 및 대규모 업데이트!!(전담교사 기능, 예산 기능 등)</b>가 마지막 테스트 중입니다.🎉 <br/> <b><u>기존 데이터는 2월 2일(목) 20:00에 모두 삭제</b></u> 됩니다. 불편하시겠지만 2월 3일(금)에 새롭게 회원가입 및 사용을 부탁드립니다! 2023년에도 많은 선생님들께 도움이 되었으면 합니다. 새해 복 많이 받으세요!😄`;
+const update_text = `안녕하세요! 첵스-쿨 운영자 말랑한 거봉입니다!🍇 안정적인 무료 운영을 위한 <b>데이터베이스 개선, 전담버전 추가</b> 등 업데이트가 마무리 되었습니다!!🎉<br/> 학교에서 소수인 전담선생님들을 생각하며 한 달 동안 정성들여서 만들었습니다ㅠ ㅎㅎ 주변 선생님들께 추천부탁드려요! (오류가 있을 경우 알려주세요!)<br/> <b>불편을 참고 재가입, 이용해주시는 선생님, 새롭게 가입해주신 선생님께 감사드립니다!</b> <br/> 2023년에도 많은 선생님들께 도움이 되었으면 합니다. 새해 복 많이 받으세요!😄<br/>`;
 // "* 아, 이거 있으면 좋겠다! 하는 기능이 있으신가요? 내년에 사용해보고 싶은 기능을 추천해주세요! 가장 많은 추천을 받은 아이디어를 선정하여 추가할 계획입니다! '잼잼'-'이거해요' 에 적어주세요~ ";
 //오늘 날짜 yyyy-mm-dd로 만들기
 const getDateHandler = (date, titleOrQuery) => {
@@ -374,7 +374,7 @@ const MainPage = (props) => {
       {props.showMainExample && (
         <ExampleModal
           onClose={() => props.setShowMainExample()}
-          imgSrc={ocrGif}
+          imgSrc={byExcel}
           text={
             <>
               <p
@@ -402,7 +402,7 @@ const MainPage = (props) => {
             // localStorage.setItem("showNotice", "2023new");
             setShowNotice(false);
           }}
-          imgSrc={new2023}
+          imgSrc={notePenImg}
           text={
             <>
               <h1

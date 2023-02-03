@@ -146,7 +146,6 @@ const AttendEachLists = (props) => {
     const student = e.target.value;
     setStudentOn(student);
     if (student === "전체학생") {
-      console.log(yearAttendLists);
       if (!isSubject) {
         setStudentAttendList(yearAttendLists);
       } else {

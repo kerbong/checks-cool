@@ -79,6 +79,7 @@ const TodoPage = (props) => {
     onSnapshot(todoRef, (doc) => {
       const new_events = [];
       doc?.data()?.todo_data?.forEach((data) => {
+        // console.log(data);
         new_events.push(data);
       });
       setEvents([...new_events]);
@@ -142,7 +143,6 @@ const TodoPage = (props) => {
     });
 
     moveMonth[1].addEventListener("click", () => {
-      // console.log("다음달 클릭");
       let currentM = getCurrentMonth();
       let fixedM = fixCurrentMonth(currentM, +1);
       setCurrentMonth(fixedM);
@@ -284,13 +284,13 @@ const TodoPage = (props) => {
     } else {
       todoRef = doc(dbService, "todo", props.userUid);
     }
-    console.log(events);
+
     // events 자료 가져와서 수정하기
     // let new_events = JSON.parse(JSON.stringify(events));
     let now_data = await getDoc(todoRef);
-    let new_events = now_data.data()?.todo_data;
+    let new_events = now_data.data()?.todo_data || [];
     //만약 events가 있었으면,
-    if (new_events.length !== 0) {
+    if (new_events?.length !== 0) {
       //학교 공용 이벤트 todo에서는 무조건 새롭게 저장함. 기존꺼 지우고.
 
       //기존 events에 있는 자료인 경우
@@ -308,16 +308,15 @@ const TodoPage = (props) => {
         // console.log("기존에 events에 있던 자료");
         if (fixOrDel === "fix") {
           let fixed_event = { ...data, eventDate: eventDate };
-          console.log(fixed_event);
 
           new_events.splice(event_index, 1);
-          console.log(new_events);
+
           new_events.push(fixed_event);
-          console.log(new_events);
+
           delete new_events[new_events.length - 1].eventDate;
           const fixed_data = { todo_data: new_events };
           await setDoc(todoRef, fixed_data);
-          console.log(new_events);
+
           // console.log("이벤트바이데이즈에서 일치하는 자료 찾아서 수정함!");
         } else if (fixOrDel === "del") {
           //혹시 해당 날짜에 지금 이벤트가 마지막 남은 이벤트인 경우 달력에 이벤트 있음을 표시하는 백그라운드 컬러 삭제
@@ -332,7 +331,7 @@ const TodoPage = (props) => {
 
           //splice(인덱스값을, 1이면 제거 0이면 추가)
           new_events.splice(event_index, 1);
-          console.log(new_events);
+
           setEvents([...new_events]);
           // console.log("이벤트바이데이즈에서 일치하는 자료 찾아서 제거함!");
           const new_data = { todo_data: new_events };

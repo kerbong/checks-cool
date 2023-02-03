@@ -173,6 +173,8 @@ const AttendCtxCalendar = (props) => {
       ".react-datepicker__navigation"
     );
 
+    // console.log(moveMonth);
+
     moveMonth[0]?.addEventListener("click", () => {
       // console.log("이전달 클릭");
       //이전 노드에서 가져와서 반영하니까.. 보정함

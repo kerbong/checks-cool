@@ -152,10 +152,14 @@ const CheckLists = (props) => {
 
   const saveItemHandler = async (item) => {
     //자료 저장할 떄 실제로 실행되는 함수
-    const dataSaved = async () => {
+    const dataSaved = async (newOrSame) => {
       Swal.fire({
         icon: "success",
-        title: "자료가 저장되었어요.",
+        title: `${
+          newOrSame !== "new"
+            ? "중복된 이름으로 자료 저장됨"
+            : "자료가 저장/수정됨"
+        }`,
         text: "5초 후에 창이 사라집니다.",
         confirmButtonText: "확인",
         confirmButtonColor: "#85bd82",
@@ -167,11 +171,13 @@ const CheckLists = (props) => {
       if (item.unSubmitStudents) {
         //checklists자료 받아오기
         let newCheckRef = doc(dbService, "checkLists", props.userUid);
-        // const checkListsSnap = await getDoc(newCheckRef);
-        // if (checkListsSnap?.exists()) {
-        if (checkLists.length > 0) {
+        const checkListsSnap = await getDoc(newCheckRef);
+        const checkListsData = checkListsSnap?.data()?.checkLists_data;
+        //기존자료가 있으면?!
+        if (checkListsData?.length > 0) {
+          // if (checkLists?.length > 0) {
           item = { ...item, yearGroup: checkListsYear.current.value };
-          let new_datas = [...checkLists];
+          let new_datas = [...checkListsData];
           let data_index = undefined;
           new_datas.forEach((data, index) => {
             if (data.id === item.id) {
@@ -221,11 +227,14 @@ const CheckLists = (props) => {
 
         //listMemo일 경우
       } else {
+        //listMemo자료 받아오기
         let newListRef = doc(dbService, "listMemo", props.userUid);
-
-        if (listMemo.length > 0) {
+        const listMemoSnap = await getDoc(newListRef);
+        const listMemoData = listMemoSnap?.data()?.listMemo_data;
+        //기존자료가 있으면?!
+        if (listMemoData?.length > 0) {
           item = { ...item, yearGroup: listMemoYear.current.value };
-          let new_datas = [...listMemo];
+          let new_datas = [...listMemoData];
           let data_index = undefined;
           new_datas.forEach((data, index) => {
             if (data.id === item.id) {
@@ -280,16 +289,19 @@ const CheckLists = (props) => {
     //같은 이름의 체크리스트 있는지 확인하고, 저장 묻기
     let regex = / /gi;
     let same_checkTitle = datas?.filter(
-      (list) => list.title.replace(regex, "") === item.title.replace(regex, "")
+      (list) =>
+        list.title.replace(regex, "") === item.title.replace(regex, "") &&
+        list.id !== item.id
     );
 
     //동일한 이름의 체크리스트가 있을 경우 묻기
     if (same_checkTitle?.length > 0) {
       Swal.fire({
-        title: "자료를 저장/수정할까요?",
-        text: `"${item.title}"로 동일한 이름의 체크리스트가 이미 존재합니다.`,
+        icon: "warning",
+        title: "제목 중복",
+        text: `"${item.title}"로 동일한 이름의 체크리스트가 이미 존재합니다. 같은 제목으로 새로운 자료를 저장할까요?`,
         showDenyButton: true,
-        confirmButtonText: "저장/수정",
+        confirmButtonText: "저장",
         confirmButtonColor: "#db100cf2",
         denyButtonColor: "#85bd82",
         denyButtonText: `취소`,
@@ -297,14 +309,14 @@ const CheckLists = (props) => {
         /* Read more about isConfirmed, isDenied below */
         //저장버튼 누르면
         if (result.isConfirmed) {
-          dataSaved();
+          dataSaved("sameTitle");
           //취소누르면 그냥 반환
         } else {
           return;
         }
       });
     } else {
-      dataSaved();
+      dataSaved("new");
     }
   };
 
@@ -312,7 +324,11 @@ const CheckLists = (props) => {
     //checkLists 에서 중복되는거 없애기(순서가 중요함..! firestore전에)
     let new_datas;
     if (item.unSubmitStudents) {
-      new_datas = checkLists.filter((list) => list.id !== item.id);
+      let newCheckRef = doc(dbService, "checkLists", props.userUid);
+      const checkListsSnap = await getDoc(newCheckRef);
+      const checkListsData = checkListsSnap?.data()?.checkLists_data;
+
+      new_datas = checkListsData.filter((list) => list.id !== item.id);
       // setCheckLists([...new_datas]);
       setNowOnCheckLists([
         ...nowOnCheckLists.filter((list) => list.id !== item.id),
@@ -322,12 +338,15 @@ const CheckLists = (props) => {
       });
       //listMemo 에서 중복되는거 없애기(순서가 중요함..! firestore전에)
     } else {
-      new_datas = listMemo.filter((list) => list.id !== item.id);
+      let listMemoRef = doc(dbService, "listMemo", props.userUid);
+      const listMemoSnap = await getDoc(listMemoRef);
+      const listMemoData = listMemoSnap?.data()?.listMemo_data;
+      new_datas = listMemoData?.filter((list) => list.id !== item.id);
       // setListMemo([...new_datas]);
       setNowOnListMemo([
         ...nowOnListMemo.filter((list) => list.id !== item.id),
       ]);
-      await setDoc(doc(dbService, "listMemo", props.userUid), {
+      await setDoc(listMemoRef, {
         listMemo_data: new_datas,
       });
     }

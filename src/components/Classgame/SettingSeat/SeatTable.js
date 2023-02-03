@@ -587,7 +587,6 @@ const SeatTable = (props) => {
     } else {
       new_allSeats.push(data);
     }
-    console.log(new_allSeats);
     setAllSeats([...new_allSeats]);
     await setDoc(existRef, { seats_data: new_allSeats });
 

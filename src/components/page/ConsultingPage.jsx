@@ -127,24 +127,6 @@ const ConsultingPage = (props) => {
 
   //선택된 학급이 바뀌면 해당반 학생으로 바꿔주기
   const selectEvents = () => {
-    //만약 해당 반에 아직 데이터가 없으면 events빈배열로 설정 및 리무브 스크린 이벤트함수 실행
-    // const existSelectClData = [...wholeEvents].filter(
-    //   (cl) => Object.keys(cl)[0] === nowClassName
-    // );
-    // if (existSelectClData.length === 0) {
-    //   removeScreenEvents();
-
-    //   setEvents([]);
-    // }
-
-    //wholeEvents에서 해당하는 학급 찾아서 events에 저장
-    // [...wholeEvents].forEach((cl) => {
-    //   if (Object.keys(cl)[0] === nowClassName) {
-    //     removeScreenEvents();
-
-    //     setEvents(Object.values(cl)[0]);
-    //   }
-    // });
     nowStudents?.forEach((cl) => {
       if (Object.keys(cl)[0] === nowClassName) {
         setNowClStudents(Object.values(cl)[0]);
@@ -164,7 +146,7 @@ const ConsultingPage = (props) => {
     let now_month = now.format("MM");
     let now_year = now.format("YYYY");
 
-    if (+now_month >= 3) {
+    if (+now_month >= 2) {
       yearGroup = now_year;
     } else if (+now_month <= 1) {
       yearGroup = String(+now_year - 1);
@@ -260,9 +242,9 @@ const ConsultingPage = (props) => {
           isSubject={true}
         />
       )}
-      {props.students.length === 0 && (
+      {nowStudents?.length === 0 && (
         <>
-          <div>학생 명단이 존재하지 않네요!</div>
+          <div>올해 학생 명단이 존재하지 않네요!</div>
           <div>메뉴의 곰돌이를 눌러서</div>
           <div>학생 명단을 먼저 입력해주세요!</div>
         </>

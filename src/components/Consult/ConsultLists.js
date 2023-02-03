@@ -69,14 +69,14 @@ const ConsultLists = (props) => {
   }, [consults]);
 
   function sortDate(consult, upOrDown) {
-    const sorted_consults = consult.sort(function (a, b) {
+    const sorted_consults = consult?.sort(function (a, b) {
       let a_date = `${a.id.slice(0, 10)} ${a.id.slice(10, 15)}`;
       let b_date = `${b.id.slice(0, 10)} ${b.id.slice(10, 15)}`;
       return new Date(a_date) - new Date(b_date);
     });
 
     if (upOrDown === "up") {
-      sorted_consults.reverse();
+      sorted_consults?.reverse();
     }
     return sorted_consults;
   }
@@ -303,7 +303,7 @@ const ConsultLists = (props) => {
     let now_month = now.format("MM");
     let now_year = now.format("YYYY");
 
-    if (+now_month >= 3) {
+    if (+now_month >= 2) {
       yearGroup = now_year;
     } else if (+now_month <= 1) {
       yearGroup = String(+now_year - 1);
@@ -377,7 +377,7 @@ const ConsultLists = (props) => {
             <option value="" defaultChecked>
               --학생--
             </option>
-            {nowOnConsult.length > 0 && (
+            {nowOnConsult?.length > 0 && (
               <option value="전체학생">전체보기</option>
             )}
 

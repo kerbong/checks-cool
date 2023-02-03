@@ -87,7 +87,7 @@ const StudentLists = (props) => {
 
     let uploadData = [];
     if (studentSnap.exists()) {
-      console.log(studentSnap.data());
+      // console.log(studentSnap.data());
       let exceptNow = studentSnap
         .data()
         ?.studentDatas.filter(
@@ -138,7 +138,7 @@ const StudentLists = (props) => {
 
           //전담용 로직
         } else {
-          console.log(wholeClass);
+          // console.log(wholeClass);
           let new_wholeClass = [...wholeClass];
           new_wholeClass.map((cl) => {
             //각반 학생들을 정렬하고 성별 속성 부여
@@ -148,7 +148,7 @@ const StudentLists = (props) => {
               }
               return stu;
             });
-            console.log(cl);
+            // console.log(cl);
             // new_wholeClass.push({`${Object.keys(cl)[0]}`:new_cl});
             return cl;
           });
@@ -156,7 +156,7 @@ const StudentLists = (props) => {
             [setYear()]: new_wholeClass,
           };
 
-          console.log(fixed_data);
+          // console.log(fixed_data);
           uploadStudents(fixed_data);
         }
 
@@ -218,7 +218,7 @@ const StudentLists = (props) => {
     let new_studentsInfo = [...studentsInfo].filter(
       (stu) => stu.num !== student.num
     );
-    console.log(new_studentsInfo);
+    // console.log(new_studentsInfo);
     setStudentsInfo([...new_studentsInfo]);
 
     return new_studentsInfo;
@@ -229,7 +229,7 @@ const StudentLists = (props) => {
     let new_studentsInfo = deleteStudentHandler(studentData);
     //새롭게 저장하기
     new_studentsInfo.push(studentData);
-    console.log(new_studentsInfo);
+    // console.log(new_studentsInfo);
     setStudentsInfo(sortNum(new_studentsInfo));
   };
 

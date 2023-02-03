@@ -19,8 +19,6 @@ const ClassgamePage = (props) => {
     }
   }, [state]);
 
-  console.log(props.students);
-
   return (
     <>
       <div id="title-div">

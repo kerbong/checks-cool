@@ -51,8 +51,8 @@ const AttendCalendar = (props) => {
         onChange={onChange}
         filterDate={isWeekday}
         startDate={startDate}
-        minDate={props.isSubject ? new Date(now_year(), 2, 1) : false}
-        maxDate={props.isSubject ? new Date(+now_year() + 1, 1, 14) : false}
+        // minDate={props.isSubject ? new Date(now_year(), 2, 1) : false}
+        // maxDate={props.isSubject ? new Date(+now_year() + 1, 1, 14) : false}
         endDate={props.about === "attendance" && endDate}
         selectsRange={props.about === "attendance" && true}
         disabledKeyboardNavigation
