@@ -76,6 +76,26 @@ const Profile = (props) => {
       return false;
     }
 
+    //다른 유저들의 닉네임과 겹치지 않는지 확인하기
+    let nickNamesRef = doc(dbService, "user", "nickNames");
+    const nick_doc = await getDoc(nickNamesRef);
+    let existNickNames = nick_doc.data().nickNames_data;
+
+    const isExistNick = existNickNames?.filter(
+      (nick) => nick === userInfo.nickName?.trim()
+    );
+
+    if (isExistNick.length > 0) {
+      Swal.fire({
+        icon: "error",
+        title: "닉네임 중복",
+        html: "이미 존재하는 닉네임입니다! 다른 이름으로 변경해주세요!",
+        confirmButtonText: "확인",
+        confirmButtonColor: "#85bd82",
+      });
+      return false;
+    }
+
     Swal.fire({
       icon: "success",
       title: "저장되었어요!",
@@ -116,6 +136,15 @@ const Profile = (props) => {
     } else {
       await updateDoc(profileRef, new_userInfo);
     }
+
+    //기존 닉네임은 삭제하고 닉네임만 따로 저장하기
+    const lastNick = existUserInfo.nickName;
+    if (lastNick.length > 0) {
+      existNickNames = existNickNames.filter((nick) => nick !== lastNick);
+    }
+    existNickNames.push(userInfo.nickName?.trim());
+    const new_nickNames = existNickNames;
+    await updateDoc(nickNamesRef, { nickNames_data: new_nickNames });
 
     props.profileHandler();
   };
