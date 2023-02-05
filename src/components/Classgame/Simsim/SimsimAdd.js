@@ -152,11 +152,7 @@ const SimsimAdd = (props) => {
           <Button
             className={"saveSimsim-btn"}
             onclick={submitHandler}
-            icon={
-              <>
-                <i className="fa-solid fa-plus"></i>
-              </>
-            }
+            icon={<>저장</>}
           />
         </div>
       </form>

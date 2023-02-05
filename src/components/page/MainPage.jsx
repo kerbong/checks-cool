@@ -117,67 +117,72 @@ const MainPage = (props) => {
   };
 
   //firestore에서 오늘 attend관련 자료들 받아오기
-  const getAttendsFromDb = (isSubject) => {
+  const getAttendsFromDb = async (isSubject) => {
     setAttendEvents([]);
 
-    let attendRef = query(doc(dbService, "attend", props.userUid));
-    onSnapshot(attendRef, (doc) => {
-      let new_attends = [];
-      if (isSubject) {
-        doc?.data()?.attend_data?.forEach((cl) => {
-          let attends = [];
-          // new_attends.push(...Object.values(cl));
-          Object.values(cl).forEach((atd) => {
-            attends.push(...atd);
-          });
-          let new_data = [];
-          attends?.forEach((atd) => {
-            // console.log(atd);
-            if (atd?.id?.slice(0, 10) === todayYyyymmdd) {
-              new_data.push({ ...atd, cl: Object.keys(cl)[0] });
-            }
-          });
-          new_attends.push(...new_data);
+    // let attendRef = query(doc(dbService, "attend", props.userUid));
+    let attendRef = doc(dbService, "attend", props.userUid);
+    // onSnapshot(attendRef, (doc) => {
+    let attendSnap = await getDoc(attendRef);
+    let new_attends = [];
+    if (isSubject) {
+      // doc?.data()?.attend_data?.forEach((cl) => {
+      attendSnap?.data()?.attend_data?.forEach((cl) => {
+        let attends = [];
+        // new_attends.push(...Object.values(cl));
+        Object.values(cl).forEach((atd) => {
+          attends.push(...atd);
         });
-      } else {
-        doc?.data()?.attend_data?.forEach((data) => {
-          if (data?.id?.slice(0, 10) === todayYyyymmdd) {
-            new_attends.push(data);
+        let new_data = [];
+        attends?.forEach((atd) => {
+          // console.log(atd);
+          if (atd?.id?.slice(0, 10) === todayYyyymmdd) {
+            new_data.push({ ...atd, cl: Object.keys(cl)[0] });
           }
         });
-      }
-      // console.log(new_attends);
-      setAttendEvents([...new_attends]);
-    });
+        new_attends.push(...new_data);
+      });
+    } else {
+      // doc?.data()?.attend_data?.forEach((data) => {
+      attendSnap?.data()?.attend_data?.forEach((data) => {
+        if (data?.id?.slice(0, 10) === todayYyyymmdd) {
+          new_attends.push(data);
+        }
+      });
+    }
+    // console.log(new_attends);
+    setAttendEvents([...new_attends]);
+    // });
   };
 
   //firestore에서 공용/개인 스케쥴 자료 받아오기
-  const getScheduleFromDb = () => {
+  const getScheduleFromDb = async () => {
     setSchedule([]);
 
     let publicRef = doc(dbService, "todo", roomInfo);
-
+    let publicSnap = await getDoc(publicRef);
     let personalRef = doc(dbService, "todo", props.userUid);
+    let personalSnap = await getDoc(personalRef);
 
     const new_schedule = [];
 
-    onSnapshot(publicRef, (doc) => {
-      doc?.data()?.todo_data?.forEach((data) => {
-        if (data.id.slice(0, 10) === todayYyyymmdd) {
-          const new_data = { ...data, public: true };
-          new_schedule.push(new_data);
-        }
-      });
+    // onSnapshot(publicRef, (doc) => {
+    publicSnap?.data()?.todo_data?.forEach((data) => {
+      if (data.id.slice(0, 10) === todayYyyymmdd) {
+        const new_data = { ...data, public: true };
+        new_schedule.push(new_data);
+      }
     });
+    // });
 
-    onSnapshot(personalRef, (doc) => {
-      doc?.data()?.todo_data?.forEach((data) => {
-        if (data.id.slice(0, 10) === todayYyyymmdd) {
-          const new_data = { ...data, public: false };
-          new_schedule.push(new_data);
-        }
-      });
+    // onSnapshot(personalRef, (doc) => {
+    personalSnap?.data()?.todo_data?.forEach((data) => {
+      if (data.id.slice(0, 10) === todayYyyymmdd) {
+        const new_data = { ...data, public: false };
+        new_schedule.push(new_data);
+      }
     });
+    // });
 
     setSchedule(new_schedule);
   };
@@ -188,51 +193,55 @@ const MainPage = (props) => {
     let memoSnap = await getDoc(memoRef);
 
     if (memoSnap.exists()) {
-      onSnapshot(memoRef, (doc) => {
-        doc.data().memoTodo.forEach((data) => {
-          if (data.deleted === false && data.checked === false) {
-            setToDoLists((prev) => {
-              prev.forEach((prev_data, index) => {
-                if (prev_data.id === data.id) {
-                  prev.splice(index, 1);
-                }
-              });
-              return [...prev, data];
+      // onSnapshot(memoRef, (doc) => {
+      memoSnap?.data()?.memoTodo?.forEach((data) => {
+        if (data.deleted === false && data.checked === false) {
+          setToDoLists((prev) => {
+            prev.forEach((prev_data, index) => {
+              if (prev_data.id === data.id) {
+                prev.splice(index, 1);
+              }
             });
-          }
-        });
+            return [...prev, data];
+          });
+        }
       });
+      // });
     }
   };
 
   //firestore에서 제출(냄 안냄) 받아오기
-  const getCheckListsFromDb = () => {
+  const getCheckListsFromDb = async () => {
     let checkListsRef = doc(dbService, "checkLists", props.userUid);
     setCheckLists([]);
-    onSnapshot(checkListsRef, (doc) => {
-      const new_checkLists = [];
-      doc?.data()?.checkLists_data?.forEach((data) => {
-        if (data.id.slice(0, 10) === todayYyyymmdd) {
-          new_checkLists.push(data);
-        }
-      });
-      setCheckLists([...new_checkLists]);
+    let checkListsSnap = await getDoc(checkListsRef);
+
+    // onSnapshot(checkListsRef, (doc) => {
+    const new_checkLists = [];
+    checkListsSnap?.data()?.checkLists_data?.forEach((data) => {
+      if (data.id.slice(0, 10) === todayYyyymmdd) {
+        new_checkLists.push(data);
+      }
     });
+    setCheckLists([...new_checkLists]);
+    // });
   };
 
   //firestore에서 개별 명렬표 기록 받아오기
-  const getListMemoFromDb = () => {
+  const getListMemoFromDb = async () => {
     let listMemoRef = doc(dbService, "listMemo", props.userUid);
+    let listMemoSnap = await getDoc(listMemoRef);
+
     setListMemo([]);
-    onSnapshot(listMemoRef, (doc) => {
-      const new_listMemo = [];
-      doc?.data()?.listMemo_data?.forEach((data) => {
-        if (data.id.slice(0, 10) === todayYyyymmdd) {
-          new_listMemo.push(data);
-        }
-      });
-      setListMemo([...new_listMemo]);
+    // onSnapshot(listMemoRef, (doc) => {
+    const new_listMemo = [];
+    listMemoSnap?.data()?.listMemo_data?.forEach((data) => {
+      if (data.id.slice(0, 10) === todayYyyymmdd) {
+        new_listMemo.push(data);
+      }
     });
+    setListMemo([...new_listMemo]);
+    // });
   };
 
   //firestore에서 오늘 시간표 관련 자료들 받아오기
@@ -399,7 +408,7 @@ const MainPage = (props) => {
       {showNotice && (
         <ExampleModal
           onClose={() => {
-            // localStorage.setItem("showNotice", "2023new");
+            localStorage.setItem("showNotice", "2023new");
             setShowNotice(false);
           }}
           imgSrc={notePenImg}

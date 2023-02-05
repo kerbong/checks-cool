@@ -19,13 +19,19 @@ input {
   font-size: 4rem;
 }
 
-.simsim-Text {
-  width: 80vw;
+.simsim-Text,
+.meetSum-Text {
+  width: 75vw;
   font-size: 1.3rem;
   padding: 15px;
   height: 47px;
   overflow-y: hidden;
   resize: none;
+  border-radius: 10px;
+}
+
+.meetSum-Text {
+  width: 90%;
 }
 
 .class-memo {

@@ -31,6 +31,12 @@ select {
   text-align: center;
 }
 
+.todoExplain-p {
+  margin: 15px;
+  word-break: keep-all;
+  font-size: 1.2rem;
+}
+
 @media screen and (min-width: 620px) {
   .eventData {
     font-size: 0.7em;
