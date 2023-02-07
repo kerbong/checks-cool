@@ -1,7 +1,7 @@
 import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import "./App.css";
 import { useState, useEffect } from "react";
-import { doc, onSnapshot, getDoc } from "firebase/firestore";
+import { doc, onSnapshot, getDoc, setDoc } from "firebase/firestore";
 import { dbService, authService } from "./fbase";
 import Swal from "sweetalert2";
 import dayjs from "dayjs";
@@ -30,6 +30,7 @@ function App() {
   const [menuOnHead, setMenuOnHead] = useState(true);
   const [showMainExample, setShowMainExample] = useState();
   const [profile, setProfile] = useState({});
+  const [nowToken, setNowToken] = useState("");
 
   let navigate = useNavigate();
 
@@ -155,6 +156,60 @@ function App() {
     getProfile(userUid);
   };
 
+  //토큰 저장하는 함수 7일 지나면 삭제
+  const saveTokenHandler = async (token) => {
+    //아직 유저uid가 없으면.. 실행안함
+    if (!userUid) {
+      return;
+    }
+
+    const now_yymmdd = dayjs().format("YYYY-MM-DD");
+
+    //저장된 토큰이 있는데, 현재 날짜와 최근 받아온 토큰의 날짜 차이가 2일보다 작으면... 저장하지 않음
+    if (
+      nowToken !== "" &&
+      dayjs(now_yymmdd)?.diff(nowToken?.split("***")?.[0]) < 2
+    ) {
+      return;
+    }
+
+    const fcmTokenRef = doc(dbService, "fcmToken", userUid);
+    const now_fcmToken = now_yymmdd + "***" + token;
+
+    const now_doc = await getDoc(fcmTokenRef);
+    let new_token = [];
+    if (now_doc?.exists()) {
+      let remain_token = now_doc?.data()?.fcmToken;
+
+      new_token = remain_token?.filter(
+        (tk) =>
+          //날짜가 일주일 이상 지난거, 지금꺼랑 같은거 제외하고 저장하기
+          dayjs(now_yymmdd)?.diff(dayjs(tk?.split("***")?.[0]), "day") < 7 &&
+          token !== tk?.split("***")?.[1]
+      );
+      //일단...토큰이 5개 남았으면 제일 오래된 한개 지우기
+      if (new_token?.length > 4) {
+        new_token?.sort()?.shift();
+      }
+
+      if (new_token?.length === 0 || new_token === undefined) {
+        new_token = [now_fcmToken];
+      } else {
+        new_token?.push(now_fcmToken);
+      }
+
+      //현재 날짜+토큰 새롭게 추가
+    } else {
+      new_token = [now_fcmToken];
+    }
+
+    //토큰 상태에 저장
+    setNowToken(now_fcmToken);
+
+    //토큰 최종 저장
+    await setDoc(fcmTokenRef, { fcmToken_data: new_token });
+  };
+
   return (
     <div>
       <div className={menuOnHead ? "App" : "App-bottom"}>
@@ -165,7 +220,7 @@ function App() {
           setMenuHandler={setMenuHandler}
           menuOnHead={menuOnHead}
         />
-        <Notification userUid={userUid} />
+        <Notification saveTokenHandler={saveTokenHandler} />
         <Routes>
           {/* 초기화 로그인 되어 있는데, 프로필이 없거나 프로필에 올해 전담여부가 없으면 */}
           {init &&

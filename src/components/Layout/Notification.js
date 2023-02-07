@@ -23,16 +23,9 @@ const Notification = (props) => {
   }, [notification]);
 
   requestForToken().then((token) => {
-    console.log(token);
+    // 토큰 받으면 App으로 전달하고 거기에서 저장/수정여부 판단하기
+    props.saveTokenHandler(token);
   });
-
-  //   useEffect(() => {
-  //     const getFcmToken = async () => {
-  //       return await requestForToken();
-  //     };
-  //     const userFcmToken = getFcmToken();
-  //     console.log(userFcmToken);
-  //   }, []);
 
   onMessageListener()
     .then((payload) => {
