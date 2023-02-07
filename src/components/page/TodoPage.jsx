@@ -84,7 +84,7 @@ const TodoPage = (props) => {
         // console.log(data);
         new_events.push(data);
       });
-      console.log(new_events);
+      // console.log(new_events);
       setEvents([...new_events]);
     });
   };
@@ -138,7 +138,7 @@ const TodoPage = (props) => {
     );
 
     moveMonth[0].addEventListener("click", () => {
-      console.log("이전달");
+      // console.log("이전달");
       //이전 노드에서 가져와서 반영하니까.. 보정함
       let currentM = getCurrentMonth();
       let fixedM = fixCurrentMonth(currentM, -1);
@@ -147,7 +147,7 @@ const TodoPage = (props) => {
     });
 
     moveMonth[1].addEventListener("click", () => {
-      console.log("다음달");
+      // console.log("다음달");
       let currentM = getCurrentMonth();
       let fixedM = fixCurrentMonth(currentM, +1);
       setCurrentMonth(fixedM);
@@ -159,7 +159,6 @@ const TodoPage = (props) => {
     //현재 연월가져옴
     let currentM = getCurrentMonth();
     //state로 설정함
-    console.log(currentMonth);
     setCurrentMonth(currentM);
 
     //달력 클릭하면 이벤트 창 보여주기
@@ -183,12 +182,10 @@ const TodoPage = (props) => {
             let fixedM = fixCurrentMonth(currentM, move_to);
             //state 설정
             setCurrentMonth(fixedM);
-            console.log("잘못");
           };
           //해당 월의 일반적인 주중 날짜를 클릭하면..
         } else {
           day.onclick = function dayOnClick() {
-            console.log("제대로");
             //클릭한 날짜정보와 일치하는 보여줄 정보만 eventOnDay에 저장
             let day_date = day.getAttribute("aria-label");
             let yyyymmdd = calEventDayToYMD(day);

@@ -9,7 +9,8 @@
 /coverage
 
 # production
-#/build
+/build
+/public/firebase-messaging-sw.js
 
 # misc
 .DS_Store

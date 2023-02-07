@@ -1,5 +1,7 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
+import { getMessaging, getToken, onMessage } from "firebase/messaging";
+
 import { getAnalytics, logEvent } from "firebase/analytics";
 import { getAuth } from "firebase/auth";
 import {
@@ -77,29 +79,28 @@ export const dbDeleteData = async (collection_name, dataId, useId) => {
 export const authService = getAuth(firebaseApp);
 export const dbService = getFirestore(firebaseApp);
 export const storageService = getStorage(firebaseApp);
-// export const messaging = getMessaging(firebaseApp);
+export const messaging = getMessaging(firebaseApp);
 
-// export const fcm_permission = async function requestPermission() {
-//   const messaging = getMessaging(firebaseApp);
-//   console.log("권한 요청 중...");
+//서비스워커 등록 및 토큰 받아오기
+export const requestForToken = async () => {
+  const swRegistration = await navigator.serviceWorker.register(
+    `${process.env.PUBLIC_URL}/firebase-messaging-sw.js`
+  );
 
-//   const permission = await Notification.requestPermission();
-//   if (permission === "denied") {
-//     console.log("알림 권한 허용 안됨");
-//     return;
-//   }
+  const token = await getToken(messaging, {
+    vapidKey: process.env.REACT_APP_VAPID_KEY,
+    serviceWorkerRegistration: swRegistration,
+  });
 
-//   console.log("알림 권한이 허용됨");
+  // console.log(token);
 
-//   const token = await getToken(messaging, {
-//     vapidKey: process.env.REACT_APP_VAPID_KEY,
-//   });
+  return token;
+};
 
-//   if (token) console.log("token: ", token);
-//   else console.log("Can not get Token");
-
-//   onMessage(messaging, (payload) => {
-//     console.log("메시지가 도착했습니다.", payload);
-//     // ...
-//   });
-// };
+export const onMessageListener = () =>
+  new Promise((resolve) => {
+    onMessage(messaging, (payload) => {
+      // console.log("payload", payload);
+      resolve(payload);
+    });
+  });

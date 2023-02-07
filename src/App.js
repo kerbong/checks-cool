@@ -2,10 +2,7 @@ import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import "./App.css";
 import { useState, useEffect } from "react";
 import { doc, onSnapshot, getDoc } from "firebase/firestore";
-// import { dbService, fcm_permission, messaging } from "./fbase";
-import { dbService } from "./fbase";
-// import { getFirebaseToken } from "./FirebaseInit";
-// import "./fcm_messaging_init";
+import { dbService, authService } from "./fbase";
 import Swal from "sweetalert2";
 import dayjs from "dayjs";
 import MainPage from "./components/page/MainPage";
@@ -20,8 +17,9 @@ import Notice from "./components/page/Notice";
 import ClassTableBasic from "./components/page/ClassTableBasic";
 
 import Auth from "./components/page/Auth";
-import { authService } from "./fbase";
 import StudentLists from "./components/page/StudentLists";
+
+import Notification from "./components/Layout/Notification";
 
 function App() {
   const [init, setInit] = useState(false);
@@ -167,6 +165,7 @@ function App() {
           setMenuHandler={setMenuHandler}
           menuOnHead={menuOnHead}
         />
+        <Notification userUid={userUid} />
         <Routes>
           {/* 초기화 로그인 되어 있는데, 프로필이 없거나 프로필에 올해 전담여부가 없으면 */}
           {init &&

@@ -95,6 +95,12 @@
   font-size: 1em;
 }
 
+@media screen and (min-width: 800px) {
+  .custom-input {
+    font-size: 2rem;
+  }
+}
+
 .react-datepicker__month-container {
   /* min-width: 95vw; */
   min-height: 50vh;
