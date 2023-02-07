@@ -165,10 +165,10 @@ function App() {
 
     const now_yymmdd = dayjs().format("YYYY-MM-DD");
 
-    //저장된 토큰이 있는데, 현재 날짜와 최근 받아온 토큰의 날짜 차이가 2일보다 작으면... 저장하지 않음
+    //저장된 토큰이 있는데, 현재 날짜와 최근 받아온 토큰의 날짜 차이가 1일보다 작으면... 저장하지 않음
     if (
       nowToken !== "" &&
-      dayjs(now_yymmdd)?.diff(nowToken?.split("***")?.[0]) < 2
+      dayjs(now_yymmdd)?.diff(nowToken?.split("***")?.[0]) < 1
     ) {
       return;
     }
@@ -179,7 +179,7 @@ function App() {
     const now_doc = await getDoc(fcmTokenRef);
     let new_token = [];
     if (now_doc?.exists()) {
-      let remain_token = now_doc?.data()?.fcmToken;
+      let remain_token = now_doc?.data()?.fcmToken_data;
 
       new_token = remain_token?.filter(
         (tk) =>
