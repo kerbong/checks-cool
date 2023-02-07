@@ -1,44 +1,28 @@
-if ("serviceWorker" in navigator) {
-  navigator.serviceWorker
-    .register(process.env.PUBLIC_URL + "/firebase-messaging-sw.js")
-    .then(function (registration) {
-      console.log("Registration successful, scope is:", registration.scope);
-    })
-    .catch(function (err) {
-      console.log("Service worker registration failed, error:", err);
-    });
-}
+//v8 버전1
+// Scripts for firebase and firebase messaging
+importScripts("https://www.gstatic.com/firebasejs/8.2.0/firebase-app.js");
+importScripts("https://www.gstatic.com/firebasejs/8.2.0/firebase-messaging.js");
 
-self.addEventListener("install", function (e) {
-  console.log("fcm sw install..");
-  self.skipWaiting();
-});
+// Initialize the Firebase app in the service worker by passing the generated config
+const firebaseConfig = {
+  apiKey: "AIzaSyAK7LLwtvPzIJoX_loNqoVpat-SbPjCbVo",
+  projectId: "checks-cho-ok",
+  messagingSenderId: "1085563899383",
+  appId: "1:1085563899383:web:2e0d2f63c7613dd31472f2",
+};
 
-self.addEventListener("activate", function (e) {
-  console.log("fcm sw activate..");
-});
+firebase.initializeApp(firebaseConfig);
 
-self.addEventListener("push", function (e) {
-  console.log(e);
-  console.log("push: ", e.data.json());
-  if (!e.data.json()) return;
+// Retrieve firebase messaging
+const messaging = firebase.messaging();
 
-  const resultData = e.data.json().notification;
-  const notificationTitle = resultData.title;
+messaging.onBackgroundMessage(function (payload) {
+  console.log("Received background message ", payload);
+
+  const notificationTitle = payload.notification.title;
   const notificationOptions = {
-    body: resultData.body,
-    icon: resultData.image,
-    tag: resultData.tag,
-    ...resultData,
+    body: payload.notification.body,
   };
-  console.log("push: ", { resultData, notificationTitle, notificationOptions });
 
   self.registration.showNotification(notificationTitle, notificationOptions);
-});
-
-self.addEventListener("notificationclick", function (event) {
-  console.log("notification click");
-  const url = "/";
-  event.notification.close();
-  event.waitUntil(clients.openWindow(url));
 });
