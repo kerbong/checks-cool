@@ -18,7 +18,6 @@ import ClassTableBasic from "./components/page/ClassTableBasic";
 
 import Auth from "./components/page/Auth";
 import StudentLists from "./components/page/StudentLists";
-
 import Notification from "./components/Layout/Notification";
 
 function App() {
@@ -168,7 +167,7 @@ function App() {
     //저장된 토큰이 있는데, 현재 날짜와 최근 받아온 토큰의 날짜 차이가 1일보다 작으면... 저장하지 않음
     if (
       nowToken !== "" &&
-      dayjs(now_yymmdd)?.diff(nowToken?.split("***")?.[0]) < 1
+      dayjs(now_yymmdd)?.diff(nowToken?.split("***")?.[0]) < 2
     ) {
       return;
     }
@@ -220,6 +219,7 @@ function App() {
           setMenuHandler={setMenuHandler}
           menuOnHead={menuOnHead}
         />
+
         <Notification saveTokenHandler={saveTokenHandler} />
         <Routes>
           {/* 초기화 로그인 되어 있는데, 프로필이 없거나 프로필에 올해 전담여부가 없으면 */}
@@ -265,6 +265,7 @@ function App() {
                   <ClassgamePage
                     students={students}
                     userUid={userUid}
+                    nickName={profile?.nickName || ""}
                     isSubject={profile?.isSubject || []}
                   />
                 }

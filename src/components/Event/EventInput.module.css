@@ -46,6 +46,7 @@
   font-size: 1.2em;
   margin: 10px;
   width: 70%;
+  border-radius: 5px;
 }
 
 .note-area {
@@ -56,4 +57,11 @@
   padding: 10px 5px;
   overflow: hidden;
   font-size: 1.1em;
+  border-radius: 5px;
+}
+
+.todo-alarm-span {
+  margin: 3px 10px 0px -16px;
+  padding: 10px;
+  color: #4c4c4c;
 }

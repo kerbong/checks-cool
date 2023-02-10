@@ -227,6 +227,7 @@ const TodoLists = (props) => {
                 setAddEvent(false);
               }
             }}
+            when={1}
           />
         )}
       </div>

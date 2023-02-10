@@ -4,14 +4,7 @@ import { dbService, messaging } from "../../fbase";
 
 import { getToken } from "firebase/messaging";
 
-import {
-  query,
-  onSnapshot,
-  getDoc,
-  doc,
-  setDoc,
-  updateDoc,
-} from "firebase/firestore";
+import { getDoc, doc, setDoc, updateDoc } from "firebase/firestore";
 import classes from "./MainPage.module.css";
 import ClassItem from "../Main/ClassItem";
 import { useNavigate } from "react-router-dom";
@@ -88,13 +81,6 @@ const MainPage = (props) => {
   if (roomInfo === null) {
     roomInfo = "--";
   }
-
-  //프로필이 없으면 무조건 프로필 화면으로 이동시킴
-  // useEffect(() => {
-  //   if (Object.values(props.profile).length === 0) {
-  //     console.log("실행");
-  //   }
-  // }, [props.profile]);
 
   const moveDateHandler = (tomoOrYester) => {
     let now = new Date(todayYyyymmdd);

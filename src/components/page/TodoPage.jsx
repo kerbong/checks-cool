@@ -506,7 +506,9 @@ const TodoPage = (props) => {
         <>
           <p className={classes["todoExplain-p"]}>
             {" "}
-            * 이벤트가 안 보일 경우 공용/개인용 아이콘을 다시 클릭해주세요!
+            * 이벤트가 안 보일 경우 공용/개인용 아이콘을 다시
+            클릭해주세요!(안정적 이용을 위해 첫 페이지 진입 시 3~5초
+            기다려주세요.)
           </p>
           <p className={classes["todoExplain-p"]}>
             {" "}

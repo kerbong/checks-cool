@@ -104,3 +104,5 @@ export const onMessageListener = () =>
       resolve(payload);
     });
   });
+
+export const GOOGLE_APPLICATION_CREDENTIALS = "./firebase-adminsdk.json";

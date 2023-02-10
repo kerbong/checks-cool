@@ -141,28 +141,31 @@ const Auth = () => {
       provider = new GoogleAuthProvider();
     }
 
-    if (navigator.platform) {
-      var filter = "win16|win32|win64|mac|macintel";
-      if (filter.indexOf(navigator.platform.toLowerCase()) < 0) {
-        // mobile 접속인 경우
-        // console.log("모바일");
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(
+      window.navigator.userAgent
+    );
 
-        await signInWithRedirect(authService, provider);
-      } else {
-        if (
-          navigator.userAgent.match(
-            ".*(iPhone|iPod|iPad|Android|Windows CE|BlackBerry|Symbian|Windows Phone|webOS|Opera Mini|Opera Mobi|POLARIS|IEMobile|lgtelecom|nokia|SonyEricsson).*"
-          )
-        ) {
-          // PC 상의 모바일 에뮬레이터
-          // console.log("mobile on pc");
-          await signInWithPopup(authService, provider);
-        } else {
-          // pc 접속인 경우
-          // console.log("pc");
-          await signInWithPopup(authService, provider);
-        }
-      }
+    if (isMobile) {
+      // mobile 접속인 경우
+      console.log("모바일");
+
+      await signInWithRedirect(authService, provider);
+    } else {
+      console.log("PC");
+      await signInWithPopup(authService, provider);
+      // if (
+      //   navigator.userAgent.match(
+      //     ".*(iPhone|iPod|iPad|Android|Windows CE|BlackBerry|Symbian|Windows Phone|webOS|Opera Mini|Opera Mobi|POLARIS|IEMobile|lgtelecom|nokia|SonyEricsson).*"
+      //   )
+      // ) {
+      //   // PC 상의 모바일 에뮬레이터
+      //   // console.log("mobile on pc");
+      //   await signInWithPopup(authService, provider);
+      // } else {
+      //   // pc 접속인 경우
+      //   // console.log("pc");
+      //   await signInWithPopup(authService, provider);
+      // }
     }
   };
 
