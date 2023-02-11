@@ -335,7 +335,7 @@ const ConsultLists = (props) => {
             name="searchYear-selcet"
             ref={yearGroupRef}
             defaultValue={""}
-            className={classes["select-year"]}
+            className={classes["student-select"]}
             onChange={searchYearHandler}
           >
             <option value="" defaultChecked>

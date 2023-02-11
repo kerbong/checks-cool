@@ -17,7 +17,8 @@ html {
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
 
-button {
+button,
+select {
   color: black;
 }
 /* 아이폰에서 사파리 기본 스타일, 색깔 적용 등 제거*/

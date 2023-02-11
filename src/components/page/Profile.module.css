@@ -75,3 +75,7 @@
 .checkLabel-checked {
   background-color: #ffc0c0;
 }
+
+.check-input {
+  display: none;
+}

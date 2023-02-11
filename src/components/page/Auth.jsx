@@ -10,6 +10,8 @@ import {
   sendEmailVerification,
   getRedirectResult,
   signInWithCredential,
+  AuthCredential,
+  OAuthCredential,
 } from "firebase/auth";
 import { authService } from "../../fbase";
 import classes from "./Auth.module.css";
@@ -149,46 +151,26 @@ const Auth = (props) => {
 
     if (isMobile) {
       // mobile 접속인 경우
-      console.log("모바일");
-
-      await signInWithRedirect(authService, provider);
-      getRedirectResult(authService)
-        .then((result) => {
-          // // This gives you a Google Access Token. You can use it to access Google APIs.
-          // const credential = GoogleAuthProvider.credentialFromResult(result);
-          // const token = credential.accessToken;
+      const mobileType = navigator.userAgent.toLowerCase();
+      // 아이폰은 팝업으로 로그인
+      if (
+        mobileType.indexOf("iphone") > -1 ||
+        mobileType.indexOf("ipad") > -1 ||
+        mobileType.indexOf("ipod") > -1
+      ) {
+        await signInWithPopup(authService, provider).then((result) => {
+          const credential = GoogleAuthProvider.credentialFromResult(result);
 
           // The signed-in user info.
-          props.safariHandler(result.user);
-          // IdP data available using getAdditionalUserInfo(result)
-          // ...
-        })
-        .catch((error) => {
-          // Handle Errors here.
-          const errorCode = error.code;
-          const errorMessage = error.message;
-          // The email of the user's account used.
-          const email = error.customData.email;
-          // The AuthCredential type that was used.
-          const credential = GoogleAuthProvider.credentialFromError(error);
-          // ...
+          props.safariHandler(credential);
         });
+        // 안드로이드는 리다이렉트로 로그인
+      } else {
+        await signInWithRedirect(authService, provider);
+      }
     } else {
       console.log("PC");
       await signInWithPopup(authService, provider);
-      // if (
-      //   navigator.userAgent.match(
-      //     ".*(iPhone|iPod|iPad|Android|Windows CE|BlackBerry|Symbian|Windows Phone|webOS|Opera Mini|Opera Mobi|POLARIS|IEMobile|lgtelecom|nokia|SonyEricsson).*"
-      //   )
-      // ) {
-      //   // PC 상의 모바일 에뮬레이터
-      //   // console.log("mobile on pc");
-      //   await signInWithPopup(authService, provider);
-      // } else {
-      //   // pc 접속인 경우
-      //   // console.log("pc");
-      //   await signInWithPopup(authService, provider);
-      // }
     }
   };
 

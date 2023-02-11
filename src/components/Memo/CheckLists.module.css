@@ -169,6 +169,7 @@
   position: relative;
   width: 22%;
   height: 60px;
+  font-size: 1rem;
 }
 .budgetList-desc {
   display: flex;

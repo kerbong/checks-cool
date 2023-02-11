@@ -213,6 +213,7 @@ const Profile = (props) => {
               }`}
             >
               <input
+                className={classes["check-input"]}
                 key={"isSub"}
                 onChange={(e) => userInfoHandler(e, "isSubject")}
                 value={userInfo?.["isSubject"]?.[now_year()] || ""}

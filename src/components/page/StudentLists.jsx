@@ -215,7 +215,7 @@ const StudentLists = (props) => {
 
   //학생 제거 함수
   const deleteStudentHandler = (student) => {
-    let new_studentsInfo = [...studentsInfo].filter(
+    let new_studentsInfo = [...studentsInfo]?.filter(
       (stu) => stu.num !== student.num
     );
     // console.log(new_studentsInfo);
@@ -225,11 +225,15 @@ const StudentLists = (props) => {
   };
 
   const setAddStudentsInfo = (studentData) => {
-    //같은 번호 학생이 있으면 제거하고
-    let new_studentsInfo = deleteStudentHandler(studentData);
+    //현재 학생이 있으면.. 제거하고 푸시
+    let new_studentsInfo = [];
+    if (studentsInfo.length > 0) {
+      //같은 번호 학생이 있으면 제거하고
+      new_studentsInfo = deleteStudentHandler(studentData);
+    }
     //새롭게 저장하기
     new_studentsInfo.push(studentData);
-    // console.log(new_studentsInfo);
+
     setStudentsInfo(sortNum(new_studentsInfo));
   };
 

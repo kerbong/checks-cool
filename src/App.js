@@ -3,6 +3,7 @@ import "./App.css";
 import { useState, useEffect } from "react";
 import { doc, onSnapshot, getDoc, setDoc } from "firebase/firestore";
 import { dbService, authService } from "./fbase";
+import { signInWithCredential } from "firebase/auth";
 import Swal from "sweetalert2";
 import dayjs from "dayjs";
 import MainPage from "./components/page/MainPage";
@@ -343,12 +344,13 @@ function App() {
                 index
                 element={
                   <Auth
-                    safariHandler={(user) => {
-                      setUserUid(user.uid);
-                      getProfile(user.uid);
-                      setUser(user);
-                      setIsLoggedIn(true);
-                      setInit(true);
+                    safariHandler={(credential) => {
+                      signInWithCredential(authService, credential);
+                      // setUserUid(user.uid);
+                      // getProfile(user.uid);
+                      // setUser(user);
+                      // setIsLoggedIn(true);
+                      // setInit(true);
                     }}
                   />
                 }

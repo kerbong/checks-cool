@@ -67,7 +67,7 @@
   width: 80px;
   height: 50px;
   margin-left: 20px;
-  font-size: 1.1em;
+  font-size: 1rem;
   border-radius: 10px;
   border-width: 0;
   background-color: #993fc447;
@@ -84,7 +84,7 @@
 }
 
 .student-save {
-  width: 70px;
+  width: 80px;
   height: 50px;
   margin-left: 20px;
   font-size: 1.1em;
