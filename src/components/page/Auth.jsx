@@ -25,6 +25,7 @@ const Auth = (props) => {
   const [agreeTerms, setAgreeTerms] = useState(false);
   const [isKakaoLink, setIsKakaoLink] = useState(false);
   const [showAgency, setShowAgency] = useState(false);
+  const [isSamePw, setIsSamePw] = useState(false);
 
   useEffect(() => {
     const isKakao = navigator.userAgent.match("KAKAOTALK");
@@ -68,6 +69,15 @@ const Auth = (props) => {
     }
   };
 
+  const checkPwHandler = (e) => {
+    const checkPwValue = e.target.value;
+    if (checkPwValue === password) {
+      setIsSamePw(true);
+    } else {
+      setIsSamePw(false);
+    }
+  };
+
   const failLogIn = (icon, title, text) => {
     Swal.fire({
       icon: icon,
@@ -105,6 +115,18 @@ const Auth = (props) => {
         return;
       }
     } else {
+      //비밀번호가 다르면 회원가입 불가..!!
+      if (!isSamePw) {
+        Swal.fire({
+          icon: "error",
+          title: `비밀번호 불일치`,
+          text: `비밀번호가 일치하지 않습니다. 확인하시고 수정해주세요.`,
+          confirmButtonText: "확인",
+          confirmButtonColor: "#85bd82",
+        });
+        return;
+      }
+
       try {
         data = await createUserWithEmailAndPassword(auth, email, password);
 
@@ -168,8 +190,9 @@ const Auth = (props) => {
       } else {
         await signInWithRedirect(authService, provider);
       }
+      // 피씨는 팝업 로그인
     } else {
-      console.log("PC");
+      // console.log("PC");
       await signInWithPopup(authService, provider);
     }
   };
@@ -180,7 +203,7 @@ const Auth = (props) => {
         <input
           name="email"
           type="email"
-          placeholder="Email"
+          placeholder="이메일 주소"
           required
           value={email}
           onChange={onChange}
@@ -189,12 +212,23 @@ const Auth = (props) => {
         <input
           name="password"
           type="password"
-          placeholder="Password"
+          placeholder="비밀번호"
           required
           value={password}
           onChange={onChange}
           className={classes["logInOut-input"]}
         />
+        {newAccount && (
+          <input
+            name="passwordCheck"
+            type="password"
+            placeholder="비밀번호 확인"
+            required
+            onChange={checkPwHandler}
+            className={classes["logInOut-input"]}
+          />
+        )}
+
         {!newAccount && (
           <>
             <p>* 이메일/연동 로그인 후 잠시 기다려주세요.</p>
@@ -247,7 +281,6 @@ const Auth = (props) => {
 
         <input
           type="submit"
-          style={{ width: "74%" }}
           value={newAccount ? "회원가입" : "로그인"}
           disabled={newAccount && !agreeTerms && true}
           className={classes["logInOut-SignUp"]}
