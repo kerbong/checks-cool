@@ -136,7 +136,7 @@ const EventInput = (props) => {
     }
 
     //EventLists saveFixedData함수에서 필요한 것만 보냄
-    if (props.about.slice(0, 4) !== "todo") {
+    if (props.about !== "todo") {
       new_data = {
         eventDate: eventDate,
         num: student.split(" ")[0],
@@ -150,9 +150,9 @@ const EventInput = (props) => {
         id: new_data_id,
       };
     }
-    if (props.about.slice(0, 4) === "todo") {
-      showNotification(todo_eventName);
-    }
+    // if (props.about.slice(0, 4) === "todo") {
+    //   showNotification(todo_eventName);
+    // }
     props.saveNewData(new_data);
   };
 
@@ -291,7 +291,7 @@ const EventInput = (props) => {
             }}
           >
             {/* 알람설정 버튼 */}
-            {props.about.slice(0, 4) === "todo" && (
+            {/* {props.about.slice(0, 4) === "todo" && (
               <span
                 className={classes["todo-alarm-span"]}
                 onClick={() => {
@@ -304,7 +304,7 @@ const EventInput = (props) => {
                   <i class="fa-regular fa-bell"></i>
                 )}
               </span>
-            )}
+            )} */}
 
             {/* 분류 고르는 셀렉트 태그 */}
             {props.selectOption && (

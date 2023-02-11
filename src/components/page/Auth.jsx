@@ -8,13 +8,15 @@ import {
   signInWithPopup,
   signInWithRedirect,
   sendEmailVerification,
+  getRedirectResult,
+  signInWithCredential,
 } from "firebase/auth";
 import { authService } from "../../fbase";
 import classes from "./Auth.module.css";
 import AuthTerms from "./AuthTerms";
 import Swal from "sweetalert2";
 
-const Auth = () => {
+const Auth = (props) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [newAccount, setNewAccount] = useState(false);
@@ -150,6 +152,27 @@ const Auth = () => {
       console.log("모바일");
 
       await signInWithRedirect(authService, provider);
+      getRedirectResult(authService)
+        .then((result) => {
+          // // This gives you a Google Access Token. You can use it to access Google APIs.
+          // const credential = GoogleAuthProvider.credentialFromResult(result);
+          // const token = credential.accessToken;
+
+          // The signed-in user info.
+          props.safariHandler(result.user);
+          // IdP data available using getAdditionalUserInfo(result)
+          // ...
+        })
+        .catch((error) => {
+          // Handle Errors here.
+          const errorCode = error.code;
+          const errorMessage = error.message;
+          // The email of the user's account used.
+          const email = error.customData.email;
+          // The AuthCredential type that was used.
+          const credential = GoogleAuthProvider.credentialFromError(error);
+          // ...
+        });
     } else {
       console.log("PC");
       await signInWithPopup(authService, provider);

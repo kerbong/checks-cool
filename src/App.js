@@ -339,7 +339,20 @@ function App() {
           ) : (
             // 초기화되었지만 로그인 되지 않은 상태
             <>
-              <Route index element={<Auth />} />
+              <Route
+                index
+                element={
+                  <Auth
+                    safariHandler={(user) => {
+                      setUserUid(user.uid);
+                      getProfile(user.uid);
+                      setUser(user);
+                      setIsLoggedIn(true);
+                      setInit(true);
+                    }}
+                  />
+                }
+              />
             </>
           )}
           <Route path="*" element={<Navigate replace to="/" />} />

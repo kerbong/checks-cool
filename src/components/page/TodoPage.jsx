@@ -528,6 +528,11 @@ const TodoPage = (props) => {
           </p>
           <p className={classes["todoExplain-p"]}>
             {" "}
+            * 회의 자료가 해당 학년도(현재 달력의 월을 기준으로 2월~ 다음년도
+            1월까지)에 하나라도 있는 경우 엑셀저장" 버튼이 보입니다.
+          </p>
+          <p className={classes["todoExplain-p"]}>
+            {" "}
             * 엑셀로 저장하면 해당 학년도(현재 달력의 월을 기준으로 2월~
             다음년도 1월까지)의 데이터가 저장됩니다.
           </p>

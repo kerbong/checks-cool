@@ -81,9 +81,17 @@ const Profile = (props) => {
     const nick_doc = await getDoc(nickNamesRef);
     let existNickNames = nick_doc.data().nickNames_data;
 
-    const isExistNick = existNickNames?.filter(
+    //유저들 닉네임과 같은거
+    let isExistNick = existNickNames?.filter(
       (nick) => nick === userInfo.nickName?.trim()
     );
+
+    //유저들 닉네임과 같은거인데 수정중이고 기존 내이름은 괜찮
+    if (!isNew) {
+      isExistNick = isExistNick?.filter(
+        (nick) => nick !== existUserInfo.nickName
+      );
+    }
 
     if (isExistNick.length > 0) {
       Swal.fire({
@@ -197,15 +205,22 @@ const Profile = (props) => {
           maxLength={50}
         />
         <div>
-          <h3>
-            <input
-              key={"isSub"}
-              onChange={(e) => userInfoHandler(e, "isSubject")}
-              value={userInfo?.["isSubject"]?.[now_year()] || ""}
-              checked={userInfo?.["isSubject"]?.[now_year()] ? true : false}
-              type="checkbox"
-              // defaultValue={}
-            />{" "}
+          <h3 className={classes["check-h3"]}>
+            <label
+              className={`${classes["checkLabel"]} ${
+                userInfo?.["isSubject"]?.[now_year()] &&
+                classes["checkLabel-checked"]
+              }`}
+            >
+              <input
+                key={"isSub"}
+                onChange={(e) => userInfoHandler(e, "isSubject")}
+                value={userInfo?.["isSubject"]?.[now_year()] || ""}
+                checked={userInfo?.["isSubject"]?.[now_year()] ? true : false}
+                type="checkbox"
+                // defaultValue={}
+              />{" "}
+            </label>
             이번학년도 전담교사
           </h3>
           {/* 첫 프로필이면... */}

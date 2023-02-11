@@ -94,7 +94,13 @@ const MemoPage = (props) => {
       <div id="title-div">
         <button id="title-btn" className="title-memo" onClick={exampleHandler}>
           <>
-            <i className="fa-regular fa-square-check"></i>{" "}
+            {showWhatMemo === "checkLists"
+              ? ICONS[0]
+              : showWhatMemo === "listMemo"
+              ? ICONS[1]
+              : showWhatMemo === "todayTodo"
+              ? ICONS[2]
+              : ICONS[3]}{" "}
             {memoTitle(showWhatMemo)?.replace("<br/>", "") || ""}
           </>
         </button>
