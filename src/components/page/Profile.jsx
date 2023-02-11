@@ -146,8 +146,8 @@ const Profile = (props) => {
     }
 
     //기존 닉네임은 삭제하고 닉네임만 따로 저장하기
-    const lastNick = existUserInfo.nickName;
-    if (lastNick.length > 0) {
+    const lastNick = existUserInfo?.nickName;
+    if (lastNick.length > 0 || lastNick !== undefined) {
       existNickNames = existNickNames.filter((nick) => nick !== lastNick);
     }
     existNickNames.push(userInfo.nickName?.trim());

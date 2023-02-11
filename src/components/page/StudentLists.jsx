@@ -227,7 +227,7 @@ const StudentLists = (props) => {
   const setAddStudentsInfo = (studentData) => {
     //현재 학생이 있으면.. 제거하고 푸시
     let new_studentsInfo = [];
-    if (studentsInfo.length > 0) {
+    if (studentsInfo?.length > 0 || studentsInfo !== undefined) {
       //같은 번호 학생이 있으면 제거하고
       new_studentsInfo = deleteStudentHandler(studentData);
     }
