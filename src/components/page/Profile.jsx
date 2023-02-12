@@ -80,18 +80,17 @@ const Profile = (props) => {
     let nickNamesRef = doc(dbService, "user", "nickNames");
     const nick_doc = await getDoc(nickNamesRef);
     let existNickNames = nick_doc.data().nickNames_data;
+    const lastNick = existUserInfo?.nickName;
+
+    //새로 프로필 생성 중이 아니면, 기존의 내 닉네임 제외하기
+    if (!isNew) {
+      existNickNames = existNickNames?.filter((nick) => nick !== lastNick);
+    }
 
     //유저들 닉네임과 같은거
     let isExistNick = existNickNames?.filter(
       (nick) => nick === userInfo.nickName?.trim()
     );
-
-    //유저들 닉네임과 같은거인데 수정중이고 기존 내이름은 괜찮
-    if (!isNew) {
-      isExistNick = isExistNick?.filter(
-        (nick) => nick !== existUserInfo.nickName
-      );
-    }
 
     if (isExistNick.length > 0) {
       Swal.fire({
@@ -145,11 +144,7 @@ const Profile = (props) => {
       await updateDoc(profileRef, new_userInfo);
     }
 
-    //기존 닉네임은 삭제하고 닉네임만 따로 저장하기
-    const lastNick = existUserInfo?.nickName;
-    if (lastNick.length > 0 || lastNick !== undefined) {
-      existNickNames = existNickNames.filter((nick) => nick !== lastNick);
-    }
+    //현재 닉네임만 따로 저장하기
     existNickNames.push(userInfo.nickName?.trim());
     const new_nickNames = existNickNames;
     await updateDoc(nickNamesRef, { nickNames_data: new_nickNames });

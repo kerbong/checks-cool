@@ -69,6 +69,7 @@ const Auth = (props) => {
     }
   };
 
+  //비밀번호 확인 로직
   const checkPwHandler = (e) => {
     const checkPwValue = e.target.value;
     if (checkPwValue === password) {

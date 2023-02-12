@@ -346,11 +346,6 @@ function App() {
                   <Auth
                     safariHandler={(credential) => {
                       signInWithCredential(authService, credential);
-                      // setUserUid(user.uid);
-                      // getProfile(user.uid);
-                      // setUser(user);
-                      // setIsLoggedIn(true);
-                      // setInit(true);
                     }}
                   />
                 }
