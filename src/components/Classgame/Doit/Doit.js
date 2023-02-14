@@ -10,6 +10,7 @@ import {
   getDownloadURL,
   // deleteObject,/
 } from "firebase/storage";
+import { init, send } from "emailjs-com";
 
 // import serviceAccount from "../../../firebase-adminsdk.json";
 import { v4 } from "uuid";
@@ -50,6 +51,11 @@ const Doit = (props) => {
   useEffect(() => {
     getDoitDatas();
   }, []);
+
+  //이메일 서비스 실행
+  // useEffect(() => {
+  //   init(process.env.REACT_APP_EMAILJS_INIT);
+  // }, []);
 
   //건의 불편사항 글 추가하기
   const addDoitHandler = async (data) => {
@@ -127,6 +133,21 @@ const Doit = (props) => {
     }
 
     await setDoc(doitRef, { doit_data: existData });
+
+    var templateParams = {
+      from_name: props.nickName,
+      to_name: "말랑한 거봉 운영자님",
+      message: data.text,
+      title: data.title,
+    };
+
+    //개발자 이메일로 내용 보내기
+    await send(
+      process.env.REACT_APP_EMAILJS_SERVICEID,
+      process.env.REACT_APP_EMAILJS_TEMPLATEID,
+      templateParams,
+      process.env.REACT_APP_EMAILJS_INIT
+    );
 
     //입력되었던 자료들 삭제하기
     document.getElementById("title-input").value = "";
