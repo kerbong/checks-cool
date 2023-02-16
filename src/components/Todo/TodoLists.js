@@ -166,14 +166,14 @@ const TodoLists = (props) => {
     }).then((result) => {
       /* Read more about isConfirmed, isDenied below */
       if (result.isConfirmed) {
-        Swal.fire({
-          icon: "success",
-          title: "자료가 삭제되었어요.",
-          text: "5초 후에 창이 사라집니다.",
-          confirmButtonText: "확인",
-          confirmButtonColor: "#85bd82",
-          timer: 5000,
-        });
+        // Swal.fire({
+        //   icon: "success",
+        //   title: "자료가 삭제되었어요.",
+        //   text: "5초 후에 창이 사라집니다.",
+        //   confirmButtonText: "확인",
+        //   confirmButtonColor: "#85bd82",
+        //   timer: 5000,
+        // });
 
         props.removeData(data);
         //자료 복제하고 기존 자료도 남겨둘 경우

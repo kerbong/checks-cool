@@ -95,14 +95,14 @@ const ConsultLists = (props) => {
     }).then((result) => {
       /* Read more about isConfirmed, isDenied below */
       if (result.isConfirmed) {
-        Swal.fire({
-          icon: "success",
-          title: "자료가 삭제되었어요.",
-          text: "5초 후에 창이 사라집니다.",
-          confirmButtonText: "확인",
-          confirmButtonColor: "#85bd82",
-          timer: 5000,
-        });
+        // Swal.fire({
+        //   icon: "success",
+        //   title: "자료가 삭제되었어요.",
+        //   text: "5초 후에 창이 사라집니다.",
+        //   confirmButtonText: "확인",
+        //   confirmButtonColor: "#85bd82",
+        //   timer: 5000,
+        // });
 
         props.deleteConsult(consult.id, consult.attachedFileUrl);
 
