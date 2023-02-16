@@ -54,14 +54,14 @@ const TypingStudent = (props) => {
     }).then((result) => {
       /* Read more about isConfirmed, isDenied below */
       if (result.isConfirmed) {
-        Swal.fire({
-          icon: "success",
-          title: "삭제완료",
-          text: `모든 학생정보가 삭제되었습니다.`,
-          confirmButtonText: "확인",
-          confirmButtonColor: "#85bd82",
-          timer: 4000,
-        });
+        // Swal.fire({
+        //   icon: "success",
+        //   title: "삭제완료",
+        //   text: `모든 학생정보가 삭제되었습니다.`,
+        //   confirmButtonText: "확인",
+        //   confirmButtonColor: "#85bd82",
+        //   timer: 4000,
+        // });
 
         props.deleteAllHandler();
       }
