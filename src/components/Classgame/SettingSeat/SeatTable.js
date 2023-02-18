@@ -51,7 +51,6 @@ const SeatTable = (props) => {
   const [seatLists, setSeatLists] = useState(null);
   const [pairStudents, setPairStudents] = useState([]);
   const [randomJustStudent, setRandomJustStudent] = useState(true);
-  const [titleValue, setTitleValue] = useState([]);
 
   let navigate = useNavigate();
 
@@ -521,6 +520,7 @@ const SeatTable = (props) => {
       if (list.saveDate.slice(0, 7) === today_yyyymmdd.slice(0, 7))
         return (saved_month += 1);
     });
+
     //기존자료가 아니고
     if (saved_today >= 5 && props.isExist === undefined) {
       saveErrorSwal(
@@ -561,7 +561,7 @@ const SeatTable = (props) => {
     let new_allSeats = [...allSeats];
     //기존자료면 업데이트
     if (props.isExist) {
-      //기존자료 자리만 변경후 저장이면
+      //기존자료 자리만 변경후 저장이면(제목이 바뀌면 새로운 자료로 취급)
       const existData = new_allSeats?.filter(
         (seat) => seat.saveDate === data.saveDate
       );
@@ -570,8 +570,9 @@ const SeatTable = (props) => {
         new_allSeats = new_allSeats?.filter(
           (seat) => seat.saveDate !== data.saveDate
         );
+        // 제목이 바뀌어서 복사본일 경우, 기존 자료의 인풋창의 내용을 기존에 받아온 item.title 값으로 넣어줌.
       } else {
-        setTitleValue(props.title);
+        title.value = props.title;
       }
       //새 자료 추가하기
       new_allSeats.push(data);

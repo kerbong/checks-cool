@@ -2,8 +2,12 @@ import React, { useRef, useCallback, useState, useEffect } from "react";
 import classes from "./Input.module.css";
 
 const Input = React.forwardRef((props, ref) => {
-  const [value, setValue] = useState(props.defaultValue || "");
+  const [value, setValue] = useState("");
   const noteRef = useRef(null);
+
+  useEffect(() => {
+    setValue("");
+  }, []);
 
   useEffect(() => {
     setValue(props.defaultValue);
@@ -28,6 +32,7 @@ const Input = React.forwardRef((props, ref) => {
         <textarea
           id={props.id}
           key={"textArea" + props.myKey}
+          // key={"textArea" + props.myKey}
           ref={noteRef}
           {...props.input}
           className={classes[props.className]}

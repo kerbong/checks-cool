@@ -4,6 +4,15 @@ import classes from "./ClassItem.module.css";
 import dayjs from "dayjs";
 
 const ClassItem = (props) => {
+  const [memoDefValue, setMemoDefValue] = useState("");
+
+  useEffect(() => {
+    if (props.memo) {
+      setMemoDefValue(props.memo);
+    } else {
+      setMemoDefValue("");
+    }
+  }, [props.memo]);
   return (
     <>
       <li className={classes["li-section"]} key={props.myKey}>
@@ -30,16 +39,16 @@ const ClassItem = (props) => {
             input={{
               id: `classSubject-${props.classNum}`,
             }}
-            key={"classNameInput"}
+            key={`classSubject-${props.classNum}`}
             myKey={`classSubject-${props.classNum}`}
             className={"class-subject"}
-            defaultValue={props.subject}
+            defaultValue={props.subject || ""}
           />
         </div>
 
         <div className={classes["classNote-section"]}>
           <Input
-            key={"memoInput"}
+            key={`classMemo-${props.classNum}`}
             id={`classMemo-${props.classNum}`}
             myKey={`classMemo-${props.classNum}`}
             className={`class-memo`}
@@ -47,7 +56,7 @@ const ClassItem = (props) => {
             input={{
               type: "textarea",
             }}
-            defaultValue={props.memo}
+            defaultValue={memoDefValue}
           />
         </div>
       </li>

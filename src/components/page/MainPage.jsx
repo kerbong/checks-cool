@@ -237,13 +237,30 @@ const MainPage = (props) => {
     setClassTable([]);
     // 기초시간표 내용
     setClassBasic([]);
-    // 오늘 시간표 내용
-    setTodayClassTable({});
+    //오늘 시간표 기초 데이터 만들기
+    let new_todayClassTable = {
+      id: "",
+      classMemo: classLists.map((cl) => {
+        return { memo: "", classNum: cl, subject: "" };
+      }),
+    };
     // 시작 시간 모음
     setClassStart([]);
 
     const now_doc = await getDoc(classTableRef);
     if (now_doc.exists()) {
+      //오늘 요일설정
+      let today_weekday = new Date(todayYyyymmdd).getDay();
+      //기초 시간표 내용 넣기
+      if (today_weekday > 0 && today_weekday < 6) {
+        setClassBasic(now_doc.data()?.[WEEKDAYS[today_weekday]]);
+      }
+
+      //교시별 시작시간 세팅하기
+      if (now_doc?.data()?.classStart) {
+        setClassStart([...now_doc?.data()?.classStart]);
+      }
+
       // 저장된 각 날짜의 시간표 데이터가 있으면
       if (now_doc?.data()?.datas) {
         setClassTable([...now_doc?.data()?.datas]);
@@ -256,21 +273,11 @@ const MainPage = (props) => {
           setTodayClassTable({ ...todayClass[0] });
           // console.log(todayClass[0]);
         } else {
-          setTodayClassTable({ id: "", classMemo: [] });
+          setTodayClassTable(new_todayClassTable);
         }
       }
-
-      //오늘 요일설정
-      let today_weekday = new Date(todayYyyymmdd).getDay();
-      //기초 시간표 내용 넣기
-      if (today_weekday > 0 && today_weekday < 6) {
-        setClassBasic(now_doc.data()?.[WEEKDAYS[today_weekday]]);
-      }
-
-      //교시별 시작시간 세팅하기
-      if (now_doc?.data()?.classStart) {
-        setClassStart([...now_doc?.data()?.classStart]);
-      }
+    } else {
+      setTodayClassTable(new_todayClassTable);
     }
   };
 
@@ -363,6 +370,27 @@ const MainPage = (props) => {
       await setDoc(classMemoRef, new_classData);
     }
   };
+
+  // //날짜를 변경하고 나면 시간표 내용이 있는지 확인하고, 없으면 dom에서 직접 바꿔주기??
+  useEffect(() => {
+    // 주말이 아닐 때만 실행함.
+    if (titleDate.slice(-2, -1) === "토" || titleDate.slice(-2, -1) === "일") {
+      return;
+    }
+    // console.log(todayClassTable);
+    setTimeout(() => {
+      todayClassTable.classMemo.forEach((item) => {
+        //과목명이 없으면 해당 input창 찾아서 빈칸으로 만들기
+        if (item?.subject?.length === 0) {
+          document.getElementById(`classSubject-${item.classNum}`).value = "";
+        }
+        //교시 내용이 없으면 해당 input창 찾아서 빈칸으로 만들기
+        if (item?.memo?.length === 0) {
+          document.getElementById(`classMemo-${item.classNum}`).value = "";
+        }
+      });
+    }, 100);
+  }, [todayClassTable]);
 
   return (
     <div className={classes["whole-div"]}>
@@ -507,7 +535,7 @@ const MainPage = (props) => {
             titleDate.slice(-2, -1) !== "일" ? (
               <>
                 <ul className={classes["ul-section"]}>
-                  {classLists.map((classNum, index) => (
+                  {/* {classLists.map((classNum, index) => (
                     <ClassItem
                       key={`item${classNum}`}
                       myKey={`class${classNum}`}
@@ -519,6 +547,16 @@ const MainPage = (props) => {
                         ""
                       }
                       memo={todayClassTable?.classMemo?.[index]?.memo || ""}
+                    />
+                  ))} */}
+                  {todayClassTable?.classMemo?.map((item, index) => (
+                    <ClassItem
+                      key={`item${item.classNum}`}
+                      myKey={`class${item.classNum}`}
+                      classNum={item.classNum}
+                      classStart={classStart?.[index]}
+                      subject={item.subject || classBasic?.[index]}
+                      memo={item.memo}
                     />
                   ))}
                 </ul>
