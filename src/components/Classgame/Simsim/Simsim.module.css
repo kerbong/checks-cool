@@ -102,13 +102,38 @@
   padding: 100px 60px 100px 0;
 }
 
-.p {
+.p,
+.p-active,
+.p-hide {
   margin: 15px;
   line-height: 35px;
   word-break: keep-all;
   text-align: left;
 }
 
+.p-active {
+  transition: opacity 0.2s;
+  position: relative;
+  opacity: 1;
+}
+
+.p-hide {
+  transition: all 0.2s linear 0s;
+  visibility: hidden;
+  position: fixed;
+  opacity: 0;
+}
+
 .nickName-div {
   font-weight: bold;
+}
+
+.explain-icon {
+  color: gray;
+  margin-left: 20px;
+}
+
+.explain-span {
+  display: flex;
+  align-items: center;
 }

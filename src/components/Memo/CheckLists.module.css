@@ -203,7 +203,8 @@
 .budget-save,
 .budgetEdit-save,
 .budgetEdit-cancle,
-.budget-del {
+.budget-del,
+.budgetList-save {
   width: 40px;
   height: 40px;
   border-width: 0;
@@ -235,6 +236,12 @@
 
 .budget-save {
   right: 10px;
+  top: -49px;
+}
+
+.budgetList-save {
+  right: 10px;
+  top: -69px;
 }
 
 .budgetMenu-div {
@@ -330,4 +337,8 @@
 
 .searchYear-select {
   font-size: 1rem;
+}
+
+.newBudget-active {
+  animation: slide-down 300ms ease-out forwards;
 }

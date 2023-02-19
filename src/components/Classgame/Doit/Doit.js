@@ -2,7 +2,11 @@ import React, { useState, useEffect } from "react";
 import DoInput from "./DoInput";
 import DoingList from "./DoingList";
 import DoMyList from "./DoMyList";
-import { dbService, storageService } from "../../../fbase";
+import {
+  dbService,
+  storageService,
+  GOOGLE_APPLICATION_CREDENTIALS,
+} from "../../../fbase";
 import { onSnapshot, setDoc, doc, getDoc } from "firebase/firestore";
 import {
   ref,
@@ -11,14 +15,16 @@ import {
   // deleteObject,/
 } from "firebase/storage";
 import { init, send } from "emailjs-com";
+// import { initializeApp, applicationDefault } from "firebase-admin/app";
 
 // import serviceAccount from "../../../firebase-adminsdk.json";
 import { v4 } from "uuid";
 import Swal from "sweetalert2";
 import dayjs from "dayjs";
-// import { getMessaging } from "firebase/messaging";
+import { getMessaging } from "firebase/messaging";
 // import axios from "axios";
 import BrowserNotification from "components/Layout/useBrowserNotification";
+import HwpMaker from "./HwpMaker";
 
 const Doit = (props) => {
   const [lists, setLists] = useState([]);
@@ -179,21 +185,23 @@ const Doit = (props) => {
   //     await deleteObject(ref(storageService, url));
   //   }
   // };
-  const registrationTokens = [
-    "d5jXRadimGS8JReSwesPpn:APA91bE_NbNes2Mxop0Uieb-8ao6klIKAsY_rDOZ7CbL9-EIz15-XiVOcqyjFvvu8U8gPRIxNERqiG9c5siWqdfjFKMd6IlPPHogAzXeFZTqoh1BJESdi_0nfv6eVWfDGLbqj65awdli",
-    // …
-    "cRBKEXIa3cCDh9y3REFWdW:APA91bE00jQLPmuE3dph1EKRQjaKcT-u42FzEhn52Ps6_Hs4zDOK_nGylYpsWADlFa-uHy4dGhe58ooJnEqoMTAZSFiUaoAML-nZWNMjAvw88vNXAa8pHYVkqJYxpTfLsYpXRrFDn_QO",
-  ];
+  // const registrationTokens = [
+  //
+  // ];
 
-  const message = {
-    data: {
-      score: "850",
-      time: "2:45",
-    },
-    token: registrationTokens,
-  };
+  // const message = {
+  //   data: {
+  //     score: "850",
+  //     time: "2:45",
+  //   },
+  //   token: registrationTokens,
+  // };
 
   const sendMessage = async () => {
+    // initializeApp({
+    //   credential: applicationDefault(),
+    //   projectId: "checks-cho-ok",
+    // });
     // const { JWT } = require("google-auth-library");
     // let MESSAGING_SCOPE = "https://www.googleapis.com/auth/firebase.messaging";
     // let SCOPES = [MESSAGING_SCOPE];
@@ -223,7 +231,7 @@ const Doit = (props) => {
     //   {
     //     message: {
     //       token:
-    //         "d5jXRadimGS8JReSwesPpn:APA91bE_NbNes2Mxop0Uieb-8ao6klIKAsY_rDOZ7CbL9-EIz15-XiVOcqyjFvvu8U8gPRIxNERqiG9c5siWqdfjFKMd6IlPPHogAzXeFZTqoh1BJESdi_0nfv6eVWfDGLbqj65awdli",
+    //         "",
     //       notification: {
     //         body: "알림이 도착했습니다!",
     //         title: "TEST-PWA",
@@ -242,19 +250,42 @@ const Doit = (props) => {
     //   .then((response) => {
     //     console.log(response.successCount + " messages were sent successfully");
     //   });
+    // const registrationToken =
+    //   "";
+    // const message = {
+    //   data: {
+    //     score: "850",
+    //     time: "2:45",
+    //   },
+    //   token: registrationToken,
+    // };
+    // Send a message to the device corresponding to the provided
+    // registration token.
+    // getMessaging()
+    //   .send(message)
+    //   .then((response) => {
+    //     // Response is a message ID string.
+    //     console.log("Successfully sent message:", response);
+    //   })
+    //   .catch((error) => {
+    //     console.log("Error sending message:", error);
+    //   });
   };
 
   return (
     <div>
       {/* 운영자가 정리해서 올리는 해결중인 내용들 */}
       <DoingList lists={lists} />
+      <br />
       {/* 유저가 직접 작성한 건의 불편사항 */}
       <DoMyList lists={lists?.filter((list) => list.user === props.userUid)} />
-
+      <br />
       <hr />
+      <br />
       <DoInput addDoitHandler={addDoitHandler} />
 
       {/* <button onClick={sendMessage}>메세지보내기</button> */}
+      {/* <HwpMaker /> */}
     </div>
   );
 };

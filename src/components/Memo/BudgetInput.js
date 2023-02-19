@@ -117,7 +117,10 @@ const BudgetInput = (props) => {
     <>
       {/* 자료 추가인 경우에만 저장버튼 보여주기 */}
       {props.about !== "edit" && (
-        <button className={classes["budget-save"]} onClick={saveBudgetHandler}>
+        <button
+          className={classes["budgetList-save"]}
+          onClick={saveBudgetHandler}
+        >
           <i className="fa-regular fa-floppy-disk"></i>
         </button>
       )}

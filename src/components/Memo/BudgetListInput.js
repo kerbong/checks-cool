@@ -91,51 +91,55 @@ const BudgetListInput = (props) => {
       <button className={classes["budget-save"]} onClick={saveBudgetHandler}>
         <i className="fa-regular fa-floppy-disk"></i>
       </button>
-      <h1>새로운 예산 등록</h1>
-      <li className={classes["budgetList-li"]}>
-        <div className={classes["budgetList-newdiv"]}>
-          <span className={classes["budgetList-desc"]}>
-            {/* 에산명 적는 부분 */}
-            <input
-              type="text"
-              ref={nameRef}
-              placeholder="예산명"
-              className={classes["newBudget-title"]}
-            />
-
-            {/* 사용기한 날짜 선택 달력부분 */}
-            <div className={classes["newBudget-date"]}>
-              사용기한{" "}
-              <AttendCalendar
-                getDateValue={getDateHandler}
-                about={props.about}
-                setStart={new Date(dayjs().format("YYYY") + "-12-01")}
+      <br />
+      {/* <div className={props.showInput ? classes["newBudget-active"] : classes["newBudget-hidden"]}> */}
+      <div>
+        <h1>새로운 예산 등록</h1>
+        <li className={classes["budgetList-li"]}>
+          <div className={classes["budgetList-newdiv"]}>
+            <span className={classes["budgetList-desc"]}>
+              {/* 에산명 적는 부분 */}
+              <input
+                type="text"
+                ref={nameRef}
+                placeholder="예산명"
+                className={classes["newBudget-title"]}
               />
+
+              {/* 사용기한 날짜 선택 달력부분 */}
+              <div className={classes["newBudget-date"]}>
+                사용기한{" "}
+                <AttendCalendar
+                  getDateValue={getDateHandler}
+                  about={props.about}
+                  setStart={new Date(dayjs().format("YYYY") + "-12-01")}
+                />
+              </div>
+            </span>
+
+            <hr style={{ margin: "15px", width: "90vw" }} />
+
+            <div className={classes["budgetList-desc"]}>
+              {/* 비고 */}
+              <input
+                ref={noteRef}
+                type="text"
+                placeholder="예산목록, 기억할 점 등"
+                className={classes["newBudget-note"]}
+              />
+              {/* 총액 */}{" "}
+              <input
+                ref={amountRef}
+                type="number"
+                style={{ width: "30%" }}
+                placeholder="총 예산"
+                className={classes["newBudget-amount"]}
+              />
+              원
             </div>
-          </span>
-
-          <hr style={{ margin: "15px", width: "90vw" }} />
-
-          <div className={classes["budgetList-desc"]}>
-            {/* 비고 */}
-            <input
-              ref={noteRef}
-              type="text"
-              placeholder="예산목록, 기억할 점 등"
-              className={classes["newBudget-note"]}
-            />
-            {/* 총액 */}{" "}
-            <input
-              ref={amountRef}
-              type="number"
-              style={{ width: "30%" }}
-              placeholder="총 예산"
-              className={classes["newBudget-amount"]}
-            />
-            원
           </div>
-        </div>
-      </li>
+        </li>
+      </div>
     </>
   );
 };

@@ -31,6 +31,7 @@ const Simsim = (props) => {
   const [hasUserInfo, setHasUserInfo] = useState(false);
   const [contentNum, setContentNum] = useState(0);
   const [simsimLength, setSimsimLength] = useState(0);
+  const [showExplain, setShowExplain] = useState(false);
 
   let navigate = useNavigate();
 
@@ -306,13 +307,37 @@ const Simsim = (props) => {
         <div>
           <hr />
         </div>
-        <p className={classes["p"]}>
-          * 화면 중앙의 우측, 혹은 좌측 부분을 클릭 / 왼쪽이나 오른쪽으로
-          슬라이드 하시면 다음, 이전 내용으로 이동합니다.
-        </p>
-        <p className={classes["p"]}>
-          * 좋아요 버튼은 4초에 한 번만 상태 변경이 가능합니다.
-        </p>
+        <span
+          className={classes["explain-span"]}
+          onClick={() => setShowExplain((prev) => !prev)}
+        >
+          📋 심심해요 활용 안내
+          <span className={classes["explain-icon"]}>
+            {showExplain ? (
+              <i className="fa-solid fa-chevron-up"></i>
+            ) : (
+              <i className="fa-solid fa-chevron-down"></i>
+            )}{" "}
+          </span>
+        </span>
+        <div>
+          <p className={showExplain ? classes["p-active"] : classes["p-hide"]}>
+            <p className={classes["p"]}>
+              * 화면 중앙의 우측, 혹은 좌측 부분을 클릭 / 왼쪽이나 오른쪽으로
+              슬라이드 하시면 다음, 이전 내용으로 이동합니다.
+            </p>
+            <p className={classes["p"]}>
+              * 좋아요 버튼은 4초에 한 번만 상태 변경이 가능합니다.
+            </p>
+            <p className={classes["p"]}>
+              * 자료는 월별로 저장되며 '좋아요'만 가능합니다.
+            </p>
+            <p className={classes["p"]}>
+              * 4월부터 이전 달에 좋아요를 많이 받은 게시글들을 모아서
+              보여드립니다.
+            </p>
+          </p>
+        </div>
       </div>
     </>
   );

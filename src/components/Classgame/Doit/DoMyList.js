@@ -26,7 +26,7 @@ const DoMyList = (props) => {
             </span>
           </li>
         ))}
-        {props.lists?.length === 0 && "건의/불편사항 자료가 없습니다."}
+        {props.lists?.length === 0 && "* 건의/불편사항 자료가 없습니다."}
       </div>
     </div>
   );

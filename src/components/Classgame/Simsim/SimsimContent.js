@@ -12,11 +12,12 @@ const SimsimContent = (props) => {
           <i className="fa-solid fa-chevron-left"></i>
         </div>
 
-        {props.nowOnSimsim?.image === "" ? (
+        {props.nowOnSimsim && props.nowOnSimsim?.image === "" && (
           <div className={classes["insteadText-div"]}>
             {props.nowOnSimsim?.insteadText}
           </div>
-        ) : (
+        )}
+        {props.nowOnSimsim && props.nowOnSimsim?.image !== "" && (
           // 이미지있을 경우 넣어줌
           <img
             alt=""
@@ -24,6 +25,14 @@ const SimsimContent = (props) => {
             className={classes["previewImg"]}
           />
         )}
+
+        {/* 아직 자료가 없을 경우 */}
+        {!props.nowOnSimsim && (
+          <>
+            아직 이번달 자료가 없어요! <br /> <br /> 글을 작성해주세요!
+          </>
+        )}
+
         <div className={classes["image-next"]} onClick={() => props.next()}>
           <i className="fa-solid fa-chevron-right"></i>
         </div>
@@ -37,16 +46,18 @@ const SimsimContent = (props) => {
         <div className={classes["user-div"]}>
           <div className={classes["nickName-div"]}>
             {props.nowOnSimsim?.nickName}
+            {!props.nowOnSimsim && "저기요!"}
           </div>
           <div className={classes["stateMessage-div"]}>
             {props.nowOnSimsim?.stateMessage}
+            {!props.nowOnSimsim && "거기 누구 계신가요??"}
           </div>
         </div>
         {/* 좋아요 버튼 */}
         <div className={classes["like-div"]}>
           <LikeBtn
-            like={props.like}
-            changeLike={() => props.changeLikeHandler()}
+            like={props.nowOnSimsim && props.like}
+            changeLike={() => props.nowOnSimsim && props.changeLikeHandler()}
           />
           <div>{props.nowOnSimsim?.like?.length}</div>
         </div>

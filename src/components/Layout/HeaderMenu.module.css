@@ -31,7 +31,7 @@
   list-style: none;
   background-color: #e2e2e2e8;
   border-radius: 10px;
-  z-index: 50;
+  /* z-index: 50; */
 }
 
 .profile-dropdown-ul-bottom {
@@ -43,7 +43,30 @@
   list-style: none;
   background-color: #e2e2e2e8;
   border-radius: 10px;
-  z-index: 10;
+}
+
+.profile-dropdown-div,
+.profile-dropdown-div-hide {
+  background-color: #e2e2e2e8;
+
+  transition: all 0.3s ease;
+  border-radius: 10px;
+}
+
+.profile-dropdown-div {
+  z-index: 1;
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0px);
+}
+
+.profile-dropdown-div-hide {
+  z-index: -1;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(5px);
+
+  cursor: default;
 }
 
 .profile-dropdown-li {
@@ -61,8 +84,4 @@
   background-color: #dcb2a1f0;
   position: relative;
   top: 2px;
-}
-
-.profile-dropdown-div {
-  position: relative;
 }

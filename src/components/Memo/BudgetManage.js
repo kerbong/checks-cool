@@ -14,6 +14,7 @@ import BudgetInput from "./BudgetInput";
 import BudgetListInput from "./BudgetListInput";
 import BudgetList from "./BudgetList";
 import dayjs from "dayjs";
+import FadeInOut from "components/Layout/FadeInOut";
 
 const BudgetManage = (props) => {
   const [budgets, setBudgets] = useState([]);
@@ -299,24 +300,31 @@ const BudgetManage = (props) => {
           </button>
         )}
       </div>
-      {/* 예산목록 입력 */}
+      {/* 새로운 예산 입력 */}
+      <div id="newBudget-div"></div>
       {showInput && budgetSelectRef.current.value === "" && (
-        <BudgetListInput
-          saveBudgetHandler={(item) => {
-            saveNewBudgetHandler(item);
-            setShowInput(false);
-          }}
-        />
+        <FadeInOut elementId={"newBudget-div"}>
+          <BudgetListInput
+            showInput={showInput}
+            saveBudgetHandler={(item) => {
+              saveNewBudgetHandler(item);
+              setShowInput(false);
+            }}
+          />
+        </FadeInOut>
       )}
 
+      <div id="newBudgetList-div"></div>
       {/* 예산사용 바로입력 */}
       {showInput && budgetSelectRef.current.value !== "" && (
-        <BudgetInput
-          saveBudgetHandler={(item) => {
-            saveBudgetHandler(item);
-            setShowInput(false);
-          }}
-        />
+        <FadeInOut elementId={"newBudgetList-div"}>
+          <BudgetInput
+            saveBudgetHandler={(item) => {
+              saveBudgetHandler(item);
+              setShowInput(false);
+            }}
+          />
+        </FadeInOut>
       )}
       {/* 지금까지 사용한 예산목록 */}
       <BudgetList

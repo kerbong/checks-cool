@@ -101,11 +101,17 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  transition: opacity 0.2s;
+  position: relative;
+  opacity: 1;
 }
 
 .explainP {
   margin: 10px 0 0 25px;
   font-size: 1.2rem;
+  word-break: keep-all;
+  width: 90%;
+  padding: 0px;
 }
 
 .likeReplyDiv {
@@ -181,4 +187,17 @@
   display: flex;
   align-items: center;
   justify-content: space-around;
+}
+
+.explainDivHide {
+  transition: all 0.2s linear 0s;
+  visibility: hidden;
+  position: fixed;
+  opacity: 0;
+}
+
+.p-active {
+}
+
+.p-hide {
 }

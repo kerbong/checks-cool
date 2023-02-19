@@ -13,11 +13,10 @@ import Swal from "sweetalert2";
 const EXPLAINS = [
   "* 아침 7~9시에 글쓰기가 가능해요.",
   "* 하루 한 개의 글만 올릴 수 있어요.",
-  "* 글에는 한 명당 하나의 댓글만 쓸 수 있어요.",
+  "* 글에는 한 개의 댓글만 쓸 수 있어요.",
   "* 여러 글에 댓글을 달 수 있어요.",
   "* 오늘 올린 글만 볼 수 있어요.",
   "* 글은 수정, 삭제가 불가능해요!",
-  "* 글을 한 번이상 올리면 다른 글을 볼 수 있어요.",
 ];
 //   {/* <p>* 매주 월요일에는 지난주 핫미션이 나와요.</p> */}
 
@@ -214,15 +213,14 @@ const Mission = (props) => {
           )}{" "}
         </span>
       </h1>
-      {explainOn && (
-        <div className={classes.explainDiv}>
-          {EXPLAINS.map((explain, index) => (
-            <p key={`explain-${index}`} className={classes.explainP}>
-              {explain}
-            </p>
-          ))}
-        </div>
-      )}
+
+      <div className={explainOn ? classes.explainDiv : classes.explainDivHide}>
+        {EXPLAINS.map((explain, index) => (
+          <span key={`explain-${index}`} className={classes.explainP}>
+            {explain}
+          </span>
+        ))}
+      </div>
 
       {/* 아침미션 입력 7~9시에만 보이기 */}
       {is7to9 && (
@@ -248,7 +246,11 @@ const Mission = (props) => {
           />
         ))
       ) : (
-        <h2>* 한 개 이상의 글을 작성해주세요.</h2>
+        <>
+          <br />
+          <br />
+          <h2>* 한 개 이상의 글을 작성해주세요.</h2>
+        </>
       )}
     </div>
   );

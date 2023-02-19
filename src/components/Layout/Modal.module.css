@@ -23,6 +23,10 @@
   overflow-y: scroll;
 }
 
+.fadeModal {
+  animation: slide-down 400ms ease-in-out forwards;
+}
+
 .addOverflow {
   overflow: auto;
 }

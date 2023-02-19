@@ -26,7 +26,7 @@ const ClassgamePage = (props) => {
           {/* onClick={exampleHandler}>/ */}
           {selectedMenu === "settingSeat" && (
             <>
-              <i className="fa-regular fa-square-check"></i> 자리뽑기
+              <i className="fa-sharp fa-solid fa-chair"></i> 자리뽑기
             </>
           )}
           {selectedMenu === "" && (
@@ -36,7 +36,7 @@ const ClassgamePage = (props) => {
           )}
           {selectedMenu === "simsim" && (
             <>
-              <i className="fa-regular fa-square-check"></i> 심심해요
+              <i className="fa-solid fa-face-meh"></i> 심심해요
             </>
           )}
           {selectedMenu === "mission" && (
@@ -46,7 +46,7 @@ const ClassgamePage = (props) => {
           )}
           {selectedMenu === "doThis" && (
             <>
-              <i className="fa-solid fa-mug-saucer"></i> 이거해요
+              <i className="fa-solid fa-thumbs-up"></i> 이거해요
             </>
           )}
         </button>
