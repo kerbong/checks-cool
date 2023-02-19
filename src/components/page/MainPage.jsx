@@ -379,9 +379,9 @@ const MainPage = (props) => {
     }
     // console.log(todayClassTable);
     setTimeout(() => {
-      todayClassTable.classMemo.forEach((item) => {
+      todayClassTable.classMemo.forEach((item, index) => {
         //과목명이 없으면 해당 input창 찾아서 빈칸으로 만들기
-        if (item?.subject?.length === 0) {
+        if (item?.subject?.length === 0 && classBasic?.[index].length === 0) {
           document.getElementById(`classSubject-${item.classNum}`).value = "";
         }
         //교시 내용이 없으면 해당 input창 찾아서 빈칸으로 만들기
@@ -389,7 +389,7 @@ const MainPage = (props) => {
           document.getElementById(`classMemo-${item.classNum}`).value = "";
         }
       });
-    }, 100);
+    }, 150);
   }, [todayClassTable]);
 
   return (
