@@ -2,16 +2,25 @@ import React, { useState, useEffect } from "react";
 import classes from "./CheckLists.module.css";
 import BudgetInput from "./BudgetInput";
 import Swal from "sweetalert2";
+import BudgetListInput from "./BudgetListInput";
+import FadeInOut from "components/Layout/FadeInOut";
 
 const BudgetList = (props) => {
   const [budget, setBudget] = useState({});
   const [remain, setRemain] = useState(props.budget.totalAmount || 0);
   const [showEdit, setShowEdit] = useState("");
   const [showEditBtns, setShowEditBtns] = useState("");
+  const [isBudgetEditing, setIsBudgetEditing] = useState(false);
 
   useEffect(() => {
     setBudget(props.budget);
   }, [props.budget]);
+
+  useEffect(() => {
+    if (props.budgetListEdit === false) {
+      setIsBudgetEditing(false);
+    }
+  }, [props.budgetListEdit]);
 
   useEffect(() => {
     let usedAmount = 0;
@@ -65,36 +74,84 @@ const BudgetList = (props) => {
     });
   };
 
+  //예산 수정
+
   return (
     <div>
       {Object.keys(budget).length > 0 && (
         <>
           <div>
             {/* 예산 기본정보 */}
-            <div>
-              <div className={classes["budgetList-sum"]}>
-                <div className={classes["budgetList-dateNote"]}>
-                  <span>사용기한 : {budget.until}</span>
 
-                  <span>
-                    비&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;고 :{" "}
-                    {budget.note || "없음"}
-                  </span>
-                </div>
-                <div className={classes["budgetList-desc"]}>
-                  <span>
-                    <p>총</p> {numberComma(budget.totalAmount)}원
-                  </span>
-                  <span>
-                    <p>사용</p> {numberComma(budget.totalAmount - remain)}원
-                  </span>
+            {/* 수정중이 아니면 */}
+            {!isBudgetEditing && (
+              <div>
+                <div className={classes["budgetList-sum"]}>
+                  <div className={classes["budgetList-upDiv"]}>
+                    <div className={classes["budgetList-dateNote"]}>
+                      <span>사용기한 : {budget.until}</span>
+                    </div>
+                    <div className={classes["budgetList-buttonDiv"]}>
+                      {/* 수정버튼 */}
+                      <button
+                        className={classes["budget-del"]}
+                        onClick={() => {
+                          setIsBudgetEditing(true);
+                          props.showBudgetEditHandler();
+                        }}
+                      >
+                        <i className="fa-solid fa-pencil"></i>
+                      </button>
 
-                  <span className={classes["remain-p"]}>
-                    <p>남음</p> {numberComma(remain)}원
-                  </span>
+                      {/* 삭제버튼 */}
+                      <button
+                        className={classes["budget-del"]}
+                        onClick={() => {
+                          props.deleteBugetHandler();
+                        }}
+                      >
+                        <i className="fa-solid fa-trash-can"></i>
+                      </button>
+                    </div>
+                  </div>
+                  <div className={classes["budgetList-upDiv"]}>
+                    <span>
+                      비&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;고 :{" "}
+                      {budget.note || "없음"}
+                    </span>
+                  </div>
+                  <div className={classes["budgetList-desc"]}>
+                    <span>
+                      <p>총</p> {numberComma(budget.totalAmount)}원
+                    </span>
+                    <span>
+                      <p>사용</p> {numberComma(budget.totalAmount - remain)}원
+                    </span>
+
+                    <span className={classes["remain-p"]}>
+                      <p>남음</p> {numberComma(remain)}원
+                    </span>
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
+
+            {/* 예산 기본정보 수정중*/}
+            <div id="newBudget-div"></div>
+            {isBudgetEditing && (
+              <FadeInOut elementId={"newBudget-div"}>
+                <BudgetListInput
+                  edit={true}
+                  title={budget.budget_name}
+                  date={budget.until}
+                  amount={budget.totalAmount}
+                  saveBudgetHandler={(new_budget) => {
+                    props.editBudgetHandler(new_budget);
+                  }}
+                />
+              </FadeInOut>
+            )}
+
             {/* 예산 사용목록 */}
             <ul className={classes["budgetList-ul"]}>
               {budget?.useLists?.map((list) =>

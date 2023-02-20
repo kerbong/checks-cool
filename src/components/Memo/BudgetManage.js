@@ -24,6 +24,7 @@ const BudgetManage = (props) => {
   const [nowOnBudget, setNowOnBudget] = useState([]);
   const [showInput, setShowInput] = useState(false);
   const [showExplain, setShowExplain] = useState(false);
+  const [budgetListEdit, setBudgetListEdit] = useState(false);
 
   const budgetSelectRef = useRef();
   const budgetYearRef = useRef();
@@ -240,6 +241,39 @@ const BudgetManage = (props) => {
     });
   };
 
+  // 예산 자체 수정함수
+  const editBudgetHandler = async (item) => {
+    let budgetRef = doc(dbService, "budgets", props.userUid);
+
+    //nowOnBudget의 자료를 업데이트 해야함.
+    let new_budgets = [...budgets];
+    let new_onBudget = { ...nowOnBudget };
+
+    //일단 현재 받아온 데이터 확인해보기
+    // console.log(item);
+
+    //budget에서 찾아서 제거한후
+    new_budgets = new_budgets.filter(
+      (bud) =>
+        bud.until + bud.budget_name !==
+        new_onBudget.until + new_onBudget.budget_name
+    );
+
+    //onBudget에서 바뀐 내용을 수정하고
+    new_onBudget.budget_name = item.budget_name;
+    new_onBudget.note = item.note;
+    new_onBudget.totalAmount = item.totalAmount;
+    new_onBudget.until = item.until;
+
+    new_budgets.push(new_onBudget);
+
+    setBudgets([...new_budgets]);
+    setNowOnBudget(new_onBudget);
+    //수정 옵션 false로 바꾸기
+    setBudgetListEdit(false);
+    await updateDoc(budgetRef, { budgets_data: new_budgets });
+  };
+
   return (
     <div className={classes["budgetAll-div"]}>
       <div className={classes["budgetMenu-div"]}>
@@ -278,27 +312,24 @@ const BudgetManage = (props) => {
         <button
           className={classes["budget-add"]}
           onClick={() => {
-            setShowInput((prev) => !prev);
+            // 예산 수정하는 중이 아니면
+            if (!budgetListEdit) {
+              setShowInput((prev) => !prev);
+
+              // 예산 수정중이면
+            } else {
+              setBudgetListEdit(false);
+            }
           }}
         >
-          {showInput ? (
+          {!budgetListEdit && showInput && (
             <i className="fa-solid fa-xmark"></i>
-          ) : (
+          )}
+          {!budgetListEdit && !showInput && (
             <i className="fa-solid fa-plus"></i>
           )}
+          {budgetListEdit && <i className="fa-solid fa-xmark"></i>}
         </button>
-
-        {/* 예산이 선택된 경우 삭제할 수 있는 버튼  */}
-        {!showInput && budgetSelectRef?.current?.value !== "" && (
-          <button
-            className={classes["budget-del"]}
-            onClick={() => {
-              deleteBugetHandler();
-            }}
-          >
-            <i className="fa-solid fa-trash-can"></i>
-          </button>
-        )}
       </div>
       {/* 새로운 예산 입력 */}
       <div id="newBudget-div"></div>
@@ -331,6 +362,11 @@ const BudgetManage = (props) => {
         budget={nowOnBudget}
         deleteHandler={(budget) => deleteHandler(budget)}
         saveBudgetHandler={saveBudgetHandler}
+        deleteBugetHandler={deleteBugetHandler}
+        showBudgetEditHandler={() => setBudgetListEdit(true)}
+        showInput={showInput}
+        budgetListEdit={budgetListEdit}
+        editBudgetHandler={editBudgetHandler}
       />
 
       <div

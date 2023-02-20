@@ -182,25 +182,25 @@ const Auth = (props) => {
 
     if (isMobile) {
       // mobile 접속인 경우
-      const mobileType = navigator.userAgent.toLowerCase();
+      // const mobileType = navigator.userAgent.toLowerCase();
       // 아이폰은 팝업으로 로그인
-      if (
-        mobileType.indexOf("iphone") > -1 ||
-        mobileType.indexOf("ipad") > -1 ||
-        mobileType.indexOf("ipod") > -1
-      ) {
-        setIsLoading(true);
-        await signInWithPopup(authService, provider).then((result) => {
-          const credential = GoogleAuthProvider.credentialFromResult(result);
+      // if (
+      //   mobileType.indexOf("iphone") > -1 ||
+      //   mobileType.indexOf("ipad") > -1 ||
+      //   mobileType.indexOf("ipod") > -1
+      // ) {
+      setIsLoading(true);
+      await signInWithPopup(authService, provider).then((result) => {
+        const credential = GoogleAuthProvider.credentialFromResult(result);
 
-          // The signed-in user info.
-          props.safariHandler(credential);
-        });
-        // 안드로이드는 리다이렉트로 로그인
-      } else {
-        setIsLoading(true);
-        await signInWithRedirect(authService, provider);
-      }
+        // The signed-in user info.
+        props.safariHandler(credential);
+      });
+      // 안드로이드는 리다이렉트로 로그인
+      // } else {
+      //   setIsLoading(true);
+      //   await signInWithRedirect(authService, provider);
+      // }
       // 피씨는 팝업 로그인
     } else {
       setIsLoading(true);

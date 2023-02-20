@@ -5,7 +5,12 @@ import AttendCalendar from "../Attendance/AttendCalendar";
 import dayjs from "dayjs";
 
 const BudgetListInput = (props) => {
-  const [attendDate, setAttendDate] = useState(new Date());
+  const [attendDate, setAttendDate] = useState(
+    new Date(props.date || dayjs().format("YYYY") + "-12-01")
+  );
+  const [nameValue, setNameValue] = useState("");
+  const [noteValue, setNoteValue] = useState("");
+  const [amountValue, setAmountValue] = useState("");
 
   const getDateHandler = (date) => {
     setAttendDate(date);
@@ -55,7 +60,7 @@ const BudgetListInput = (props) => {
 
     Swal.fire({
       icon: "question",
-      title: "새예산 저장",
+      title: `${props.edit ? "예산 수정" : "새예산 등록"}`,
       text: `[  ${new_budget.budget_name} / ${
         new_budget.until
       }까지 사용 /  ${numberComma(
@@ -86,15 +91,27 @@ const BudgetListInput = (props) => {
     });
   };
 
+  //변경되는 값 설정하는 함수
+  const valueHandler = (e, what) => {
+    let value = e.target.value;
+    if (what === "amount") {
+      setAmountValue(value);
+    } else if (what === "name") {
+      setNameValue(value);
+    } else if (what === "note") {
+      setNoteValue(value);
+    }
+  };
+
   return (
     <>
       <button className={classes["budget-save"]} onClick={saveBudgetHandler}>
         <i className="fa-regular fa-floppy-disk"></i>
       </button>
       <br />
-      {/* <div className={props.showInput ? classes["newBudget-active"] : classes["newBudget-hidden"]}> */}
+
       <div>
-        <h1>새로운 예산 등록</h1>
+        <h1>{props.edit ? `${props.title} 수정` : "새로운 예산 등록"}</h1>
         <li className={classes["budgetList-li"]}>
           <div className={classes["budgetList-newdiv"]}>
             <span className={classes["budgetList-desc"]}>
@@ -104,6 +121,8 @@ const BudgetListInput = (props) => {
                 ref={nameRef}
                 placeholder="예산명"
                 className={classes["newBudget-title"]}
+                onChange={(e) => valueHandler(e, "name")}
+                defaultValue={props.title || nameValue}
               />
 
               {/* 사용기한 날짜 선택 달력부분 */}
@@ -112,7 +131,9 @@ const BudgetListInput = (props) => {
                 <AttendCalendar
                   getDateValue={getDateHandler}
                   about={props.about}
-                  setStart={new Date(dayjs().format("YYYY") + "-12-01")}
+                  setStart={
+                    new Date(props.date || dayjs().format("YYYY") + "-12-01")
+                  }
                 />
               </div>
             </span>
@@ -126,6 +147,8 @@ const BudgetListInput = (props) => {
                 type="text"
                 placeholder="예산목록, 기억할 점 등"
                 className={classes["newBudget-note"]}
+                onChange={(e) => valueHandler(e, "note")}
+                defaultValue={props.note || noteValue}
               />
               {/* 총액 */}{" "}
               <input
@@ -134,6 +157,8 @@ const BudgetListInput = (props) => {
                 style={{ width: "30%" }}
                 placeholder="총 예산"
                 className={classes["newBudget-amount"]}
+                onChange={(e) => valueHandler(e, "amount")}
+                defaultValue={props.amount || amountValue}
               />
               원
             </div>
