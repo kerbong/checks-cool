@@ -198,6 +198,7 @@ const Auth = (props) => {
         });
         // 안드로이드는 리다이렉트로 로그인
       } else {
+        setIsLoading(true);
         await signInWithRedirect(authService, provider);
       }
       // 피씨는 팝업 로그인

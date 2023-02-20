@@ -241,7 +241,7 @@ const BudgetManage = (props) => {
   };
 
   return (
-    <div>
+    <div className={classes["budgetAll-div"]}>
       <div className={classes["budgetMenu-div"]}>
         {/* 년도 선택 */}
         <select
@@ -369,6 +369,14 @@ const BudgetManage = (props) => {
           <p>
             3. <i className="fa-regular fa-floppy-disk"></i> 버튼 클릭해서 저장
           </p>
+
+          <h3>
+            <p>* 품목을 복사, 삭제하고 싶을 때 *</p>
+          </h3>
+
+          <p>1. 해당 품목을 클릭</p>
+          <p>2. 품목에 생긴 반투명한 아이콘 클릭</p>
+          <p>3. 저장 혹은 삭제하기</p>
         </div>
       )}
     </div>
