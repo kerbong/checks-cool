@@ -8,15 +8,12 @@ import {
   signInWithPopup,
   signInWithRedirect,
   sendEmailVerification,
-  getRedirectResult,
-  signInWithCredential,
-  AuthCredential,
-  OAuthCredential,
 } from "firebase/auth";
 import { authService } from "../../fbase";
 import classes from "./Auth.module.css";
 import AuthTerms from "./AuthTerms";
 import Swal from "sweetalert2";
+import Loading from "./Loading";
 
 const Auth = (props) => {
   const [email, setEmail] = useState("");
@@ -26,6 +23,7 @@ const Auth = (props) => {
   const [isKakaoLink, setIsKakaoLink] = useState(false);
   const [showAgency, setShowAgency] = useState(false);
   const [isSamePw, setIsSamePw] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const isKakao = navigator.userAgent.match("KAKAOTALK");
@@ -96,10 +94,12 @@ const Auth = (props) => {
     const auth = getAuth();
     //기존 유저의 로그인이면
     if (!newAccount) {
+      setIsLoading(true);
       try {
         data = await signInWithEmailAndPassword(auth, email, password);
         //이메일 인증이 완료되지 않은 경우
         if (!auth.currentUser.emailVerified) {
+          setIsLoading(false);
           failLogIn(
             "error",
             "로그인 실패",
@@ -107,7 +107,9 @@ const Auth = (props) => {
           );
           auth.signOut();
         }
+        setIsLoading(false);
       } catch (error) {
+        setIsLoading(false);
         failLogIn(
           "error",
           "로그인 실패",
@@ -129,21 +131,25 @@ const Auth = (props) => {
       }
 
       try {
+        setIsLoading(true);
         data = await createUserWithEmailAndPassword(auth, email, password);
 
         try {
           // send verification mail.
           sendEmailVerification(auth.currentUser);
           auth.signOut();
+          setIsLoading(false);
           failLogIn(
             "success",
             "인증메일 발송완료",
             "인증메일이 발송되었습니다. 인증메일 내부의 링크를 눌러 가입을 완료해주세요."
           );
         } catch {
+          setIsLoading(false);
           console.log("에러");
         }
       } catch (error) {
+        setIsLoading(false);
         failLogIn(
           "error",
           "회원가입 실패",
@@ -153,6 +159,8 @@ const Auth = (props) => {
       }
     }
   };
+
+  //로그인 중에 전체 화면 클릭 막는 함수
 
   const toggleAccount = (e) => {
     setNewAccount((prev) => !prev);
@@ -181,6 +189,7 @@ const Auth = (props) => {
         mobileType.indexOf("ipad") > -1 ||
         mobileType.indexOf("ipod") > -1
       ) {
+        setIsLoading(true);
         await signInWithPopup(authService, provider).then((result) => {
           const credential = GoogleAuthProvider.credentialFromResult(result);
 
@@ -193,12 +202,13 @@ const Auth = (props) => {
       }
       // 피씨는 팝업 로그인
     } else {
+      setIsLoading(true);
       // console.log("PC");
       await signInWithPopup(authService, provider);
     }
   };
 
-  return (
+  return !isLoading ? (
     <div>
       <form onSubmit={onSubmit} className={classes["logInOut-form"]}>
         <input
@@ -320,6 +330,8 @@ const Auth = (props) => {
         </button>
       </div>
     </div>
+  ) : (
+    <Loading />
   );
 };
 
