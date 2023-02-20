@@ -535,7 +535,7 @@ const MainPage = (props) => {
             titleDate.slice(-2, -1) !== "일" ? (
               <>
                 <ul className={classes["ul-section"]}>
-                  {/* {classLists.map((classNum, index) => (
+                  {classLists.map((classNum, index) => (
                     <ClassItem
                       key={`item${classNum}`}
                       myKey={`class${classNum}`}
@@ -547,16 +547,6 @@ const MainPage = (props) => {
                         ""
                       }
                       memo={todayClassTable?.classMemo?.[index]?.memo || ""}
-                    />
-                  ))} */}
-                  {todayClassTable?.classMemo?.map((item, index) => (
-                    <ClassItem
-                      key={`item${item.classNum}`}
-                      myKey={`class${item.classNum}`}
-                      classNum={item.classNum}
-                      classStart={classStart?.[index]}
-                      subject={item.subject || classBasic?.[index]}
-                      memo={item.memo}
                     />
                   ))}
                 </ul>
