@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import PropTypes from "prop-types";
 import Swal from "sweetalert2";
 
@@ -14,6 +14,16 @@ const MemoTodayTodoItem = ({ todoItem, todoList, setTodoList }) => {
       editInputRef.current.focus();
     }
   }, [edited]);
+
+  const handleResizeHeight = useCallback(() => {
+    if (editInputRef === null || editInputRef.current === null) {
+      return;
+    }
+
+    editInputRef.current.style.height = "10px";
+    editInputRef.current.style.height =
+      editInputRef.current.scrollHeight - 3 + "px";
+  }, []);
 
   const onChangeCheckbox = () => {
     const nextTodoList = todoList.map((item) => ({
@@ -103,18 +113,15 @@ const MemoTodayTodoItem = ({ todoItem, todoList, setTodoList }) => {
       {
         // 아이템 내용
         edited ? (
-          <input
-            type="text"
+          <textarea
             className="todoapp__item-edit-input"
             value={newText}
             ref={editInputRef}
             onChange={onChangeEditInput}
-            onKeyPress={(e) => {
-              if (e.key === "Enter") {
-                onClickSubmitButton();
-              }
-            }}
-            onInput={(e) => handleOnInput(e, 20)}
+            onKeyDown={() => handleResizeHeight(this)}
+            onKeyUp={() => handleResizeHeight(this)}
+            onClick={() => handleResizeHeight(this)}
+            onInput={(e) => handleOnInput(e, 70)}
           />
         ) : (
           <span

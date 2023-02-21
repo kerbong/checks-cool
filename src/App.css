@@ -67,6 +67,8 @@ a {
   height: 50px;
   box-sizing: border-box;
   font-size: 1.1em;
+  overflow-y: hidden;
+  resize: none;
 }
 .todoapp__inputbox-inp:focus {
   outline: none;
@@ -107,7 +109,7 @@ a {
   display: flex;
   align-items: center;
   margin: 5px 15px;
-  height: 36px;
+  height: auto;
 }
 .todoapp__item:last-child {
   margin-bottom: 0;
@@ -145,13 +147,17 @@ a {
   box-sizing: border-box;
   background-color: #ff99581c;
   border-radius: 20px;
+  overflow-y: hidden;
+  resize: none;
 }
 .todoapp__item-edit-input:focus {
   outline: none;
 }
 .todoapp__item-ctx {
+  word-break: break-all;
   flex: 1;
   font-size: 1.1em;
+  padding: 0 0 0 10px;
 }
 .todoapp__item-ctx-checked {
   font-style: italic;

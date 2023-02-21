@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useCallback } from "react";
 import PropTypes from "prop-types";
 import Swal from "sweetalert2";
 const MemoTodayTodoInput = ({ todoList, setTodoList }) => {
@@ -9,6 +9,15 @@ const MemoTodayTodoInput = ({ todoList, setTodoList }) => {
   const onChangeInput = (e) => {
     setText(e.target.value);
   };
+
+  const handleResizeHeight = useCallback(() => {
+    if (inputRef === null || inputRef.current === null) {
+      return;
+    }
+
+    inputRef.current.style.height = "10px";
+    inputRef.current.style.height = inputRef.current.scrollHeight - 13 + "px";
+  }, []);
 
   const onPressSubmitButton = (e) => {
     e.preventDefault();
@@ -45,15 +54,17 @@ const MemoTodayTodoInput = ({ todoList, setTodoList }) => {
   return (
     <form onSubmit={onPressSubmitButton} className="todoapp__inputbox">
       {/* 아이템 내용 입력 오늘할일 제일 위쪽 입력창 */}
-      <input
-        type="text"
+      <textarea
         name="todoItem"
         value={text}
         ref={inputRef}
         placeholder="할 일을 입력해주세요"
         className="todoapp__inputbox-inp"
+        onKeyDown={() => handleResizeHeight(this)}
+        onKeyUp={() => handleResizeHeight(this)}
+        onClick={() => handleResizeHeight(this)}
         onChange={onChangeInput}
-        onInput={(e) => handleOnInput(e, 30)}
+        onInput={(e) => handleOnInput(e, 70)}
       />
       {/* 입력 후 아이템 추가 버튼 */}
       <button type="submit" className="todoapp__inputbox-add-btn">
