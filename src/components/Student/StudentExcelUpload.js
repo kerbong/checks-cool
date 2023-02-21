@@ -36,6 +36,28 @@ const StudentExcelUpload = (props) => {
                 woman: row["성별"] === "남" ? false : true,
               }));
 
+              let hasUndefined = false;
+              new_rows.forEach((stu) => {
+                if (
+                  stu.num === undefined ||
+                  stu.name === undefined ||
+                  stu.woman === undefined
+                ) {
+                  hasUndefined = true;
+                }
+              });
+
+              if (hasUndefined) {
+                Swal.fire({
+                  icon: "error",
+                  title: "업로드 실패!",
+                  html: "번호, 이름, 성별 문자의 철자가 정확한지, 문자 앞/뒤에 띄어쓰기는 없는지, 비어있는 칸이나 줄은 없는지 확인해주세요! 문제가 지속되면 kerbong@gmail.com 으로 알려주세요!",
+                  confirmButtonText: "확인",
+                  confirmButtonColor: "#85bd82",
+                });
+                return;
+              }
+
               classInfo[sheetName] = [...new_rows];
               wholeClass.push({ ...classInfo });
             });
@@ -50,6 +72,29 @@ const StudentExcelUpload = (props) => {
                 name: row["이름"],
                 woman: row["성별"] === "남" ? false : true,
               }));
+
+              let hasUndefined = false;
+              new_rows.forEach((stu) => {
+                if (
+                  stu.num === undefined ||
+                  stu.name === undefined ||
+                  stu.woman === undefined
+                ) {
+                  hasUndefined = true;
+                }
+              });
+
+              if (hasUndefined) {
+                Swal.fire({
+                  icon: "error",
+                  title: "업로드 실패!",
+                  html: "번호, 이름, 성별 문자의 철자가 정확한지, 문자 앞/뒤에 띄어쓰기는 없는지, 비어있는 칸이나 줄은 없는지 확인해주세요! 문제가 지속되면 kerbong@gmail.com 으로 알려주세요!",
+                  confirmButtonText: "확인",
+                  confirmButtonColor: "#85bd82",
+                });
+                return;
+              }
+
               props.studentsInfoHandler(new_rows);
             });
           }
