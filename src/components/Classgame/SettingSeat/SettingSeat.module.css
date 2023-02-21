@@ -145,7 +145,7 @@
 
 .listSpace-div {
   margin: 20px;
-  height: 35px;
+  height: 15px;
 }
 
 .title-input {
@@ -154,7 +154,7 @@
 
 .seatsAdd-btn {
   position: absolute;
-  top: 75px;
+  top: 140px;
   right: 7%;
   padding: 10px;
   width: 45px;
@@ -173,7 +173,7 @@
 }
 
 .mt--25 {
-  margin-top: -25px;
+  margin-top: -20px;
 }
 
 .clname-span {
@@ -197,4 +197,14 @@
   font-size: 1.5rem;
   height: 70px;
   width: 150px;
+}
+
+.title-btns {
+  height: 70px;
+  display: flex;
+  align-items: center;
+  width: 190px;
+  justify-content: flex-end;
+  line-height: 20px;
+  font-size: 0.9rem;
 }

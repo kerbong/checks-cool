@@ -11,7 +11,7 @@ const DoingList = (props) => {
         <h3> 해결상태 </h3>
       </li>
       {props.lists?.map((list) => (
-        <li key={list.id} className={classes["li"]}>
+        <li key={list.id + list.title} className={classes["li"]}>
           <span>
             ({list.nickName}) {list.title} : {list.text}
           </span>

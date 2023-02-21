@@ -6,10 +6,27 @@ import Simsim from "../Classgame/Simsim/Simsim";
 import Mission from "../Classgame/Mission/Mission";
 import Doit from "../Classgame/Doit/Doit";
 import { useLocation } from "react-router-dom";
+import TitleBtn from "components/Memo/TitleBtn";
 
 const ClassgamePage = (props) => {
   const { state } = useLocation();
   const [selectedMenu, setSelectedMenu] = useState("");
+
+  const SHOW_WHAT = ["settingSeat", "simsim", "mission", "doThis"];
+
+  const MENU_NAME = [
+    "자리<br/>뽑기",
+    "심심<br/>해요",
+    "아침<br/>한마디",
+    "이거<br/>해요",
+  ];
+
+  const ICONS = [
+    <i className="fa-sharp fa-solid fa-chair"></i>,
+    <i className="fa-solid fa-face-meh"></i>,
+    <i className="fa-solid fa-mug-saucer"></i>,
+    <i className="fa-solid fa-thumbs-up"></i>,
+  ];
 
   useEffect(() => {
     if (state === "main") {
@@ -24,36 +41,31 @@ const ClassgamePage = (props) => {
       <div id="title-div">
         <button id="title-btn" className="">
           {/* onClick={exampleHandler}>/ */}
-          {selectedMenu === "settingSeat" && (
-            <>
-              <i className="fa-sharp fa-solid fa-chair"></i> 자리뽑기
-            </>
-          )}
+          {selectedMenu === "settingSeat" && <>{ICONS[0]}자리뽑기</>}
           {selectedMenu === "" && (
             <>
               <i className="fa-solid fa-gamepad"></i> 잼잼
             </>
           )}
-          {selectedMenu === "simsim" && (
-            <>
-              <i className="fa-solid fa-face-meh"></i> 심심해요
-            </>
-          )}
-          {selectedMenu === "mission" && (
-            <>
-              <i className="fa-solid fa-mug-saucer"></i> 아침한마디
-            </>
-          )}
-          {selectedMenu === "doThis" && (
-            <>
-              <i className="fa-solid fa-thumbs-up"></i> 이거해요
-            </>
-          )}
+          {selectedMenu === "simsim" && <>{ICONS[1]} 심심해요</>}
+          {selectedMenu === "mission" && <>{ICONS[2]}아침한마디</>}
+          {selectedMenu === "doThis" && <>{ICONS[3]} 이거해요</>}
         </button>
 
-        {/* 추가하기 버튼 */}
-
-        {/*  )} */}
+        <div className={classes["title-btns"]}>
+          {/* 메뉴 선택하는 버튼들 */}
+          {SHOW_WHAT.map((what, index) => (
+            <TitleBtn
+              setShowWhatMemo={() => {
+                setSelectedMenu(what);
+              }}
+              key={what}
+              icon={ICONS[index]}
+              what={what}
+              menu_name={MENU_NAME[index]}
+            />
+          ))}
+        </div>
       </div>
 
       {selectedMenu === "" && (

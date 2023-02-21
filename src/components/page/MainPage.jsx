@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Button from "../Layout/Button";
-import { dbService, messaging } from "../../fbase";
-
-import { getToken } from "firebase/messaging";
+import { dbService } from "../../fbase";
 
 import { getDoc, doc, setDoc, updateDoc } from "firebase/firestore";
 import classes from "./MainPage.module.css";
