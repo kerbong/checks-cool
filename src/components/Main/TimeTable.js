@@ -30,17 +30,17 @@ const TimeTable = (props) => {
           ))}
         </select>
         <Button
-          name={"+10"}
+          name={"+5"}
           className={"time-pm-button"}
           onclick={(e) => {
-            submitHandler(e, "plus", 10);
+            submitHandler(e, "plus", 5);
           }}
         />
         <Button
-          name={"-10"}
+          name={"-5"}
           className={"time-pm-button"}
           onclick={(e) => {
-            submitHandler(e, "minus", 10);
+            submitHandler(e, "minus", 5);
           }}
         />
       </form>
