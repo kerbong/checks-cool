@@ -44,7 +44,7 @@ const AttendEachLists = (props) => {
           years.push(data_year);
           //자료에 년도를 yearGroup으로 추가해둠
           new_data = { ...data, yearGroup: data_year };
-        } else if (+data_month <= 1) {
+        } else if (+data_month <= 2) {
           let fixed_year = String(+data_year - 1);
           years.push(fixed_year);
           new_data = { ...data, yearGroup: fixed_year };
@@ -465,9 +465,11 @@ const AttendEachLists = (props) => {
                     <p className={`${classes.p} data-p`}>
                       📅
                       {yearMonthDay(data.id.slice(0, 10))}
-                      {` | ${isSubject === false ? "" : data.clName + " - "} ${
-                        data.name
-                      }`}
+                      {` | ${
+                        isSubject === false || isSubject === undefined
+                          ? ""
+                          : data.clName + " - "
+                      } ${data.name}`}
                     </p>
                     <p>
                       <span>{` ${data.option.slice(1)}`}</span>{" "}
