@@ -83,6 +83,24 @@ const MeetingSumItem = (props) => {
     });
   };
 
+  //수정하는 함수
+  const editHandler = () => {
+    Swal.fire({
+      icon: "warning",
+      title: "회의록 수정",
+      text: "현재 회의록을 수정해서 저장하시겠어요?",
+      confirmButtonText: "확인",
+      confirmButtonColor: "#85bd82",
+      showDenyButton: true,
+      denyButtonText: "취소",
+    }).then((result) => {
+      /* Read more about isConfirmed, isDenied below */
+      if (result.isConfirmed) {
+        // props.deleteHandler(props.item.id, props.item.title, props.item.file);
+      }
+    });
+  };
+
   return (
     <>
       {/* 새로운 자료 입력할 때 */}
@@ -180,10 +198,16 @@ const MeetingSumItem = (props) => {
           <div className={`${classes["fs-14"]} ${classes["m-10"]}`}>
             <p>(회의결과)</p>
             {/* 인풋창보여주기 */}
-            {/* 수정 버튼 만들기 */}
             <div>{props.item.result}</div>
           </div>
-          <div className={classes["m-20-5"]}>
+
+          {/* 수정 / 삭제 버튼 */}
+          <div className={classes["m-20-5-btns"]}>
+            <Button
+              className={"saveSimsim-btn"}
+              onclick={editHandler}
+              icon={<>수정</>}
+            />
             <Button
               className={"saveSimsim-btn"}
               onclick={deleteHandler}

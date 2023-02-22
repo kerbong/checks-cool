@@ -266,6 +266,7 @@ function App() {
                   <ClassgamePage
                     students={students}
                     userUid={userUid}
+                    email={user.email}
                     nickName={profile?.nickName || ""}
                     isSubject={profile?.isSubject || []}
                   />

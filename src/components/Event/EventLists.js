@@ -183,18 +183,20 @@ const EventLists = (props) => {
         )} (${eventOnDay[0].eventDate.slice(-3, -2)})`}
       </h1>
       {/* //addEvent false 상황이면 추가하기 버튼 */}
-      <div className={classes["add-event-div"]}>
-        <Button
-          name={"추가"}
-          id={"add-checkItemBtn"}
-          className={"add-event-button"}
-          onclick={() => {
-            setAddEvent(true);
-            props.setFixIsShown("0");
-          }}
-        />
-      </div>
-      <div className="event-input-div">
+      {!addEvent && (
+        <div className={classes["add-event-div"]}>
+          <Button
+            name={"추가"}
+            id={"add-checkItemBtn"}
+            className={"add-event-button"}
+            onclick={() => {
+              setAddEvent(true);
+              props.setFixIsShown("0");
+            }}
+          />
+        </div>
+      )}
+      <div className={classes["event-input-div"]}>
         {addEvent && (
           //addEvent 상황이면 인풋창 보여주고
           <EventInput

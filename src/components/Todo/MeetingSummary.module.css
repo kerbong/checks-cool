@@ -58,7 +58,8 @@
   grid-row: 1/2;
 }
 
-.m-20-5 {
+.m-20-5,
+.m-20-5-btns {
   margin: 20px 5px;
   justify-content: center;
   display: flex;
@@ -66,6 +67,11 @@
   align-content: space-between;
   align-items: center;
   flex-wrap: nowrap;
+}
+
+.m-20-5-btns {
+  flex-direction: row;
+  justify-content: space-around;
 }
 
 .previewImg {

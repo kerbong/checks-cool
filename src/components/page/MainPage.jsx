@@ -71,6 +71,8 @@ const MainPage = (props) => {
     "방과후",
   ];
 
+  // 기초시간표 자료 받아올 때 classLists 이름이 있으면 세팅해서 불러오도록...? 기초시간표에 교시 쪽에 input 넣어주고 기본 값으로 교시 넣어주기. 수정 저장 가능.
+
   const WEEKDAYS = ["일", "월", "화", "수", "목", "금", "토"];
 
   let navigate = useNavigate();

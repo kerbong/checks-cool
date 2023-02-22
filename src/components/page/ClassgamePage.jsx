@@ -103,7 +103,11 @@ const ClassgamePage = (props) => {
         {selectedMenu === "mission" && <Mission userUid={props.userUid} />}
 
         {selectedMenu === "doThis" && (
-          <Doit userUid={props.userUid} nickName={props.nickName} />
+          <Doit
+            userUid={props.userUid}
+            nickName={props.nickName}
+            email={props.email}
+          />
         )}
       </div>
     </>

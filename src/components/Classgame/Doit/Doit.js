@@ -141,7 +141,7 @@ const Doit = (props) => {
     await setDoc(doitRef, { doit_data: existData });
 
     var templateParams = {
-      from_name: props.nickName,
+      from_name: props.nickName + ")" + props.email,
       to_name: "말랑한 거봉 운영자님",
       message: data.text,
       title: data.title,

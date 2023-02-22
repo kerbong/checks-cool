@@ -57,7 +57,7 @@ const DoInput = (props) => {
   };
 
   return (
-    <div>
+    <div className={classes["input-div"]}>
       <h1>건의 / 불편 글 보내기</h1>
       <br />
       <div className={classes["title"]}>
