@@ -71,7 +71,7 @@ const CheckLists = (props) => {
           // 자료가 없으면 현재 학년도로 세팅
         } else {
           setDataYears([
-            +dayjs().format("MM") <= 1
+            +dayjs().format("MM") <= 2
               ? String(+dayjs().format("YYYY") - 1)
               : dayjs().format("YYYY"),
           ]);
@@ -103,7 +103,7 @@ const CheckLists = (props) => {
           // 자료가 없으면 현재 학년도로 세팅
         } else {
           setDataYears([
-            +dayjs().format("MM") <= 1
+            +dayjs().format("MM") <= 2
               ? String(+dayjs().format("YYYY") - 1)
               : dayjs().format("YYYY"),
           ]);
@@ -121,7 +121,7 @@ const CheckLists = (props) => {
     let new_date = new Date();
     //학년도 설정
     let new_year = new_date.getFullYear();
-    if (new_date.getMonth() + 1 <= 1) {
+    if (new_date.getMonth() + 1 <= 2) {
       new_year -= 1;
     }
     //데이터 중에 현재 학년도와 같은 데이터가 있으면 바로 보여줌.
@@ -463,7 +463,7 @@ const CheckLists = (props) => {
   }, [nowClassName]);
 
   const nowYear = () => {
-    return +dayjs().format("MM") <= 1
+    return +dayjs().format("MM") <= 2
       ? String(+dayjs().format("YYYY") - 1)
       : dayjs().format("YYYY");
   };

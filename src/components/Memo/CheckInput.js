@@ -220,10 +220,9 @@ const CheckInput = (props) => {
               Swal.fire({
                 icon: "error",
                 title: "저장에 실패했어요!",
-                text: "메뉴의 곰돌이를 눌러서 학생명부를 먼저 입력해주세요.",
+                text: "메뉴의 곰돌이를 눌러서 학생명부를 먼저 입력해주세요. 학생명부가 저장 되어있는데 저장이 실패하셨다면, 새로운 학년도의 3월부터 입력이 가능합니다.",
                 confirmButtonText: "확인",
                 confirmButtonColor: "#85bd82",
-                timer: 5000,
               });
             } else {
               saveCheckItem();

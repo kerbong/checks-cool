@@ -54,7 +54,7 @@ const StudentLists = (props) => {
 
   //학년도 설정함수
   const setYear = () => {
-    //2월부터는 새로운 학년도로 인식함
+    //학생자료 등록의 경우..예외적으로 2월부터는 새로운 학년도로 인식함
     return +dayjs().format("MM") <= 1
       ? String(+dayjs().format("YYYY") - 1)
       : dayjs().format("YYYY");
