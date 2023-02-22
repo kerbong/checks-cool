@@ -51,6 +51,7 @@ const SeatTable = (props) => {
   const [seatLists, setSeatLists] = useState(null);
   const [pairStudents, setPairStudents] = useState([]);
   const [randomJustStudent, setRandomJustStudent] = useState(true);
+  const [pickSeatAll, setPickSeatAll] = useState("");
 
   let navigate = useNavigate();
 
@@ -278,13 +279,15 @@ const SeatTable = (props) => {
       }
 
       setTempBeforeName(selectedStudent.name);
-
       //학생목록에서 뽑힌 학생 제거하기
-      new_students.forEach((stu, index) => {
-        if (stu.num === selectedStudent.num) {
-          new_students.splice(index, 1);
-        }
-      });
+      // new_students.forEach((stu, index) => {
+      //   if (stu.num === selectedStudent.num) {
+      //     new_students.splice(index, 1);
+      //   }
+      // });
+      new_students = new_students.filter(
+        (stu) => stu.num !== selectedStudent.num
+      );
     };
 
     while (Object.keys(selectedStudent).length === 0) {
@@ -293,8 +296,9 @@ const SeatTable = (props) => {
 
     selectedSwal(selectedStudent.num, selectedStudent.name);
 
-    setStudents(new_students);
+    setStudents([...new_students]);
     setTempStudent({ ...selectedStudent });
+    return selectedStudent;
   };
 
   //자리를 누르면 실행되는 함수
@@ -641,6 +645,91 @@ const SeatTable = (props) => {
     });
   };
 
+  useEffect(() => {
+    let timer;
+    if (students.length > 0) {
+      //한번에 모든 학생(남+ 여 번갈아) 뽑는 로직이면..
+      if (pickSeatAll === "gender") {
+        //이전에 뽑힌 학생이 여자면 남자뽑고
+        if (tempStudent.woman === true) {
+          timer = setTimeout(() => {
+            pickAndSeat("gender", false);
+          }, 3000);
+
+          // 이전에 뽑힌 학생이 남자면 여자뽑고
+        } else {
+          timer = setTimeout(() => {
+            pickAndSeat("gender", true);
+          }, 3000);
+        }
+
+        // 성별 상관없이 아무나 뽑을 경우우
+      } else if (pickSeatAll === "mix") {
+        timer = setTimeout(() => {
+          pickAndSeat("mix", "all");
+        }, 3000);
+      }
+
+      // 학생이 다 뽑히고 나면 pickSeatAll 설정 초기화
+    } else {
+      setPickSeatAll("");
+    }
+
+    return () => clearTimeout(timer);
+  }, [students]);
+
+  //넣어준 성별의 학생 뽑아서(없으면 반대성별뽑아서) temp에 저장함
+  const pickAndSeat = (consider, isWoman) => {
+    //숫자가 가장 작은 빈자리에 이름 넣기 함수
+    const seatHandler = (name) => {
+      let existItems = document.querySelectorAll(".item");
+      let leftSeats = [];
+      //아직 학생 없는 숫자만 있는 자리들
+      existItems.forEach((item) => {
+        if (!isNaN(+item.innerText)) {
+          leftSeats.push(item);
+          return false;
+        }
+      });
+      //가장 앞자리 골라서 이름 넣기
+      let firstSeat = leftSeats[0];
+      firstSeat.innerText = name;
+      firstSeat.style.backgroundColor = "#d4e8dcbd";
+    };
+
+    // 성별 번갈아 일 경우
+    let selecStu;
+    if (consider === "gender") {
+      if (randomIsPossible(isWoman)) {
+        selecStu = randomSeatHandler(isWoman);
+      } else {
+        selecStu = randomSeatHandler(!isWoman);
+      }
+      // 아무나 일 경우
+    } else if (consider === "mix") {
+      randomSeatHandler("all");
+    }
+    //자리에 넣음
+    setTempStudent((prev) => {
+      seatHandler(prev.name);
+      return { ...prev };
+    });
+
+    return selecStu;
+  };
+
+  //자리까지 뽑는데 계속 이어서 한 번만 클릭하면 모두 뽑히는 함수
+  const randomAllHandler = (consider) => {
+    //consider가 gender면 남/여 학생 번갈아 뽑아서 남은 자리의 번호 순서대로 쭉 남은 학생이 없을 때까지 반복함.
+
+    if (consider === "gender") {
+      //여기서 한번 뽑아두고, useEffect로 students 변화를 받아서, pickSeatAll state가 gender 혹은 mix면.. 학생을 뽑고 앉히는걸 시킴 => sudents 줄어듬 => useEffect실행됨 => 반복..
+      pickAndSeat("gender", true);
+    } else if (consider === "mix") {
+      pickAndSeat("mix", "all");
+    }
+  };
+
   return (
     <div id={props.title || "newSeats"}>
       {students.length === 0 && (
@@ -734,37 +823,64 @@ const SeatTable = (props) => {
       {students.length > 0 && (
         <>
           <div className={classes["remain-student-div"]}>
-            <Button
-              id="justStudent"
-              onclick={() => {
-                setRandomJustStudent((prev) => !prev);
-              }}
-              className={"switch-random-btn"}
-              icon={<i className="fa-solid fa-repeat"></i>}
-              name={
-                randomJustStudent ? " to 자리까지 랜덤뽑기" : " to 학생만 뽑기"
-              }
-            />
+            <div className={classes["randomPickBtn-div"]}>
+              누구랑&nbsp;
+              <Button
+                id="newPairBtn"
+                onclick={() => {
+                  setIsNewPair(true);
+                }}
+                className={
+                  isNewPair ? `switch-random-btn-selected` : `switch-random-btn`
+                }
+                name={"새로운짝"}
+              />
+              <Button
+                id="newPairBtn"
+                onclick={() => {
+                  setIsNewPair(false);
+                }}
+                className={
+                  !isNewPair
+                    ? `switch-random-btn-selected`
+                    : `switch-random-btn`
+                }
+                name={"인생랜덤"}
+              />
+            </div>
+
+            <div className={`${classes["randomPickBtn-div"]}`}>
+              어떻게&nbsp;
+              <Button
+                id="justStudent"
+                onclick={() => {
+                  setRandomJustStudent(true);
+                }}
+                className={
+                  randomJustStudent
+                    ? `switch-random-btn-selected`
+                    : `switch-random-btn`
+                }
+                name={"학생만"}
+              />
+              <Button
+                id="stuPlusSeat"
+                onclick={() => {
+                  setRandomJustStudent(false);
+                }}
+                className={
+                  !randomJustStudent
+                    ? `switch-random-btn-selected`
+                    : `switch-random-btn`
+                }
+                name={"학생+자리"}
+              />
+            </div>
           </div>
           <div className={classes["remain-student-div"]}>
             <>
-              <div className={classes["margin-div"]}>
-                {randomJustStudent && (
-                  <>
-                    <Button
-                      id="newPairBtn"
-                      onclick={() => {
-                        setIsNewPair((prev) => !prev);
-                      }}
-                      className={"settingSeat-btn"}
-                      name={isNewPair ? "to 인생은랜덤" : "to 새로운짝"}
-                    />{" "}
-                    👉
-                  </>
-                )}
-              </div>
-
               <div className={classes["randomPickBtn-div"]}>
+                {!randomJustStudent && "한명씩"}
                 <Button
                   id="randomWomanPickBtn"
                   onclick={() =>
@@ -796,6 +912,31 @@ const SeatTable = (props) => {
                   name="아무나"
                 />
               </div>
+
+              {/* 자리까지 뽑기 버전에서만 가능한 전체 뽑기, 1번자리부터 순서대로 들어감! */}
+              {!randomJustStudent && (
+                <div className={classes["randomPickBtn-div"]}>
+                  한번에
+                  <Button
+                    id="randomWomanPickBtn"
+                    onclick={() => {
+                      setPickSeatAll("gender");
+                      randomAllHandler("gender");
+                    }}
+                    className={"settingSeat-btn"}
+                    name="남+여"
+                  />
+                  <Button
+                    id="randomWomanPickBtn"
+                    onclick={() => {
+                      setPickSeatAll("mix");
+                      randomAllHandler("mix");
+                    }}
+                    className={"settingSeat-btn"}
+                    name="아무나"
+                  />
+                </div>
+              )}
             </>
           </div>
         </>

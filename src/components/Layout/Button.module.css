@@ -319,14 +319,21 @@
   justify-content: center;
 }
 
-.switch-random-btn {
+.switch-random-btn,
+.switch-random-btn-selected {
   width: auto;
-  font-size: 1.1rem;
+  font-size: 1rem;
   padding: 12px;
   margin: 0 5px;
   background-color: #dac69a;
   border-radius: 5px;
   border-width: 0;
+}
+
+.switch-random-btn-selected {
+  font-weight: bold;
+  font-size: 1.1rem;
+  padding: 15px;
 }
 
 .missionEditBtn {

@@ -111,6 +111,7 @@ const RowColumn = (props) => {
                   min: "1",
                   step: "1",
                   max: "30",
+                  autoFocus: true,
                 }}
                 className={"rowcolumn-input"}
                 required={true}
