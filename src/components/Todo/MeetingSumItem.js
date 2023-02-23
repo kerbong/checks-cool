@@ -103,6 +103,21 @@ const MeetingSumItem = (props) => {
   const submitHandler = async (e) => {
     e.preventDefault();
 
+    //공용방 정보가 빈자료는 저장불가...
+    if (
+      localStorage.getItem("todoPublicRoom") === "--" &&
+      props.showPublicEvent
+    ) {
+      Swal.fire({
+        icon: "warning",
+        title: "공용회의록 저장 불가",
+        text: "먼저 공용 방 설정을 해주세요.",
+        confirmButtonText: "확인",
+        confirmButtonColor: "#85bd82",
+      });
+      return false;
+    }
+
     //저장에 딜레이가 조금 있어서.. 중복저장금지로 disabled 속성 추가
     const saveBtn = document.getElementById("saveMeetSum-btn");
     saveBtn.disabled = true;

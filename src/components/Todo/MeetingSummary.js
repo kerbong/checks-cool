@@ -246,6 +246,7 @@ const MeetingSummary = (props) => {
       {newMeetSum && (
         <Modal onClose={() => setNewMeetSum(false)}>
           <MeetingSumItem
+            showPublicEvent={props.showPublicEvent}
             addMeetSumHandler={addMeetSumHandler}
             showSumClose={() => setNewMeetSum(false)}
             userUid={props.userUid}
