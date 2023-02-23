@@ -98,3 +98,7 @@
 .close-span {
   padding: 5px;
 }
+
+.t-align-left {
+  text-align: left;
+}

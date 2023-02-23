@@ -3,7 +3,7 @@ import classes from "./FileArea.module.css";
 import FileForm from "./FileForm";
 
 const FileArea = (props) => {
-  const [attachedFile, setAttachedFile] = useState("");
+  const [attachedFile, setAttachedFile] = useState(props.file || "");
 
   return (
     <div className={classes.fileArea}>

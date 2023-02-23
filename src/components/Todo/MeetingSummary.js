@@ -1,14 +1,8 @@
 import React, { useState, useEffect } from "react";
 import classes from "./MeetingSummary.module.css";
 import { dbService, storageService } from "../../fbase";
-import { onSnapshot, setDoc, doc, getDoc } from "firebase/firestore";
-import {
-  ref,
-  uploadString,
-  getDownloadURL,
-  deleteObject,
-} from "firebase/storage";
-import { v4 } from "uuid";
+import { onSnapshot, setDoc, doc, getDoc, updateDoc } from "firebase/firestore";
+import { ref, deleteObject } from "firebase/storage";
 import Modal from "components/Layout/Modal";
 import MeetingSumItem from "./MeetingSumItem";
 import Swal from "sweetalert2";
@@ -88,23 +82,6 @@ const MeetingSummary = (props) => {
       showDenyButton: false,
       timer: 5000,
     });
-    //첨부파일 있으면
-    let img = data.file;
-    if (img.length > 0) {
-      //storage에 저장
-      const response = await uploadString(
-        ref(storageService, `${props.userUid}/${v4()}`),
-        img,
-        "data_url"
-      );
-      //firestore에 저장할 url받아오기
-      img = await getDownloadURL(response.ref);
-    }
-
-    const new_data = {
-      ...data,
-      file: img,
-    };
 
     //firestore에 저장
     let meetingSumRef;
@@ -115,7 +92,7 @@ const MeetingSummary = (props) => {
     }
     //기존 자료 목록 받아오고 거기에 추가하기
 
-    let existData = [new_data];
+    let existData = [data];
     const meetSumDoc = await getDoc(meetingSumRef);
     if (meetSumDoc.exists()) {
       meetSumDoc?.data()?.meetSum_data?.forEach((data) => existData.push(data));
@@ -125,7 +102,7 @@ const MeetingSummary = (props) => {
 
     //혹시 기존 자료가 없을 경우 summary에 강제로 추가해주기
     if (summary.length === 0) {
-      setSummary([new_data]);
+      setSummary([data]);
     }
 
     setNewMeetSum(false);
@@ -212,6 +189,44 @@ const MeetingSummary = (props) => {
     );
   };
 
+  //개별 회의록 수정 함수
+  const editHandler = async (new_data) => {
+    //일단 전체 회의록에서 제거하고 다시 추가하기(id는 같음.)
+    let edited_data = []; //새로 업로드할 데이터
+    let exist_data; //기존 데이터
+    summary.forEach((data) => {
+      if (data.id !== new_data.id) {
+        edited_data.push(data);
+      } else {
+        exist_data = data;
+      }
+    });
+    console.log(edited_data);
+
+    let meetingSumRef;
+    if (props.showPublicEvent) {
+      meetingSumRef = doc(dbService, "todo", "MeetSum" + roomInfo);
+    } else {
+      meetingSumRef = doc(dbService, "todo", "MeetSum" + props.userUid);
+    }
+
+    edited_data.push(new_data);
+    console.log(edited_data);
+
+    //모달 닫기
+    setShowSum("");
+
+    //자료 업데이트
+    await updateDoc(meetingSumRef, { meetSum_data: edited_data });
+
+    //사진 파일이 전과 달라졌으면 기존에 저장했던 파일 삭제
+    if (new_data.file !== exist_data.file) {
+      await deleteObject(ref(storageService, exist_data.file));
+    }
+    // 전체 서머리 업데이트
+    setSummary(edited_data);
+  };
+
   return (
     <div>
       {/* {개별 회의록 클릭 시 보여줄 모달} */}
@@ -221,6 +236,8 @@ const MeetingSummary = (props) => {
             item={nowOnSummary?.filter((data) => data?.id === showSum)[0]}
             showSumClose={() => setShowSum("")}
             deleteHandler={deleteHandler}
+            editHandler={editHandler}
+            userUid={props.userUid}
           />
         </Modal>
       )}
@@ -231,6 +248,7 @@ const MeetingSummary = (props) => {
           <MeetingSumItem
             addMeetSumHandler={addMeetSumHandler}
             showSumClose={() => setNewMeetSum(false)}
+            userUid={props.userUid}
           />
         </Modal>
       )}
