@@ -6,7 +6,7 @@ import {
   signInWithEmailAndPassword,
   GoogleAuthProvider,
   signInWithPopup,
-  signInWithRedirect,
+  sendPasswordResetEmail,
   sendEmailVerification,
 } from "firebase/auth";
 import { authService } from "../../fbase";
@@ -209,6 +209,31 @@ const Auth = (props) => {
     }
   };
 
+  //이메일 로그인의 경우 비밀번호 찾기 로직
+  const findPassword = () => {
+    var regExp =
+      /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$/i;
+    // 검증에 사용할 정규식 변수 regExp에 저장
+
+    if (email.match(regExp) === null) {
+      failLogIn(
+        "error",
+        "이메일주소 확인",
+        "이메일주소의 양식이 올바르지 않습니다. 확인해주세요."
+      );
+      return;
+    }
+
+    sendPasswordResetEmail(authService, email).then(() => {
+      console.log("email sent");
+      failLogIn(
+        "success",
+        "메일전송 완료",
+        "입력하신 이메일 주소로 비밀번호 재설정 링크가 전송되었습니다."
+      );
+    });
+  };
+
   return !isLoading ? (
     <div>
       <form onSubmit={onSubmit} className={classes["logInOut-form"]}>
@@ -308,6 +333,17 @@ const Auth = (props) => {
           <i className="fa-brands fa-google"></i>{" "}
           {newAccount ? "Google로 가입" : "Google 로그인"}
         </button>
+
+        {!newAccount && (
+          <button
+            name="google"
+            onClick={findPassword}
+            disabled={newAccount && !agreeTerms && true}
+            className={classes["logInOut-SignUp"]}
+          >
+            비밀번호 찾기
+          </button>
+        )}
         <span>
           {newAccount && !agreeTerms && (
             <>
