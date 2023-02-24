@@ -22,7 +22,7 @@ const MemoTodayTodoItem = ({ todoItem, todoList, setTodoList }) => {
 
     editInputRef.current.style.height = "10px";
     editInputRef.current.style.height =
-      editInputRef.current.scrollHeight - 3 + "px";
+      editInputRef.current.scrollHeight + 5 + "px";
   }, []);
 
   const onChangeCheckbox = () => {
@@ -110,6 +110,12 @@ const MemoTodayTodoItem = ({ todoItem, todoList, setTodoList }) => {
         htmlFor={`todoapp_checkbox${todoItem.id}`}
         className={todoItem.checked ? "label_checked" : ""}
       ></label>
+      {todoItem?.emg && (
+        <span className={"todoapp__inputbox-emergency"}>
+          <i className="fa-solid fa-circle-exclamation"></i>
+        </span>
+      )}
+
       {
         // 아이템 내용
         edited ? (
@@ -124,13 +130,15 @@ const MemoTodayTodoItem = ({ todoItem, todoList, setTodoList }) => {
             onInput={(e) => handleOnInput(e, 70)}
           />
         ) : (
-          <span
-            className={`todoapp__item-ctx ${
-              todoItem.checked ? "todoapp__item-ctx-checked" : ""
-            }`}
-          >
-            {todoItem.text}
-          </span>
+          <>
+            <span
+              className={`todoapp__item-ctx ${
+                todoItem.checked ? "todoapp__item-ctx-checked" : ""
+              }`}
+            >
+              {todoItem.text}
+            </span>
+          </>
         )
       }
       {

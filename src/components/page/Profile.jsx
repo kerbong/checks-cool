@@ -39,8 +39,32 @@ const Profile = (props) => {
       : dayjs().format("YYYY");
   };
 
+  const swal_maker = (icon, title, text) => {
+    Swal.fire({
+      icon: icon,
+      title: title,
+      html: text,
+      confirmButtonText: "확인",
+      confirmButtonColor: "#85bd82",
+    });
+  };
+
   const userInfoSaveHandler = async (e) => {
     e.preventDefault();
+    //하루에 두 번만 수정 가능함.
+    let todayProfileChange = localStorage.getItem(
+      "profile" + dayjs().format("YY-MM-DD")
+    );
+
+    if (todayProfileChange >= 2) {
+      swal_maker(
+        "error",
+        "저장횟수 초과",
+        "하루에 두 번만 프로필 수정이 가능합니다. 내일 다시 시도해주세요!"
+      );
+      return false;
+    }
+
     let existUserInfo;
     let isNew = false;
     let profileRef = doc(dbService, "user", props.user.uid);
@@ -54,25 +78,23 @@ const Profile = (props) => {
 
     //존재하는지 확인하기
     if (Object.values(userInfo).length === 0) {
-      Swal.fire({
-        icon: "error",
-        title: "저장에 실패했어요!",
-        html: "입력된 내용이 없습니다. 확인해주세요!",
-        confirmButtonText: "확인",
-        confirmButtonColor: "#85bd82",
-      });
+      swal_maker(
+        "error",
+        "저장에 실패했어요!",
+        "입력된 내용이 없습니다. 확인해주세요!"
+      );
+
       return false;
     }
 
     //닉네임은 필수저장!
     if (userInfo.nickName?.trim().length === 0) {
-      Swal.fire({
-        icon: "error",
-        title: "저장에 실패했어요!",
-        html: "닉네임은 필수 입력 사항입니다! 확인해주세요.",
-        confirmButtonText: "확인",
-        confirmButtonColor: "#85bd82",
-      });
+      swal_maker(
+        "error",
+        "저장에 실패했어요!",
+        "닉네임은 필수 입력 사항입니다! 확인해주세요."
+      );
+
       return false;
     }
 
@@ -93,24 +115,16 @@ const Profile = (props) => {
     );
 
     if (isExistNick.length > 0) {
-      Swal.fire({
-        icon: "error",
-        title: "닉네임 중복",
-        html: "이미 존재하는 닉네임입니다! 다른 이름으로 변경해주세요!",
-        confirmButtonText: "확인",
-        confirmButtonColor: "#85bd82",
-      });
+      swal_maker(
+        "error",
+        "닉네임 중복",
+        "이미 존재하는 닉네임입니다! 다른 이름으로 변경해주세요!"
+      );
+
       return false;
     }
 
-    Swal.fire({
-      icon: "success",
-      title: "저장되었어요!",
-      text: "자료가 수정/저장되었습니다!",
-      confirmButtonText: "확인",
-      confirmButtonColor: "#85bd82",
-      timer: 5000,
-    });
+    swal_maker("success", "저장되었어요!", "자료가 수정/저장되었습니다!");
 
     //전담이 아닌경우 자료 추가
     if (!userInfo.isSubject) {
@@ -150,6 +164,13 @@ const Profile = (props) => {
     await updateDoc(nickNamesRef, { nickNames_data: new_nickNames });
 
     props.profileHandler();
+
+    //오늘 프로필 수정 횟수 저장하기.
+
+    localStorage.setItem(
+      "profile" + dayjs().format("YY-MM-DD"),
+      todayProfileChange + 1
+    );
   };
 
   const userInfoHandler = (e, nameOrState) => {
@@ -253,7 +274,7 @@ const Profile = (props) => {
         />
       </form>
       <p className={classes["explain-p"]}>
-        * 메뉴의 <i className="fa-solid fa-user"></i> => "프로필 수정" 을 통해
+        * 메뉴의 <i className="fa-solid fa-user"></i> - "프로필 수정" 을 통해
         현재 페이지로 이동이 가능합니다.{" "}
       </p>
     </div>

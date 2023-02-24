@@ -14,7 +14,19 @@ const MemoTodayTodo = (props) => {
     let memoSnap = await getDoc(memoRef);
 
     if (memoSnap.exists()) {
-      onSnapshot(memoRef, (doc) => setTodoList(doc.data().memoTodo));
+      const sortEmg = (todo_list) => {
+        let sorted_lists = todo_list.sort(function (a, b) {
+          let a_emg = a.emg || false;
+          let b_emg = b.emg || false;
+          return b_emg - a_emg;
+        });
+        console.log(sorted_lists);
+        return sorted_lists;
+      };
+
+      onSnapshot(memoRef, (doc) => {
+        setTodoList(sortEmg(doc.data().memoTodo));
+      });
     }
   };
 

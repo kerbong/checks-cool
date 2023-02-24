@@ -392,6 +392,17 @@ const MainPage = (props) => {
     }, 150);
   }, [todayClassTable]);
 
+  //할일 목록 중요한 거 부터 보여주는 sort 함수
+  const sortEmg = (todo_list) => {
+    let sorted_lists = todo_list.sort(function (a, b) {
+      let a_emg = a.emg || false;
+      let b_emg = b.emg || false;
+      return b_emg - a_emg;
+    });
+    console.log(sorted_lists);
+    return sorted_lists;
+  };
+
   return (
     <div className={classes["whole-div"]}>
       {props.showMainExample && (
@@ -627,9 +638,14 @@ const MainPage = (props) => {
           {toDoLists.length === 0 ? (
             <li className={classes["main-li"]}>할 일 없음</li>
           ) : (
-            toDoLists.map((event) => (
+            sortEmg(toDoLists).map((event) => (
               <li key={event.id} className={classes["main-li"]}>
-                {event.text}
+                {event?.emg && (
+                  <span className={"todoapp__inputbox-emergency"}>
+                    <i className="fa-solid fa-circle-exclamation"></i>
+                  </span>
+                )}
+                <span>{event.text}</span>
               </li>
             ))
           )}
