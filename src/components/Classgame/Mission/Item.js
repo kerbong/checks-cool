@@ -42,31 +42,41 @@ const Item = (props) => {
   //라이크를 변경하는 함수, 값을 찾아서 업데이트
   const changeLikeHandler = async () => {
     // console.log(mission);
-    //만약 이전이 좋아요였으면 해제
-    const nowOnRef = doc(dbService, "mission", mission.date);
-    let nowAll = (await getDoc(nowOnRef)).data().mission_data;
-    let nowOnMission = {};
-    let nowIndex;
-    nowAll.forEach((data, index) => {
+    //해당 날짜의 자료에서
+
+    const nowOnRef = doc(dbService, "mission", props.dataDate);
+    setLike((prev) => !prev);
+
+    const getNowData = await getDoc(nowOnRef);
+    //이번달 자료 중 현재 자료의 인덱스 저장하고
+    let nowData_index = 0;
+    let new_missionData = [...getNowData.data().mission_data];
+
+    new_missionData.forEach((data, index) => {
       if (data.writtenId === mission.writtenId) {
-        nowOnMission = { ...data };
-        nowIndex = index;
+        nowData_index = index;
       }
     });
-    setLike((prev) => !prev);
+    let nowOnData = new_missionData[nowData_index];
+    let nowOnData_like = nowOnData.like;
+
+    //만약 이전이 좋아요였으면 해제
     if (like) {
-      //   console.log("삭제");
-      nowOnMission.like.filter((id) => id !== props.userUid);
+      new_missionData[nowData_index].like = nowOnData_like.filter(
+        (uid) => uid !== props.userUid
+      );
+
+      console.log(nowOnData);
+      console.log(new_missionData);
 
       //만약 이전이 무응답이었으면 추가
     } else {
-      nowOnMission.like.push(props.userUid);
+      nowOnData_like.push(props.userUid);
+      console.log(nowOnData);
+      console.log(new_missionData);
     }
-    nowAll[nowIndex] = nowOnMission;
-    // console.log(nowAll)
-    await updateDoc(nowOnRef, {
-      mission_data: nowAll,
-    });
+
+    await updateDoc(nowOnRef, { mission_data: new_missionData });
   };
   return (
     <li
@@ -120,7 +130,7 @@ const Item = (props) => {
         <div className={classes.likeReplyDiv}>
           <LikeBtn
             like={like}
-            changeLike={changeLikeHandler}
+            changeLike={!props.likeNonClick && changeLikeHandler}
             likeNonClick={props.likeNonClick}
           />
           {props.mission?.like?.length}

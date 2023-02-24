@@ -17,7 +17,7 @@ const Reply = (props) => {
 
   //현재 받은 미션자료 받아오고 댓글 담아두기
   const getMissionFromDb = async (mission) => {
-    const missionRef = doc(dbService, "mission", mission.date);
+    const missionRef = doc(dbService, "mission", props.dataDate);
     onSnapshot(missionRef, (doc) => {
       const allMission = doc.data().mission_data;
       allMission.forEach((data) => {
@@ -67,9 +67,10 @@ const Reply = (props) => {
 
   //댓글 삭제, 추가, 수정기능 함수
   const replyHandler = async (value, option) => {
-    const nowOnRef = doc(dbService, "mission", mission.date);
+    const nowOnRef = doc(dbService, "mission", props.dataDate);
     //오늘 미션 전체 데이터
-    let nowAllMission = await getDoc(nowOnRef).data().mission_data;
+    let getDatas = await getDoc(nowOnRef);
+    let nowAllMission = [...getDatas.data().mission_data];
     //오늘 미션 데이터 중 해당 글 데이터
     let nowOnMission = {};
     let nowOnIndex;
@@ -97,7 +98,6 @@ const Reply = (props) => {
     }
     nowOnMission.reply = [...new_data_reply];
     nowAllMission[nowOnIndex] = { ...nowOnMission };
-    console.log(nowAllMission);
     //업데이트 공통
     await updateDoc(nowOnRef, { mission_data: nowAllMission });
   };

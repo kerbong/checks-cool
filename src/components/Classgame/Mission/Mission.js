@@ -191,11 +191,13 @@ const Mission = (props) => {
             itemClickHandler={() => {}}
             onPopup={true}
             likeNonClick={false}
+            dataDate={TODAYDATE}
           />
           <Reply
             userState={userState}
             mission={showMission}
             userUid={props.userUid}
+            dataDate={TODAYDATE}
           />
         </Modal>
       )}

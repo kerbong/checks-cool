@@ -5,14 +5,10 @@ import { dbService, storageService } from "../../../fbase";
 import { ref, uploadString, getDownloadURL } from "firebase/storage";
 import { v4 } from "uuid";
 import {
-  arrayRemove,
-  arrayUnion,
   updateDoc,
-  collection,
   doc,
   getDoc,
   onSnapshot,
-  query,
   setDoc,
   orderBy,
 } from "firebase/firestore";
@@ -146,20 +142,33 @@ const Simsim = (props) => {
 
   //라이크를 변경하는 함수, 값을 찾아서 업데이트
   const changeLikeHandler = async () => {
-    const nowOnRef = doc(dbService, "simsim", nowOnSimsim.doc_id);
+    const nowOnRef = doc(dbService, "simsim", dayjs().format("YYYY-MM"));
     setLike((prev) => !prev);
+
+    const getNowData = await getDoc(nowOnRef);
+    //이번달 자료 중 현재 자료의 인덱스 저장하고
+    let nowData_index = 0;
+    let new_simsimData = [...getNowData.data().simsim_data];
+    new_simsimData.forEach((data, index) => {
+      if (data.writtenId + data.id === nowOnSimsim.writtenId + nowOnSimsim.id) {
+        nowData_index = index;
+      }
+    });
+    let nowOnData = new_simsimData[nowData_index];
+    let nowOnData_like = nowOnData.like;
 
     //만약 이전이 좋아요였으면 해제
     if (like) {
-      await updateDoc(nowOnRef, {
-        like: arrayRemove(props.userUid),
-      });
+      new_simsimData[nowData_index].like = nowOnData_like.filter(
+        (uid) => uid !== props.userUid
+      );
+
       //만약 이전이 무응답이었으면 추가
     } else {
-      await updateDoc(nowOnRef, {
-        like: arrayUnion(props.userUid),
-      });
+      nowOnData_like.push(props.userUid);
     }
+
+    await updateDoc(nowOnRef, { simsim_data: new_simsimData });
   };
 
   //프로필 없는거 알려주고 이동시키기
