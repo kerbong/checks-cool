@@ -20,25 +20,31 @@ const Auth = (props) => {
   const [password, setPassword] = useState("");
   const [newAccount, setNewAccount] = useState(false);
   const [agreeTerms, setAgreeTerms] = useState(false);
-  const [isKakaoLink, setIsKakaoLink] = useState(false);
+  const [isNaverKakao, setIsKakaoNaver] = useState("");
   const [showAgency, setShowAgency] = useState(false);
   const [isSamePw, setIsSamePw] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    const isKakao = navigator.userAgent.match("KAKAOTALK");
+    let isKakaoNaver = "";
+    if (navigator.userAgent.match("KAKAOTALK")) {
+      isKakaoNaver = "카카오톡";
+    } else if (navigator.userAgent.match("NAVER")) {
+      isKakaoNaver = "네이버";
+    }
     // console.log(navigator.userAgent);
-    setIsKakaoLink(Boolean(isKakao));
+    setIsKakaoNaver(isKakaoNaver);
   }, []);
 
   useEffect(() => {
-    // console.log(isKakaoLink);
-    if (isKakaoLink) {
+    // console.log(isNaverKakao);
+    if (isNaverKakao !== "") {
       let text;
       const mobileType = navigator.userAgent.toLowerCase();
       //안드로이드폰에서 카톡링크로 접속하면
       if (mobileType.indexOf("android") > -1) {
-        text = " ... 을 눌러 '다른 브라우저로 열기' ";
+        text =
+          " ...(메뉴바) 을 눌러 '다른 브라우저로 열기' 혹은 '기본 브라우저로 열기' ";
         //아이폰에서 카톡링크로 접속하면
       } else if (
         mobileType.indexOf("iphone") > -1 ||
@@ -49,12 +55,12 @@ const Auth = (props) => {
       Swal.fire({
         icon: "error",
         title: `연동 로그인 불가`,
-        text: `카카오톡 링크로 접속하면 구글 연동 로그인이 불가능합니다. 오른쪽 하단의 ${text}로 접속해주세요.`,
+        text: `${isNaverKakao} 링크로 접속하면 구글 연동 로그인이 불가능합니다. 오른쪽 하단의 ${text}로 접속해주세요.`,
         confirmButtonText: "확인",
         confirmButtonColor: "#85bd82",
       });
     }
-  }, [isKakaoLink]);
+  }, [isNaverKakao]);
 
   const onChange = (e) => {
     const {

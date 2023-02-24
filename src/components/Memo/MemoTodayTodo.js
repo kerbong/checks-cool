@@ -20,7 +20,6 @@ const MemoTodayTodo = (props) => {
           let b_emg = b.emg || false;
           return b_emg - a_emg;
         });
-        console.log(sorted_lists);
         return sorted_lists;
       };
 

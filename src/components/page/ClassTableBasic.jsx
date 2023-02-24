@@ -17,24 +17,26 @@ const STARTBASE = [
   "2022-01-13 14:00",
   "2022-01-13 14:50",
 ];
+const CLASSTIME = [
+  "아침",
+  "1교시",
+  "2교시",
+  "3교시",
+  "4교시",
+  "5교시",
+  "6교시",
+  "방과후",
+];
 
 const ClassTableBasic = (props) => {
   const [showExample, setShowExample] = useState(false);
   const [items, setItems] = useState(false);
   const [classBasic, setClassBasic] = useState([]);
   const [classStart, setClassStart] = useState([]);
+  const [classTime, setClassTime] = useState(CLASSTIME);
 
   const WEEKDAYS = ["월", "화", "수", "목", "금"];
-  const CLASSTIME = [
-    "아침",
-    "1교시",
-    "2교시",
-    "3교시",
-    "4교시",
-    "5교시",
-    "6교시",
-    "방과후",
-  ];
+
   const itemsNumArray = [...Array(40).keys()].map((i) => i);
 
   //시간표의 인풋창들 만들기, 저장된 기존 기초시간표 자료가 있으면 재랜더링해서 값 넣어주기.
@@ -73,6 +75,10 @@ const ClassTableBasic = (props) => {
       } else {
         setClassBasic([]);
         setClassStart([...STARTBASE]);
+      }
+
+      if (now_doc?.data()?.classTime) {
+        setClassTime(now_doc?.data()?.classTime);
       }
     };
 
@@ -134,7 +140,14 @@ const ClassTableBasic = (props) => {
       }
     });
 
-    // 만약 모든 요일의 자료가 비어있고 시각도 변함이 없으면 저장 안되도록
+    // 교시 이름 설정하기
+    let new_classTime = [];
+    CLASSTIME.forEach((cl, index) => {
+      let clt_name = document.querySelectorAll(
+        `input[id="classTime-${index}"]`
+      )[0].value;
+      new_classTime.push(clt_name);
+    });
 
     const now_doc = await getDoc(classBasicRef);
     if (now_doc.exists()) {
@@ -145,6 +158,7 @@ const ClassTableBasic = (props) => {
         목: [...목],
         금: [...금],
         classStart: [...classStart],
+        classTime: [...new_classTime],
       });
     } else {
       await setDoc(classBasicRef, {
@@ -154,6 +168,7 @@ const ClassTableBasic = (props) => {
         목: [...목],
         금: [...금],
         classStart: [...classStart],
+        classTime: [...new_classTime],
       });
     }
 
@@ -207,6 +222,8 @@ const ClassTableBasic = (props) => {
         setClassStart([...STARTBASE]);
         //교시별 과목 초기화
         setClassBasic([]);
+        //교시 이름 초기화
+        setClassTime(CLASSTIME);
       }
     });
   };
@@ -262,10 +279,18 @@ const ClassTableBasic = (props) => {
       <div className={classes["title-class-container"]}>
         {/* 아침~ 6교시, 방과후 표시 */}
         <div className={classes["title-class"]}>
-          {CLASSTIME.map((ct, index) => (
-            <div key={ct}>
+          {classTime.map((ct, index) => (
+            <div key={ct} className={classes["title-class-div"]}>
               {/* 1교시 */}
-              <div style={{ fontWeight: "bold" }}>{ct}</div>
+              <div style={{ fontWeight: "bold" }}>
+                <input
+                  className={classes["time-input"]}
+                  type="text"
+                  id={`classTime-${index}`}
+                  placeholder={""}
+                  defaultValue={ct}
+                />
+              </div>
               <div className={classes["timeRanges"]}>
                 {/* 시간표시 09:00~09:40 */}
                 <div className={classes["timeRange"]}>{`${dayjs(
@@ -293,7 +318,7 @@ const ClassTableBasic = (props) => {
 
       <TimeTable
         classStartHandler={classStartHandler}
-        classTime={CLASSTIME}
+        classTime={classTime}
         returnBaseHandler={returnBaseHandler}
       />
     </>

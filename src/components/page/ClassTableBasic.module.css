@@ -1,11 +1,11 @@
 .container {
   display: grid;
-  padding: 15px 8px;
+  padding: 10px 2px;
 
   grid-template-columns: repeat(5, 1fr);
   grid-auto-rows: repeat(8, 1fr);
   grid-gap: 10px;
-  width: 79%;
+  width: 85%;
 }
 
 .item {
@@ -25,21 +25,32 @@
   width: 100%;
 }
 
-.input {
+.input,
+.time-input {
   width: 70%;
   text-align: center;
+  padding: 5px;
+}
+
+.time-input {
+  width: 60%;
+  padding: 2px 5px;
 }
 
 .title-weekday {
-  margin-top: 80px;
+  margin-top: 85px;
   display: flex;
-  width: 79%;
+  width: 90%;
   justify-content: space-around;
-  padding: 10px;
 }
 
 .title-class-container {
   display: flex;
+}
+
+.title-class-div {
+  line-height: 1.2;
+  padding: 5px;
 }
 
 .title-class {

@@ -32,6 +32,17 @@ const getDateHandler = (date, titleOrQuery) => {
   }
 };
 
+const CLASSLISTS = [
+  "아침",
+  "1교시",
+  "2교시",
+  "3교시",
+  "4교시",
+  "5교시",
+  "6교시",
+  "방과후",
+];
+
 const MainPage = (props) => {
   const [attendEvents, setAttendEvents] = useState([]);
   const [schedule, setSchedule] = useState([]);
@@ -54,22 +65,12 @@ const MainPage = (props) => {
   const [classStart, setClassStart] = useState([]);
   // const [subjectYear, setSubjectYear] = useState(false);
   const [isSubject, setIsSubject] = useState(false);
+  const [classLists, setClassLists] = useState(CLASSLISTS);
 
   //업데이트 내용 보여주기 로컬스토리지에서 showNotice를 스트링으로 저장해서 확인 후에 이전에 봤으면 안보여주기
   const [showNotice, setShowNotice] = useState(
     localStorage.getItem("showNotice") === "2023new" ? false : true
   );
-
-  const classLists = [
-    "아침",
-    "1교시",
-    "2교시",
-    "3교시",
-    "4교시",
-    "5교시",
-    "6교시",
-    "방과후",
-  ];
 
   // 기초시간표 자료 받아올 때 classLists 이름이 있으면 세팅해서 불러오도록...? 기초시간표에 교시 쪽에 input 넣어주고 기본 값으로 교시 넣어주기. 수정 저장 가능.
 
@@ -237,15 +238,11 @@ const MainPage = (props) => {
     setClassTable([]);
     // 기초시간표 내용
     setClassBasic([]);
-    //오늘 시간표 기초 데이터 만들기
-    let new_todayClassTable = {
-      id: "",
-      classMemo: classLists.map((cl) => {
-        return { memo: "", classNum: cl, subject: "" };
-      }),
-    };
     // 시작 시간 모음
     setClassStart([]);
+
+    let new_classLists = [];
+    let new_todayClassTable;
 
     const now_doc = await getDoc(classTableRef);
     if (now_doc.exists()) {
@@ -259,6 +256,26 @@ const MainPage = (props) => {
       //교시별 시작시간 세팅하기
       if (now_doc?.data()?.classStart) {
         setClassStart([...now_doc?.data()?.classStart]);
+      }
+
+      //오늘 시간표 기초 데이터 만들기
+
+      if (now_doc?.data()?.classTime) {
+        let cltime = now_doc?.data()?.classTime;
+        new_todayClassTable = {
+          id: "",
+          classMemo: cltime.map((cl) => {
+            return { memo: "", classNum: cl, subject: "" };
+          }),
+        };
+        setClassLists(cltime);
+      } else {
+        new_todayClassTable = {
+          id: "",
+          classMemo: classLists.map((cl) => {
+            return { memo: "", classNum: cl, subject: "" };
+          }),
+        };
       }
 
       // 저장된 각 날짜의 시간표 데이터가 있으면
@@ -399,7 +416,6 @@ const MainPage = (props) => {
       let b_emg = b.emg || false;
       return b_emg - a_emg;
     });
-    console.log(sorted_lists);
     return sorted_lists;
   };
 
