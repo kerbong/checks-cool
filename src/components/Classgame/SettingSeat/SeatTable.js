@@ -86,11 +86,41 @@ const SeatTable = (props) => {
     let itemsNumArray = [...Array(+tableRow * +tableColumn)].map(
       (v, i) => i + 1
     );
+
+    let data_month;
+    let data_year;
+    let dataYear_students;
+    //기존 자료인 경우 학생 자료 받아와서.. 성별 넣어주기
+    if (props.saveDate) {
+      data_month = props.saveDate.slice(5, 7);
+      data_year = props.saveDate.slice(0, 4);
+      //학년도 세팅한 후에 (1월까지)
+      if (+data_month <= 1) {
+        data_year = String(+data_year - 1);
+      }
+      //받아온 전체 학생 자료에서 현재 학년도 학생 자료만 만들어 주기
+      dataYear_students = props?.wholeStudents?.filter(
+        (yearStd) => Object.keys(yearStd)[0] === data_year
+      )?.[0]?.[data_year];
+
+      if (props.clName) {
+        dataYear_students = dataYear_students?.filter(
+          (cl) => Object.keys(cl)[0] === props.clName
+        )?.[0]?.[props.clName];
+      }
+    }
+
     setItems(
       itemsNumArray.map((item) => (
         <div
           key={`table-${item}`}
-          className={`${classes["item"]} item`}
+          className={`${classes["item"]} item ${
+            classes[
+              dataYear_students?.filter(
+                (stu) => stu.name === props.seatStudents[+item - 1]
+              )?.[0]?.woman && "existWoman"
+            ]
+          }`}
           id={
             props.title?.length > 0
               ? `table-${props.title}-${item}`
@@ -632,15 +662,27 @@ const SeatTable = (props) => {
     }).then((result) => {
       /* Read more about isConfirmed, isDenied below */
       if (result.isConfirmed) {
-        // Swal.fire({
-        //   icon: "success",
-        //   title: "삭제완료",
-        //   text: "자료가 삭제되었습니다.",
-        //   confirmButtonText: "확인",
-        //   confirmButtonColor: "#85bd82",
-        //   timer: 5000,
-        // });
         deleteDocHandler();
+      }
+    });
+  };
+
+  //학생들 성별에 따라 배경 색 바꿔주기 함수
+  const coloringGender = () => {
+    let existItems = document.querySelectorAll(".item");
+    //학생 이름이 들어가 있는 자리들
+    existItems.forEach((item) => {
+      if (!isNaN(+item.innerText)) {
+        return false;
+      } else {
+        //여학생이면
+        if (
+          props.students?.filter((stu) => stu.name === item.innerText)[0].woman
+        ) {
+          item.style.backgroundColor = "#dcc32985";
+        } else {
+          item.style.backgroundColor = "#ffffff";
+        }
       }
     });
   };
@@ -671,6 +713,7 @@ const SeatTable = (props) => {
       }
 
       // 학생이 다 뽑히고 나면 pickSeatAll 설정 초기화
+      // 남, 여 학생 성별에 따라 색 다르게 보여주기
     } else {
       setPickSeatAll("");
     }
@@ -815,7 +858,20 @@ const SeatTable = (props) => {
           </>
         ) : (
           <div className={classes["remain-student-div"]}>
-            {props.title ? "" : "자리뽑기가 끝났어요!"}
+            {props.title ? (
+              ""
+            ) : (
+              <>
+                <p>자리뽑기가 끝났어요!</p>
+                <p>
+                  <Button
+                    name={"여학생 자리만 색칠하기"}
+                    onclick={coloringGender}
+                    className={"settingSeat-btn"}
+                  />
+                </p>
+              </>
+            )}
           </div>
         )}
       </div>

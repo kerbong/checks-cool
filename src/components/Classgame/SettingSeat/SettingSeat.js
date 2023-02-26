@@ -10,6 +10,7 @@ import Swal from "sweetalert2";
 const SettingSeat = (props) => {
   const [init, setInit] = useState(true);
   const [showTable, setShowTable] = useState(false);
+  const [explainOn, setExplainOn] = useState(false);
   const [addNew, setAddNew] = useState();
   const [rowColumn, setRowColumn] = useState("");
   const [nowClassName, setNowClassName] = useState("");
@@ -97,7 +98,7 @@ const SettingSeat = (props) => {
           >
             <i className="fa-solid fa-plus"></i>
           </button>
-          <SeatLists userUid={props.userUid} />
+          <SeatLists userUid={props.userUid} wholeStudents={props.students} />
         </>
       )}
 
@@ -131,28 +132,44 @@ const SettingSeat = (props) => {
             }}
             nowClassName={nowClassName}
           />
-          1. 학생만 뽑기 => 자리는 선택 2. 학생번호 클릭 => 자리는 선택 3.
-          학생+자리 뽑기 한명씩! 4. new) 학생+자리 뽑기 한번에! (3초 간격 자동
-          실행)
-          <p className={classes[`gameMenu`]}>
-            * 1번 방법 (학생만 뽑고 자리는 직접선택) 👉 어떻게 - 학생만 👉
-            여학생/남학생/아무나 👉 자리선택
-          </p>
-          <p className={classes[`gameMenu`]}>
-            * 2번 방법 (학생과 자리를 직접선택) 👉 학생번호 클릭 👉 자리선택
-          </p>
-          <p className={classes[`gameMenu`]}>
-            * 3번 방법 (학생+자리를 한명씩 뽑기) 👉 어떻게 - 학생+자리 👉
-            한명씩(성별클릭)
-          </p>
-          <p className={classes[`gameMenu`]}>
-            * 4번 방법 (학생+자리를 한번에 뽑기) 👉 어떻게 - 학생+자리 👉
-            한번에(버튼클릭) 3초 마다 새로운 학생이 1번자리부터 쭉- 들어갑니다.
-          </p>
-          <p className={classes[`gameMenu`]}>
-            * 두 자리를 차례로 선택하면 자리를 바꿀 수 있습니다.(빈자리로
-            옮기기도 가능)
-          </p>
+
+          <h2 onClick={() => setExplainOn((prev) => !prev)}>
+            {" "}
+            😮 사용 방법{" "}
+            <span>
+              {explainOn ? (
+                <i className="fa-solid fa-chevron-up"></i>
+              ) : (
+                <i className="fa-solid fa-chevron-down"></i>
+              )}{" "}
+            </span>
+          </h2>
+          <div
+            className={explainOn ? classes.explainDiv : classes.explainDivHide}
+          >
+            <p className={classes[`gameMenu`]}>
+              * 1번 방법 (학생만 뽑고 자리는 직접선택) 👉 어떻게 - [학생만]
+              클릭! 👉 [여학생/남학생/아무나] 에서 하나 클릭!(학생뽑기) 👉
+              자리선택
+            </p>
+            <p className={classes[`gameMenu`]}>
+              * 2번 방법 (학생과 자리를 직접선택) 👉 (남은학생 아래에
+              있는)[학생번호] 클릭! 👉 자리선택
+            </p>
+            <p className={classes[`gameMenu`]}>
+              * 3번 방법 (학생+자리를 한명씩 뽑기) 👉 어떻게 - [학생+자리] 클릭!
+              👉 한명씩 - [여학생/남학생/아무나] 에서 하나 클릭!
+            </p>
+            <p className={classes[`gameMenu`]}>
+              * 4번 방법 (학생+자리를 한번에 뽑기) 👉 어떻게 - [학생+자리] 클릭!
+              👉 한번에 - [남+여/아무나] 클릭! 👉 3초 마다 새로운 학생이
+              1번자리부터 쭉- 자동으로 들어갑니다.
+            </p>
+            <p className={classes[`gameMenu`]}>
+              * 두 자리를 차례로 선택하면 자리를 바꿀 수 있습니다.(빈자리로
+              옮기기도 가능)
+            </p>
+          </div>
         </>
       )}
     </>

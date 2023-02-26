@@ -98,6 +98,7 @@ const SeatLists = (props) => {
               </span>
 
               <SeatTable
+                wholeStudents={props.wholeStudents}
                 rowColumn={item.rowColumn}
                 students={[]}
                 seatStudents={item.students}

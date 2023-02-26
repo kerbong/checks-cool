@@ -200,6 +200,10 @@
   width: 150px;
 }
 
+.existWoman {
+  background-color: rgba(235, 238, 63, 0.74);
+}
+
 .title-btns {
   height: 70px;
   display: flex;
@@ -208,4 +212,20 @@
   justify-content: flex-end;
   line-height: 20px;
   font-size: 0.9rem;
+}
+
+.explainDiv {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  transition: opacity 0.2s;
+  position: relative;
+  opacity: 1;
+}
+
+.explainDivHide {
+  transition: all 0.2s linear 0s;
+  visibility: hidden;
+  position: fixed;
+  opacity: 0;
 }
