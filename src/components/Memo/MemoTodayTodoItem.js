@@ -5,6 +5,7 @@ import Swal from "sweetalert2";
 const MemoTodayTodoItem = ({ todoItem, todoList, setTodoList }) => {
   const [edited, setEdited] = useState(false);
   const [newText, setNewTest] = useState(todoItem.text);
+  const [emergency, setEmergency] = useState(todoItem.emg || false);
 
   const editInputRef = useRef(null);
 
@@ -46,7 +47,8 @@ const MemoTodayTodoItem = ({ todoItem, todoList, setTodoList }) => {
   const onClickSubmitButton = (e) => {
     const nextTodoList = todoList.map((item) => ({
       ...item,
-      text: item.id === todoItem.id ? newText : item.text, // 새로운 아이템 내용을 넣어줌
+      text: item.id === todoItem.id ? newText : item.text,
+      emg: item.id === todoItem.id ? emergency : item.emg || false, // 새로운 아이템 내용을 넣어줌
     }));
     setTodoList(nextTodoList);
     setEdited(false);
@@ -110,11 +112,24 @@ const MemoTodayTodoItem = ({ todoItem, todoList, setTodoList }) => {
         htmlFor={`todoapp_checkbox${todoItem.id}`}
         className={todoItem.checked ? "label_checked" : ""}
       ></label>
-      {todoItem?.emg && (
-        <span className={"todoapp__inputbox-emergency"}>
-          <i className="fa-solid fa-circle-exclamation"></i>
-        </span>
-      )}
+
+      <span
+        className={
+          emergency
+            ? "todoapp__inputbox-emergency-clicked"
+            : edited
+            ? "todoapp__inputbox-emergency"
+            : "todoapp__inputbox-emergency-none"
+        }
+        // 수정중일 때만 클릭가능
+        onClick={() => {
+          if (edited) {
+            setEmergency((prev) => !prev);
+          }
+        }}
+      >
+        <i className="fa-solid fa-circle-exclamation"></i>
+      </span>
 
       {
         // 아이템 내용

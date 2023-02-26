@@ -75,7 +75,7 @@ a {
 }
 .todoapp__inputbox-add-btn {
   border: none;
-  border-radius: 0;
+  border-radius: 15px;
   background-color: #d695db91;
   height: 50px;
   width: 50px;
@@ -99,10 +99,20 @@ a {
   background-color: rgba(255, 0, 98, 0.697);
 }
 
+.todoapp__inputbox-emergency-clicked,
+.todoapp__inputbox-emergency-none,
 .todoapp__inputbox-emergency {
   margin: 10px;
   font-size: 1.4rem;
   color: rgba(255, 0, 98, 0.697);
+}
+
+.todoapp__inputbox-emergency {
+  color: #0000001a;
+}
+
+.todoapp__inputbox-emergency-none {
+  color: #00000000;
 }
 
 /* ToDo Item List */
@@ -194,15 +204,16 @@ a {
   height: 36px;
   width: 36px;
   background-color: inherit;
+  color: #270d0378;
 }
 .todoapp__item-edit-btn:hover,
 .todoapp__item-delete-btn:hover {
   cursor: pointer;
-  background-color: #d0ebff;
+  background-color: #c5c5c536;
+  border-radius: 15px;
 }
 .todoapp__item-edit-btn {
   margin-right: 3px;
-  color: #270d03;
 }
 
 @media screen and (min-width: 620px) {

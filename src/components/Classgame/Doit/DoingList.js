@@ -20,6 +20,8 @@ const DoingList = (props) => {
               ? "대기중"
               : list.result === "1"
               ? "확인중"
+              : list.result === "2"
+              ? "개발중"
               : "해결"}
           </span>
         </li>
