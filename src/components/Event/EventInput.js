@@ -338,7 +338,11 @@ const EventInput = (props) => {
                 student ? `option-note${student.split(" ")[0]}` : "option-note"
               }
               className={classes["note-area"]}
-              onInput={(e) => handleOnInput(e, 30)}
+              onInput={(e) => {
+                props.about.slice(0, 4) === "todo"
+                  ? handleOnInput(e, 60)
+                  : handleOnInput(e, 40);
+              }}
             />
           </form>
         </div>

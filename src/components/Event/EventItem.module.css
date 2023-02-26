@@ -1,14 +1,27 @@
-.event-area {
+.event-area,
+.event-area-edit {
   margin-bottom: 5px;
   border-radius: 15px;
   display: flex;
   align-items: center;
+  flex-direction: column;
   padding: 5px;
 }
-.attendInfo-area {
-  width: 70%;
-  display: flex;
+
+.event-area {
   flex-direction: column;
+}
+.titleDate-area {
+  width: 70%;
+  flex-direction: column;
+}
+
+.attendInfo-area {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
 }
 .option-area {
   margin-left: 20px;
@@ -18,6 +31,7 @@
   margin-left: 5%;
   display: flex;
   flex-wrap: nowrap;
+  width: 100%;
 }
 
 .button-area {
@@ -27,12 +41,26 @@
 }
 
 .note-area {
-  width: 60%;
+  width: 65%;
   text-align: center;
+  height: 33px;
+  resize: none;
+  padding: 10px 5px;
+  overflow: hidden;
+  font-size: 1.1em;
+  border-radius: 5px;
+}
+
+.optionNote-area {
+  width: 100%;
+  justify-content: center;
+  display: flex;
+  margin: 10px;
 }
 
 .date-area {
-  margin: 0 0 12px 20px;
+  margin: -10px 0 10px 10px;
+  line-height: 0;
 }
 
 .datePick-area {
@@ -42,4 +70,13 @@
 
 .event-clicked {
   height: auto;
+}
+
+.eventNameInput-area {
+  text-align: center;
+  height: 30px;
+  font-size: 1.2em;
+  margin: 10px;
+  width: 70%;
+  border-radius: 5px;
 }

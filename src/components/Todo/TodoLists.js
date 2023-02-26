@@ -21,18 +21,17 @@ const TodoLists = (props) => {
     //행사명
     let eventName;
     //새로 추가하거나 바로 입력한 자료인 경우
-    if (item["doc_id"] === undefined) {
+    if (item["eventName"] === undefined) {
       eventName = document.getElementById("todo-eventName");
       let option = document.getElementById(`option-select`);
       // console.log(eventName);
       // console.log(option);
       //새로운 자료(input)인 경우 있음
       if (option !== null || eventName !== null) {
-        eventName = eventName.value;
         optionValue = option.value;
       } else {
+        eventName = eventName.value;
         // console.log(item);
-        eventName = item.eventName;
         optionValue = document.getElementById(
           `option-select${eventName.replace(/ /g, "")}`
         ).value;
@@ -41,7 +40,7 @@ const TodoLists = (props) => {
     } else {
       eventName = item.eventName;
       optionValue = document.getElementById(
-        `option-select${eventName.replace(/ /g, "")}`
+        `option-select${item.eventName.replace(/ /g, "")}`
       ).value;
     }
 
@@ -85,16 +84,16 @@ const TodoLists = (props) => {
     } else {
       eventName = item.eventName;
       optionValue = document.getElementById(
-        `option-select${eventName.replace(/ /g, "")}`
+        `option-select${item.eventName.replace(/ /g, "")}`
       ).value;
       noteValue = document.getElementById(
-        `option-note${eventName.replace(/ /g, "")}`
+        `option-note${item.eventName.replace(/ /g, "")}`
       ).value;
     }
 
     //todo 이벤트 자료형식
     const fixed_data = {
-      id: item.id,
+      id: item.id.slice(0, 10) + eventName,
       eventName: eventName,
       option: optionValue,
       note: noteValue,
@@ -129,12 +128,15 @@ const TodoLists = (props) => {
   };
 
   //이미 있던 이벤트 수정할 때 화면 수정하는 함수
-  const updateEventOnScreen = (data) => {
-    // console.log(data.id);
+  const updateEventOnScreen = (data, event) => {
     let option = document.getElementById(
-      `option-area${data.eventName.replace(/ /g, "")}`
+      `option-area${event.eventName.replace(/ /g, "")}`
     );
     option.innerText = `${data.option.slice(1)} | ${data.note}`;
+
+    // //제목도 바꿔주기
+    let eventName = document.getElementById(`eventName${event.id}`);
+    eventName.innerText = `😀 ${data.eventName}`;
   };
 
   //없던 이벤트 새로 추가할 떄 화면 수정하는 함수
@@ -256,7 +258,7 @@ const TodoLists = (props) => {
               if (getEnoughData) {
                 let data = saveFixedData(item);
                 if (event.id === data.id) {
-                  updateEventOnScreen(data);
+                  updateEventOnScreen(data, event);
                 }
               }
             }}

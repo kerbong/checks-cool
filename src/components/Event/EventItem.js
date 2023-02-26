@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback, useRef } from "react";
 import Swal from "sweetalert2";
 import classes from "./EventItem.module.css";
 import Button from "../Layout/Button";
@@ -15,6 +15,8 @@ const EventItem = (props) => {
   const [eventId, setEventId] = useState(keyId);
   const [selectValue, setSelectValue] = useState(option);
 
+  const noteRef = useRef(null);
+
   const getDateHandler = (date) => {
     let year = date.getFullYear();
     let month = ("0" + (date.getMonth() + 1)).slice(-2);
@@ -23,6 +25,16 @@ const EventItem = (props) => {
     let yyyymmdd_id = year + "-" + month + "-" + day + keyId.slice(10);
     setEventId(yyyymmdd_id);
   };
+
+  //사이즈조절
+  const handleResizeHeight = useCallback(() => {
+    if (noteRef === null || noteRef.current === null) {
+      return;
+    }
+
+    noteRef.current.style.height = "10px";
+    noteRef.current.style.height = noteRef.current.scrollHeight - 13 + "px";
+  }, []);
 
   const handleOnInput = (e, maxlength) => {
     if (e.target.value.length > maxlength) {
@@ -45,7 +57,8 @@ const EventItem = (props) => {
 
   const saveHandler = () => {
     //날짜가 수정된 경우
-    if (eventId !== keyId) {
+
+    if (eventId.slice(0, 10) !== keyId.slice(0, 10)) {
       const new_item = { ...item, id: eventId };
       // console.log(new_item);
       // console.log(item);
@@ -71,38 +84,120 @@ const EventItem = (props) => {
           backgroundColor: props.fixIsShown === shownId && "bisque",
         }}
       >
+        {/* row 이름 + 버튼모음*/}
         <div
           id={`attendInfo-area${shownId}`}
           className={classes["attendInfo-area"]}
         >
-          <h2 id={"eventName" + shownId}>😀 {text}</h2>
-          <div
-            className={classes["date-area"]}
-            style={{
-              display: props.fixIsShown !== shownId && "none",
-            }}
-          >
-            <div className={`${classes["datePick-area"]}`}>
-              <i className="fa-solid fa-circle-arrow-right"></i>
-              <AttendCalendar
-                getDateValue={getDateHandler}
-                setStart={new Date(changeDateFormat(keyId))}
-              />
-            </div>
-            {props.about.slice(0, 4) === "todo"
-              ? "행사복사(날짜선택-저장)"
-              : "출결복사(날짜선택-저장) "}
-          </div>
+          {/* 타이틀(이름) + 날짜 달력나오는거 column*/}
+          <div className={`${classes["titleDate-area"]}`}>
+            <h2 id={"eventName" + shownId}>{`😀 ${text}`}</h2>
 
+            <div
+              className={classes["date-area"]}
+              style={{
+                display: props.fixIsShown !== shownId && "none",
+              }}
+            >
+              <div className={`${classes["datePick-area"]}`}>
+                <i className="fa-solid fa-circle-arrow-right"></i>
+                <AttendCalendar
+                  getDateValue={getDateHandler}
+                  setStart={new Date(changeDateFormat(keyId))}
+                />
+              </div>
+              {props.about.slice(0, 4) !== "todo"
+                ? "출결복사(날짜선택-저장)"
+                : "일정복사(날짜선택-저장)"}
+            </div>
+            {/* 옵션 + 노트 부분 */}
+            {props.about.slice(0, 4) !== "todo" && (
+              <span
+                id={`option-area${text.replace(/ /g, "")}`}
+                className={classes["option-area"]}
+                style={{
+                  display: props.fixIsShown === shownId && "none",
+                }}
+              >
+                {option.slice(1)} | {note && note}
+              </span>
+            )}
+          </div>
+          {/* 버튼모음 */}
+          <div className={classes["button-area"]}>
+            {/* 수정 / 저장버튼 */}
+            <Button
+              className="small-student"
+              name={
+                props.fixIsShown !== shownId ? (
+                  <i className="fa-solid fa-pencil"></i>
+                ) : (
+                  <i className="fa-regular fa-floppy-disk"></i>
+                )
+              }
+              id={
+                props.fixIsShown !== shownId
+                  ? `fix-btn${shownId}`
+                  : `save-btn${shownId}`
+              }
+              onclick={
+                props.fixIsShown !== shownId
+                  ? () => {
+                      props.setFixIsShown(shownId);
+                    }
+                  : saveHandler
+              }
+            />
+            {/* 삭제 / 취소버튼 */}
+
+            <Button
+              className="small-student"
+              name={
+                props.fixIsShown !== shownId ? (
+                  <i className="fa-regular fa-trash-can"></i>
+                ) : (
+                  <i className="fa-solid fa-xmark"></i>
+                )
+              }
+              id={
+                props.fixIsShown !== shownId
+                  ? `delete-btn${shownId}`
+                  : `cancle-btn${shownId}`
+              }
+              onclick={
+                props.fixIsShown !== shownId
+                  ? function () {
+                      props.removeCheckSwal(item);
+                    }
+                  : function () {
+                      props.setFixIsShown("0");
+                      setSelectValue("");
+                    }
+              }
+            />
+          </div>
+        </div>
+
+        {props.about.slice(0, 4) === "todo" && (
           <span
             id={`option-area${text.replace(/ /g, "")}`}
             className={classes["option-area"]}
             style={{
               display: props.fixIsShown === shownId && "none",
+              marginLeft: "0",
             }}
           >
             {option.slice(1)} | {note && note}
           </span>
+        )}
+
+        {/* 수정중 일때만 보여주기 */}
+        <div
+          className={classes["optionNote-area"]}
+          style={{
+            display: props.fixIsShown !== shownId && "none",
+          }}
+        >
           <form
             id={`optionChange-area${shownId}`}
             className={classes["optionChange-area"]}
@@ -121,6 +216,9 @@ const EventItem = (props) => {
               key={`option-select${keyId}`}
               defaultValue={selectValue}
               onChange={selectChangeHandler}
+              style={{
+                width: "30%",
+              }}
             >
               <option value="" onChange={selectChangeHandler} disabled>
                 -- 분류 --
@@ -135,70 +233,20 @@ const EventItem = (props) => {
                 </option>
               ))}
             </select>
-            <input
+            <textarea
+              ref={noteRef}
               key={shownId}
-              type="text"
-              placeholder="메모 / 비고 입력란"
+              onKeyDown={() => handleResizeHeight(this)}
+              onKeyUp={() => handleResizeHeight(this)}
+              onClick={() => handleResizeHeight(this)}
+              defaultValue={note || ""}
               id={`option-note${text.replace(/ /g, "")}`}
-              defaultValue={note}
               className={classes["note-area"]}
-              onInput={(e) => handleOnInput(e, 30)}
+              onInput={(e) => {
+                handleOnInput(e, 40);
+              }}
             />
           </form>
-        </div>
-        <div className={classes["button-area"]}>
-          {/* 수정 / 저장버튼 */}
-          <Button
-            className="small-student"
-            name={
-              props.fixIsShown !== shownId ? (
-                <i className="fa-solid fa-pencil"></i>
-              ) : (
-                <i className="fa-regular fa-floppy-disk"></i>
-              )
-            }
-            id={
-              props.fixIsShown !== shownId
-                ? `fix-btn${shownId}`
-                : `save-btn${shownId}`
-            }
-            style={{ width: "30%", fontSize: "1.1em" }}
-            onclick={
-              props.fixIsShown !== shownId
-                ? () => {
-                    props.setFixIsShown(shownId);
-                  }
-                : saveHandler
-            }
-          />
-          {/* 삭제 / 취소버튼 */}
-
-          <Button
-            className="small-student"
-            name={
-              props.fixIsShown !== shownId ? (
-                <i className="fa-regular fa-trash-can"></i>
-              ) : (
-                <i className="fa-solid fa-xmark"></i>
-              )
-            }
-            id={
-              props.fixIsShown !== shownId
-                ? `delete-btn${shownId}`
-                : `cancle-btn${shownId}`
-            }
-            style={{ width: "30%", fontSize: "1.1em" }}
-            onclick={
-              props.fixIsShown !== shownId
-                ? function () {
-                    props.removeCheckSwal(item);
-                  }
-                : function () {
-                    props.setFixIsShown("0");
-                    setSelectValue("");
-                  }
-            }
-          />
         </div>
       </li>
     </>

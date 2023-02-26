@@ -6,7 +6,7 @@ const Loading = () => {
   return (
     <div id="background" className={classes["background"]}>
       <div className={classes["text"]}>잠시만 기다려주세요.</div>
-      <img src={Spinner} alt="로딩중" width="5%" />
+      <img src={Spinner} alt="로딩중" width="10%" />
     </div>
   );
 };
