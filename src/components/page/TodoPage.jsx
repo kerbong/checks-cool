@@ -430,28 +430,26 @@ const TodoPage = (props) => {
         </button>
 
         {/* 설정, 공용or개인용 버튼 부분 */}
-        <span>
-          <span className="todo" onClick={() => setShowPublicSetting(true)}>
-            <i className="fa-solid fa-gear"></i> 설정
-          </span>
+        <button id="switch-btn" onClick={() => setShowPublicSetting(true)}>
+          <i className="fa-solid fa-gear"></i> 설정
+        </button>
 
-          <button
-            id="switch-btn"
-            onClick={() => {
-              setShowPublicEvent((prev) => !prev);
-            }}
-          >
-            {showPublicEvent ? (
-              <>
-                <i className="fa-solid fa-chalkboard-user"></i> 개인용
-              </>
-            ) : (
-              <>
-                <i className="fa-solid fa-school-flag"></i> 공용
-              </>
-            )}
-          </button>
-        </span>
+        <button
+          id="switch-btn"
+          onClick={() => {
+            setShowPublicEvent((prev) => !prev);
+          }}
+        >
+          {showPublicEvent ? (
+            <>
+              <i className="fa-solid fa-chalkboard-user"></i> 개인용
+            </>
+          ) : (
+            <>
+              <i className="fa-solid fa-school-flag"></i> 공용
+            </>
+          )}
+        </button>
       </div>
       {/* 달력날짜 누르면 나오는 모달 */}
       {dayEventIsShown && (

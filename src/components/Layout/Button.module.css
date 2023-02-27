@@ -19,6 +19,9 @@
   padding: 10px;
   background-color: #ffbec7;
   height: 45px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .header-logInOut {

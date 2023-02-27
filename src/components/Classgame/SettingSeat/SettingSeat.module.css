@@ -208,7 +208,7 @@
   height: 70px;
   display: flex;
   align-items: center;
-  width: 190px;
+  width: auto;
   justify-content: flex-end;
   line-height: 20px;
   font-size: 0.9rem;

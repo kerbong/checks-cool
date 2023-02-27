@@ -10,9 +10,10 @@
 
 .event-area {
   flex-direction: column;
+  align-items: flex-start;
 }
 .titleDate-area {
-  width: 70%;
+  width: 80%;
   flex-direction: column;
 }
 
@@ -21,7 +22,7 @@
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
 }
 .option-area {
   margin-left: 20px;
@@ -36,7 +37,7 @@
 
 .button-area {
   display: flex;
-  width: 40%;
+  width: 100px;
   justify-content: center;
 }
 
@@ -61,6 +62,15 @@
 .date-area {
   margin: -10px 0 10px 10px;
   line-height: 0;
+}
+
+@media screen and (min-width: 800px) {
+  .date-area {
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+  }
 }
 
 .datePick-area {

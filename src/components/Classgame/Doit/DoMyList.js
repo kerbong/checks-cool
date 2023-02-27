@@ -22,11 +22,13 @@ const DoMyList = (props) => {
                 ? "대기중"
                 : list.result === "1"
                 ? "확인중"
+                : list.result === "2"
+                ? "개발중"
                 : "해결"}
             </span>
           </li>
         ))}
-        {props.lists?.length === 0 && "* 건의/불편사항 자료가 없습니다."}
+        {props.lists?.length === 0 && "* 자료가 없습니다."}
       </div>
     </div>
   );

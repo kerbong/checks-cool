@@ -109,7 +109,7 @@ const MemoPage = (props) => {
             height: "70px",
             display: "flex",
             alignItems: "center",
-            width: "190px",
+            width: "auto",
             justifyContent: "flex-end",
             lineHeight: "20px",
             fontSize: "0.9rem",

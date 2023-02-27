@@ -184,7 +184,7 @@ const EventItem = (props) => {
             className={classes["option-area"]}
             style={{
               display: props.fixIsShown === shownId && "none",
-              marginLeft: "0",
+              marginLeft: "20px",
             }}
           >
             {option.slice(1)} | {note && note}

@@ -74,13 +74,17 @@
 }
 
 #switch-btn {
+  display: flex;
+  flex-direction: column;
+  padding: 5px;
+  color: #000000bd;
+  align-items: center;
   width: auto;
-  margin: 20px 5px;
+  margin: 13px 5px;
   font-size: 1em;
   border-radius: 10px;
   border-width: 0;
   letter-spacing: 1px;
-  padding: 1vh;
   background-color: inherit;
 }
 
@@ -97,7 +101,7 @@
 
 @media screen and (min-width: 800px) {
   .custom-input {
-    font-size: 2rem;
+    font-size: 1.4rem;
   }
 }
 

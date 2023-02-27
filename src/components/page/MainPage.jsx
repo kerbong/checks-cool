@@ -657,7 +657,7 @@ const MainPage = (props) => {
             sortEmg(toDoLists).map((event) => (
               <li key={event.id} className={classes["main-li"]}>
                 {event?.emg && (
-                  <span className={"todoapp__inputbox-emergency"}>
+                  <span className={"todoapp__mainpage-emergency"}>
                     <i className="fa-solid fa-circle-exclamation"></i>
                   </span>
                 )}
