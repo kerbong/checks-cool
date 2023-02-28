@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import Button from "../Layout/Button";
 import { dbService } from "../../fbase";
 
@@ -9,13 +9,13 @@ import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import ExampleModal from "./ExampleModal";
 import byExcel from "../../assets/student/teacher-excel.gif";
-import notePenImg from "../../assets/notice/new_start_note_pen.jpg";
+import mainImg from "../../assets/notice/메인화면개선.jpg";
 import dayjs from "dayjs";
 import AttendCalendar from "components/Attendance/AttendCalendar";
 
-const update_title = `반가워요 선생님!🎆`;
+const update_title = `메인화면 업데이트`;
 
-const update_text = `안녕하세요! 첵스-쿨 운영자 말랑한 거봉입니다!🍇 안정적인 무료 운영을 위한 <b>데이터베이스 개선, 전담버전 추가</b> 등 업데이트가 마무리 되었습니다!!🎉<br/> 학교에서 소수인 전담선생님들을 생각하며 한 달 동안 정성들여서 만들었습니다ㅠ ㅎㅎ 주변 선생님들께 추천부탁드려요! (오류가 있을 경우 알려주세요!)<br/> <b>불편을 참고 재가입, 이용해주시는 선생님, 새롭게 가입해주신 선생님께 감사드립니다!</b> <br/> 2023년에도 많은 선생님들께 도움이 되었으면 합니다. 새해 복 많이 받으세요!😄<br/>`;
+const update_text = `안녕하세요! 새학년도를 맞이하여 <br/><b>메인화면이 업데이트</b> 되었습니다!!🎆 <br/><b>PC에서</b> 접속하시면 <b><br/>한 눈에 모든 내용을</b> 보실 수 있어요~😎 <br/> + 학기초 문제가 생길 수 있습니다!ㅠ 개선/불편사항은 '잼잼' - '이거해요'에 올려주세요!!🫡  감사합니다!🤩`;
 // "* 아, 이거 있으면 좋겠다! 하는 기능이 있으신가요? 내년에 사용해보고 싶은 기능을 추천해주세요! 가장 많은 추천을 받은 아이디어를 선정하여 추가할 계획입니다! '잼잼'-'이거해요' 에 적어주세요~ ";
 //오늘 날짜 yyyy-mm-dd로 만들기
 const getDateHandler = (date, titleOrQuery) => {
@@ -66,11 +66,56 @@ const MainPage = (props) => {
   // const [subjectYear, setSubjectYear] = useState(false);
   const [isSubject, setIsSubject] = useState(false);
   const [classLists, setClassLists] = useState(CLASSLISTS);
+  const [isLgWidth, setIsLgWidth] = useState(false);
+  const [gridFr3or4, setGridFr3or4] = useState("");
+  const [scaleValue, setScaleValue] = useState(1);
 
   //업데이트 내용 보여주기 로컬스토리지에서 showNotice를 스트링으로 저장해서 확인 후에 이전에 봤으면 안보여주기
   const [showNotice, setShowNotice] = useState(
-    localStorage.getItem("showNotice") === "2023new" ? false : true
+    localStorage.getItem("showNotice") === "mainUpdate0228" ? false : true
   );
+
+  //화면 사이즈가 변경되면.. 시간표의 기본 세팅을 열림으로 바꿔주기.
+  const resizeHandler = useCallback(() => {
+    window.addEventListener("resize", () => {
+      if (window.innerWidth > 1400) {
+        setIsLgWidth(true);
+        setHideClassTable(false);
+        setGridFr3or4("3fr");
+      } else if (window.innerWidth > 1000) {
+        setIsLgWidth(true);
+        setHideClassTable(false);
+        setGridFr3or4("4fr");
+      } else {
+        setGridFr3or4("");
+        setIsLgWidth(false);
+      }
+    });
+  }, []);
+
+  // 다른 메뉴에서 처음 진입할 때도.. 시간표 보여주기!
+  useEffect(() => {
+    if (window.innerWidth > 1400) {
+      setIsLgWidth(true);
+      setHideClassTable(false);
+      setGridFr3or4("3fr");
+    } else if (window.innerWidth > 1000) {
+      setIsLgWidth(true);
+      setHideClassTable(false);
+      setGridFr3or4("4fr");
+    } else {
+      setGridFr3or4("");
+      setIsLgWidth(false);
+    }
+  }, []);
+
+  // 윈도우 창의 크기에 따라 시간표 보여주기 기능 true로 바꾸기
+  useEffect(() => {
+    resizeHandler();
+    return () => {
+      window.removeEventListener("resize", resizeHandler);
+    };
+  }, []);
 
   // 기초시간표 자료 받아올 때 classLists 이름이 있으면 세팅해서 불러오도록...? 기초시간표에 교시 쪽에 input 넣어주고 기본 값으로 교시 넣어주기. 수정 저장 가능.
 
@@ -241,7 +286,7 @@ const MainPage = (props) => {
     // 시작 시간 모음
     setClassStart([]);
 
-    let new_classLists = [];
+    // let new_classLists = [];
     let new_todayClassTable;
 
     const now_doc = await getDoc(classTableRef);
@@ -419,6 +464,38 @@ const MainPage = (props) => {
     return sorted_lists;
   };
 
+  //시간표 css 바꿔주는 함수
+  const tableCssHandler = () => {
+    if (gridFr3or4 === "4fr") {
+      setGridFr3or4("3fr");
+    } else {
+      setGridFr3or4("4fr");
+    }
+  };
+
+  //글자크기 핸들러 함수
+  const fontSizeHandler = (isPlus) => {
+    let new_scaleValue = scaleValue;
+    if (isPlus) {
+      new_scaleValue *= 1.2;
+      if (new_scaleValue > 1) {
+        new_scaleValue = 1;
+      }
+    } else {
+      new_scaleValue /= 1.2;
+      if (new_scaleValue < 0.55) {
+        new_scaleValue = 0.555;
+      }
+    }
+    setScaleValue(new_scaleValue);
+  };
+
+  useEffect(() => {
+    if (scaleValue !== 1) {
+      document.body.style.zoom = scaleValue;
+    }
+  }, [scaleValue]);
+
   return (
     <div className={classes["whole-div"]}>
       {props.showMainExample && (
@@ -449,10 +526,10 @@ const MainPage = (props) => {
       {showNotice && (
         <ExampleModal
           onClose={() => {
-            localStorage.setItem("showNotice", "2023new");
+            localStorage.setItem("showNotice", "mainUpdate0228");
             setShowNotice(false);
           }}
-          imgSrc={notePenImg}
+          imgSrc={mainImg}
           text={
             <>
               <h1
@@ -479,13 +556,19 @@ const MainPage = (props) => {
         />
       )}
 
-      <div className={classes["events"]}>
+      <div className={`${classes["events"]} events`}>
         <div className={classes["events-dateArea"]}>
           <span
             className={classes["events-dateMove"]}
             onClick={() => moveDateHandler("yesterday")}
           >
-            <i className="fa-solid fa-chevron-left"></i>
+            <i
+              className={
+                !isLgWidth
+                  ? "fa-solid fa-chevron-left fa-lg"
+                  : "fa-solid fa-chevron-left fa-2xl"
+              }
+            ></i>
           </span>
           <span
             className={
@@ -508,7 +591,13 @@ const MainPage = (props) => {
             className={classes["events-dateMove"]}
             onClick={() => moveDateHandler("tomorrow")}
           >
-            <i className="fa-solid fa-chevron-right"></i>
+            <i
+              className={
+                !isLgWidth
+                  ? "fa-solid fa-chevron-right fa-lg"
+                  : "fa-solid fa-chevron-right fa-2xl"
+              }
+            ></i>
           </span>
         </div>
 
@@ -532,217 +621,279 @@ const MainPage = (props) => {
             }
             icon={<i className="fa-solid fa-user-plus"></i>}
           />
+          {isLgWidth && (
+            <>
+              <Button
+                name={gridFr3or4 === "3fr" ? " 시간표확대" : " 시간표축소"}
+                onclick={tableCssHandler}
+                className={`main-studentPage`}
+                icon={
+                  gridFr3or4 === "3fr" ? (
+                    <i className="fa-solid fa-up-right-and-down-left-from-center"></i>
+                  ) : (
+                    <i className="fa-solid fa-down-left-and-up-right-to-center"></i>
+                  )
+                }
+              />
+            </>
+          )}
+          {!/iPhone|iPad|iPod|Android/i.test(window.navigator.userAgent) && (
+            <>
+              <Button
+                onclick={() => fontSizeHandler(true)}
+                className={`main-studentPage`}
+                icon={<i className="fa-solid fa-magnifying-glass-plus"></i>}
+              />
+              <Button
+                onclick={() => fontSizeHandler(false)}
+                className={`main-studentPage`}
+                icon={<i className="fa-solid fa-magnifying-glass-minus"></i>}
+              />
+            </>
+          )}
         </div>
 
-        {/* 시간표 */}
-        <div className={classes["event-div"]}>
+        {/* 각각의 기능을 전체로 묶어서 그리드 해줄... div */}
+        <div
+          className={`${classes["event-all"]} ${
+            gridFr3or4 === "4fr"
+              ? classes["event-all-4fr"]
+              : gridFr3or4 === "3fr"
+              ? classes["event-all-3fr"]
+              : ""
+          }`}
+        >
+          {/* 시간표 */}
           <div
-            className={classes["event-title"]}
-            onClick={() => setHideClassTable((prev) => !prev)}
+            className={`${classes["event-div"]} ${classes["class-table"]} ${
+              gridFr3or4 === "3fr"
+                ? classes["class-table-3fr"]
+                : classes["class-table-4fr"]
+            }`}
           >
-            🕘 시간표
-            <span className={classes["event-title-dropdown"]}>
-              {" "}
-              {hideClassTable ? (
-                <i className="fa-solid fa-chevron-down"></i>
+            <div
+              className={classes["event-title"]}
+              onClick={() => setHideClassTable((prev) => !prev)}
+            >
+              🕘 시간표
+              <span className={classes["event-title-dropdown"]}>
+                {" "}
+                {hideClassTable ? (
+                  <i className="fa-solid fa-chevron-down"></i>
+                ) : (
+                  <i className="fa-solid fa-chevron-up"></i>
+                )}{" "}
+              </span>
+            </div>
+            <hr className={classes["main-hr"]} />
+
+            <div
+              className={
+                hideClassTable
+                  ? classes["eventContent-hide"]
+                  : classes["eventContent-show"]
+              }
+            >
+              {titleDate.slice(-2, -1) !== "토" &&
+              titleDate.slice(-2, -1) !== "일" ? (
+                <>
+                  <ul className={classes["ul-section"]}>
+                    {classLists.map((classNum, index) => (
+                      <ClassItem
+                        key={`item${classNum}`}
+                        myKey={`class${classNum}`}
+                        classNum={classNum}
+                        classStart={classStart?.[index]}
+                        subject={
+                          todayClassTable?.classMemo?.[index]?.subject ||
+                          classBasic?.[index] ||
+                          ""
+                        }
+                        memo={todayClassTable?.classMemo?.[index]?.memo || ""}
+                      />
+                    ))}
+                  </ul>
+                  <div className={classes["eventSave-div"]}>
+                    <Button
+                      name={"기초시간표"}
+                      className={"show-basicClass-button"}
+                      onclick={() => navigate(`/classTable`)}
+                    />
+                    <Button
+                      name={"저장"}
+                      className={"save-classItem-button"}
+                      onclick={saveClassMemoHandler}
+                    />
+                  </div>
+                </>
               ) : (
-                <i className="fa-solid fa-chevron-up"></i>
-              )}{" "}
-            </span>
+                "주말에는 푹 쉬세요❤"
+              )}
+            </div>
           </div>
 
+          {/* 할일 목록 */}
           <div
-            className={
-              hideClassTable
-                ? classes["eventContent-hide"]
-                : classes["eventContent-show"]
-            }
+            className={classes["event-div"]}
+            onClick={() => navigate(`/memo`)}
           >
-            {titleDate.slice(-2, -1) !== "토" &&
-            titleDate.slice(-2, -1) !== "일" ? (
-              <>
-                <ul className={classes["ul-section"]}>
-                  {classLists.map((classNum, index) => (
-                    <ClassItem
-                      key={`item${classNum}`}
-                      myKey={`class${classNum}`}
-                      classNum={classNum}
-                      classStart={classStart?.[index]}
-                      subject={
-                        todayClassTable?.classMemo?.[index]?.subject ||
-                        classBasic?.[index] ||
-                        ""
-                      }
-                      memo={todayClassTable?.classMemo?.[index]?.memo || ""}
-                    />
-                  ))}
-                </ul>
-                <div className={classes["eventSave-div"]}>
-                  <Button
-                    name={"기초시간표"}
-                    className={"show-basicClass-button"}
-                    onclick={() => navigate(`/classTable`)}
-                  />
-                  <Button
-                    name={"저장"}
-                    className={"save-classItem-button"}
-                    onclick={saveClassMemoHandler}
-                  />
-                </div>
-              </>
+            <div className={classes["event-title"]}>📝 할 일</div>
+            <hr className={classes["main-hr"]} />
+            {toDoLists.length === 0 ? (
+              <li className={classes["main-li"]}>할 일 없음</li>
             ) : (
-              "주말에는 푹 쉬세요❤"
+              sortEmg(toDoLists).map((event) => (
+                <li key={event.id} className={classes["main-li"]}>
+                  {event?.emg && (
+                    <span className={"todoapp__mainpage-emergency"}>
+                      <i className="fa-solid fa-circle-exclamation"></i>
+                    </span>
+                  )}
+                  <span>{event.text}</span>
+                </li>
+              ))
             )}
           </div>
-        </div>
 
-        {/* 출결목록 */}
-        <div
-          className={classes["event-div"]}
-          onClick={() => navigate(`/attendance`)}
-        >
-          <div className={classes["event-title"]}>
-            😉 출결 {attendEvents.length || ""}
-          </div>
-          {props.students.length === 0 && (
-            <li className={classes["main-li"]}>* 학생명부를 입력해주세요!</li>
-          )}
-          {props.students.length !== 0 && attendEvents.length === 0 ? (
-            <li className={classes["main-li"]}>모두 출석!</li>
-          ) : (
-            attendEvents.map((event) => (
-              <li
-                key={
-                  !isSubject
-                    ? event.id + event.num
-                    : event.cl + event.id + event.num
-                }
-                className={classes["main-li"]}
-              >
-                {isSubject && (
-                  <span className={classes["mr-underline"]}>{event.cl}</span>
-                )}
-                {event.num}번 - {event.name} / {event.option.slice(1)} /{" "}
-                {event.note || ""}
-              </li>
-            ))
-          )}
-        </div>
-
-        {/* 공용 개별일정 */}
-        <div className={classes["event-div"]} onClick={() => navigate(`/todo`)}>
-          <div className={classes["event-title"]}>📆 일정</div>
-
-          {schedule.length === 0 ? (
-            <li className={classes["main-li"]}>일정 없음</li>
-          ) : (
-            schedule.map((event) => (
-              <li key={event.id} className={classes["main-li"]}>
-                <span>
-                  {event.public ? "공용) " : "개인) "}
-                  {event.eventName}({event.option.slice(1)})
-                </span>
-                <span> {event.note ? ` / ${event.note}` : ""}</span>
-              </li>
-            ))
-          )}
-        </div>
-
-        {/* 할일 목록 */}
-        <div className={classes["event-div"]} onClick={() => navigate(`/memo`)}>
-          <div className={classes["event-title"]}>📝 할 일</div>
-          {toDoLists.length === 0 ? (
-            <li className={classes["main-li"]}>할 일 없음</li>
-          ) : (
-            sortEmg(toDoLists).map((event) => (
-              <li key={event.id} className={classes["main-li"]}>
-                {event?.emg && (
-                  <span className={"todoapp__mainpage-emergency"}>
-                    <i className="fa-solid fa-circle-exclamation"></i>
+          {/* 공용 개별일정 */}
+          <div
+            className={classes["event-div"]}
+            onClick={() => navigate(`/todo`)}
+          >
+            <div className={classes["event-title"]}>📆 일정</div>
+            <hr className={classes["main-hr"]} />
+            {schedule.length === 0 ? (
+              <li className={classes["main-li"]}>일정 없음</li>
+            ) : (
+              schedule.map((event) => (
+                <li key={event.id} className={classes["main-li"]}>
+                  <span>
+                    {event.public ? "공용) " : "개인) "}
+                    {event.eventName}({event.option.slice(1)})
                   </span>
+                  <span> {event.note ? ` / ${event.note}` : ""}</span>
+                </li>
+              ))
+            )}
+          </div>
+
+          {/* 출결목록 */}
+          <div
+            className={classes["event-div"]}
+            onClick={() => navigate(`/attendance`)}
+          >
+            <div className={classes["event-title"]}>
+              😉 출결 {attendEvents.length || ""}
+            </div>
+            <hr className={classes["main-hr"]} />
+            {props.students.length === 0 && (
+              <li className={classes["main-li"]}>* 학생명부를 입력해주세요!</li>
+            )}
+            {props.students.length !== 0 && attendEvents.length === 0 ? (
+              <li className={classes["main-li"]}>모두 출석!</li>
+            ) : (
+              attendEvents.map((event) => (
+                <li
+                  key={
+                    !isSubject
+                      ? event.id + event.num
+                      : event.cl + event.id + event.num
+                  }
+                  className={classes["main-li"]}
+                >
+                  {isSubject && (
+                    <span className={classes["mr-underline"]}>{event.cl}</span>
+                  )}
+                  {event.num}번 - {event.name} / {event.option.slice(1)} /{" "}
+                  {event.note || ""}
+                </li>
+              ))
+            )}
+          </div>
+
+          {/* 제출 냄안냄 checklist 목록 */}
+          <div
+            className={classes["event-div"]}
+            onClick={() => navigate(`/memo`, { state: "checkLists" })}
+          >
+            <div className={classes["event-title"]}>👉 미제출</div>
+            <hr className={classes["main-hr"]} />
+            {checkLists.length === 0 ? (
+              <li className={classes["main-li"]}> 자료 없음</li>
+            ) : (
+              <>
+                {checkLists.map(
+                  (event) =>
+                    event.unSubmitStudents.length !== 0 && (
+                      <li
+                        key={event.id}
+                        className={classes["mainCheckLists-li"]}
+                      >
+                        <span>
+                          {isSubject && (
+                            <span className={classes["mr-underline"]}>
+                              {event.clName}
+                            </span>
+                          )}
+                          {event.title} ({event.unSubmitStudents.length})
+                        </span>
+                        <span className={classes["mainCheckLists-students"]}>
+                          {" "}
+                          {event.unSubmitStudents.map((stu) => (
+                            <span
+                              key={stu.num + stu.name}
+                              className={classes["mainCheckLists-student"]}
+                            >{`${stu.name}`}</span>
+                          )) || ""}
+                        </span>
+                      </li>
+                    )
                 )}
-                <span>{event.text}</span>
-              </li>
-            ))
-          )}
-        </div>
+              </>
+            )}
+          </div>
 
-        {/* 제출 냄안냄 checklist 목록 */}
-        <div
-          className={classes["event-div"]}
-          onClick={() => navigate(`/memo`, { state: "checkLists" })}
-        >
-          <div className={classes["event-title"]}>👉 미제출</div>
-
-          {checkLists.length === 0 ? (
-            <li className={classes["main-li"]}> 자료 없음</li>
-          ) : (
-            <>
-              {checkLists.map(
-                (event) =>
-                  event.unSubmitStudents.length !== 0 && (
-                    <li key={event.id} className={classes["mainCheckLists-li"]}>
-                      <span>
-                        {isSubject && (
-                          <span className={classes["mr-underline"]}>
-                            {event.clName}
-                          </span>
-                        )}
-                        {event.title} ({event.unSubmitStudents.length})
-                      </span>
-                      <span className={classes["mainCheckLists-students"]}>
-                        {" "}
-                        {event.unSubmitStudents.map((stu) => (
-                          <span
-                            key={stu.num + stu.name}
-                            className={classes["mainCheckLists-student"]}
-                          >{`${stu.name}`}</span>
-                        )) || ""}
-                      </span>
-                    </li>
-                  )
-              )}
-            </>
-          )}
-        </div>
-
-        {/* 개별기록 listmemo 목록 */}
-        <div
-          className={classes["event-div"]}
-          onClick={() => navigate(`/memo`, { state: "listMemo" })}
-        >
-          <div className={classes["event-title"]}>📑 개별기록</div>
-
-          {listMemo.length === 0 ? (
-            <li className={classes["main-li"]}>* 자료 없음</li>
-          ) : (
-            <>
-              {listMemo.map(
-                (event) =>
-                  event.data.length !== props.students.length && (
-                    <li key={event.id} className={classes["mainCheckLists-li"]}>
-                      <span>
-                        {isSubject && (
-                          <span className={classes["mr-underline"]}>
-                            {event.clName}
-                          </span>
-                        )}
-                        {event.title} / 미입력 (
-                        {
-                          props.students.filter(
-                            (stu) =>
-                              !event.data
-                                .map((data) => data.num)
-                                .includes(stu.num)
-                          ).length
-                        }
-                        )
-                      </span>
-                    </li>
-                  )
-              )}
-            </>
-          )}
+          {/* 개별기록 listmemo 목록 */}
+          <div
+            className={classes["event-div"]}
+            onClick={() => navigate(`/memo`, { state: "listMemo" })}
+          >
+            <div className={classes["event-title"]}>📑 개별기록</div>
+            <hr className={classes["main-hr"]} />
+            {listMemo.length === 0 ? (
+              <li className={classes["main-li"]}>* 자료 없음</li>
+            ) : (
+              <>
+                {listMemo.map(
+                  (event) =>
+                    event.data.length !== props.students.length && (
+                      <li
+                        key={event.id}
+                        className={classes["mainCheckLists-li"]}
+                      >
+                        <span>
+                          {isSubject && (
+                            <span className={classes["mr-underline"]}>
+                              {event.clName}
+                            </span>
+                          )}
+                          {event.title} / 미입력 (
+                          {
+                            props.students.filter(
+                              (stu) =>
+                                !event.data
+                                  .map((data) => data.num)
+                                  .includes(stu.num)
+                            ).length
+                          }
+                          )
+                        </span>
+                      </li>
+                    )
+                )}
+              </>
+            )}
+          </div>
         </div>
       </div>
 

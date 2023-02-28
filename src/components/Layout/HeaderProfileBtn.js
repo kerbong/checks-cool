@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 
 const HeaderProfileBtn = (props) => {
   const [showDropdown, setShowDropdown] = useState(false);
+  const [scaleValue, setScaleValue] = useState(1);
 
   //드롭다운 후 4초 후에 해당 버튼이 클릭되거나 메뉴를 누르지 않아 상태 변경이 되지 않은 경우 상태 변경하기
 
@@ -31,6 +32,29 @@ const HeaderProfileBtn = (props) => {
   const dropdownHandler = () => {
     setShowDropdown((prev) => !prev);
   };
+
+  //글자크기 핸들러 함수
+  const fontSizeHandler = (isPlus) => {
+    let new_scaleValue = scaleValue;
+    if (isPlus) {
+      new_scaleValue *= 1.2;
+      if (new_scaleValue > 1) {
+        new_scaleValue = 1;
+      }
+    } else {
+      new_scaleValue /= 1.2;
+      if (new_scaleValue < 0.55) {
+        new_scaleValue = 0.555;
+      }
+    }
+    setScaleValue(new_scaleValue);
+  };
+
+  useEffect(() => {
+    if (scaleValue !== 1) {
+      document.body.style.zoom = scaleValue;
+    }
+  }, [scaleValue]);
 
   return (
     <>
@@ -88,7 +112,6 @@ const HeaderProfileBtn = (props) => {
           >
             프로필 수정
           </li>
-
           <li
             className={classes["profile-dropdown-li"]}
             onClick={() => {
@@ -98,6 +121,24 @@ const HeaderProfileBtn = (props) => {
           >
             메뉴바 위치변경
           </li>
+          {!/iPhone|iPad|iPod|Android/i.test(window.navigator.userAgent) && (
+            <li>
+              <span
+                className={classes["profile-dropdown-li"]}
+                onClick={() => fontSizeHandler(true)}
+              >
+                <i className="fa-solid fa-magnifying-glass-plus"></i>
+              </span>{" "}
+              /{" "}
+              <span
+                className={classes["profile-dropdown-li"]}
+                onClick={() => fontSizeHandler(false)}
+              >
+                <i className="fa-solid fa-magnifying-glass-minus"></i>
+              </span>
+            </li>
+          )}
+
           <li
             className={classes["profile-dropdown-li"]}
             onClick={logOutHandler}

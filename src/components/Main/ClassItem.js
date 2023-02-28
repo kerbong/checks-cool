@@ -17,7 +17,7 @@ const ClassItem = (props) => {
     <>
       <li className={classes["li-section"]} key={props.myKey}>
         <div className={classes["title-section"]}>
-          <div>{props.classNum}</div>
+          <div className={classes["title-bold"]}>{props.classNum}</div>
           {/* 시간표시 09:00~09:40 */}
           <div className={classes["fs-09"]}>
             <div>

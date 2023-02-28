@@ -96,7 +96,7 @@
   height: 50px;
   background-color: inherit;
   border-width: inherit;
-  font-size: 1em;
+  font-size: 0.9em;
 }
 
 @media screen and (min-width: 800px) {

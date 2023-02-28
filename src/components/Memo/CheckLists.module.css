@@ -53,6 +53,7 @@
   flex-direction: column;
   padding: 7px;
   color: #000000bd;
+  line-height: 1.5;
 }
 
 .listMemo-date {
