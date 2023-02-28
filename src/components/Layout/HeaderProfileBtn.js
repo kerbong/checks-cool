@@ -8,6 +8,12 @@ const HeaderProfileBtn = (props) => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [scaleValue, setScaleValue] = useState(1);
 
+  useEffect(() => {
+    if (showDropdown) {
+      setScaleValue(document.body.style.zoom);
+    }
+  }, [showDropdown]);
+
   //드롭다운 후 4초 후에 해당 버튼이 클릭되거나 메뉴를 누르지 않아 상태 변경이 되지 않은 경우 상태 변경하기
 
   useEffect(() => {
@@ -33,7 +39,6 @@ const HeaderProfileBtn = (props) => {
     setShowDropdown((prev) => !prev);
   };
 
-  //글자크기 핸들러 함수
   const fontSizeHandler = (isPlus) => {
     let new_scaleValue = scaleValue;
     if (isPlus) {
@@ -47,13 +52,14 @@ const HeaderProfileBtn = (props) => {
         new_scaleValue = 0.555;
       }
     }
+    if (new_scaleValue === scaleValue) {
+      return;
+    }
     setScaleValue(new_scaleValue);
   };
 
   useEffect(() => {
-    if (scaleValue !== 1) {
-      document.body.style.zoom = scaleValue;
-    }
+    document.body.style.zoom = scaleValue;
   }, [scaleValue]);
 
   return (

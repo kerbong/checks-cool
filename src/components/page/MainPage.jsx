@@ -68,7 +68,7 @@ const MainPage = (props) => {
   const [classLists, setClassLists] = useState(CLASSLISTS);
   const [isLgWidth, setIsLgWidth] = useState(false);
   const [gridFr3or4, setGridFr3or4] = useState("");
-  const [scaleValue, setScaleValue] = useState(1);
+  const [scaleValue, setScaleValue] = useState(document.body.style.zoom || 1);
 
   //업데이트 내용 보여주기 로컬스토리지에서 showNotice를 스트링으로 저장해서 확인 후에 이전에 봤으면 안보여주기
   const [showNotice, setShowNotice] = useState(
@@ -487,13 +487,14 @@ const MainPage = (props) => {
         new_scaleValue = 0.555;
       }
     }
+    if (new_scaleValue === scaleValue) {
+      return;
+    }
     setScaleValue(new_scaleValue);
   };
 
   useEffect(() => {
-    if (scaleValue !== 1) {
-      document.body.style.zoom = scaleValue;
-    }
+    document.body.style.zoom = scaleValue;
   }, [scaleValue]);
 
   return (
