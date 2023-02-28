@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/checks-cool/static/css/main.32e4dd9c.css",
-    "main.js": "/checks-cool/static/js/main.65179a3f.js",
+    "main.css": "/checks-cool/static/css/main.a901ee5c.css",
+    "main.js": "/checks-cool/static/js/main.d395e1db.js",
     "static/media/GowunDodum-Regular.ttf": "/checks-cool/static/media/GowunDodum-Regular.39c9a39c246c3c54c53e.ttf",
     "static/media/list.gif": "/checks-cool/static/media/list.8fffec1112ca3ad4d287.gif",
     "static/media/listMemo.gif": "/checks-cool/static/media/listMemo.9b1e9fbe144c9fd5c575.gif",
@@ -15,13 +15,13 @@
     "static/media/todayTodo.gif": "/checks-cool/static/media/todayTodo.538cb7bb82a6b9a8bd5c.gif",
     "static/media/teacher-typing.gif": "/checks-cool/static/media/teacher-typing.f82dbc64495a78c6242f.gif",
     "static/media/teacher-excel.gif": "/checks-cool/static/media/teacher-excel.e6955cccf0ee0cffd757.gif",
+    "static/media/메인화면개선.jpg": "/checks-cool/static/media/메인화면개선.c4faabec35a54d3272d2.jpg",
     "static/media/Spinner250px.gif": "/checks-cool/static/media/Spinner250px.5d939b7f9050c12f01f4.gif",
-    "static/media/new_start_note_pen.jpg": "/checks-cool/static/media/new_start_note_pen.feec7de9a3043150aecf.jpg",
     "static/media/excel_gender_example.jpg": "/checks-cool/static/media/excel_gender_example.f8ba40b1043a4a255572.jpg",
     "index.html": "/checks-cool/index.html"
   },
   "entrypoints": [
-    "static/css/main.32e4dd9c.css",
-    "static/js/main.65179a3f.js"
+    "static/css/main.a901ee5c.css",
+    "static/js/main.d395e1db.js"
   ]
 }
