@@ -90,7 +90,7 @@ const DoInput = (props) => {
           }}
           onInput={(e) => handleOnInput(e, 300)}
           required
-          placeholder="300자 내로 작성해주세요."
+          placeholder="예) PC에서 개별기록 저장이 안됩니다. 학생명단은 등록되어 있고, 이전에는 잘 되다가 안되네요.(300자 이내)."
         />
         <div className={classes["title"]}>
           <FileArea

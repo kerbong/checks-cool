@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef } from "react";
+import React, { useState, useCallback, useRef, useEffect } from "react";
 import Swal from "sweetalert2";
 import classes from "./EventItem.module.css";
 import Button from "../Layout/Button";
@@ -73,6 +73,12 @@ const EventItem = (props) => {
   const selectChangeHandler = (e) => {
     setSelectValue(e.target.value);
   };
+
+  useEffect(() => {
+    if (noteRef.current !== null) {
+      noteRef.current.style.height = noteRef.current.scrollHeight - 20 + "px";
+    }
+  }, [props.fixIsShown]);
 
   return (
     <>

@@ -10,7 +10,6 @@
   text-align: center;
   display: flex;
   justify-content: center;
-  font-family: "GowunDodum";
 }
 
 .option-select {
@@ -34,11 +33,9 @@
   margin: 10px;
   border-radius: 15px;
   border-width: 0;
-  font-family: "GowunDodum";
 }
 
 .student {
-  font-family: "GowunDodum";
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -54,7 +51,6 @@
   text-align: center;
   font-size: 1.1em;
 
-  font-family: "GowunDodum";
   word-spacing: 10px;
   letter-spacing: 1px;
 }

@@ -74,10 +74,7 @@ const MemoTodayTodoItem = ({ todoItem, todoList, setTodoList }) => {
         //   confirmButtonColor: "#85bd82",
         //   timer: 5000,
         // });
-        const nextTodoList = todoList.map((item) => ({
-          ...item,
-          deleted: item.id === todoItem.id ? true : item.deleted,
-        }));
+        const nextTodoList = todoList.filter((item) => item.id !== todoItem.id);
         setTodoList(nextTodoList);
       }
     });
@@ -98,8 +95,15 @@ const MemoTodayTodoItem = ({ todoItem, todoList, setTodoList }) => {
     }
   };
 
+  useEffect(() => {
+    if (editInputRef.current !== null) {
+      editInputRef.current.style.height =
+        editInputRef.current.scrollHeight - 1 + "px";
+    }
+  }, [edited]);
+
   return (
-    <li className="todoapp__item">
+    <div className="todoapp__item" id={`item-${todoItem.id}`}>
       {/* 아이템 완료 체크 / 체크 해제를 위한 체크박스 */}
       <input
         id={`todoapp_checkbox${todoItem.id}`}
@@ -125,6 +129,8 @@ const MemoTodayTodoItem = ({ todoItem, todoList, setTodoList }) => {
         onClick={() => {
           if (edited) {
             setEmergency((prev) => !prev);
+          } else {
+            return;
           }
         }}
       >
@@ -202,7 +208,7 @@ const MemoTodayTodoItem = ({ todoItem, todoList, setTodoList }) => {
           <div className="todoapp__item-done-btn"></div>
         )
       }
-    </li>
+    </div>
   );
 };
 

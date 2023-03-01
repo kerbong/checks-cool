@@ -55,7 +55,13 @@ a {
 
 /* ToDo App Input Box */
 .todoapp__inputbox {
-  width: 100%;
+  width: 80%;
+  display: flex;
+  align-items: center;
+}
+
+.todoapp__inputbox-div {
+  width: 98%;
   display: flex;
   align-items: center;
 }
@@ -92,6 +98,7 @@ a {
   border-radius: 20px;
   padding: 5px 10px;
   font-weight: bold;
+  width: 60px;
 }
 
 .todoapp__inputbox-emergency-btn-clicked {

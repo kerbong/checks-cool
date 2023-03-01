@@ -3,11 +3,22 @@ import classes from "./Input.module.css";
 
 const Input = React.forwardRef((props, ref) => {
   const [value, setValue] = useState("");
+  const [areaFix, setAreaFix] = useState("");
   const noteRef = useRef(null);
 
   useEffect(() => {
     setValue("");
   }, []);
+
+  useEffect(() => {
+    if (props.showOn === true) {
+      setAreaFix("1");
+    } else if (props.showOn === false) {
+      setAreaFix("0");
+    } else {
+      setAreaFix(props.showOn);
+    }
+  }, [props.showOn]);
 
   useEffect(() => {
     setValue(props.defaultValue);
@@ -24,6 +35,17 @@ const Input = React.forwardRef((props, ref) => {
   const changeHandler = () => {
     setValue(noteRef.current.value);
   };
+
+  useEffect(() => {
+    if (noteRef.current !== null) {
+      console.log("존재");
+      if (props.placeholder || props.defaultValue) {
+        console.log("변경가능");
+        noteRef.current.style.height = noteRef.current.scrollHeight - 13 + "px";
+        console.log(noteRef.current.value);
+      }
+    }
+  }, [areaFix]);
 
   return (
     <>

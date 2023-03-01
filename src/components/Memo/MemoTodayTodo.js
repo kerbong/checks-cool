@@ -14,17 +14,13 @@ const MemoTodayTodo = (props) => {
     let memoSnap = await getDoc(memoRef);
 
     if (memoSnap.exists()) {
-      const sortEmg = (todo_list) => {
-        let sorted_lists = todo_list.sort(function (a, b) {
-          let a_emg = a.emg || false;
-          let b_emg = b.emg || false;
-          return b_emg - a_emg;
-        });
-        return sorted_lists;
-      };
-
       onSnapshot(memoRef, (doc) => {
-        setTodoList(sortEmg(doc.data().memoTodo));
+        let exceptDeleted = doc
+          .data()
+          .memoTodo.filter(
+            (data) => data.deleted === false || data.deleted === undefined
+          );
+        setTodoList(sortEmg(sortId(exceptDeleted)));
       });
     }
   };
@@ -33,12 +29,78 @@ const MemoTodayTodo = (props) => {
     getMemoFromDb();
   }, []);
 
+  //아이디 순으로 정렬하기
+  const sortId = (todo_list) => {
+    let sorted_lists = todo_list.sort(function (a, b) {
+      return +b.id - +a.id;
+    });
+    return sorted_lists;
+  };
+
+  //중요 순으로 정렬하기
+  const sortEmg = (todo_list) => {
+    let sorted_lists = todo_list.sort(function (a, b) {
+      let a_emg = a.emg || false;
+      let b_emg = b.emg || false;
+      return b_emg - a_emg;
+    });
+    return sorted_lists;
+  };
+
+  // //todolist가 바뀌면... 정렬하기
+  // useEffect(() => {
+  //   let new_lists = sortEmg(sortId(todoList))
+  //   if (todoList)
+
+  // }, [todoList]);
+
   const setTodoListHandler = async (e) => {
     setTodoList(e);
     //firestore에 업로드  e는 전체 배열 {[할일],[할일]}
     const new_data = { memoTodo: e };
     const memoTodoRef = doc(dbService, "memo", props.userUid);
     await setDoc(memoTodoRef, new_data);
+  };
+
+  const dragEndHandler = (res) => {
+    console.log(res);
+    if (!res.destination) return;
+
+    //드래그 하는 sourced의 index
+    const sourceNum = res.source.index;
+    //드래그 해서 내려놓은 destination의 index
+    const destinationNum = res.destination.index;
+    //이동 안되면 함수 탈출
+    if (sourceNum === destinationNum) return;
+
+    //할일 목록과 완료 목록 나누기
+    let new_onTodo = [];
+    let new_finishTodo = [];
+
+    todoList.forEach((list) => {
+      if (list.checked === false) {
+        new_onTodo.push(list);
+      } else {
+        new_finishTodo.push(list);
+      }
+    });
+
+    // 새로운 할일 목록만들기
+    let new_todoList = [];
+
+    //완료안 된 할 일의 순서 바꾸기 (기존 자리에서 빼고 새 자리에 넣기)
+    let [sourceItem] = new_onTodo.splice(sourceNum, 1);
+    new_onTodo.splice(destinationNum, 0, sourceItem);
+
+    //할 일과 완료 항목 합치기
+    new_todoList = [...new_onTodo, ...new_finishTodo];
+    //긴급 기준으로 재 정렬
+    new_todoList = sortEmg(new_todoList);
+    //index 번호 새롭게 붙이기 (내림차순)
+    new_todoList = new_todoList.map((item, index) => {
+      return { ...item, id: new_todoList.length - index };
+    });
+    setTodoListHandler(new_todoList);
   };
 
   return (
@@ -50,12 +112,15 @@ const MemoTodayTodo = (props) => {
       />
 
       {/* 할 일 Item 리스트 */}
+
       <MemoTodayTodoItemList
         title={"할 일"}
         todoList={todoList}
         setTodoList={setTodoListHandler}
         checkedList={false} // (체크되지 않은) 할 일 목록
+        dragEndHandler={dragEndHandler}
       />
+
       <hr />
       {/* 완료한 Item 리스트 */}
       <MemoTodayTodoItemList

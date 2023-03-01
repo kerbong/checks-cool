@@ -227,7 +227,7 @@ const MainPage = (props) => {
     if (memoSnap.exists()) {
       // onSnapshot(memoRef, (doc) => {
       memoSnap?.data()?.memoTodo?.forEach((data) => {
-        if (data.deleted === false && data.checked === false) {
+        if (data.checked === false) {
           setToDoLists((prev) => {
             prev.forEach((prev_data, index) => {
               if (prev_data.id === data.id) {
@@ -449,6 +449,14 @@ const MainPage = (props) => {
         //교시 내용이 없으면 해당 input창 찾아서 빈칸으로 만들기
         if (item?.memo?.length === 0) {
           document.getElementById(`classMemo-${item.classNum}`).value = "";
+          document.getElementById(`classMemo-${item.classNum}`).style.height =
+            "23px";
+          // 교시 내용 있으면.. 전체 내용 보여주기
+        } else {
+          document.getElementById(`classMemo-${item.classNum}`).style.height =
+            document.getElementById(`classMemo-${item.classNum}`).scrollHeight -
+            12 +
+            "px";
         }
       });
     }, 150);
@@ -711,6 +719,7 @@ const MainPage = (props) => {
                           ""
                         }
                         memo={todayClassTable?.classMemo?.[index]?.memo || ""}
+                        showOn={hideClassTable || titleDate}
                       />
                     ))}
                   </ul>

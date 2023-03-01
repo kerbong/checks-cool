@@ -24,12 +24,16 @@ const MemoTodayTodoInput = ({ todoList, setTodoList }) => {
   const onPressSubmitButton = (e) => {
     e.preventDefault();
 
+    //todolist에서 현재 남아있는 데이터들만 새롭게 id 만들어주기
+    let new_todoList = todoList.map((list, index) => {
+      return { ...list, id: index };
+    });
+
     // todoItemList에 값 추가
-    const nextTodoList = todoList.concat({
-      id: todoList.length,
+    const nextTodoList = new_todoList.concat({
+      id: new_todoList.length,
       text,
       checked: false,
-      deleted: false,
       emg: emergency,
     });
     setTodoList(nextTodoList);
@@ -55,7 +59,7 @@ const MemoTodayTodoInput = ({ todoList, setTodoList }) => {
   };
 
   return (
-    <div className="todoapp__inputbox">
+    <div className="todoapp__inputbox-div">
       {/* 긴급 버튼 추가 */}
       <button
         className={
