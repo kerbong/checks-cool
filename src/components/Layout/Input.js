@@ -38,11 +38,8 @@ const Input = React.forwardRef((props, ref) => {
 
   useEffect(() => {
     if (noteRef.current !== null) {
-      console.log("존재");
       if (props.placeholder || props.defaultValue) {
-        console.log("변경가능");
         noteRef.current.style.height = noteRef.current.scrollHeight - 13 + "px";
-        console.log(noteRef.current.value);
       }
     }
   }, [areaFix]);
