@@ -37,12 +37,12 @@ const ClassTableBasic = (props) => {
 
   const WEEKDAYS = ["월", "화", "수", "목", "금"];
 
-  const itemsNumArray = [...Array(40).keys()].map((i) => i);
+  const itemsNumArray = [...Array(40).keys()]?.map((i) => i);
 
   //시간표의 인풋창들 만들기, 저장된 기존 기초시간표 자료가 있으면 재랜더링해서 값 넣어주기.
   useEffect(() => {
     setItems(
-      itemsNumArray.map((item, index) => (
+      itemsNumArray?.map((item, index) => (
         <div className={classes["input-div"]} key={`table-${item}`}>
           <input
             className={classes["input"]}
@@ -268,7 +268,7 @@ const ClassTableBasic = (props) => {
         {/* 월화수목금 표시 */}
         <div className={classes["title-class"]}></div>
         <div className={classes["title-weekday"]}>
-          {WEEKDAYS.map((day) => (
+          {WEEKDAYS?.map((day) => (
             <span key={day} style={{ fontWeight: "bold" }}>
               {day}
             </span>
@@ -279,7 +279,7 @@ const ClassTableBasic = (props) => {
       <div className={classes["title-class-container"]}>
         {/* 아침~ 6교시, 방과후 표시 */}
         <div className={classes["title-class"]}>
-          {classTime.map((ct, index) => (
+          {classTime?.map((ct, index) => (
             <div key={ct} className={classes["title-class-div"]}>
               {/* 1교시 */}
               <div style={{ fontWeight: "bold" }}>

@@ -38,7 +38,7 @@ const MemoTodayTodoItemList = ({
                 ref={provided.innerRef}
               >
                 {todoList && // todoList가 있을때만 출력
-                  todoList.map((todoItem, index) => {
+                  todoList?.map((todoItem, index) => {
                     // checkedList 값에 따라 '할 일 목록' 또는 '완료한 목록'을 출력
                     if (checkedList !== todoItem.checked) return null;
 
@@ -76,7 +76,7 @@ const MemoTodayTodoItemList = ({
       {checkedList && (
         <ul className="todoapp__list-ul">
           {todoList && // todoList가 있을때만 출력
-            todoList.map((todoItem, index) => {
+            todoList?.map((todoItem, index) => {
               // checkedList 값에 따라 '할 일 목록' 또는 '완료한 목록'을 출력
               if (checkedList !== todoItem.checked) return null;
 

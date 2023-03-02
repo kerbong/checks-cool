@@ -300,7 +300,7 @@ const TodoPage = (props) => {
 
       //기존 events에 있는 자료인 경우
       let event_index;
-      const existedEvent = new_events.filter((event, index) => {
+      const existedEvent = new_events?.filter((event, index) => {
         if (event.id === data.id) {
           //events에서 인덱스 저장해두기
           event_index = index;

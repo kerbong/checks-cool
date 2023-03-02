@@ -37,7 +37,7 @@ const BudgetList = (props) => {
   //삭제 함수, budget내용을 업데이트 하고 그걸 props로 보냄
   const deleteHandler = (list) => {
     let new_budget = { ...budget };
-    let new_useLists = new_budget.useLists.filter(
+    let new_useLists = new_budget.useLists?.filter(
       (data) => data.title + data.date !== list.title + list.date
     );
 

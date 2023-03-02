@@ -319,7 +319,7 @@ const EventInput = (props) => {
                 required
               >
                 <option value="">-- 분류 --</option>
-                {props.selectOption.map((select_option) => (
+                {props.selectOption?.map((select_option) => (
                   <option value={select_option.value} key={select_option.id}>
                     {select_option.class}
                   </option>

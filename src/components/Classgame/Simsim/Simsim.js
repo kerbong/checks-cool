@@ -159,7 +159,7 @@ const Simsim = (props) => {
 
     //만약 이전이 좋아요였으면 해제
     if (like) {
-      new_simsimData[nowData_index].like = nowOnData_like.filter(
+      new_simsimData[nowData_index].like = nowOnData_like?.filter(
         (uid) => uid !== props.userUid
       );
 

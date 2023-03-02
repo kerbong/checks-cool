@@ -229,7 +229,7 @@ const EventItem = (props) => {
               <option value="" onChange={selectChangeHandler} disabled>
                 -- 분류 --
               </option>
-              {props.selectOption.map((select_option) => (
+              {props.selectOption?.map((select_option) => (
                 <option
                   value={select_option.value}
                   key={select_option.id}

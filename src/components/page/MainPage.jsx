@@ -346,7 +346,7 @@ const MainPage = (props) => {
         let cltime = now_doc?.data()?.classTime;
         new_todayClassTable = {
           id: "",
-          classMemo: cltime.map((cl) => {
+          classMemo: cltime?.map((cl) => {
             return { memo: "", classNum: cl, subject: "" };
           }),
         };
@@ -354,7 +354,7 @@ const MainPage = (props) => {
       } else {
         new_todayClassTable = {
           id: "",
-          classMemo: classLists.map((cl) => {
+          classMemo: classLists?.map((cl) => {
             return { memo: "", classNum: cl, subject: "" };
           }),
         };
@@ -744,7 +744,7 @@ const MainPage = (props) => {
               titleDate.slice(-2, -1) !== "일" ? (
                 <>
                   <ul className={classes["ul-section"]}>
-                    {classLists.map((classNum, index) => (
+                    {classLists?.map((classNum, index) => (
                       <ClassItem
                         key={`item${classNum}`}
                         myKey={`class${classNum}`}
@@ -789,7 +789,7 @@ const MainPage = (props) => {
             {toDoLists.length === 0 ? (
               <li className={classes["main-li"]}>할 일 없음</li>
             ) : (
-              sortEmg(toDoLists).map((event) => (
+              sortEmg(toDoLists)?.map((event) => (
                 <li key={event.id} className={classes["main-li"]}>
                   {event?.emg && (
                     <span className={"todoapp__mainpage-emergency"}>
@@ -812,7 +812,7 @@ const MainPage = (props) => {
             {schedule.length === 0 ? (
               <li className={classes["main-li"]}>일정 없음</li>
             ) : (
-              schedule.map((event) => (
+              schedule?.map((event) => (
                 <li key={event.id} className={classes["main-li"]}>
                   <span>
                     {event.public ? "공용) " : "개인) "}
@@ -839,7 +839,7 @@ const MainPage = (props) => {
             {props.students.length !== 0 && attendEvents.length === 0 ? (
               <li className={classes["main-li"]}>모두 출석!</li>
             ) : (
-              attendEvents.map((event) => (
+              attendEvents?.map((event) => (
                 <li
                   key={
                     !isSubject
@@ -869,7 +869,7 @@ const MainPage = (props) => {
               <li className={classes["main-li"]}> * 최근 7일 내 자료 없음</li>
             ) : (
               <>
-                {checkLists.map(
+                {checkLists?.map(
                   (event) =>
                     event.unSubmitStudents.length !== 0 && (
                       <li
@@ -886,7 +886,7 @@ const MainPage = (props) => {
                         </span>
                         <span className={classes["mainCheckLists-students"]}>
                           {" "}
-                          {event.unSubmitStudents.map((stu) => (
+                          {event.unSubmitStudents?.map((stu) => (
                             <span
                               key={stu.num + stu.name}
                               className={classes["mainCheckLists-student"]}
@@ -911,7 +911,7 @@ const MainPage = (props) => {
               <li className={classes["main-li"]}> * 최근 7일 내 자료 없음</li>
             ) : (
               <>
-                {listMemo.map(
+                {listMemo?.map(
                   (event) =>
                     event.data.length !== nowYearStd?.length && (
                       <li
@@ -929,7 +929,7 @@ const MainPage = (props) => {
                             nowYearStd?.filter(
                               (stu) =>
                                 !event.data
-                                  .map((data) => +data.num)
+                                  ?.map((data) => +data.num)
                                   .includes(+stu.num)
                             ).length
                           }

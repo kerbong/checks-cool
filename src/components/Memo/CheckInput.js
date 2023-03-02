@@ -25,18 +25,18 @@ const CheckInput = (props) => {
     let new_unSubmitStudents;
     let new_submitStudents;
     let existedUnsubmit =
-      unSubmitStudents.filter((stu) => +stu.num === +studentInfo.num).length !==
-      0;
+      unSubmitStudents?.filter((stu) => +stu.num === +studentInfo.num)
+        .length !== 0;
     //안낸 사람에 있으면 제거
     if (existedUnsubmit) {
-      new_unSubmitStudents = unSubmitStudents.filter(
+      new_unSubmitStudents = unSubmitStudents?.filter(
         (stu) => +stu.num !== +studentInfo.num
       );
       new_submitStudents = submitStudents.concat(studentInfo);
       //안낸 사람에 없으면 추가
     } else {
       new_unSubmitStudents = unSubmitStudents.concat(studentInfo);
-      new_submitStudents = submitStudents.filter(
+      new_submitStudents = submitStudents?.filter(
         (stu) => +stu.num !== +studentInfo.num
       );
     }
@@ -163,7 +163,7 @@ const CheckInput = (props) => {
         <h3 className={classes.h3}> 미 제 출 </h3>
         <div className={classes.div}>
           {unSubmitStudents &&
-            unSubmitStudents.map((stu) => (
+            unSubmitStudents?.map((stu) => (
               <StudentBtn
                 className={"checklist-student"}
                 name={stu.name}

@@ -148,7 +148,7 @@ const AttendanceForm = (props) => {
       //저장가능한 날짜 중에 이미 저장된 데이터 있는지 확인하고 저장하기
       let new_attendEvents = JSON.parse(JSON.stringify(attendEvents));
       weekDayEvents.forEach((data_id) => {
-        let existAttend = attendEvents.filter((event) => event.id === data_id);
+        let existAttend = attendEvents?.filter((event) => event.id === data_id);
         //같은 날에 저장된 다른 자료가 없으면
         if (existAttend.length === 0) {
           //새로운 리스트에 추가해두기

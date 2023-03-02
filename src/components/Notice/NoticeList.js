@@ -5,7 +5,7 @@ const NoticeList = (props) => {
   return (
     <div>
       <ul className={classes["notice-ul"]}>
-        {props?.noticeDatas.map((notice) => (
+        {props?.noticeDatas?.map((notice) => (
           <li key={notice.id} id={notice.id} className={classes["notice-li"]}>
             <span
               className={classes["notice-title"]}

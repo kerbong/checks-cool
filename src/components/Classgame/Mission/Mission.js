@@ -217,7 +217,7 @@ const Mission = (props) => {
       </h1>
 
       <div className={explainOn ? classes.explainDiv : classes.explainDivHide}>
-        {EXPLAINS.map((explain, index) => (
+        {EXPLAINS?.map((explain, index) => (
           <span key={`explain-${index}`} className={classes.explainP}>
             {explain}
           </span>

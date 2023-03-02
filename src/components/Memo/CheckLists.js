@@ -328,10 +328,10 @@ const CheckLists = (props) => {
       const checkListsSnap = await getDoc(newCheckRef);
       const checkListsData = checkListsSnap?.data()?.checkLists_data;
 
-      new_datas = checkListsData.filter((list) => list.id !== item.id);
+      new_datas = checkListsData?.filter((list) => list.id !== item.id);
       // setCheckLists([...new_datas]);
       setNowOnCheckLists([
-        ...nowOnCheckLists.filter((list) => list.id !== item.id),
+        ...nowOnCheckLists?.filter((list) => list.id !== item.id),
       ]);
       await setDoc(doc(dbService, "checkLists", props.userUid), {
         checkLists_data: new_datas,
@@ -344,7 +344,7 @@ const CheckLists = (props) => {
       new_datas = listMemoData?.filter((list) => list.id !== item.id);
       // setListMemo([...new_datas]);
       setNowOnListMemo([
-        ...nowOnListMemo.filter((list) => list.id !== item.id),
+        ...nowOnListMemo?.filter((list) => list.id !== item.id),
       ]);
       await setDoc(listMemoRef, {
         listMemo_data: new_datas,
@@ -572,7 +572,7 @@ const CheckLists = (props) => {
             >
               <option value="">--학년도--</option>
 
-              {dataYears.map((year) => (
+              {dataYears?.map((year) => (
                 <option value={year} key={year}>
                   {year}학년도
                 </option>
@@ -672,7 +672,7 @@ const CheckLists = (props) => {
                       : "😎 모두 제출했네요!"}
                   </p>
                   <div className={classes.unsubmitArea}>
-                    {item.unSubmitStudents.map((stu) => (
+                    {item.unSubmitStudents?.map((stu) => (
                       <Button
                         key={item.id + stu.num}
                         name={stu.name}
@@ -722,7 +722,7 @@ const CheckLists = (props) => {
                 onChange={(e) => searchYearHandler(e.target.value)}
               >
                 <option value="">--학년도--</option>
-                {dataYears.map((year) => (
+                {dataYears?.map((year) => (
                   <option value={year} key={year}>
                     {year}학년도
                   </option>
@@ -798,7 +798,7 @@ const CheckLists = (props) => {
           <div>
             {/* 명렬표에서 입력한 자료들도 보여주기 */}
             {nowOnListMemo &&
-              sortList(nowOnListMemo).map((item) => (
+              sortList(nowOnListMemo)?.map((item) => (
                 <li
                   key={item.id}
                   id={item.id}

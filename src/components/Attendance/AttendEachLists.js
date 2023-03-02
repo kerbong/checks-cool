@@ -153,12 +153,12 @@ const AttendEachLists = (props) => {
           setStudentAttendList(yearAttendLists);
         } else {
           setStudentAttendList(
-            yearAttendLists.filter((data) => data.clName === nowClassName)
+            yearAttendLists?.filter((data) => data.clName === nowClassName)
           );
         }
       }
     } else {
-      const list = yearAttendLists.filter((data) => data.name === student);
+      const list = yearAttendLists?.filter((data) => data.name === student);
       setStudentAttendList(list);
     }
     //출결옵션부분도 초기화
@@ -168,7 +168,7 @@ const AttendEachLists = (props) => {
   //년도를 기준으로 출결기록 세팅하기(셀렉트 옵션 선택시 실행되는 함수)
   const setYearGroupHandler = (e) => {
     const year_group = e.target.value;
-    const list = attendLists.filter((data) => data.yearGroup === year_group);
+    const list = attendLists?.filter((data) => data.yearGroup === year_group);
     setYearAttendLists(list);
 
     //선택된 학생(셀렉트 태그) 초기화
@@ -179,7 +179,7 @@ const AttendEachLists = (props) => {
 
     //전담이 아닌경우
     if (!changeSubjectHandler(year_group)) {
-      let studentsOnDatas = list.map((data) => data.name);
+      let studentsOnDatas = list?.map((data) => data.name);
       setStudentLists([...new Set(studentsOnDatas)]);
     }
   };
@@ -213,7 +213,7 @@ const AttendEachLists = (props) => {
 
         //특정학급 선택하면
       } else if (nowClassName) {
-        let new_attends = yearAttendLists.filter(
+        let new_attends = yearAttendLists?.filter(
           (data) => data.clName === nowClassName
         );
         setStudentAttendList(new_attends);
@@ -428,7 +428,7 @@ const AttendEachLists = (props) => {
         )}
 
         {/* 현재 화면에 보여지는 리스트에서 출결 옵션만 뽑고 중복제거해서 버튼으로 보여주기 */}
-        {[...new Set(studentAttendList.map((data) => data.option))].map(
+        {[...new Set(studentAttendList?.map((data) => data.option))]?.map(
           (option) => (
             <Button
               key={option}
@@ -437,7 +437,7 @@ const AttendEachLists = (props) => {
                 showAttendOption === option ? "sortBtn-clicked" : "sortBtn"
               }
               name={`${option.slice(1)} (${
-                studentAttendList.filter((data) => data.option === option)
+                studentAttendList?.filter((data) => data.option === option)
                   .length
               })`}
               onclick={() => {
@@ -459,7 +459,7 @@ const AttendEachLists = (props) => {
         <ul className={classes.ul}>
           {showAttendOption === ""
             ? // {/* 전체학생 보여주는 로직 */}
-              studentAttendList.map((data) => (
+              studentAttendList?.map((data) => (
                 <div key={data.id}>
                   <li className={classes.li}>
                     <p className={`${classes.p} data-p`}>
@@ -481,8 +481,8 @@ const AttendEachLists = (props) => {
               ))
             : // showAttendOption 클릭한 출결옵션과 같은지 확인하고 보여주기
               studentAttendList
-                .filter((data) => data.option === showAttendOption)
-                .map((data) => (
+                ?.filter((data) => data.option === showAttendOption)
+                ?.map((data) => (
                   <div key={data.id}>
                     <li className={classes.li}>
                       <p className={`${classes.p} data-p`}>

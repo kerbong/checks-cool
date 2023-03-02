@@ -110,7 +110,7 @@ const MeetingSummary = (props) => {
 
   //회의록 삭제함수
   const deleteHandler = async (id, title, url) => {
-    let remainData = summary.filter((data) => data.id !== id);
+    let remainData = summary?.filter((data) => data.id !== id);
 
     let meetingSumRef;
     if (props.showPublicEvent) {

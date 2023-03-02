@@ -38,7 +38,7 @@ const EventLists = (props) => {
         props.removeData(data);
         document.querySelectorAll(`button[id='${data.id}']`)[0].remove();
 
-        const new_eventOnDay = eventOnDay.filter(
+        const new_eventOnDay = eventOnDay?.filter(
           (event) => event.id !== data.id
         );
 
@@ -222,7 +222,7 @@ const EventLists = (props) => {
           😕 등록된 이벤트가 없어요
         </div>
       ) : (
-        eventOnDay.map((event) => (
+        eventOnDay?.map((event) => (
           <EventItem
             item={event}
             key={event.id}

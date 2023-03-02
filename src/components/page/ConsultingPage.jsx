@@ -80,7 +80,7 @@ const ConsultingPage = (props) => {
       let new_datas = [
         ...consultSnap
           .data()
-          .consult_data.filter((consult) => consult.id !== new_data.id),
+          .consult_data?.filter((consult) => consult.id !== new_data.id),
       ];
       new_datas.push(new_data);
       await setDoc(consultRef, {
@@ -105,7 +105,7 @@ const ConsultingPage = (props) => {
     let new_datas = [
       ...consultSnap
         ?.data()
-        ?.consult_data.filter((consult) => consult.id !== id),
+        ?.consult_data?.filter((consult) => consult.id !== id),
     ];
     await setDoc(consultRef, {
       consult_data: new_datas,

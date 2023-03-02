@@ -7,7 +7,7 @@ const Student = (props) => {
   return (
     <div className={classes.div}>
       {props.students &&
-        props.students.map((stu) => (
+        props.students?.map((stu) => (
           // <Button name={stu.num + stu.name} small={true} key={stu.num} />
           <StudentBtn
             className={"button-student"}

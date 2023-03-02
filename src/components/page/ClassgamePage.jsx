@@ -54,7 +54,7 @@ const ClassgamePage = (props) => {
 
         <div className={classes["title-btns"]}>
           {/* 메뉴 선택하는 버튼들 */}
-          {SHOW_WHAT.map((what, index) => (
+          {SHOW_WHAT?.map((what, index) => (
             <TitleBtn
               setShowWhatMemo={() => {
                 setSelectedMenu(what);

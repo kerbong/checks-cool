@@ -108,11 +108,11 @@ const ConsultLists = (props) => {
 
         //전체 베이스 자료에서 삭제
         setConsults((prev) => {
-          return prev.filter((data) => data.id !== consult.id);
+          return prev?.filter((data) => data.id !== consult.id);
         });
         //현재 보여주고 있는 자료에서 삭제
         setNowOnConsult((prev) => {
-          let new_nowOnConsult = prev.filter((data) => data.id !== consult.id);
+          let new_nowOnConsult = prev?.filter((data) => data.id !== consult.id);
 
           return new_nowOnConsult;
         });
@@ -122,12 +122,12 @@ const ConsultLists = (props) => {
           setStudentsOnConsults([
             ...new Set(
               consults
-                .filter(
+                ?.filter(
                   (data) =>
                     data.yearGroup === yearGroupRef.current.value &&
                     data.id !== consult.id
                 )
-                .map((data) => data.name)
+                ?.map((data) => data.name)
             ),
           ]);
         }
@@ -162,7 +162,7 @@ const ConsultLists = (props) => {
     // 현재 학년도 자료 (nowOnConsult에서 보여주기)
     let consult_data = !isSubject
       ? nowOnConsult
-      : nowOnConsult.filter((data) => data.clName === nowClassName);
+      : nowOnConsult?.filter((data) => data.clName === nowClassName);
 
     if (student === "전체학생") {
       list = sortDate(consult_data, "up");
@@ -285,13 +285,13 @@ const ConsultLists = (props) => {
     if (consults.length > 0) {
       //특정학급 선택하면
 
-      let new_nowOnConsult = consults.filter(
+      let new_nowOnConsult = consults?.filter(
         (data) => data.clName === nowClassName
       );
 
       setNowOnConsult(new_nowOnConsult);
       //학생 선택하는 셀렉트 태그를 위한 값 설정
-      let studentsOnDatas = new_nowOnConsult.map((data) => data.name);
+      let studentsOnDatas = new_nowOnConsult?.map((data) => data.name);
       setStudentsOnConsults([...new Set(studentsOnDatas)]);
 
       studentSelectRef.current.value = "";
@@ -399,7 +399,7 @@ const ConsultLists = (props) => {
         />
       </div>
       {nowOnConsult &&
-        nowOnConsult.map((consult) => (
+        nowOnConsult?.map((consult) => (
           <div key={consult.id}>
             <li key={consult.id} className={classes.listArea} id={consult.id}>
               {showEditor === consult.id ? (

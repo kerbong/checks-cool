@@ -25,7 +25,7 @@ const MemoTodayTodoInput = ({ todoList, setTodoList }) => {
     e.preventDefault();
 
     //todolist에서 현재 남아있는 데이터들만 새롭게 id 만들어주기
-    let new_todoList = todoList.map((list, index) => {
+    let new_todoList = todoList?.map((list, index) => {
       return { ...list, id: index };
     });
 

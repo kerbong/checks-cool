@@ -139,7 +139,7 @@ const StudentInputByOcr = (props) => {
           .split(" ");
 
         //성별이나 다른 학급자료 등 잘린 자료가 있는경우 삭제하기..
-        sumName = sumName.filter(
+        sumName = sumName?.filter(
           (name) =>
             // 한 글자가 아니고 4글자 이하인 것들만
             name.length !== 1 && name.length < 5

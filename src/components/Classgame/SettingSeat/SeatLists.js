@@ -52,7 +52,7 @@ const SeatLists = (props) => {
 
   //년도를 기준으로 출결기록 세팅하기(셀렉트 옵션 선택시 실행되는 함수)
   const setYearGroupHandler = (year_group) => {
-    const list = seatLists.filter((data) => data.yearGroup === year_group);
+    const list = seatLists?.filter((data) => data.yearGroup === year_group);
     setYearSeatLists([...list]);
   };
 
@@ -76,7 +76,7 @@ const SeatLists = (props) => {
         <option value="" defaultChecked>
           --학년도--
         </option>
-        {dataYears.map((year) => (
+        {dataYears?.map((year) => (
           <option value={year} key={year}>
             {year}학년도
           </option>
@@ -86,7 +86,7 @@ const SeatLists = (props) => {
       <hr />
       <div>
         {yearSeatLists &&
-          sortList(yearSeatLists).map((item) => (
+          sortList(yearSeatLists)?.map((item) => (
             <li
               key={`${item.saveDate}`}
               id={`${item.saveDate}`}

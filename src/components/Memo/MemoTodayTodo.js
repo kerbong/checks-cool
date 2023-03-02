@@ -17,7 +17,7 @@ const MemoTodayTodo = (props) => {
       onSnapshot(memoRef, (doc) => {
         let exceptDeleted = doc
           .data()
-          .memoTodo.filter(
+          .memoTodo?.filter(
             (data) => data.deleted === false || data.deleted === undefined
           );
         setTodoList(sortEmg(sortId(exceptDeleted)));
@@ -96,7 +96,7 @@ const MemoTodayTodo = (props) => {
     //긴급 기준으로 재 정렬
     new_todoList = sortEmg(new_todoList);
     //index 번호 새롭게 붙이기 (내림차순)
-    new_todoList = new_todoList.map((item, index) => {
+    new_todoList = new_todoList?.map((item, index) => {
       return { ...item, id: new_todoList.length - index };
     });
     setTodoListHandler(new_todoList);

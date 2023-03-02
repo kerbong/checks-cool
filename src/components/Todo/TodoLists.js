@@ -241,7 +241,7 @@ const TodoLists = (props) => {
           😕 등록된 이벤트가 없어요
         </div>
       ) : (
-        eventOnDay.map((event) => (
+        eventOnDay?.map((event) => (
           <EventItem
             item={event}
             key={event.id}

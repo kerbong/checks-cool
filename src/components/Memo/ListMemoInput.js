@@ -184,7 +184,7 @@ const ListMemoInput = (props) => {
                   studentMemo?.data?.filter(
                     (data) => +student.num === +data.num
                   ).length > 0
-                    ? studentMemo.data.filter(
+                    ? studentMemo.data?.filter(
                         (data) => +student.num === +data.num
                       )[0].memo
                     : ""

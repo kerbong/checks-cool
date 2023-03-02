@@ -83,7 +83,7 @@ const SeatTable = (props) => {
 
   useEffect(() => {
     //   가로의 칸 column 과 세로의 줄 row를 곱하고 그 개수만큼 item을 만들어서 칸을 만들어줌.
-    let itemsNumArray = [...Array(+tableRow * +tableColumn)].map(
+    let itemsNumArray = [...Array(+tableRow * +tableColumn)]?.map(
       (v, i) => i + 1
     );
 
@@ -111,7 +111,7 @@ const SeatTable = (props) => {
     }
 
     setItems(
-      itemsNumArray.map((item) => (
+      itemsNumArray?.map((item) => (
         <div
           key={`table-${item}`}
           className={`${classes["item"]} item ${
@@ -152,7 +152,7 @@ const SeatTable = (props) => {
         seatLists?.forEach((list) => {
           list.students.forEach((stu_name, list_index) => {
             //학생들 중에 먼저 현재 학생 찾고
-            let nowStudent = new_students.filter(
+            let nowStudent = new_students?.filter(
               (student) => student.name === stu_name
             )[0];
 
@@ -242,7 +242,7 @@ const SeatTable = (props) => {
     let new_students = [...students];
 
     //전체뽑기인경우는 함수 실행하지 않음
-    let exist = new_students.filter((stu) => stu.woman === isWoman);
+    let exist = new_students?.filter((stu) => stu.woman === isWoman);
     //뽑을 수 있는 학생이 없으면
     if (exist.length === 0) {
       isPossible = false;
@@ -276,7 +276,7 @@ const SeatTable = (props) => {
     let pair_students = [...pairStudents];
     let new_students = [...students];
     //성별에 따라 새로운 배열 만들고
-    let gender_students = new_students.filter((stu) => stu.woman === isWoman);
+    let gender_students = new_students?.filter((stu) => stu.woman === isWoman);
     if (isWoman === "all") {
       gender_students = new_students;
     }
@@ -294,7 +294,7 @@ const SeatTable = (props) => {
       const getRnStudent = () => {
         let randomStudent = selectRnStudent();
         //짝 정보를 포함한 그 학생의 정보
-        selectedStudent = pair_students.filter(
+        selectedStudent = pair_students?.filter(
           (stu) => stu.name === randomStudent.name
         )[0];
       };
@@ -315,7 +315,7 @@ const SeatTable = (props) => {
       //     new_students.splice(index, 1);
       //   }
       // });
-      new_students = new_students.filter(
+      new_students = new_students?.filter(
         (stu) => +stu.num !== +selectedStudent.num
       );
     };
@@ -830,7 +830,7 @@ const SeatTable = (props) => {
           <>
             남은학생 ({students.length})
             <div className={classes["remain-student-div"]}>
-              {students.map((stu) => (
+              {students?.map((stu) => (
                 <span
                   key={stu.name}
                   className={classes["remain-student"]}
@@ -844,7 +844,7 @@ const SeatTable = (props) => {
                     }
                     let new_students = [...students];
                     setStudents([
-                      ...new_students.filter(
+                      ...new_students?.filter(
                         (student) => +student.num !== +stu.num
                       ),
                     ]);

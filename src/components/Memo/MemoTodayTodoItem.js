@@ -27,7 +27,7 @@ const MemoTodayTodoItem = ({ todoItem, todoList, setTodoList }) => {
   }, []);
 
   const onChangeCheckbox = () => {
-    const nextTodoList = todoList.map((item) => ({
+    const nextTodoList = todoList?.map((item) => ({
       ...item,
       // id 값이 같은 항목의 checked 값을 Toggle 함
       checked: item.id === todoItem.id ? !item.checked : item.checked,
@@ -45,7 +45,7 @@ const MemoTodayTodoItem = ({ todoItem, todoList, setTodoList }) => {
   };
 
   const onClickSubmitButton = (e) => {
-    const nextTodoList = todoList.map((item) => ({
+    const nextTodoList = todoList?.map((item) => ({
       ...item,
       text: item.id === todoItem.id ? newText : item.text,
       emg: item.id === todoItem.id ? emergency : item.emg || false, // 새로운 아이템 내용을 넣어줌
@@ -74,7 +74,9 @@ const MemoTodayTodoItem = ({ todoItem, todoList, setTodoList }) => {
         //   confirmButtonColor: "#85bd82",
         //   timer: 5000,
         // });
-        const nextTodoList = todoList.filter((item) => item.id !== todoItem.id);
+        const nextTodoList = todoList?.filter(
+          (item) => item.id !== todoItem.id
+        );
         setTodoList(nextTodoList);
       }
     });

@@ -95,7 +95,7 @@ const AttendCtxCalendar = (props) => {
     });
 
     //만약 해당 반에 아직 데이터가 없으면 events빈배열로 설정 및 리무브 스크린 이벤트함수 실행
-    const existSelectClData = [...wholeEvents].filter(
+    const existSelectClData = [...wholeEvents]?.filter(
       (cl) => Object.keys(cl)[0] === nowClassName
     );
     if (existSelectClData.length === 0) {
@@ -229,18 +229,18 @@ const AttendCtxCalendar = (props) => {
             if (events.length !== 0) {
               // 기존 코드, eventByDays 자료에 지금 날짜와 같은 자료가 있는지 확인해서 새로운 배열에 넣기
               // console.log(yyyymmdd.split("-")[2]);
-              let new_eventOnDay = events.filter(
+              let new_eventOnDay = events?.filter(
                 (event) => event?.id?.slice(5, 10) === yyyymmdd?.slice(5, 10)
               );
               //만약 오늘 날짜에 해당하는 게 있으면
               if (new_eventOnDay.length > 0) {
                 //중복되는 자료 있으면 제거
-                let stringEventOnDay = new_eventOnDay.map((event) => {
+                let stringEventOnDay = new_eventOnDay?.map((event) => {
                   event = { ...event, eventDate: day_date };
                   return JSON.stringify(event);
                 });
 
-                let fixed_eventOnDay = [...new Set(stringEventOnDay)].map(
+                let fixed_eventOnDay = [...new Set(stringEventOnDay)]?.map(
                   (event) => JSON.parse(event)
                 );
 
@@ -330,7 +330,7 @@ const AttendCtxCalendar = (props) => {
     const attendTodoRef = doc(dbService, "attend", props.userUid);
     // events 자료 가져와서 수정하기
     let before_events = JSON.parse(JSON.stringify(events));
-    let new_events = before_events.map((evt) => {
+    let new_events = before_events?.map((evt) => {
       delete evt.eventDate;
       return { ...evt };
     });
@@ -338,7 +338,7 @@ const AttendCtxCalendar = (props) => {
     //현재학급의 events가 있고
     if (new_events.length !== 0) {
       let event_index;
-      const existedEvent = new_events.filter((event, index) => {
+      const existedEvent = new_events?.filter((event, index) => {
         if (event.id === data.id) {
           // console.log(event_index);
           //events에서 인덱스 저장해두기
@@ -372,7 +372,7 @@ const AttendCtxCalendar = (props) => {
           } else {
             let new_wholeEvents = [];
             new_wholeEvents = [
-              ...wholeEvents.map((cl) => {
+              ...wholeEvents?.map((cl) => {
                 if (Object.keys(cl)[0] === nowClassName) {
                   //반이름이 같으면 수정한 데이터 넣고
                   return { [nowClassName]: new_data };
@@ -403,7 +403,7 @@ const AttendCtxCalendar = (props) => {
           if (!props.isSubject) {
             await updateDoc(attendTodoRef, new_data);
           } else {
-            let new_wholeEvents = [...wholeEvents].filter(
+            let new_wholeEvents = [...wholeEvents]?.filter(
               (cl) => Object.keys(cl)[0] !== nowClassName
             );
             if (new_events.length !== 0) {
@@ -430,7 +430,7 @@ const AttendCtxCalendar = (props) => {
           // console.log(data);
         } else {
           //현재 반을 제외한 전체 반 자료에 현재반 자료를 더하기
-          let new_wholeEvents = [...wholeEvents].filter(
+          let new_wholeEvents = [...wholeEvents]?.filter(
             (cl) => Object.keys(cl)[0] !== nowClassName
           );
           new_wholeEvents.push({ [nowClassName]: new_data });

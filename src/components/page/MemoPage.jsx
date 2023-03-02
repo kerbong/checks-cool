@@ -116,7 +116,7 @@ const MemoPage = (props) => {
           }}
         >
           {/* 메뉴 선택하는 버튼들 */}
-          {SHOW_WHAT.map((what, index) => (
+          {SHOW_WHAT?.map((what, index) => (
             <TitleBtn
               setShowWhatMemo={() => {
                 setShowWhatMemo(what);

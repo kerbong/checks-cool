@@ -51,7 +51,7 @@ const ClassIndex = (props) => {
     <div key={props.todayYyyymmdd}>
       <ul className={classes["ul-section"]}>
         {classMemo.classMemo
-          ? classNum.map((num) => (
+          ? classNum?.map((num) => (
               <li className={classes["li-section"]} key={num}>
                 <div className={classes["class-section"]}>
                   {num}교시

@@ -11,7 +11,7 @@ const AttendanceOption = (props) => {
   return (
     <ul className={classes["ul"]}>
       {props.selectOption &&
-        props.selectOption.map((select_option) => (
+        props.selectOption?.map((select_option) => (
           <li
             className={
               select_option.value === option

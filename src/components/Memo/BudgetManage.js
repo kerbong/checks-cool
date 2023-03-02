@@ -99,7 +99,7 @@ const BudgetManage = (props) => {
 
   // 년도가 선택되어서 년도의 자료(budgetLists)가 세팅되면, 년도의 예산 이름 세팅하기
   useEffect(() => {
-    setBudgetNameLists([...budgetLists.map((budget) => budget.budget_name)]);
+    setBudgetNameLists([...budgetLists?.map((budget) => budget.budget_name)]);
   }, [budgetLists]);
 
   //년도 이름 자료가 변경되면 다시설정!
@@ -174,7 +174,7 @@ const BudgetManage = (props) => {
   //예산 품목 삭제 함수, 받은 예산budget 내용을 업데이트
   const deleteHandler = async (budget) => {
     //기존에 들어있던 예산 전체 삭제
-    let new_budgets = budgets.filter(
+    let new_budgets = budgets?.filter(
       (data) =>
         data.budget_name + data.until !== budget.budget_name + budget.until
     );
@@ -196,7 +196,7 @@ const BudgetManage = (props) => {
 
     // //기존에 들어있던 예산 전체 삭제
     const delBudget = async () => {
-      let new_budgets = budgets.filter(
+      let new_budgets = budgets?.filter(
         (data) =>
           data.budget_name + data.until !==
           nowOnBudget.budget_name + nowOnBudget.until
@@ -253,7 +253,7 @@ const BudgetManage = (props) => {
     // console.log(item);
 
     //budget에서 찾아서 제거한후
-    new_budgets = new_budgets.filter(
+    new_budgets = new_budgets?.filter(
       (bud) =>
         bud.until + bud.budget_name !==
         new_onBudget.until + new_onBudget.budget_name
@@ -286,7 +286,7 @@ const BudgetManage = (props) => {
           onChange={(e) => searchYearHandler(e.target.value)}
         >
           <option value="">--년도--</option>
-          {dataYears.map((year) => (
+          {dataYears?.map((year) => (
             <option value={year} key={"budget" + year}>
               {year}년도
             </option>
@@ -301,7 +301,7 @@ const BudgetManage = (props) => {
           onChange={(e) => selectBudgetHandler(e.target.value)}
         >
           <option value="">--예산명--</option>
-          {budgetNameLists.map((name) => (
+          {budgetNameLists?.map((name) => (
             <option value={name} key={name}>
               {name}
             </option>
