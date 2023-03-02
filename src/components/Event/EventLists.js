@@ -135,7 +135,7 @@ const EventLists = (props) => {
     //출결 이벤트 날짜
 
     const fixed_data = {
-      num: item.num,
+      num: +item.num,
       name: item.name,
       id: item.id,
       option: optionValue,

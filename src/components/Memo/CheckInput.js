@@ -17,7 +17,7 @@ const CheckInput = (props) => {
   );
   const [submitStudents, setSubmitStudents] = useState(
     students?.filter(
-      (stu1) => !unSubmitStudents?.some((stu2) => stu1.num === stu2.num)
+      (stu1) => !unSubmitStudents?.some((stu2) => +stu1.num === +stu2.num)
     )
   );
 
@@ -25,19 +25,19 @@ const CheckInput = (props) => {
     let new_unSubmitStudents;
     let new_submitStudents;
     let existedUnsubmit =
-      unSubmitStudents.filter((stu) => stu.num === studentInfo.num).length !==
+      unSubmitStudents.filter((stu) => +stu.num === +studentInfo.num).length !==
       0;
     //안낸 사람에 있으면 제거
     if (existedUnsubmit) {
       new_unSubmitStudents = unSubmitStudents.filter(
-        (stu) => stu.num !== studentInfo.num
+        (stu) => +stu.num !== +studentInfo.num
       );
       new_submitStudents = submitStudents.concat(studentInfo);
       //안낸 사람에 없으면 추가
     } else {
       new_unSubmitStudents = unSubmitStudents.concat(studentInfo);
       new_submitStudents = submitStudents.filter(
-        (stu) => stu.num !== studentInfo.num
+        (stu) => +stu.num !== +studentInfo.num
       );
     }
     //번호순으로 정렬하기
@@ -170,7 +170,7 @@ const CheckInput = (props) => {
                 key={stu.num}
                 num={stu.num}
                 onShowOption={() => {
-                  let studentInfo = { num: stu.num, name: stu.name };
+                  let studentInfo = { num: +stu.num, name: stu.name };
                   changeUnSubmitStudents(studentInfo);
                 }}
               />
@@ -203,7 +203,7 @@ const CheckInput = (props) => {
               key={stu.num}
               num={stu.num}
               onShowOption={() => {
-                let studentInfo = { num: stu.num, name: stu.name };
+                let studentInfo = { num: +stu.num, name: stu.name };
                 changeUnSubmitStudents(studentInfo);
               }}
             />

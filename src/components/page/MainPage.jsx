@@ -478,7 +478,7 @@ const MainPage = (props) => {
     }
     // console.log(todayClassTable);
     setTimeout(() => {
-      todayClassTable.classMemo.forEach((item, index) => {
+      todayClassTable?.classMemo?.forEach((item, index) => {
         //과목명이 없으면 해당 input창 찾아서 빈칸으로 만들기
         if (item?.subject?.length === 0 && classBasic?.[index].length === 0) {
           document.getElementById(`classSubject-${item.classNum}`).value = "";
@@ -929,8 +929,8 @@ const MainPage = (props) => {
                             nowYearStd?.filter(
                               (stu) =>
                                 !event.data
-                                  .map((data) => data.num)
-                                  .includes(stu.num)
+                                  .map((data) => +data.num)
+                                  .includes(+stu.num)
                             ).length
                           }
                           )

@@ -29,7 +29,7 @@ const TodoPage = (props) => {
   const [events, setEvents] = useState([]);
   const [eventOnDay, setEventOnDay] = useState([]);
   //개인용, 공용 전환
-  const [showPublicEvent, setShowPublicEvent] = useState(true);
+  const [showPublicEvent, setShowPublicEvent] = useState(false);
   const [showExample, setShowExample] = useState(false);
   const [showExplain, setShowExplain] = useState(false);
 

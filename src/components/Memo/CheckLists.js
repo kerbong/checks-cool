@@ -413,7 +413,7 @@ const CheckLists = (props) => {
     const new_datas = [];
     listMemo.forEach((memo) => {
       memo.data.forEach((stud) => {
-        let data = [stud.num, stud.name, memo.title, stud.memo];
+        let data = [+stud.num, stud.name, memo.title, stud.memo];
         if (props.isSubject) {
           data.unshift(memo.clName);
         }
@@ -832,8 +832,8 @@ const CheckLists = (props) => {
                           ? students?.filter(
                               (stu) =>
                                 !item?.data
-                                  ?.map((data) => data.num)
-                                  ?.includes(stu.num)
+                                  ?.map((data) => +data.num)
+                                  ?.includes(+stu.num)
                             )
                           : studentsYear
                               ?.filter(
@@ -842,8 +842,8 @@ const CheckLists = (props) => {
                               ?.[item.clName]?.filter(
                                 (stu) =>
                                   !item?.data
-                                    ?.map((data) => data.num)
-                                    ?.includes(stu.num)
+                                    ?.map((data) => +data.num)
+                                    ?.includes(+stu.num)
                               )
                         )?.length
                       } )
@@ -855,8 +855,8 @@ const CheckLists = (props) => {
                       ? students?.filter(
                           (stu) =>
                             !item?.data
-                              ?.map((data) => data.num)
-                              ?.includes(stu.num)
+                              ?.map((data) => +data.num)
+                              ?.includes(+stu.num)
                         )
                       : studentsYear
                           ?.filter(
@@ -865,8 +865,8 @@ const CheckLists = (props) => {
                           ?.[item.clName]?.filter(
                             (stu) =>
                               !item?.data
-                                ?.map((data) => data.num)
-                                ?.includes(stu.num)
+                                ?.map((data) => +data.num)
+                                ?.includes(+stu.num)
                           )
                     )?.map((data) => (
                       <Button

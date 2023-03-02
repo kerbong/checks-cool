@@ -88,9 +88,10 @@ const StudentLists = (props) => {
     let uploadData = [];
     if (studentSnap.exists()) {
       // console.log(studentSnap.data());
-      let exceptNow = studentSnap
+      let exceptNow = [];
+      exceptNow = studentSnap
         .data()
-        ?.studentDatas.filter(
+        ?.studentDatas?.filter(
           (yearData) => Object.keys(yearData)[0] !== Object.keys(data)[0]
         );
       exceptNow.push({ ...data });
@@ -216,7 +217,7 @@ const StudentLists = (props) => {
   //학생 제거 함수
   const deleteStudentHandler = (student) => {
     let new_studentsInfo = [...studentsInfo]?.filter(
-      (stu) => stu.num !== student.num
+      (stu) => +stu.num !== +student.num
     );
     // console.log(new_studentsInfo);
     setStudentsInfo([...new_studentsInfo]);

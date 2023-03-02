@@ -55,16 +55,12 @@ const ListMemoInput = (props) => {
       //메모가 있는 항목들을 new_memo의 data에 추가함
       memoInputAll.forEach((inputTag) => {
         if (inputTag.value.trim() !== "") {
-          let name = students.filter(
-            (stu) => stu.num === inputTag.getAttribute("id")
-          )[0].name;
-
           new_memo["data"].push({
-            num: inputTag.id,
-            name,
+            name: inputTag.id.split("-")[0],
+            num: inputTag.id.split("-")[1],
             memo: inputTag.value,
           });
-          // console.log(new_memo);
+          console.log(new_memo);
         }
       });
 
@@ -117,7 +113,7 @@ const ListMemoInput = (props) => {
     });
   };
 
-  // console.log(props.students);
+  console.log(students);
 
   return (
     <>
@@ -176,7 +172,7 @@ const ListMemoInput = (props) => {
               <div className={classes["name-section"]}>{student.name}</div>
 
               <Input
-                id={student.num}
+                id={student.name + "-" + student.num}
                 myKey={"textArea" + student.num}
                 className={"memo-section"}
                 label="inputData"
@@ -185,10 +181,11 @@ const ListMemoInput = (props) => {
                 }}
                 defaultValue={
                   //자료가 있으면 length가 undefined가 나오고 없으면 0이 나옴. 자료 있을 때만 저장되어 있던거 보여주기
-                  studentMemo?.data?.filter((data) => student.num === data.num)
-                    .length > 0
+                  studentMemo?.data?.filter(
+                    (data) => +student.num === +data.num
+                  ).length > 0
                     ? studentMemo.data.filter(
-                        (data) => student.num === data.num
+                        (data) => +student.num === +data.num
                       )[0].memo
                     : ""
                 }

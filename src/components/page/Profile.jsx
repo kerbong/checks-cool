@@ -53,7 +53,7 @@ const Profile = (props) => {
     e.preventDefault();
     //하루에 두 번만 수정 가능함.
     let todayProfileChange = localStorage.getItem(
-      "profile" + dayjs().format("YY-MM-DD")
+      "profile" + dayjs().format("YY-MM-DD") + props.user.email
     );
 
     if (todayProfileChange >= 2) {
@@ -168,7 +168,7 @@ const Profile = (props) => {
     //오늘 프로필 수정 횟수 저장하기.
 
     localStorage.setItem(
-      "profile" + dayjs().format("YY-MM-DD"),
+      "profile" + dayjs().format("YY-MM-DD") + props.user.email,
       todayProfileChange + 1
     );
   };

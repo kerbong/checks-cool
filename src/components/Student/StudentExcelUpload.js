@@ -31,9 +31,9 @@ const StudentExcelUpload = (props) => {
               let rows = utils.sheet_to_json(workBook.Sheets[sheetName]);
               // console.log(rows);
               let new_rows = rows.map((row) => ({
-                num: row["번호"],
-                name: row["이름"],
-                woman: row["성별"] === "남" ? false : true,
+                num: String(row["번호"]),
+                name: String(row["이름"]),
+                woman: String(row["성별"]) === "남" ? false : true,
               }));
 
               let hasUndefined = false;
@@ -68,9 +68,9 @@ const StudentExcelUpload = (props) => {
               let rows = utils.sheet_to_json(workBook.Sheets[sheetName]);
               // console.log(rows);
               let new_rows = rows.map((row) => ({
-                num: row["번호"],
-                name: row["이름"],
-                woman: row["성별"] === "남" ? false : true,
+                num: String(row["번호"]),
+                name: String(row["이름"]),
+                woman: String(row["성별"]) === "남" ? false : true,
               }));
 
               let hasUndefined = false;

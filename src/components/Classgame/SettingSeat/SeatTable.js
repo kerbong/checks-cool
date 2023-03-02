@@ -316,7 +316,7 @@ const SeatTable = (props) => {
       //   }
       // });
       new_students = new_students.filter(
-        (stu) => stu.num !== selectedStudent.num
+        (stu) => +stu.num !== +selectedStudent.num
       );
     };
 
@@ -845,7 +845,7 @@ const SeatTable = (props) => {
                     let new_students = [...students];
                     setStudents([
                       ...new_students.filter(
-                        (student) => student.num !== stu.num
+                        (student) => +student.num !== +stu.num
                       ),
                     ]);
                     setTempStudent(stu);
