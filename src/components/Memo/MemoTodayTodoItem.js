@@ -148,7 +148,7 @@ const MemoTodayTodoItem = ({ todoItem, todoList, setTodoList }) => {
             onKeyDown={() => handleResizeHeight(this)}
             onKeyUp={() => handleResizeHeight(this)}
             onClick={() => handleResizeHeight(this)}
-            onInput={(e) => handleOnInput(e, 70)}
+            onInput={(e) => handleOnInput(e, 100)}
           />
         ) : (
           <>

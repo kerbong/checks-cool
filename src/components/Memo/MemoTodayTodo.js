@@ -63,7 +63,6 @@ const MemoTodayTodo = (props) => {
   };
 
   const dragEndHandler = (res) => {
-    console.log(res);
     if (!res.destination) return;
 
     //드래그 하는 sourced의 index

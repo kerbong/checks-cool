@@ -84,7 +84,7 @@ const MemoTodayTodoInput = ({ todoList, setTodoList }) => {
           onKeyUp={() => handleResizeHeight(this)}
           onClick={() => handleResizeHeight(this)}
           onChange={onChangeInput}
-          onInput={(e) => handleOnInput(e, 70)}
+          onInput={(e) => handleOnInput(e, 100)}
         />
 
         {/* 입력 후 아이템 추가 버튼 */}

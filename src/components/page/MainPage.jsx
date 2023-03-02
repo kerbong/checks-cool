@@ -63,6 +63,7 @@ const MainPage = (props) => {
   });
   const [hideClassTable, setHideClassTable] = useState(true);
   const [classStart, setClassStart] = useState([]);
+  const [nowYearStd, setNowYearStd] = useState([]);
   // const [subjectYear, setSubjectYear] = useState(false);
   const [isSubject, setIsSubject] = useState(false);
   const [classLists, setClassLists] = useState(CLASSLISTS);
@@ -117,6 +118,24 @@ const MainPage = (props) => {
     };
   }, []);
 
+  const nowYear = () => {
+    //해당학년도에 전담여부 확인
+    let year = todayYyyymmdd.slice(0, 4);
+    let month = todayYyyymmdd.slice(5, 7);
+
+    if (+month <= 2) {
+      year = String(+year - 1);
+    }
+    return year;
+  };
+
+  useEffect(() => {
+    let new_nowYearStd = props.students?.filter(
+      (yearStd) => Object.keys(yearStd)[0] === nowYear()
+    )?.[0]?.[nowYear()];
+    setNowYearStd(new_nowYearStd);
+  }, [props.students]);
+
   // 기초시간표 자료 받아올 때 classLists 이름이 있으면 세팅해서 불러오도록...? 기초시간표에 교시 쪽에 input 넣어주고 기본 값으로 교시 넣어주기. 수정 저장 가능.
 
   const WEEKDAYS = ["일", "월", "화", "수", "목", "금", "토"];
@@ -138,6 +157,20 @@ const MainPage = (props) => {
     }
     setTodayYyyymmdd(getDateHandler(tOrY, "query"));
     setTitleDate(getDateHandler(tOrY, "title"));
+  };
+
+  //지난 7일 구하기..
+  const last7days = (today) => {
+    let now_date = dayjs(today);
+    let new_7days = [];
+    new_7days.push(today);
+    new_7days.push(now_date.subtract(1, "d").format("YYYY-MM-DD"));
+    new_7days.push(now_date.subtract(2, "d").format("YYYY-MM-DD"));
+    new_7days.push(now_date.subtract(3, "d").format("YYYY-MM-DD"));
+    new_7days.push(now_date.subtract(4, "d").format("YYYY-MM-DD"));
+    new_7days.push(now_date.subtract(5, "d").format("YYYY-MM-DD"));
+    new_7days.push(now_date.subtract(6, "d").format("YYYY-MM-DD"));
+    return new_7days;
   };
 
   const calDateHandler = (date) => {
@@ -250,8 +283,11 @@ const MainPage = (props) => {
 
     // onSnapshot(checkListsRef, (doc) => {
     const new_checkLists = [];
+
+    let before7days = last7days(todayYyyymmdd);
+
     checkListsSnap?.data()?.checkLists_data?.forEach((data) => {
-      if (data.id.slice(0, 10) === todayYyyymmdd) {
+      if (before7days?.includes(data.id.slice(0, 10))) {
         new_checkLists.push(data);
       }
     });
@@ -267,8 +303,9 @@ const MainPage = (props) => {
     setListMemo([]);
     // onSnapshot(listMemoRef, (doc) => {
     const new_listMemo = [];
+    let before7days = last7days(todayYyyymmdd);
     listMemoSnap?.data()?.listMemo_data?.forEach((data) => {
-      if (data.id.slice(0, 10) === todayYyyymmdd) {
+      if (before7days?.includes(data.id.slice(0, 10))) {
         new_listMemo.push(data);
       }
     });
@@ -829,7 +866,7 @@ const MainPage = (props) => {
             <div className={classes["event-title"]}>👉 미제출</div>
             <hr className={classes["main-hr"]} />
             {checkLists.length === 0 ? (
-              <li className={classes["main-li"]}> 자료 없음</li>
+              <li className={classes["main-li"]}> * 최근 7일 내 자료 없음</li>
             ) : (
               <>
                 {checkLists.map(
@@ -871,12 +908,12 @@ const MainPage = (props) => {
             <div className={classes["event-title"]}>📑 개별기록</div>
             <hr className={classes["main-hr"]} />
             {listMemo.length === 0 ? (
-              <li className={classes["main-li"]}>* 자료 없음</li>
+              <li className={classes["main-li"]}> * 최근 7일 내 자료 없음</li>
             ) : (
               <>
                 {listMemo.map(
                   (event) =>
-                    event.data.length !== props.students.length && (
+                    event.data.length !== nowYearStd?.length && (
                       <li
                         key={event.id}
                         className={classes["mainCheckLists-li"]}
@@ -889,7 +926,7 @@ const MainPage = (props) => {
                           )}
                           {event.title} / 미입력 (
                           {
-                            props.students.filter(
+                            nowYearStd?.filter(
                               (stu) =>
                                 !event.data
                                   .map((data) => data.num)
