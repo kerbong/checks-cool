@@ -99,7 +99,8 @@
 }
 
 .fileUploadBtn,
-.excelfileUploadBtn {
+.excelfileUploadBtn,
+.excelfileUploadBtnUploaded {
   font-size: 1.1em;
   width: auto;
   padding: 17px;
@@ -109,6 +110,13 @@
   margin-left: 10px;
   border-radius: 15px;
   text-align: center;
+}
+
+.excelfileUploadBtnUploaded {
+  width: 160px;
+  margin: 0;
+  font-size: 0.8rem;
+  background-color: #7632d591;
 }
 
 .excelfileUploadBtn {

@@ -175,7 +175,9 @@ const TypingStudent = (props) => {
         </div>
         <div className={classes.studentListArea}>
           <hr className={classes["hr"]} />
-          <span className={classes["span-title"]}>학생 직접 입력/수정</span>
+          <div>
+            <span className={classes["span-title"]}>학생 직접 입력/수정</span>
+          </div>
 
           <hr className={classes["hr"]} />
           <div className={classes["div-explain"]}>

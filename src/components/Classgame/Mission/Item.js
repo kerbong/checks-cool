@@ -66,14 +66,14 @@ const Item = (props) => {
         (uid) => uid !== props.userUid
       );
 
-      console.log(nowOnData);
-      console.log(new_missionData);
+      // console.log(nowOnData);
+      // console.log(new_missionData);
 
       //만약 이전이 무응답이었으면 추가
     } else {
       nowOnData_like.push(props.userUid);
-      console.log(nowOnData);
-      console.log(new_missionData);
+      // console.log(nowOnData);
+      // console.log(new_missionData);
     }
 
     await updateDoc(nowOnRef, { mission_data: new_missionData });

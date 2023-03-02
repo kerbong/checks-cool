@@ -86,7 +86,8 @@
   background-color: #993fc447;
 }
 
-.student-save {
+.student-save,
+.student-save-uploaded {
   width: 80px;
   height: 50px;
   margin-left: 20px;
@@ -94,6 +95,13 @@
   border-radius: 10px;
   border-width: 0;
   background-color: #7632d591;
+}
+
+.student-save-uploaded {
+  background-color: #7632d5;
+  color: whitesmoke;
+  width: 120px;
+  height: 60px;
 }
 
 .add-event-button,

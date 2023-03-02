@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import { read, utils } from "xlsx";
 import classes from "./StudentLiWithDelete.module.css";
 import Swal from "sweetalert2";
@@ -6,6 +6,7 @@ import Button from "../Layout/Button";
 import excelExample from "../../assets/student/excel_gender_example.jpg";
 
 const StudentExcelUpload = (props) => {
+  const [excelUploaded, setExcelUploaded] = useState(false);
   const fileInfoInput = useRef(null);
 
   const expl_1 = props.isSubject
@@ -94,7 +95,7 @@ const StudentExcelUpload = (props) => {
                 });
                 return;
               }
-
+              setExcelUploaded(true);
               props.studentsInfoHandler(new_rows);
             });
           }
@@ -120,7 +121,11 @@ const StudentExcelUpload = (props) => {
         <label
           id="excelFileLabel"
           htmlFor="excelFile"
-          className={classes.excelfileUploadBtn}
+          className={
+            excelUploaded
+              ? `${classes.excelfileUploadBtnUploaded}`
+              : `${classes.excelfileUploadBtn}`
+          }
         >
           엑셀파일 업로드 <i className="fa-regular fa-file-excel"></i>
         </label>
@@ -137,9 +142,10 @@ const StudentExcelUpload = (props) => {
         {/* 전체 저장버튼 전담버전에서는 나오지 않도록*/}
         {!props.isSubject && (
           <Button
-            className="student-save"
+            className={excelUploaded ? "student-save-uploaded" : "student-save"}
             name={
               <>
+                {excelUploaded && "클릭! "}
                 <i className="fa-regular fa-floppy-disk"></i>
               </>
             }

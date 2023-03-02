@@ -99,6 +99,7 @@ const StudentLists = (props) => {
     } else {
       uploadData = [{ ...data }];
     }
+    // console.log(uploadData);
 
     //업로드할 데이터, 기존자료에 전달받은 학년도 자료 추가
 
@@ -107,74 +108,92 @@ const StudentLists = (props) => {
     });
   };
 
-  const submitStudentUploader = async () => {
-    //기존 자료에 덮어쓰기 됨을 알리기
-    Swal.fire({
-      icon: "question",
-      title: "저장할까요?",
-      text: `번호나 이름이 중복되지 않았는지 확인해주세요.`,
-      showDenyButton: true,
-      confirmButtonText: "저장",
-      confirmButtonColor: "#db100cf2",
-      denyButtonColor: "#85bd82",
-      denyButtonText: `취소`,
-    }).then((result) => {
-      if (result.isConfirmed) {
-        // firestore에 저장하기
-        // 담임교사
-        // 여자 설정을 안한 경우 남자로 모두 설정하기
-        if (!props.isSubject) {
-          let new_studentsInfo = [...studentsInfo];
-          new_studentsInfo.map((stu) => {
+  const submitStudentUploader = async (isExcel) => {
+    //명부를 전담, 담임에 맞게 수정하는 함수
+    const fixStudentsData = () => {
+      if (!props.isSubject) {
+        // console.log(studentsInfo);
+        let new_studentsInfo = [...studentsInfo];
+        // new_studentsInfo?.map((stu) => {
+        //   if (!stu.hasOwnProperty("woman")) {
+        //     stu["woman"] = false;
+        //   }
+        //   return stu;
+        // });
+
+        const fixed_data = {
+          [setYear()]: sortNum(new_studentsInfo),
+        };
+        uploadStudents(fixed_data);
+
+        //전담용 로직
+      } else {
+        // console.log(wholeClass);
+        let new_wholeClass = [...wholeClass];
+        new_wholeClass?.map((cl) => {
+          //각반 학생들을 정렬하고 성별 속성 부여
+          sortNum(Object.values(cl))?.map((stu) => {
             if (!stu.hasOwnProperty("woman")) {
               stu["woman"] = false;
             }
             return stu;
           });
-
-          const fixed_data = {
-            [setYear()]: sortNum(new_studentsInfo),
-          };
-          uploadStudents(fixed_data);
-
-          //전담용 로직
-        } else {
-          // console.log(wholeClass);
-          let new_wholeClass = [...wholeClass];
-          new_wholeClass.map((cl) => {
-            //각반 학생들을 정렬하고 성별 속성 부여
-            sortNum(Object.values(cl)).map((stu) => {
-              if (!stu.hasOwnProperty("woman")) {
-                stu["woman"] = false;
-              }
-              return stu;
-            });
-            // console.log(cl);
-            // new_wholeClass.push({`${Object.keys(cl)[0]}`:new_cl});
-            return cl;
-          });
-          const fixed_data = {
-            [setYear()]: new_wholeClass,
-          };
-
-          // console.log(fixed_data);
-          uploadStudents(fixed_data);
-        }
-
-        Swal.fire({
-          icon: "success",
-          title: "저장되었어요!",
-          text: `수정/추가된 학생 명단이 저장되었습니다.`,
-          confirmButtonText: "확인",
-          confirmButtonColor: "#85bd82",
-          timer: 5000,
+          // console.log(cl);
+          // new_wholeClass.push({`${Object.keys(cl)[0]}`:new_cl});
+          return cl;
         });
+        const fixed_data = {
+          [setYear()]: new_wholeClass,
+        };
 
-        //취소할 경우 저장하지 않기
-      } else {
-        return;
+        // console.log(fixed_data);
+        uploadStudents(fixed_data);
       }
-    });
+    };
+
+    if (isExcel === true) {
+      fixStudentsData();
+      Swal.fire({
+        icon: "success",
+        title: "저장되었어요!",
+        text: `엑셀파일의 학생정보가 업로드 되었습니다.`,
+        confirmButtonText: "확인",
+        confirmButtonColor: "#85bd82",
+        timer: 5000,
+      });
+    } else {
+      //기존 자료에 덮어쓰기 됨을 알리기
+      Swal.fire({
+        icon: "question",
+        title: "저장할까요?",
+        html: `번호나 이름이 중복되지 않았는지 확인 후 저장 버튼 <i class="fa-regular fa-floppy-disk"></i> 을 눌러주세요!`,
+        showDenyButton: true,
+        confirmButtonText: "저장",
+        confirmButtonColor: "#db100cf2",
+        denyButtonColor: "#85bd82",
+        denyButtonText: `취소`,
+      }).then((result) => {
+        if (result.isConfirmed) {
+          // firestore에 저장하기
+          // 담임교사
+          // 여자 설정을 안한 경우 남자로 모두 설정하기
+          fixStudentsData();
+
+          Swal.fire({
+            icon: "success",
+            title: "저장되었어요!",
+            text: `수정/추가된 학생 명단이 저장되었습니다.`,
+            confirmButtonText: "확인",
+            confirmButtonColor: "#85bd82",
+            timer: 5000,
+          });
+
+          //취소할 경우 저장하지 않기
+        } else {
+          return;
+        }
+      });
+    }
   };
 
   const sortNum = (students) => {
@@ -202,7 +221,7 @@ const StudentLists = (props) => {
     //현재 반 이름 세팅이 끝나면
     if (props.isSubject && nowClassName !== "") {
       // 현재 선택된 반만 학생 정보 수정하기
-      let new_wholeClass = [...wholeClass].map((cl) => {
+      let new_wholeClass = [...wholeClass]?.map((cl) => {
         let new_cl = cl;
         if (Object.keys(cl)[0] === nowClassName) {
           new_cl = { [nowClassName]: studentsInfo };
@@ -455,7 +474,10 @@ const StudentLists = (props) => {
         <>
           {/* 엑셀파일 업로드 & 업로드 파일에서 불러온 자료 */}
           <StudentExcelUpload
-            studentsInfoHandler={(data) => excelUploadHandler(data)}
+            studentsInfoHandler={(data) => {
+              excelUploadHandler(data);
+              // submitStudentUploader(true);
+            }}
             studentsInfo={studentsInfo}
             uploadStudentsInfo={submitStudentUploader}
             isSubject={props.isSubject}
@@ -469,7 +491,7 @@ const StudentLists = (props) => {
             }}
           >
             {studentsInfo &&
-              studentsInfo.map((student) => (
+              studentsInfo?.map((student) => (
                 <StudentLiWithDelete
                   key={"key" + student.num + student.name}
                   myKey={student.num + student.name}
