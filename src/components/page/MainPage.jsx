@@ -160,16 +160,19 @@ const MainPage = (props) => {
   };
 
   //지난 7일 구하기..
-  const last7days = (today) => {
+  const last7days = (today, pastFuture) => {
     let now_date = dayjs(today);
     let new_7days = [];
-    new_7days.push(today);
-    new_7days.push(now_date.subtract(1, "d").format("YYYY-MM-DD"));
-    new_7days.push(now_date.subtract(2, "d").format("YYYY-MM-DD"));
-    new_7days.push(now_date.subtract(3, "d").format("YYYY-MM-DD"));
-    new_7days.push(now_date.subtract(4, "d").format("YYYY-MM-DD"));
-    new_7days.push(now_date.subtract(5, "d").format("YYYY-MM-DD"));
-    new_7days.push(now_date.subtract(6, "d").format("YYYY-MM-DD"));
+    if (pastFuture === "past") {
+      for (let i = 0; i < 8; i++) {
+        new_7days.push(now_date.subtract(i, "d").format("YYYY-MM-DD"));
+      }
+    } else {
+      for (let i = 0; i < 8; i++) {
+        new_7days.push(now_date.add(i, "d").format("YYYY-MM-DD"));
+      }
+    }
+
     return new_7days;
   };
 
@@ -230,26 +233,29 @@ const MainPage = (props) => {
     let personalSnap = await getDoc(personalRef);
 
     const new_schedule = [];
+    let future7days = last7days(todayYyyymmdd, "future");
 
-    // onSnapshot(publicRef, (doc) => {
     publicSnap?.data()?.todo_data?.forEach((data) => {
-      if (data.id.slice(0, 10) === todayYyyymmdd) {
+      if (future7days?.includes(data.id.slice(0, 10))) {
         const new_data = { ...data, public: true };
         new_schedule.push(new_data);
       }
     });
-    // });
 
     // onSnapshot(personalRef, (doc) => {
     personalSnap?.data()?.todo_data?.forEach((data) => {
-      if (data.id.slice(0, 10) === todayYyyymmdd) {
+      if (future7days?.includes(data.id.slice(0, 10))) {
         const new_data = { ...data, public: false };
         new_schedule.push(new_data);
       }
     });
     // });
 
-    setSchedule(new_schedule);
+    setSchedule(
+      new_schedule.sort((a, b) =>
+        dayjs(a.id.slice(0, 10)).diff(dayjs(b.id.slice(0, 10)), "day")
+      )
+    );
   };
 
   //firestore에서 오늘 할일 관련 자료들 받아오기
@@ -284,7 +290,7 @@ const MainPage = (props) => {
     // onSnapshot(checkListsRef, (doc) => {
     const new_checkLists = [];
 
-    let before7days = last7days(todayYyyymmdd);
+    let before7days = last7days(todayYyyymmdd, "past");
 
     checkListsSnap?.data()?.checkLists_data?.forEach((data) => {
       if (before7days?.includes(data.id.slice(0, 10))) {
@@ -303,7 +309,7 @@ const MainPage = (props) => {
     setListMemo([]);
     // onSnapshot(listMemoRef, (doc) => {
     const new_listMemo = [];
-    let before7days = last7days(todayYyyymmdd);
+    let before7days = last7days(todayYyyymmdd, "past");
     listMemoSnap?.data()?.listMemo_data?.forEach((data) => {
       if (before7days?.includes(data.id.slice(0, 10))) {
         new_listMemo.push(data);
@@ -810,15 +816,25 @@ const MainPage = (props) => {
             <div className={classes["event-title"]}>📆 일정</div>
             <hr className={classes["main-hr"]} />
             {schedule.length === 0 ? (
-              <li className={classes["main-li"]}>일정 없음</li>
+              <li className={classes["main-li"]}>* 다가오는 7일 일정 없음</li>
             ) : (
               schedule?.map((event) => (
                 <li key={event.id} className={classes["main-li"]}>
-                  <span>
+                  <span
+                    className={
+                      event.id.slice(0, 10) === todayYyyymmdd
+                        ? classes["mr-underline"]
+                        : ""
+                    }
+                  >
                     {event.public ? "공용) " : "개인) "}
-                    {event.eventName}({event.option.slice(1)})
+                    {event.eventName}({event.option.slice(1)}) / D-
+                    {dayjs(event.id.slice(0, 10)).diff(
+                      todayYyyymmdd,
+                      "day"
+                    )} / {event.note ? ` ${event.note}` : ""}
                   </span>
-                  <span> {event.note ? ` / ${event.note}` : ""}</span>
+                  <span> </span>
                 </li>
               ))
             )}
@@ -866,7 +882,7 @@ const MainPage = (props) => {
             <div className={classes["event-title"]}>👉 미제출</div>
             <hr className={classes["main-hr"]} />
             {checkLists.length === 0 ? (
-              <li className={classes["main-li"]}> * 최근 7일 내 자료 없음</li>
+              <li className={classes["main-li"]}> * 최근 7일 자료 없음</li>
             ) : (
               <>
                 {checkLists?.map(
@@ -908,7 +924,7 @@ const MainPage = (props) => {
             <div className={classes["event-title"]}>📑 개별기록</div>
             <hr className={classes["main-hr"]} />
             {listMemo.length === 0 ? (
-              <li className={classes["main-li"]}> * 최근 7일 내 자료 없음</li>
+              <li className={classes["main-li"]}> * 최근 7일 자료 없음</li>
             ) : (
               <>
                 {listMemo?.map(
