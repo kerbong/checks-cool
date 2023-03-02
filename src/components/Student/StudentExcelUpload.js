@@ -62,7 +62,9 @@ const StudentExcelUpload = (props) => {
               classInfo[sheetName] = [...new_rows];
               wholeClass.push({ ...classInfo });
             });
+            setExcelUploaded(true);
             props.studentsInfoHandler(wholeClass);
+
             //담임일 경우 시트가 하나!
           } else {
             workBook.SheetNames.forEach(function (sheetName) {

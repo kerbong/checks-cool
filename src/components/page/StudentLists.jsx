@@ -89,11 +89,11 @@ const StudentLists = (props) => {
     if (studentSnap.exists()) {
       // console.log(studentSnap.data());
       let exceptNow = [];
-      exceptNow = studentSnap
-        .data()
-        ?.studentDatas?.filter(
-          (yearData) => Object.keys(yearData)[0] !== Object.keys(data)[0]
-        );
+      studentSnap.data()?.studentDatas?.forEach((yearData) => {
+        if (Object.keys(yearData)[0] !== Object.keys(data)[0]) {
+          exceptNow.push(yearData);
+        }
+      });
       exceptNow.push({ ...data });
       uploadData = exceptNow;
     } else {
@@ -276,6 +276,7 @@ const StudentLists = (props) => {
       setNowClassName(Object.keys(data[0])[0]);
 
       setStudentsInfo(...Object.values(data[0]));
+
       // 담임이면
     } else {
       setStudentsInfo([...data]);
@@ -438,9 +439,13 @@ const StudentLists = (props) => {
             ))}
           </select>
           <Button
-            className="student-save"
+            className={
+              wholeClass.length > 0 ? "student-save-uploaded" : "student-save"
+            }
+            id="studentLists-save"
             name={
               <>
+                {wholeClass.length > 0 && "클릭! "}
                 <i className="fa-regular fa-floppy-disk"></i>
               </>
             }

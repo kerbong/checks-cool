@@ -9,13 +9,13 @@ import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import ExampleModal from "./ExampleModal";
 import byExcel from "../../assets/student/teacher-excel.gif";
-import mainImg from "../../assets/notice/메인화면개선.jpg";
+import mainImg from "../../assets/notice/error-fix.jpg";
 import dayjs from "dayjs";
 import AttendCalendar from "components/Attendance/AttendCalendar";
 
-const update_title = `메인화면 업데이트`;
+const update_title = `에러 수정`;
 
-const update_text = `안녕하세요! 새학년도를 맞이하여 <br/><b>메인화면이 업데이트</b> 되었습니다!!🎆 <br/><b>PC에서</b> 접속하시면 <b><br/>한 눈에 모든 내용을</b> 보실 수 있어요~😎 <br/> + 학기초 문제가 생길 수 있습니다!ㅠ 개선/불편사항은 '잼잼' - '이거해요'에 올려주세요!!🫡  감사합니다!🤩`;
+const update_text = `안녕하세요! 학기 첫날부터 바쁜와중에 써주셔서 감사합니다!🎆 <br/>그리고... <b>죄송합니다ㅠㅠ</b>  <br/> 학생명부 업로드 기능과 개별기록 저장 기능에 문제가 있었고 수정되었습니다!<br/> 문제가 생기실 경우.. <b>상황을 자세히 알려주시면</b> 빠른 처리에 도움이 됩니다!! 🫡<br/> 다시 한 번 <b>죄송하고, 감사합니다!</b>🤩`;
 // "* 아, 이거 있으면 좋겠다! 하는 기능이 있으신가요? 내년에 사용해보고 싶은 기능을 추천해주세요! 가장 많은 추천을 받은 아이디어를 선정하여 추가할 계획입니다! '잼잼'-'이거해요' 에 적어주세요~ ";
 //오늘 날짜 yyyy-mm-dd로 만들기
 const getDateHandler = (date, titleOrQuery) => {
@@ -73,7 +73,7 @@ const MainPage = (props) => {
 
   //업데이트 내용 보여주기 로컬스토리지에서 showNotice를 스트링으로 저장해서 확인 후에 이전에 봤으면 안보여주기
   const [showNotice, setShowNotice] = useState(
-    localStorage.getItem("showNotice") === "mainUpdate0228" ? false : true
+    localStorage.getItem("showNotice") === "mainUpdate0303" ? false : true
   );
 
   //화면 사이즈가 변경되면.. 시간표의 기본 세팅을 열림으로 바꿔주기.
@@ -572,7 +572,7 @@ const MainPage = (props) => {
       {showNotice && (
         <ExampleModal
           onClose={() => {
-            localStorage.setItem("showNotice", "mainUpdate0228");
+            localStorage.setItem("showNotice", "mainUpdate0303");
             setShowNotice(false);
           }}
           imgSrc={mainImg}

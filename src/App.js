@@ -122,7 +122,7 @@ function App() {
     const docRef = doc(dbService, "students", uid);
 
     onSnapshot(docRef, (doc) => {
-      if (doc.exists()) {
+      if (doc.exists() && doc?.data()?.studentDatas.length > 0) {
         setShowMainExample(false);
         //현재학년도 자료만 보내기
         setStudents([...sortNum(doc?.data()?.studentDatas)]);
