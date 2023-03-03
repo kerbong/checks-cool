@@ -104,39 +104,29 @@ const ClassTableBasic = (props) => {
           .value;
         월.push(subject);
 
-        // await updateDoc(classBasicRef, { 월: [...월] });
-      }
-
-      // 화요일 자료
-      if (+item % 5 === 1) {
+        // 화요일 자료
+      } else if (+item % 5 === 1) {
         let subject = document.querySelectorAll(`input[id="table-${item}"]`)[0]
           .value;
         화.push(subject);
-        // await updateDoc(classBasicRef, { 화: [...화] });
-      }
 
-      // 수요일 자료
-      if (+item % 5 === 2) {
+        // 수요일 자료
+      } else if (+item % 5 === 2) {
         let subject = document.querySelectorAll(`input[id="table-${item}"]`)[0]
           .value;
         수.push(subject);
-        // await updateDoc(classBasicRef, { 수: [...수] });
-      }
 
-      // 목요일 자료
-      if (+item % 5 === 3) {
+        // 목요일 자료
+      } else if (+item % 5 === 3) {
         let subject = document.querySelectorAll(`input[id="table-${item}"]`)[0]
           .value;
         목.push(subject);
-        // await updateDoc(classBasicRef, { 목: [...목] });
-      }
 
-      // 금요일 자료
-      if (+item % 5 === 4) {
+        // 금요일 자료
+      } else if (+item % 5 === 4) {
         let subject = document.querySelectorAll(`input[id="table-${item}"]`)[0]
           .value;
         금.push(subject);
-        // await updateDoc(classBasicRef, { 금: [...금] });
       }
     });
 
@@ -150,7 +140,7 @@ const ClassTableBasic = (props) => {
     });
 
     const now_doc = await getDoc(classBasicRef);
-    if (now_doc.exists()) {
+    if (now_doc.exists() && Object.keys(now_doc?.data()).length > 0) {
       await updateDoc(classBasicRef, {
         월: [...월],
         화: [...화],
@@ -160,6 +150,7 @@ const ClassTableBasic = (props) => {
         classStart: [...classStart],
         classTime: [...new_classTime],
       });
+      console.log("업데이트");
     } else {
       await setDoc(classBasicRef, {
         월: [...월],
@@ -170,6 +161,7 @@ const ClassTableBasic = (props) => {
         classStart: [...classStart],
         classTime: [...new_classTime],
       });
+      console.log("새로 추가");
     }
 
     Swal.fire({

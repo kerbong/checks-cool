@@ -322,6 +322,7 @@ const MainPage = (props) => {
   //firestore에서 오늘 시간표 관련 자료들 받아오기
   const getClassTableFromDb = async () => {
     let classTableRef = doc(dbService, "classTable", props.userUid);
+    setClassLists([]);
     //입력한 개별날짜 시간표들
     setClassTable([]);
     // 기초시간표 내용
@@ -339,6 +340,8 @@ const MainPage = (props) => {
       //기초 시간표 내용 넣기
       if (today_weekday > 0 && today_weekday < 6) {
         setClassBasic(now_doc.data()?.[WEEKDAYS[today_weekday]]);
+      } else {
+        return;
       }
 
       //교시별 시작시간 세팅하기
@@ -377,8 +380,19 @@ const MainPage = (props) => {
         if (todayClass.length !== 0) {
           setTodayClassTable({ ...todayClass[0] });
           // console.log(todayClass[0]);
+          //오늘 자료는 없는 경우.. 혹시 저장된 과목이 있으면 그건 넣어줌!
         } else {
-          setTodayClassTable(new_todayClassTable);
+          // 혹시 기초시간표에 해당 요일의 과목이 저장되어 있으면
+          let today_subject = now_doc.data()?.[WEEKDAYS[today_weekday]] || [];
+          if (today_subject.length !== 0) {
+            new_todayClassTable.classMemo = new_todayClassTable.classMemo.map(
+              (cl, index) => {
+                return { ...cl, subject: today_subject[index] };
+              }
+            );
+          }
+
+          setTodayClassTable({ ...new_todayClassTable });
         }
       }
     } else {
@@ -483,7 +497,7 @@ const MainPage = (props) => {
       return;
     }
     // console.log(todayClassTable);
-    setTimeout(() => {
+    let time = setTimeout(() => {
       todayClassTable?.classMemo?.forEach((item, index) => {
         //과목명이 없으면 해당 input창 찾아서 빈칸으로 만들기
         if (item?.subject?.length === 0 && classBasic?.[index].length === 0) {
@@ -503,6 +517,8 @@ const MainPage = (props) => {
         }
       });
     }, 150);
+
+    return () => clearTimeout(time);
   }, [todayClassTable]);
 
   //할일 목록 중요한 거 부터 보여주는 sort 함수

@@ -2,23 +2,13 @@ import React, { useRef, useCallback, useState, useEffect } from "react";
 import classes from "./Input.module.css";
 
 const Input = React.forwardRef((props, ref) => {
+  const noteRef = useRef(null);
   const [value, setValue] = useState("");
   const [areaFix, setAreaFix] = useState("");
-  const noteRef = useRef(null);
 
   useEffect(() => {
     setValue("");
   }, []);
-
-  useEffect(() => {
-    if (props.showOn === true) {
-      setAreaFix("1");
-    } else if (props.showOn === false) {
-      setAreaFix("0");
-    } else {
-      setAreaFix(props.showOn);
-    }
-  }, [props.showOn]);
 
   useEffect(() => {
     setValue(props.defaultValue);
@@ -43,6 +33,16 @@ const Input = React.forwardRef((props, ref) => {
       }
     }
   }, [areaFix]);
+
+  useEffect(() => {
+    if (props.showOn === true) {
+      setAreaFix("1");
+    } else if (props.showOn === false) {
+      setAreaFix("0");
+    } else {
+      setAreaFix(props.showOn);
+    }
+  }, [props.showOn]);
 
   return (
     <>
