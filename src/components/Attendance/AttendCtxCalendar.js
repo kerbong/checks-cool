@@ -539,17 +539,6 @@ const AttendCtxCalendar = (props) => {
         getDateValue={getDateHandler}
         isSubject={true}
       />
-
-      {!props.isSubject && (
-        <p>
-          {"* 일정 기간 반복되는 출결은 명렬표 화면을 활용하시면 편리해요!"}
-        </p>
-      )}
-
-      <p>
-        * 문제가 지속되시면 kerbong@gmail.com으로 알려주세요. 최대한 빠르게
-        해결해 드릴게요!
-      </p>
     </>
   );
 };

@@ -1,9 +1,11 @@
 import classes from "./Header.module.css";
 import HeaderMenu from "./HeaderMenu";
+import { useEffect, useState } from "react";
 import HeaderProfileBtn from "./HeaderProfileBtn";
 import { useNavigate } from "react-router-dom";
 
 const Header = (props) => {
+  const [nowOn, setNowOn] = useState("");
   let navigate = useNavigate();
 
   const logOutHandler = () => {
@@ -13,6 +15,11 @@ const Header = (props) => {
   const setMenuHandler = () => {
     props.setMenuHandler();
   };
+
+  useEffect(() => {
+    let where = window.location.href.split("/");
+    setNowOn(where[where.length - 1]);
+  }, [window.location.href]);
 
   return (
     <>
@@ -30,21 +37,25 @@ const Header = (props) => {
             icon={"fa-regular fa-address-book"}
             path={"attendance"}
             menuText={"출석"}
+            nowOn={nowOn}
           />
           <HeaderMenu
             icon={"fa-regular fa-comments"}
             path={"consulting"}
             menuText={"상담"}
+            nowOn={nowOn}
           />
           <HeaderMenu
             icon={"fa-regular fa-calendar-check"}
             path={"todo"}
             menuText={"일정"}
+            nowOn={nowOn}
           />
           <HeaderMenu
             icon={"fa-regular fa-note-sticky"}
             path={"memo"}
             menuText={"메모"}
+            nowOn={nowOn}
           />
 
           <HeaderMenu
@@ -52,6 +63,7 @@ const Header = (props) => {
             path={"classgame"}
             from={""}
             menuText={"잼잼"}
+            nowOn={nowOn}
           />
         </ul>
         <ul className={classes.logInOut} id="logInOut">

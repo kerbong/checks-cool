@@ -3,5 +3,6 @@
   justify-content: space-evenly;
   align-content: flex-start;
   flex-wrap: wrap;
-  height: 85vh;
+  height: auto;
+  margin: 20px 0;
 }

@@ -114,17 +114,19 @@ const StudentCalendarLayout = (props) => {
             <button id="title-btn" onClick={() => setShowExample(true)}>
               <i className="fa-regular fa-address-book"></i> 다왔니?
             </button>
-            {!isSubject && (
-              <button id="switch-btn" onClick={showStudentsListHandler}>
-                <i className="fa-solid fa-list-ol"></i> 명렬표
-              </button>
-            )}
 
             <button id="switch-btn" onClick={showEachStudentHandler}>
               <i className="fa-solid fa-user"></i> 조회
             </button>
           </div>
-
+          {props.students.length === 0 && (
+            <>
+              <div>학생 명단이 존재하지 않네요!</div>
+              <div>메뉴의 곰돌이를 눌러서</div>
+              <div>학생 명단을 먼저 입력해주세요!</div>
+            </>
+          )}
+          <h2>출석 달력</h2>
           {/* 현재학년도 학생만 보내줌 */}
           <AttendCtxCalendar
             selectOption={props.selectOption}
@@ -133,6 +135,25 @@ const StudentCalendarLayout = (props) => {
             students={nowStudents}
             userUid={props.userUid}
           />
+
+          {!isSubject && (
+            <>
+              <br />
+              <h2>명렬표 출석부</h2>
+              <Student students={nowStudents} showOption={showOptionHandler} />
+
+              <p>
+                {
+                  "* 일정 기간 반복되는 출결은 학생 이름을 클릭한 후 기간을 설정하시면 쉽게 저장할 수 있어요!"
+                }
+              </p>
+
+              <p>
+                * 문제가 지속되시면 kerbong@gmail.com으로 알려주세요. 최대한
+                빠르게 해결해 드릴게요!
+              </p>
+            </>
+          )}
         </>
       )}
 
@@ -143,12 +164,6 @@ const StudentCalendarLayout = (props) => {
             <button id="title-btn" onClick={() => setShowExample(true)}>
               <i className="fa-regular fa-address-book"></i> 모아보기
             </button>
-
-            {!isSubject && (
-              <button id="switch-btn" onClick={showStudentsListHandler}>
-                <i className="fa-solid fa-list-ol"></i> 명렬표
-              </button>
-            )}
 
             <button id="switch-btn" onClick={showCalHandler}>
               <i className="fa-regular fa-calendar-days"></i> 출결달력
