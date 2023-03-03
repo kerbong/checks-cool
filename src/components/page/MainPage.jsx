@@ -331,7 +331,12 @@ const MainPage = (props) => {
     setClassStart([]);
 
     // let new_classLists = [];
-    let new_todayClassTable;
+    let new_todayClassTable = {
+      id: "",
+      classMemo: classLists?.map((cl) => {
+        return { memo: "", classNum: cl, subject: "" };
+      }),
+    };
 
     const now_doc = await getDoc(classTableRef);
     if (now_doc.exists()) {
@@ -360,13 +365,6 @@ const MainPage = (props) => {
           }),
         };
         setClassLists(cltime);
-      } else {
-        new_todayClassTable = {
-          id: "",
-          classMemo: classLists?.map((cl) => {
-            return { memo: "", classNum: cl, subject: "" };
-          }),
-        };
       }
 
       // 저장된 각 날짜의 시간표 데이터가 있으면
@@ -396,6 +394,7 @@ const MainPage = (props) => {
         }
       }
     } else {
+      setClassLists(CLASSLISTS);
       setTodayClassTable(new_todayClassTable);
     }
   };
@@ -500,7 +499,7 @@ const MainPage = (props) => {
     let time = setTimeout(() => {
       todayClassTable?.classMemo?.forEach((item, index) => {
         //과목명이 없으면 해당 input창 찾아서 빈칸으로 만들기
-        if (item?.subject?.length === 0 && classBasic?.[index].length === 0) {
+        if (item?.subject?.length === 0 && classBasic?.[index]?.length === 0) {
           document.getElementById(`classSubject-${item.classNum}`).value = "";
         }
         //교시 내용이 없으면 해당 input창 찾아서 빈칸으로 만들기
