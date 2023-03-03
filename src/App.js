@@ -1,25 +1,27 @@
 import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import "./App.css";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense, lazy } from "react";
 import { doc, onSnapshot, getDoc, setDoc } from "firebase/firestore";
 import { dbService, authService } from "./fbase";
 import { signInWithCredential } from "firebase/auth";
 import Swal from "sweetalert2";
 import dayjs from "dayjs";
-import MainPage from "./components/page/MainPage";
-import AttendancePage from "./components/page/AttendancePage";
-import ClassgamePage from "./components/page/ClassgamePage";
-import ConsultingPage from "./components/page/ConsultingPage";
-import MemoPage from "./components/page/MemoPage";
-import TodoPage from "./components/page/TodoPage";
-import Header from "./components/Layout/Header";
-import Profile from "./components/page/Profile";
-import Notice from "./components/page/Notice";
-import ClassTableBasic from "./components/page/ClassTableBasic";
-
-import Auth from "./components/page/Auth";
-import StudentLists from "./components/page/StudentLists";
 import Notification from "./components/Layout/Notification";
+import Loading from "components/page/Loading";
+import Header from "./components/Layout/Header";
+
+// lazy 로딩 적용
+const MainPage = lazy(() => import("./components/page/MainPage"));
+const AttendancePage = lazy(() => import("./components/page/AttendancePage"));
+const ClassgamePage = lazy(() => import("./components/page/ClassgamePage"));
+const ConsultingPage = lazy(() => import("./components/page/ConsultingPage"));
+const MemoPage = lazy(() => import("./components/page/MemoPage"));
+const TodoPage = lazy(() => import("./components/page/TodoPage"));
+const Profile = lazy(() => import("./components/page/Profile"));
+const Notice = lazy(() => import("./components/page/Notice"));
+const ClassTableBasic = lazy(() => import("./components/page/ClassTableBasic"));
+const Auth = lazy(() => import("./components/page/Auth"));
+const StudentLists = lazy(() => import("./components/page/StudentLists"));
 
 function App() {
   const [init, setInit] = useState(false);
@@ -222,139 +224,141 @@ function App() {
         />
 
         <Notification saveTokenHandler={saveTokenHandler} />
-        <Routes>
-          {/* 초기화 로그인 되어 있는데, 프로필이 없거나 프로필에 올해 전담여부가 없으면 */}
-          {init &&
-            isLoggedIn &&
-            (Object.keys(profile)?.length === 0 ||
-              profile?.isSubject?.filter(
-                (yearData) => Object.keys(yearData)[0] === now_year()
-              )?.length === 0) && (
-              <Route
-                index
-                element={
-                  <Profile user={user} profileHandler={profileHandler} />
-                }
-              />
+        <Suspense fallback={<Loading />}>
+          <Routes>
+            {/* 초기화 로그인 되어 있는데, 프로필이 없거나 프로필에 올해 전담여부가 없으면 */}
+            {init &&
+              isLoggedIn &&
+              (Object.keys(profile)?.length === 0 ||
+                profile?.isSubject?.filter(
+                  (yearData) => Object.keys(yearData)[0] === now_year()
+                )?.length === 0) && (
+                <Route
+                  index
+                  element={
+                    <Profile user={user} profileHandler={profileHandler} />
+                  }
+                />
+              )}
+
+            {/* 초기화 되었고 로그인 상태 */}
+            {init &&
+            Object.keys(profile)?.length !== 0 &&
+            profile?.isSubject?.filter(
+              (yearData) => Object.keys(yearData)[0] === now_year()
+            )?.length !== 0 &&
+            isLoggedIn ? (
+              <>
+                <Route
+                  index
+                  path=""
+                  element={
+                    <MainPage
+                      userUid={userUid}
+                      showMainExample={showMainExample}
+                      students={students}
+                      setShowMainExample={() => setShowMainExample(false)}
+                      isSubject={profile?.isSubject}
+                    />
+                  }
+                />
+
+                <Route
+                  path="classgame"
+                  element={
+                    <ClassgamePage
+                      students={students}
+                      userUid={userUid}
+                      email={user.email}
+                      nickName={profile?.nickName || ""}
+                      isSubject={profile?.isSubject || []}
+                    />
+                  }
+                />
+
+                <Route
+                  path="classTable"
+                  element={<ClassTableBasic userUid={userUid} />}
+                />
+
+                <Route
+                  path="attendance"
+                  element={
+                    <AttendancePage
+                      students={students}
+                      userUid={userUid}
+                      isSubject={profile?.isSubject || []}
+                    />
+                  }
+                />
+
+                <Route
+                  path="consulting"
+                  element={
+                    <ConsultingPage
+                      students={students}
+                      userUid={userUid}
+                      isSubject={profile.isSubject || []}
+                    />
+                  }
+                />
+
+                <Route
+                  path="memo"
+                  element={
+                    <MemoPage
+                      students={students}
+                      userUid={userUid}
+                      isSubject={profile.isSubject || []}
+                    />
+                  }
+                />
+
+                <Route path="todo" element={<TodoPage userUid={userUid} />} />
+
+                {/* 전담여부 issubject를 올해 자료만 보냄. 어차피 올해자료만 입력/수정가능 */}
+                <Route
+                  path="student-manage"
+                  element={
+                    <StudentLists
+                      userUid={userUid}
+                      students={students}
+                      isSubject={
+                        profile?.isSubject?.filter(
+                          (yearData) => Object.keys(yearData)[0] === now_year()
+                        )?.[0]?.[now_year()]
+                      }
+                    />
+                  }
+                />
+
+                <Route
+                  path="profile"
+                  element={
+                    <Profile user={user} profileHandler={profileHandler} />
+                  }
+                />
+
+                <Route path="notice" element={<Notice />} />
+              </>
+            ) : (
+              // 초기화되었지만 로그인 되지 않은 상태
+              <>
+                <Route
+                  index
+                  element={
+                    <Auth
+                      safariHandler={(credential) => {
+                        signInWithCredential(authService, credential);
+                      }}
+                    />
+                  }
+                />
+              </>
             )}
-
-          {/* 초기화 되었고 로그인 상태 */}
-          {init &&
-          Object.keys(profile)?.length !== 0 &&
-          profile?.isSubject?.filter(
-            (yearData) => Object.keys(yearData)[0] === now_year()
-          )?.length !== 0 &&
-          isLoggedIn ? (
-            <>
-              <Route
-                index
-                path=""
-                element={
-                  <MainPage
-                    userUid={userUid}
-                    showMainExample={showMainExample}
-                    students={students}
-                    setShowMainExample={() => setShowMainExample(false)}
-                    isSubject={profile?.isSubject}
-                  />
-                }
-              />
-
-              <Route
-                path="classgame"
-                element={
-                  <ClassgamePage
-                    students={students}
-                    userUid={userUid}
-                    email={user.email}
-                    nickName={profile?.nickName || ""}
-                    isSubject={profile?.isSubject || []}
-                  />
-                }
-              />
-
-              <Route
-                path="classTable"
-                element={<ClassTableBasic userUid={userUid} />}
-              />
-
-              <Route
-                path="attendance"
-                element={
-                  <AttendancePage
-                    students={students}
-                    userUid={userUid}
-                    isSubject={profile?.isSubject || []}
-                  />
-                }
-              />
-
-              <Route
-                path="consulting"
-                element={
-                  <ConsultingPage
-                    students={students}
-                    userUid={userUid}
-                    isSubject={profile.isSubject || []}
-                  />
-                }
-              />
-
-              <Route
-                path="memo"
-                element={
-                  <MemoPage
-                    students={students}
-                    userUid={userUid}
-                    isSubject={profile.isSubject || []}
-                  />
-                }
-              />
-
-              <Route path="todo" element={<TodoPage userUid={userUid} />} />
-
-              {/* 전담여부 issubject를 올해 자료만 보냄. 어차피 올해자료만 입력/수정가능 */}
-              <Route
-                path="student-manage"
-                element={
-                  <StudentLists
-                    userUid={userUid}
-                    students={students}
-                    isSubject={
-                      profile?.isSubject?.filter(
-                        (yearData) => Object.keys(yearData)[0] === now_year()
-                      )?.[0]?.[now_year()]
-                    }
-                  />
-                }
-              />
-
-              <Route
-                path="profile"
-                element={
-                  <Profile user={user} profileHandler={profileHandler} />
-                }
-              />
-
-              <Route path="notice" element={<Notice />} />
-            </>
-          ) : (
-            // 초기화되었지만 로그인 되지 않은 상태
-            <>
-              <Route
-                index
-                element={
-                  <Auth
-                    safariHandler={(credential) => {
-                      signInWithCredential(authService, credential);
-                    }}
-                  />
-                }
-              />
-            </>
-          )}
-          <Route path="*" element={<Navigate replace to="/" />} />
-        </Routes>
+            <Route path="*" element={<Navigate replace to="/" />} />
+          </Routes>
+        </Suspense>
       </div>
     </div>
   );
