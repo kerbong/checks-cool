@@ -11,12 +11,17 @@
 }
 
 .board-all {
-  width: 95vw;
-  border-radius: 20px;
-  height: 80vh;
-  background-color: rgb(0, 51, 0);
-  color: whitesmoke;
   font-size: 2rem;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
+}
+
+.board {
+  margin: 20px 0;
+  width: 98%;
 }
 
 .alarm-all {
@@ -36,7 +41,47 @@
 }
 
 .date {
-  margin-bottom: 20px;
   width: auto;
   font-size: 1.5rem;
+}
+
+.setting {
+  font-size: 0.8rem;
+  position: absolute;
+  right: 30px;
+  display: flex;
+  flex-direction: column;
+  width: 65px;
+  color: whitesmoke;
+  align-items: center;
+}
+
+.mg-5 {
+  margin: 5px;
+}
+
+.fontSize-div {
+  background-color: #595959c4;
+  border-radius: 15px;
+  padding: 5px;
+  display: flex;
+  flex-direction: column;
+}
+
+.btn,
+.btn-clicked {
+  border-radius: 10px;
+  background-color: #e4e4e4;
+  border-width: 0;
+  padding: 2px 10px;
+}
+
+.btn-clicked {
+  background-color: #c7ff24;
+}
+
+@media screen and (min-width: 800px) {
+  .setting {
+    width: 105px;
+  }
 }

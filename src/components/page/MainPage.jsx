@@ -9,13 +9,13 @@ import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import ExampleModal from "./ExampleModal";
 import byExcel from "../../assets/student/teacher-excel.gif";
-import mainImg from "../../assets/notice/error-fix.jpg";
+import mainImg from "../../assets/notice/alarmpage.png";
 import dayjs from "dayjs";
 import AttendCalendar from "components/Attendance/AttendCalendar";
 
-const update_title = `에러 수정`;
+const update_title = `에러수정 + 알림장추가`;
 
-const update_text = `안녕하세요! 학기 첫날부터 바쁜와중에 써주셔서 감사합니다!🎆 <br/>그리고... <b>죄송합니다ㅠㅠ</b>  <br/> 학생명부 업로드 기능과 개별기록 저장 기능에 문제가 있었고 수정되었습니다!<br/> 문제가 생기실 경우.. <b>상황을 자세히 알려주시면</b> 빠른 처리에 도움이 됩니다!! 🫡<br/> 다시 한 번 <b>죄송하고, 감사합니다!</b>🤩`;
+const update_text = `시간표 부분 에러가 수정되었습니다!!  <br/> 또 알림장 기능이 추가되었습니다!!🎆<br/> <b>[잼잼] - [알림장]</b> 으로 들어가셔서 사용이 가능합니다. <br/> 추후 기능을 조금 더 추가할 예정입니다. <br/> 출석부분도 명렬표와 달력이 한 화면에 나오도록 구성되었고 <br/> 메뉴에 현재 위치한 페이지가 표시됩니다! <br/> 추후, 메뉴부분 정리가 있을 예정입니다. (업데이트 시 다시 안내드리겠습니다!!) <br/> 학기초 바쁜 와중에 불편드려 죄송합니다😭 <br/> 그럼에도 <b>많은 사용과 홍보, 의견 감사합니다!</b>🤩`;
 // "* 아, 이거 있으면 좋겠다! 하는 기능이 있으신가요? 내년에 사용해보고 싶은 기능을 추천해주세요! 가장 많은 추천을 받은 아이디어를 선정하여 추가할 계획입니다! '잼잼'-'이거해요' 에 적어주세요~ ";
 //오늘 날짜 yyyy-mm-dd로 만들기
 const getDateHandler = (date, titleOrQuery) => {
@@ -73,7 +73,7 @@ const MainPage = (props) => {
 
   //업데이트 내용 보여주기 로컬스토리지에서 showNotice를 스트링으로 저장해서 확인 후에 이전에 봤으면 안보여주기
   const [showNotice, setShowNotice] = useState(
-    localStorage.getItem("showNotice") === "mainUpdate0303" ? false : true
+    localStorage.getItem("showNotice") === "mainUpdate0305" ? false : true
   );
 
   //화면 사이즈가 변경되면.. 시간표의 기본 세팅을 열림으로 바꿔주기.
@@ -596,7 +596,7 @@ const MainPage = (props) => {
       {showNotice && (
         <ExampleModal
           onClose={() => {
-            localStorage.setItem("showNotice", "mainUpdate0303");
+            localStorage.setItem("showNotice", "mainUpdate0305");
             setShowNotice(false);
           }}
           imgSrc={mainImg}

@@ -42,7 +42,7 @@ const ClassgamePage = (props) => {
   return (
     <>
       {showAlarm ? (
-        <Alarm alarmClose={() => setShowAlarm(false)} />
+        <Alarm alarmClose={() => setShowAlarm(false)} userUid={props.userUid} />
       ) : (
         <div>
           <div id="title-div">

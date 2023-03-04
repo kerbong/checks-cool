@@ -71,3 +71,36 @@ input {
   overflow-y: hidden;
   resize: none;
 }
+
+.board-input,
+.board-input-half {
+  color: whitesmoke;
+  border-width: 0;
+  font-size: 50px;
+  overflow-y: hidden;
+  width: 95%;
+  border-radius: 20px;
+  resize: none;
+  min-height: 77vh;
+  background-color: rgb(0, 51, 0);
+  padding: 25px;
+}
+
+.board-input-half {
+}
+
+.fs-80px {
+  font-size: 80px;
+}
+.fs-70px {
+  font-size: 70px;
+}
+.fs-60px {
+  font-size: 60px;
+}
+.fs-50px {
+  font-size: 50px;
+}
+.fs-40px {
+  font-size: 40px;
+}
