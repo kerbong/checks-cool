@@ -333,7 +333,7 @@ const MainPage = (props) => {
     // let new_classLists = [];
     let new_todayClassTable = {
       id: "",
-      classMemo: classLists?.map((cl) => {
+      classMemo: CLASSLISTS?.map((cl) => {
         return { memo: "", classNum: cl, subject: "" };
       }),
     };
@@ -374,9 +374,11 @@ const MainPage = (props) => {
         let todayClass = now_doc
           ?.data()
           ?.datas?.filter((data) => data.id === todayYyyymmdd);
-        // console.log(todayClass);
+        //오늘자료가 있는 경우 넣어주기
         if (todayClass.length !== 0) {
           setTodayClassTable({ ...todayClass[0] });
+          setClassLists(CLASSLISTS);
+          return;
           // console.log(todayClass[0]);
           //오늘 자료는 없는 경우.. 혹시 저장된 과목이 있으면 그건 넣어줌!
         } else {
@@ -389,13 +391,14 @@ const MainPage = (props) => {
               }
             );
           }
-
           setTodayClassTable({ ...new_todayClassTable });
+          setClassLists(CLASSLISTS);
+          return;
         }
       }
     } else {
-      setClassLists(CLASSLISTS);
       setTodayClassTable(new_todayClassTable);
+      setClassLists(CLASSLISTS);
     }
   };
 
