@@ -325,10 +325,10 @@ const MainPage = (props) => {
     setClassLists([]);
     //입력한 개별날짜 시간표들
     setClassTable([]);
-    // 기초시간표 내용
-    setClassBasic([]);
     // 시작 시간 모음
     setClassStart([]);
+
+    let clNum = [];
 
     // let new_classLists = [];
     let new_todayClassTable = {
@@ -365,6 +365,8 @@ const MainPage = (props) => {
           }),
         };
         setClassLists(cltime);
+      } else {
+        setClassLists(CLASSLISTS);
       }
 
       // 저장된 각 날짜의 시간표 데이터가 있으면
@@ -377,7 +379,6 @@ const MainPage = (props) => {
         //오늘자료가 있는 경우 넣어주기
         if (todayClass.length !== 0) {
           setTodayClassTable({ ...todayClass[0] });
-          setClassLists(CLASSLISTS);
           return;
           // console.log(todayClass[0]);
           //오늘 자료는 없는 경우.. 혹시 저장된 과목이 있으면 그건 넣어줌!
@@ -392,7 +393,6 @@ const MainPage = (props) => {
             );
           }
           setTodayClassTable({ ...new_todayClassTable });
-          setClassLists(CLASSLISTS);
           return;
         }
       }
@@ -492,33 +492,20 @@ const MainPage = (props) => {
     }
   };
 
-  // //날짜를 변경하고 나면 시간표 내용이 있는지 확인하고, 없으면 dom에서 직접 바꿔주기??
+  //날짜를 변경하고 나면 시간표 내용이 있는지 확인하고, 없으면 dom에서 직접 바꿔주기??
   useEffect(() => {
     // 주말이 아닐 때만 실행함.
     if (titleDate.slice(-2, -1) === "토" || titleDate.slice(-2, -1) === "일") {
       return;
     }
-    // console.log(todayClassTable);
+    console.log(todayClassTable);
     let time = setTimeout(() => {
       todayClassTable?.classMemo?.forEach((item, index) => {
-        //과목명이 없으면 해당 input창 찾아서 빈칸으로 만들기
-        if (item?.subject?.length === 0 && classBasic?.[index]?.length === 0) {
-          document.getElementById(`classSubject-${item.classNum}`).value = "";
-        }
-        //교시 내용이 없으면 해당 input창 찾아서 빈칸으로 만들기
-        if (item?.memo?.length === 0) {
-          document.getElementById(`classMemo-${item.classNum}`).value = "";
-          document.getElementById(`classMemo-${item.classNum}`).style.height =
-            "23px";
-          // 교시 내용 있으면.. 전체 내용 보여주기
-        } else {
-          document.getElementById(`classMemo-${item.classNum}`).style.height =
-            document.getElementById(`classMemo-${item.classNum}`).scrollHeight -
-            12 +
-            "px";
-        }
+        let textareaTag = document.getElementById(`classMemo-${item.classNum}`);
+        console.log(textareaTag);
+        textareaTag.style.height = textareaTag.scrollHeight - 20 + "px";
       });
-    }, 150);
+    }, 100);
 
     return () => clearTimeout(time);
   }, [todayClassTable]);
@@ -775,12 +762,9 @@ const MainPage = (props) => {
                         classNum={classNum}
                         classStart={classStart?.[index]}
                         subject={
-                          todayClassTable?.classMemo?.[index]?.subject ||
-                          classBasic?.[index] ||
-                          ""
+                          todayClassTable?.classMemo?.[index]?.subject || ""
                         }
                         memo={todayClassTable?.classMemo?.[index]?.memo || ""}
-                        showOn={hideClassTable || titleDate}
                       />
                     ))}
                   </ul>

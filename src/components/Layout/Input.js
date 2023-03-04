@@ -28,34 +28,9 @@ const Input = React.forwardRef((props, ref) => {
     return +limitRow;
   }, []);
 
-  useEffect(() => {}, [props.fontSizePx]);
-
-  const handleResizeHeight = useCallback((e) => {
-    if (noteRef === null || noteRef.current === null) {
-      return;
-    }
-
-    if (props.alarm) {
-      //스크롤을 가장 아래로 내리기..
-      window.scrollTo(0, noteRef.current.scrollHeight);
-      rowAlert();
-      return;
-    }
-    noteRef.current.style.height = "10px";
-    noteRef.current.style.height = noteRef.current.scrollHeight - 13 + "px";
-  }, []);
-
   const changeHandler = () => {
     setValue(noteRef.current.value);
   };
-
-  useEffect(() => {
-    if (noteRef.current !== null) {
-      if (props.placeholder || props.defaultValue) {
-        noteRef.current.style.height = noteRef.current.scrollHeight - 13 + "px";
-      }
-    }
-  }, [areaFix]);
 
   useEffect(() => {
     if (props.showOn === true) {
@@ -66,6 +41,10 @@ const Input = React.forwardRef((props, ref) => {
       setAreaFix(props.showOn);
     }
   }, [props.showOn]);
+
+  useEffect(() => {
+    handleResizeHeight();
+  }, [areaFix]);
 
   useEffect(() => {
     noteRef.current.style.height = props.startheight;
@@ -92,6 +71,21 @@ const Input = React.forwardRef((props, ref) => {
       rowAlert();
     }
   }, [props.fontSize]);
+
+  const handleResizeHeight = useCallback((e) => {
+    if (noteRef === null || noteRef.current === null) {
+      return;
+    }
+
+    if (props.alarm) {
+      //스크롤을 가장 아래로 내리기..
+      window.scrollTo(0, noteRef.current.scrollHeight);
+      rowAlert();
+      return;
+    }
+    noteRef.current.style.height = "10px";
+    noteRef.current.style.height = noteRef.current.scrollHeight - 13 + "px";
+  }, []);
 
   return (
     <>

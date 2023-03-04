@@ -57,7 +57,6 @@ const ClassItem = (props) => {
               type: "textarea",
             }}
             defaultValue={memoDefValue}
-            showOn={props.showOn}
           />
         </div>
       </li>
