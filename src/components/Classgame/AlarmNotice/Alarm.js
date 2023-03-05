@@ -73,6 +73,7 @@ const Alarm = (props) => {
     if (is_mobile) {
       setIsMobile(is_mobile);
       document.getElementById("board-input").style.fontSize = "25px";
+      setFontSize("25px");
     } else {
       setIsMobile(false);
     }
@@ -122,9 +123,9 @@ const Alarm = (props) => {
     if (error === "enter") {
       text =
         "입력 가능한 줄을 초과했어요! 글자크기를 줄이시거나 내용을 줄여주세요.";
-    } else if (error === "width") {
+    } else if (error === "length") {
       text =
-        "한 줄에 입력 가능한 글자수를 초과했어요! 글자 수를 줄이시거나 엔터로 줄을 구분해주세요.";
+        "입력가능한 글자수를 초과했어요! 글자크기를 줄이시거나 내용을 줄여주세요.";
     }
     Swal.fire({
       icon: "error",

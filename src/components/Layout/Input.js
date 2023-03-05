@@ -15,8 +15,10 @@ const Input = React.forwardRef((props, ref) => {
   }, [props.defaultValue]);
 
   const maxRows = useCallback(() => {
-    let limitRow = 9;
-    if (props.fontSize === "50px") {
+    let limitRow = 27;
+    if (props.fontSize === "40px") {
+      limitRow = 9;
+    } else if (props.fontSize === "50px") {
       limitRow = 8;
     } else if (props.fontSize === "60px") {
       limitRow = 7;
@@ -50,23 +52,42 @@ const Input = React.forwardRef((props, ref) => {
     noteRef.current.style.height = props.startheight;
   }, [props.startheight]);
 
+  //알림장용 로직..
   const rowAlert = () => {
     let limitRow = maxRows();
     let rows = noteRef.current.value.split("\n");
+    let row_length = Math.ceil(
+      (noteRef.current.clientWidth - 50) / (+props.fontSize.slice(0, 2) + 2)
+    );
+    let column_length = Math.ceil(
+      (noteRef.current.clientHeight - 50) / (+props.fontSize.slice(0, 2) + 8)
+    );
+    console.log(noteRef.current.value.length);
+    // 칠판에 들어갈 전체 글자수. 가로 글자수 * 세로줄 글자수
+    let maxLength = +Math.floor(row_length * column_length);
+
+    console.log(maxLength);
+    //수정된 전체 줄수
+    let fixed_rows = rows.length;
+
+    //줄수 검증
+    rows.forEach((text) => {
+      let text_row = Math.floor(text.length / row_length);
+      if (text_row > 1) {
+        fixed_rows += text_row;
+      }
+    });
+
     //윈도우 세로에 들어갈 줄 엔터 과다
-    if (rows.length > limitRow) {
+    if (fixed_rows > limitRow) {
       props.maxRowAlert("enter");
-    }
-    // 윈도우 가로에 들어갈 글자수 과다
-    if (
-      noteRef.current.clientWidth / +props.fontSize.slice(0, 2) <
-      rows[rows.length - 1].length
-    ) {
-      props.maxRowAlert("width");
+    } else if (noteRef.current.value.length > maxLength) {
+      props.maxRowAlert("length");
     }
   };
 
   useEffect(() => {
+    console.log(props.fontSize);
     if (props.fontSize !== "" && props.fontSize !== undefined) {
       rowAlert();
     }

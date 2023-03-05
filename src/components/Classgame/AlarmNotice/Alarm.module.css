@@ -14,9 +14,9 @@
   font-size: 2rem;
   display: flex;
   flex-direction: row;
-  justify-content: flex-start;
+  justify-content: center;
   align-items: center;
-  width: 100%;
+  width: 95%;
 }
 
 .board {
