@@ -5,7 +5,7 @@ import dayjs from "dayjs";
 import Input from "components/Layout/Input";
 import Swal from "sweetalert2";
 import { dbService } from "../../../fbase";
-import { onSnapshot, doc, getDoc, setDoc } from "firebase/firestore";
+import { onSnapshot, doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 
 const getDateHandler = (date, titleOrQuery) => {
   let year = date.getFullYear();
@@ -37,16 +37,15 @@ const Alarm = (props) => {
 
   const getAlarmFromDb = async () => {
     let alarmRef = doc(dbService, "alarm", props.userUid);
-    setAlarmLists([]);
 
-    const now_doc = await getDoc(alarmRef);
-    if (now_doc.exists()) {
-      onSnapshot(alarmRef, (doc) => {
-        if (doc?.data()?.alarm_data) {
-          setAlarmLists([...doc?.data()?.alarm_data]);
-        }
+    onSnapshot(alarmRef, (doc) => {
+      setAlarmLists([]);
+      const new_lists = [];
+      doc?.data()?.alarm_data?.forEach((data) => {
+        new_lists.push(data);
       });
-    }
+      setAlarmLists([...new_lists]);
+    });
   };
 
   useEffect(() => {
@@ -86,28 +85,38 @@ const Alarm = (props) => {
     const checkInput = () => {
       clearTimeout(timer);
       timer = setTimeout(async () => {
-        console.log("5초 지남");
+        // console.log("5초 지남");
 
         //데이터 저장하기
-        let data = {
+        let today_data = {
           id: todayYyyymmdd,
           text: textArea.value,
         };
-        let new_datas = [];
-        new_datas = [...alarmLists]?.filter(
-          (data) => data.id !== todayYyyymmdd
-        );
-        new_datas.push(data);
 
-        await setDoc(doc(dbService, "alarm", props.userUid), {
-          alarm_data: new_datas,
+        let new_datas = [];
+
+        [...alarmLists]?.forEach((data) => {
+          if (data.id !== todayYyyymmdd) {
+            new_datas.push(data);
+          }
         });
+        new_datas.push(today_data);
+
+        if (new_datas.length > 1) {
+          await updateDoc(doc(dbService, "alarm", props.userUid), {
+            alarm_data: new_datas,
+          });
+        } else {
+          await setDoc(doc(dbService, "alarm", props.userUid), {
+            alarm_data: new_datas,
+          });
+        }
       }, 5000);
     };
     textArea.addEventListener("keydown", checkInput);
 
     return () => clearTimeout(timer);
-  }, []);
+  }, [todayYyyymmdd]);
 
   const calDateHandler = (date) => {
     let weekd = dayjs(date).format("d");
@@ -171,20 +180,7 @@ const Alarm = (props) => {
       //어제 자료 있으면
       if (yesterData.length > 0) {
         let textValue = document.getElementById("board-input");
-        textValue.setAttribute("value", yesterData[0].text);
-        var t = document.createTextNode(yesterData[0].text);
-        textValue.appendChild(t);
-        // document.getElementById("board-input").focus();
-        // textValue.innerHTML /= textValue.value + yesterData[0].text;
-
-        Swal.fire({
-          icon: "info",
-          title: "개발중",
-          text: "빠른 속도로 개발중입니다..! 조금만 기다려주세요~",
-          confirmButtonText: "확인",
-          confirmButtonColor: "#85bd82",
-          timer: 5000,
-        });
+        textValue.value += yesterData[0].text;
       } else {
         Swal.fire({
           icon: "error",

@@ -15,7 +15,7 @@ const Input = React.forwardRef((props, ref) => {
   }, [props.defaultValue]);
 
   const maxRows = useCallback(() => {
-    let limitRow = 27;
+    let limitRow = 25;
     if (props.fontSize === "40px") {
       limitRow = 9;
     } else if (props.fontSize === "50px") {
@@ -62,11 +62,11 @@ const Input = React.forwardRef((props, ref) => {
     let column_length = Math.ceil(
       (noteRef.current.clientHeight - 50) / (+props.fontSize.slice(0, 2) + 8)
     );
-    console.log(noteRef.current.value.length);
+    // console.log(noteRef.current.value.length);
     // 칠판에 들어갈 전체 글자수. 가로 글자수 * 세로줄 글자수
     let maxLength = +Math.floor(row_length * column_length);
 
-    console.log(maxLength);
+    // console.log(maxLength);
     //수정된 전체 줄수
     let fixed_rows = rows.length;
 
@@ -87,7 +87,7 @@ const Input = React.forwardRef((props, ref) => {
   };
 
   useEffect(() => {
-    console.log(props.fontSize);
+    // console.log(props.fontSize);
     if (props.fontSize !== "" && props.fontSize !== undefined) {
       rowAlert();
     }
