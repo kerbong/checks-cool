@@ -148,13 +148,10 @@ const ConsultLists = (props) => {
     return year + "년 " + month + "월 " + day + "일  ";
   };
 
-  // const timeSortedHandler = (upOrDown, tOrF) => {
-  //   if (nowOnConsult.length === 1) {
-  //     return;
-  //   }
-  //   setNowOnConsult((prev) => sortDate(prev, upOrDown));
-  //   setShowPastFirst(tOrF);
-  // };
+  //이름 셀렉트 부분에 정렬하기 오름차?
+  const sortName = (datas) => {
+    return datas.sort((a, b) => (a > b ? 1 : -1));
+  };
 
   const consultsHandler = (e) => {
     const student = e.target.value;
@@ -383,7 +380,7 @@ const ConsultLists = (props) => {
               <option value="전체학생">전체보기</option>
             )}
 
-            {studentsOnConsults?.map((student) => (
+            {sortName(studentsOnConsults)?.map((student) => (
               <option value={student} key={student}>
                 {student}
               </option>
