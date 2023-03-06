@@ -6,6 +6,7 @@ import Input from "components/Layout/Input";
 import Swal from "sweetalert2";
 import { dbService } from "../../../fbase";
 import { onSnapshot, doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
+import { utils, writeFile } from "xlsx";
 
 const getDateHandler = (date, titleOrQuery) => {
   let year = date.getFullYear();
@@ -87,30 +88,7 @@ const Alarm = (props) => {
       timer = setTimeout(async () => {
         // console.log("5초 지남");
 
-        //데이터 저장하기
-        let today_data = {
-          id: todayYyyymmdd,
-          text: textArea.value,
-        };
-
-        let new_datas = [];
-
-        [...alarmLists]?.forEach((data) => {
-          if (data.id !== todayYyyymmdd) {
-            new_datas.push(data);
-          }
-        });
-        new_datas.push(today_data);
-
-        if (new_datas.length > 1) {
-          await updateDoc(doc(dbService, "alarm", props.userUid), {
-            alarm_data: new_datas,
-          });
-        } else {
-          await setDoc(doc(dbService, "alarm", props.userUid), {
-            alarm_data: new_datas,
-          });
-        }
+        await saveHandler();
       }, 5000);
     };
     textArea.addEventListener("keydown", checkInput);
@@ -160,14 +138,22 @@ const Alarm = (props) => {
 
   //전체 알림장 엑셀로 저장하기
   const excelSave = () => {
-    Swal.fire({
-      icon: "info",
-      title: "개발중",
-      text: "빠른 속도로 개발중입니다..! 조금만 기다려주세요~",
-      confirmButtonText: "확인",
-      confirmButtonColor: "#85bd82",
-      timer: 5000,
+    const new_datas = [];
+    alarmLists.forEach((alarm) => {
+      let data = [alarm.id, alarm.text];
+      new_datas.push(data);
     });
+    new_datas.unshift(["날짜(년-월-일)", "알림장 내용"]);
+
+    //새로운 가상 엑셀파일 생성
+    const book = utils.book_new();
+    const alarm_datas = utils.aoa_to_sheet(new_datas);
+    //셀의 넓이 지정
+    alarm_datas["!cols"] = [{ wpx: 100 }, { wpx: 300 }];
+    //시트에 작성한 데이터 넣기
+    utils.book_append_sheet(book, alarm_datas, "알림장 기록");
+
+    writeFile(book, `알림장 기록(${todayYyyymmdd} 저장).xlsx`);
   };
 
   //어제 자료 받아오기
@@ -191,6 +177,35 @@ const Alarm = (props) => {
           timer: 5000,
         });
       }
+    }
+  };
+
+  //수동저장함수
+  const saveHandler = async () => {
+    let textArea = document.getElementById("board-input");
+    //데이터 저장하기
+    let today_data = {
+      id: todayYyyymmdd,
+      text: textArea.value,
+    };
+
+    let new_datas = [];
+
+    [...alarmLists]?.forEach((data) => {
+      if (data.id !== todayYyyymmdd) {
+        new_datas.push(data);
+      }
+    });
+    new_datas.push(today_data);
+
+    if (new_datas.length > 1) {
+      await updateDoc(doc(dbService, "alarm", props.userUid), {
+        alarm_data: new_datas,
+      });
+    } else {
+      await setDoc(doc(dbService, "alarm", props.userUid), {
+        alarm_data: new_datas,
+      });
     }
   };
 
@@ -286,6 +301,12 @@ const Alarm = (props) => {
               onClick={getYesterdayData}
             >
               어제자료 가져오기
+            </button>
+            <button
+              className={`${classes["mg-5"]} ${classes["btn"]}`}
+              onClick={saveHandler}
+            >
+              수동저장
             </button>
             <button
               className={`${classes["mg-5"]} ${classes["btn"]}`}
