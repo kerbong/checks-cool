@@ -328,8 +328,6 @@ const MainPage = (props) => {
     // 시작 시간 모음
     setClassStart([]);
 
-    let clNum = [];
-
     // let new_classLists = [];
     let new_todayClassTable = {
       id: "",
@@ -378,6 +376,8 @@ const MainPage = (props) => {
           ?.datas?.filter((data) => data.id === todayYyyymmdd);
         //오늘자료가 있는 경우 넣어주기
         if (todayClass.length !== 0) {
+          console.log(todayClass[0]);
+
           setTodayClassTable({ ...todayClass[0] });
           return;
           // console.log(todayClass[0]);
@@ -402,6 +402,9 @@ const MainPage = (props) => {
     }
   };
 
+  useEffect(() => {
+    console.log(classLists);
+  }, [classLists]);
   //db에서 자료 받아오기 useEffect
   useEffect(() => {
     //해당학년도에 전담여부 확인
@@ -498,11 +501,9 @@ const MainPage = (props) => {
     if (titleDate.slice(-2, -1) === "토" || titleDate.slice(-2, -1) === "일") {
       return;
     }
-    console.log(todayClassTable);
     let time = setTimeout(() => {
-      todayClassTable?.classMemo?.forEach((item, index) => {
-        let textareaTag = document.getElementById(`classMemo-${item.classNum}`);
-        console.log(textareaTag);
+      classLists.forEach((item) => {
+        let textareaTag = document.getElementById(`classMemo-${item}`);
         textareaTag.style.height = textareaTag.scrollHeight - 20 + "px";
       });
     }, 100);

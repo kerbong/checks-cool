@@ -126,7 +126,7 @@ const StudentCalendarLayout = (props) => {
               <div>학생 명단을 먼저 입력해주세요!</div>
             </>
           )}
-          <h2>출석 달력</h2>
+          {!isSubject && <h2>출결 달력</h2>}
           {/* 현재학년도 학생만 보내줌 */}
           <AttendCtxCalendar
             selectOption={props.selectOption}

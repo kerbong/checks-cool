@@ -395,6 +395,11 @@ const ConsultLists = (props) => {
           onclick={saveExcelHandler}
         />
       </div>
+      {nowOnConsult ? (
+        <p>* 정보보호를 위해 먼저 항목을 선택해주세요.</p>
+      ) : (
+        <p>* 자료가 없습니다. </p>
+      )}
       {nowOnConsult &&
         nowOnConsult?.map((consult) => (
           <div key={consult.id}>

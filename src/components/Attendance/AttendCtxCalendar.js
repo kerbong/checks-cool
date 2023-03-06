@@ -516,22 +516,25 @@ const AttendCtxCalendar = (props) => {
       {/* 전담교사만 보이는 학급 셀렉트 */}
 
       {props.isSubject && (
-        <div className={classes["classSelect-div"]}>
-          <select
-            ref={selectRef}
-            onChange={selectClassHandler}
-            className={classes["class-select"]}
-            value={nowClassName}
-          >
-            <option value="">--학급--</option>
-            {props.students?.map((cl) => (
-              <option key={Object.keys(cl)} value={Object.keys(cl)}>
-                {Object.keys(cl)}
-              </option>
-            ))}
-          </select>
+        <>
+          <div className={classes["classSelect-div"]}>
+            <h2 className={classes["classSelect-title"]}>출결 달력</h2>
+            <select
+              ref={selectRef}
+              onChange={selectClassHandler}
+              className={classes["class-select"]}
+              value={nowClassName}
+            >
+              <option value="">--학급--</option>
+              {props.students?.map((cl) => (
+                <option key={Object.keys(cl)} value={Object.keys(cl)}>
+                  {Object.keys(cl)}
+                </option>
+              ))}
+            </select>
+          </div>
           {selectRef?.current?.value === "" && "* 학급을 먼저 선택해주세요."}
-        </div>
+        </>
       )}
 
       <AttendCalendar
