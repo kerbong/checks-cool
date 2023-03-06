@@ -11,6 +11,7 @@ import dayjs from "dayjs";
 const ConsultLists = (props) => {
   const [consults, setConsults] = useState([]);
   const [nowOnConsult, setNowOnConsult] = useState([]);
+  const [showOnScreen, setShowOnScreen] = useState([]);
   const [showEditor, setShowEditor] = useState("");
   const [initTextareaHeight, setInitTextareaHeight] = useState("");
   // const [showPastFirst, setShowPastFirst] = useState(false);
@@ -153,6 +154,7 @@ const ConsultLists = (props) => {
     return datas.sort((a, b) => (a > b ? 1 : -1));
   };
 
+  //학생 이름 선택하면 실행되는 함수
   const consultsHandler = (e) => {
     const student = e.target.value;
     let list;
@@ -160,6 +162,8 @@ const ConsultLists = (props) => {
     let consult_data = !isSubject
       ? nowOnConsult
       : nowOnConsult?.filter((data) => data.clName === nowClassName);
+    console.log(consult_data);
+    console.log(consults);
 
     if (student === "전체학생") {
       list = sortDate(consult_data, "up");
@@ -171,7 +175,7 @@ const ConsultLists = (props) => {
         "up"
       );
     }
-    setNowOnConsult(list);
+    setShowOnScreen(list);
   };
 
   //학년도 선택 함수
@@ -401,7 +405,7 @@ const ConsultLists = (props) => {
         <p>* 자료가 없습니다. </p>
       )}
       {nowOnConsult &&
-        nowOnConsult?.map((consult) => (
+        showOnScreen?.map((consult) => (
           <div key={consult.id}>
             <li key={consult.id} className={classes.listArea} id={consult.id}>
               {showEditor === consult.id ? (

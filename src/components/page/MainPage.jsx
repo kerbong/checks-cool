@@ -402,9 +402,6 @@ const MainPage = (props) => {
     }
   };
 
-  useEffect(() => {
-    console.log(classLists);
-  }, [classLists]);
   //db에서 자료 받아오기 useEffect
   useEffect(() => {
     //해당학년도에 전담여부 확인
