@@ -7,11 +7,13 @@ import FileArea from "components/Layout/FileArea";
 
 import { dbService } from "../../fbase";
 import { onSnapshot, setDoc, doc } from "firebase/firestore";
+import AudioRecord from "components/Consult/AudioRecord";
 
 const AttendanceForm = (props) => {
   const [attachedFile, setAttachedFile] = useState("");
   const [option, setOption] = useState("");
   const [inputIsShown, setInputIsShown] = useState(false);
+  const [isImgFile, setIsImgFile] = useState(true);
   const [attendEvents, setAttendEvents] = useState([]);
   const noteRef = useRef(null);
 
@@ -199,6 +201,11 @@ const AttendanceForm = (props) => {
     }
   };
 
+  // 녹음파일 추가하기
+  const uploadAudio = (url) => {
+    setAttachedFile(url);
+  };
+
   return (
     <>
       <AttendanceOption
@@ -230,12 +237,37 @@ const AttendanceForm = (props) => {
             />
           </form>
           <div className={classes.btnArea}>
-            <FileArea
-              about={props.about}
-              attachedFileHandler={(file) => {
-                setAttachedFile(file);
-              }}
-            />
+            {props.about === "consulting" ? (
+              <>
+                <button
+                  className={classes.btn}
+                  onClick={() => setIsImgFile((prev) => !prev)}
+                >
+                  <i className="fa-solid fa-rotate"></i>
+                </button>
+                {isImgFile ? (
+                  <FileArea
+                    about={props.about}
+                    attachedFileHandler={(file) => {
+                      setAttachedFile(file);
+                    }}
+                  />
+                ) : (
+                  <AudioRecord
+                    userUid={props.userUid}
+                    uploadAudio={uploadAudio}
+                  />
+                )}
+              </>
+            ) : (
+              <FileArea
+                about={props.about}
+                attachedFileHandler={(file) => {
+                  setAttachedFile(file);
+                }}
+              />
+            )}
+
             <button className={classes.btn} onClick={submitHandler}>
               저장
             </button>

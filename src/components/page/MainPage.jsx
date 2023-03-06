@@ -376,8 +376,6 @@ const MainPage = (props) => {
           ?.datas?.filter((data) => data.id === todayYyyymmdd);
         //오늘자료가 있는 경우 넣어주기
         if (todayClass.length !== 0) {
-          console.log(todayClass[0]);
-
           setTodayClassTable({ ...todayClass[0] });
           return;
           // console.log(todayClass[0]);
@@ -495,12 +493,16 @@ const MainPage = (props) => {
   //날짜를 변경하고 나면 시간표 내용이 있는지 확인하고, 없으면 dom에서 직접 바꿔주기??
   useEffect(() => {
     // 주말이 아닐 때만 실행함.
-    if (titleDate.slice(-2, -1) === "토" || titleDate.slice(-2, -1) === "일") {
+    if (titleDate.slice(-2, -1) === "토" || titleDate.slice(-2, -1) === "일")
       return;
-    }
+
+    //시간표 보여주기 상태일때만 실행
+    if (hideClassTable) return;
+
     let time = setTimeout(() => {
-      classLists.forEach((item) => {
+      classLists?.forEach((item) => {
         let textareaTag = document.getElementById(`classMemo-${item}`);
+        if (!textareaTag) return;
         textareaTag.style.height = textareaTag.scrollHeight - 20 + "px";
       });
     }, 100);

@@ -14,6 +14,7 @@ import {
   ref,
   uploadString,
   getDownloadURL,
+  uploadBytes,
 } from "firebase/storage";
 import { v4 } from "uuid";
 
@@ -47,13 +48,36 @@ const ConsultingPage = (props) => {
     //파일 있으면 storage에 저장하기, 업데이트하면서 파일을 바꾸지 않는 경우 패스!
     if (data.attachedFileUrl !== "") {
       //storage에 저장
-      const response = await uploadString(
-        ref(storageService, `${props.userUid}/${v4()}`),
-        data.attachedFileUrl,
-        "data_url"
-      );
-      //firestore에 저장할 url받아오기
-      fileUrl = await getDownloadURL(response.ref);
+      //음성녹음인 경우
+      if (data.attachedFileUrl instanceof Object) {
+        const upAndDownUrl = async (audio_file) => {
+          const response = await uploadBytes(
+            ref(storageService, `${props.userUid}/${v4()}`),
+            audio_file,
+            { contentType: "audio/webm" }
+          );
+          //firestore에 저장할 url받아오기
+          return await getDownloadURL(response.ref);
+        };
+
+        // //blob 또는 File api정보 업로드하기
+        // const reader = new FileReader();
+        // reader.readAsDataURL(data.attachedFileUrl);
+        // reader.onloadend = (finishedEvent) => {
+        //   fileUrl = upAndDownUrl(finishedEvent.currentTarget.result);
+        // };
+        fileUrl = await upAndDownUrl(data.attachedFileUrl);
+
+        //이미지파일인 경우
+      } else {
+        const response = await uploadString(
+          ref(storageService, `${props.userUid}/${v4()}`),
+          data.attachedFileUrl,
+          "data_url"
+        );
+        //firestore에 저장할 url받아오기
+        fileUrl = await getDownloadURL(response.ref);
+      }
     }
     //firebase에 firestore에 업로드, 데이터에서 같은게 있는지 확인
     let new_data = {

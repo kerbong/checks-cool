@@ -118,6 +118,12 @@ const ConsultLists = (props) => {
           return new_nowOnConsult;
         });
 
+        setShowOnScreen((prev) => {
+          let new_nowOnConsult = prev?.filter((data) => data.id !== consult.id);
+
+          return new_nowOnConsult;
+        });
+
         if (!isSubject) {
           //학생들 이름 다시 세팅하기. 전체자료에서 현재학년도이면서 삭제한 자료가 아닌것 들로 학생들 이름 설정
           setStudentsOnConsults([
@@ -162,8 +168,6 @@ const ConsultLists = (props) => {
     let consult_data = !isSubject
       ? nowOnConsult
       : nowOnConsult?.filter((data) => data.clName === nowClassName);
-    console.log(consult_data);
-    console.log(consults);
 
     if (student === "전체학생") {
       list = sortDate(consult_data, "up");
@@ -329,6 +333,10 @@ const ConsultLists = (props) => {
     setIsSubject(isSubject);
   }, [props.isSubject]);
 
+  const imageOnError = (event) => {
+    event.currentTarget.style.display = "none";
+  };
+
   return (
     <>
       {/* 정렬하는 부분 */}
@@ -430,14 +438,20 @@ const ConsultLists = (props) => {
                     </span>
                   </div>
 
-                  {/* 이미지가 있으면 이미지 보여주기 */}
+                  {/* 이미지 / 녹음파일이 있으면 이미지 보여주기 */}
                   {consult.attachedFileUrl && (
                     <div className={classes.fileArea}>
                       <img
                         src={consult.attachedFileUrl}
                         height="400px"
                         alt="filePreview"
+                        onError={imageOnError}
                       />
+                      <audio
+                        controls
+                        src={consult.attachedFileUrl}
+                        onError={imageOnError}
+                      ></audio>
                     </div>
                   )}
                   {/* 상담 비고 등록한 부분 있으면 보여주기 */}

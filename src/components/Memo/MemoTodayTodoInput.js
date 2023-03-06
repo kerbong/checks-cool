@@ -24,6 +24,9 @@ const MemoTodayTodoInput = ({ todoList, setTodoList }) => {
   const onPressSubmitButton = (e) => {
     e.preventDefault();
 
+    //빈칸의 경우 저장되지 않도록
+    if (text.trim().length === 0) return;
+
     //todolist에서 현재 남아있는 데이터들만 새롭게 id 만들어주기
     let new_todoList = todoList?.map((list, index) => {
       return { ...list, id: index };

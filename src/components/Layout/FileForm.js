@@ -44,7 +44,7 @@ const FileForm = (props) => {
           }
         }}
       >
-        {!attachedFile ? "파일추가" : "초기화&파일추가"}
+        {!attachedFile ? "이미지 추가" : "초기화&이미지추가"}
       </label>
       <input
         type="file"
