@@ -385,7 +385,11 @@ const MainPage = (props) => {
         } else {
           setTodayClassTable(new_todayClassTable);
         }
+        // 저장된 시간표 데이터가 없으면
+      } else {
+        setTodayClassTable(new_todayClassTable);
       }
+      // 아예 새롭게 처음이면
     } else {
       setTodayClassTable(new_todayClassTable);
       setClassLists(CLASSLISTS);
