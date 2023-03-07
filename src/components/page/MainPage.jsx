@@ -322,7 +322,8 @@ const MainPage = (props) => {
   //firestore에서 오늘 시간표 관련 자료들 받아오기
   const getClassTableFromDb = async () => {
     let classTableRef = doc(dbService, "classTable", props.userUid);
-    setClassLists([]);
+    setTodayClassTable({});
+
     //입력한 개별날짜 시간표들
     setClassTable([]);
     // 시작 시간 모음
@@ -369,17 +370,20 @@ const MainPage = (props) => {
 
       // 저장된 각 날짜의 시간표 데이터가 있으면
       if (now_doc?.data()?.datas) {
-        setClassTable([...now_doc?.data()?.datas]);
+        let all_classTable = now_doc?.data()?.datas;
+        setClassTable([...all_classTable]);
 
-        let todayClass = now_doc
-          ?.data()
-          ?.datas?.filter((data) => data.id === todayYyyymmdd);
+        let todayClass = all_classTable?.filter(
+          (data) => data.id === todayYyyymmdd
+        );
         //오늘자료가 있는 경우 넣어주기
         if (todayClass.length !== 0) {
           setTodayClassTable({ ...todayClass[0] });
           return;
           // console.log(todayClass[0]);
           //오늘 자료는 없는 경우.. 혹시 저장된 과목이 있으면 그건 넣어줌!
+        } else {
+          setTodayClassTable(new_todayClassTable);
         }
       }
     } else {
@@ -745,18 +749,19 @@ const MainPage = (props) => {
               titleDate.slice(-2, -1) !== "일" ? (
                 <>
                   <ul className={classes["ul-section"]}>
-                    {classLists?.map((classNum, index) => (
+                    {/* todayClassTable로 렌더링 */}
+                    {todayClassTable?.classMemo?.map((clInfo, index) => (
                       <ClassItem
-                        key={`item${classNum}`}
-                        myKey={`class${classNum}`}
-                        classNum={classNum}
+                        key={`item${clInfo?.classNum}`}
+                        myKey={`class${clInfo?.classNum}`}
+                        classNum={clInfo?.classNum}
                         classStart={classStart?.[index]}
                         subject={
-                          todayClassTable?.classMemo?.[index]?.subject ||
-                          classBasic?.[index] ||
-                          ""
+                          clInfo?.subject !== ""
+                            ? clInfo?.subject
+                            : classBasic?.[index] || ""
                         }
-                        memo={todayClassTable?.classMemo?.[index]?.memo || ""}
+                        memo={clInfo?.memo || ""}
                       />
                     ))}
                   </ul>
