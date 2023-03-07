@@ -26,10 +26,16 @@ const AudioRecord = (props) => {
         setPermission(true);
         setStream(streamData);
       } catch (err) {
-        alert(err.message);
+        Swal.fire(
+          "에러!",
+          `${err.message}, 문제가 지속되면 kerbong@gmail.com / 잼잼-이거해요 에 알려주세요!`,
+          "warning"
+        );
       }
     } else {
-      alert("The MediaRecorder API is not supported in your browser.");
+      alert(
+        "현재 브라우저에서 실행이 불가능한 기능입니다! 크롬에서 실행해주세요!"
+      );
     }
   };
 
@@ -101,8 +107,17 @@ const AudioRecord = (props) => {
         setRecordOnTime(min + ":" + sec);
       }, 1000);
     } else if (recordingStatus === "inactive") {
-      setRecordStartTime(null);
-      clearInterval(interval);
+      //녹음된 자료가 있으면..
+      if (audio) {
+        setRecordStartTime(null);
+        clearInterval(interval);
+        Swal.fire(
+          "녹음 종료",
+          `녹음이 종료되었습니다. 저장하시려면 [파일추가] 를 누르신 후, [저장]을 눌러주세요!`,
+          "warning"
+        );
+        props.uploadAudio(audioBlob);
+      }
     }
 
     return () => clearInterval(interval);
@@ -113,10 +128,15 @@ const AudioRecord = (props) => {
   };
 
   useEffect(() => {
-    if (recordOnTime === "05:00") {
-      remain_swal(3);
-    } else if (recordOnTime === "07:00") {
-      remain_swal(1);
+    if (recordStartTime !== null) {
+      if (recordOnTime === "05:00") {
+        remain_swal(3);
+      } else if (recordOnTime === "07:00") {
+        remain_swal(1);
+        //8분이 최대 녹음...
+      } else if (recordOnTime === "08:00") {
+        stopRecording();
+      }
     }
   }, [recordOnTime]);
 
