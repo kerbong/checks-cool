@@ -33,7 +33,7 @@ const StudentExcelUpload = (props) => {
               // console.log(rows);
               let new_rows = rows?.map((row) => ({
                 num: String(row["번호"]),
-                name: String(row["이름"]),
+                name: String(row["이름"] || row["성명"]),
                 woman: String(row["성별"]) === "남" ? false : true,
               }));
 
@@ -72,7 +72,7 @@ const StudentExcelUpload = (props) => {
               // console.log(rows);
               let new_rows = rows?.map((row) => ({
                 num: String(row["번호"]),
-                name: String(row["이름"]),
+                name: String(row["이름"] || row["성명"]),
                 woman: String(row["성별"]) === "남" ? false : true,
               }));
 

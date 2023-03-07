@@ -336,16 +336,16 @@ const MainPage = (props) => {
       }),
     };
 
+    let class_basic = [];
     const now_doc = await getDoc(classTableRef);
     if (now_doc.exists()) {
       //오늘 요일설정
       let today_weekday = new Date(todayYyyymmdd).getDay();
       //기초 시간표 내용 넣기
       if (today_weekday > 0 && today_weekday < 6) {
-        setClassBasic(now_doc.data()?.[WEEKDAYS[today_weekday]]);
-      } else {
-        return;
+        class_basic = now_doc.data()?.[WEEKDAYS[today_weekday]];
       }
+      setClassBasic(class_basic);
 
       //교시별 시작시간 세팅하기
       if (now_doc?.data()?.classStart) {
@@ -380,18 +380,6 @@ const MainPage = (props) => {
           return;
           // console.log(todayClass[0]);
           //오늘 자료는 없는 경우.. 혹시 저장된 과목이 있으면 그건 넣어줌!
-        } else {
-          // 혹시 기초시간표에 해당 요일의 과목이 저장되어 있으면
-          let today_subject = now_doc.data()?.[WEEKDAYS[today_weekday]] || [];
-          if (today_subject.length !== 0) {
-            new_todayClassTable.classMemo = new_todayClassTable.classMemo.map(
-              (cl, index) => {
-                return { ...cl, subject: today_subject[index] };
-              }
-            );
-          }
-          setTodayClassTable({ ...new_todayClassTable });
-          return;
         }
       }
     } else {
@@ -764,7 +752,9 @@ const MainPage = (props) => {
                         classNum={classNum}
                         classStart={classStart?.[index]}
                         subject={
-                          todayClassTable?.classMemo?.[index]?.subject || ""
+                          todayClassTable?.classMemo?.[index]?.subject ||
+                          classBasic?.[index] ||
+                          ""
                         }
                         memo={todayClassTable?.classMemo?.[index]?.memo || ""}
                       />
