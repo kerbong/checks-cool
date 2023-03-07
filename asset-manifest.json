@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/checks-cool/static/css/main.e223db94.css",
-    "main.js": "/checks-cool/static/js/main.636bc84e.js",
+    "main.js": "/checks-cool/static/js/main.0c7d1061.js",
     "static/css/453.9675931b.chunk.css": "/checks-cool/static/css/453.9675931b.chunk.css",
     "static/js/453.6d8970d3.chunk.js": "/checks-cool/static/js/453.6d8970d3.chunk.js",
     "static/css/925.b8242f5f.chunk.css": "/checks-cool/static/css/925.b8242f5f.chunk.css",
@@ -9,9 +9,9 @@
     "static/css/779.9e408cbb.chunk.css": "/checks-cool/static/css/779.9e408cbb.chunk.css",
     "static/js/779.c27c2c98.chunk.js": "/checks-cool/static/js/779.c27c2c98.chunk.js",
     "static/css/447.af947595.chunk.css": "/checks-cool/static/css/447.af947595.chunk.css",
-    "static/js/447.d3aebb95.chunk.js": "/checks-cool/static/js/447.d3aebb95.chunk.js",
+    "static/js/447.af44ddf2.chunk.js": "/checks-cool/static/js/447.af44ddf2.chunk.js",
     "static/css/893.5919f80e.chunk.css": "/checks-cool/static/css/893.5919f80e.chunk.css",
-    "static/js/893.d122abd9.chunk.js": "/checks-cool/static/js/893.d122abd9.chunk.js",
+    "static/js/893.b6c54559.chunk.js": "/checks-cool/static/js/893.b6c54559.chunk.js",
     "static/css/89.2f754f97.chunk.css": "/checks-cool/static/css/89.2f754f97.chunk.css",
     "static/js/89.e1233f69.chunk.js": "/checks-cool/static/js/89.e1233f69.chunk.js",
     "static/css/771.7e3e42b3.chunk.css": "/checks-cool/static/css/771.7e3e42b3.chunk.css",
@@ -30,7 +30,7 @@
     "static/js/964.9ece06fb.chunk.js": "/checks-cool/static/js/964.9ece06fb.chunk.js",
     "static/js/787.5c335e8e.chunk.js": "/checks-cool/static/js/787.5c335e8e.chunk.js",
     "static/js/517.6adad237.chunk.js": "/checks-cool/static/js/517.6adad237.chunk.js",
-    "static/js/437.914c6800.chunk.js": "/checks-cool/static/js/437.914c6800.chunk.js",
+    "static/js/437.b34f0f77.chunk.js": "/checks-cool/static/js/437.b34f0f77.chunk.js",
     "static/media/GowunDodum-Regular.ttf": "/checks-cool/static/media/GowunDodum-Regular.39c9a39c246c3c54c53e.ttf",
     "static/media/list.gif": "/checks-cool/static/media/list.8fffec1112ca3ad4d287.gif",
     "static/media/listMemo.gif": "/checks-cool/static/media/listMemo.9b1e9fbe144c9fd5c575.gif",
@@ -51,6 +51,6 @@
   },
   "entrypoints": [
     "static/css/main.e223db94.css",
-    "static/js/main.636bc84e.js"
+    "static/js/main.0c7d1061.js"
   ]
 }
