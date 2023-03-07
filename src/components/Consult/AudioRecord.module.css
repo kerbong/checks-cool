@@ -27,13 +27,11 @@
   background-color: #ff6600;
   color: white;
   font-weight: bold;
-  border-width: 2px;
+  border-width: 0;
 }
 .audio-btns {
   display: flex;
   align-items: center;
-}
-.downRecordFile {
 }
 
 /* Adjustments for wider screens */

@@ -185,11 +185,6 @@ const AudioRecord = (props) => {
         <div className={classes["audio-btns"]}>
           {audio && (
             <>
-              <button className={classes["downRecordFile"]}>
-                <a download href={audio}>
-                  다운로드
-                </a>
-              </button>
               <button
                 onClick={uploadAudio}
                 className={classes["addRecordFile"]}
