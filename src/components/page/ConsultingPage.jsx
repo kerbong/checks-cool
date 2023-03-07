@@ -54,7 +54,7 @@ const ConsultingPage = (props) => {
           const response = await uploadBytes(
             ref(storageService, `${props.userUid}/${v4()}`),
             audio_file,
-            { contentType: "audio/webm" }
+            { contentType: "audio/mp4" }
           );
           //firestore에 저장할 url받아오기
           return await getDownloadURL(response.ref);

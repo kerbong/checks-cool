@@ -38,12 +38,19 @@ const MemoTodayTodoItem = ({ todoItem, todoList, setTodoList }) => {
 
   const onClickEditButton = () => {
     setEdited(true);
+    // 혹시 순서가 바뀐 걸 고려해서, textarea에 들어갈 value 새로 세팅하기 (안해주면.. 순서바꾸고 edit 버튼 누르면 순서 바뀌기 전의 텍스트가 보임)
+    todoList?.forEach((item) => {
+      if (todoItem?.id === item?.id) {
+        setNewTest(item.text);
+      }
+    });
   };
 
   const onChangeEditInput = (e) => {
     setNewTest(e.target.value);
   };
 
+  //수정할 때 저장버튼 함수
   const onClickSubmitButton = (e) => {
     const nextTodoList = todoList?.map((item) => ({
       ...item,
@@ -132,7 +139,9 @@ const MemoTodayTodoItem = ({ todoItem, todoList, setTodoList }) => {
           if (edited) {
             setEmergency((prev) => !prev);
           } else {
-            return;
+            if (todoItem?.emg !== emergency) {
+              setEmergency(todoItem?.emg);
+            }
           }
         }}
       >
@@ -181,7 +190,12 @@ const MemoTodayTodoItem = ({ todoItem, todoList, setTodoList }) => {
               <button
                 type="button"
                 className="todoapp__item-delete-btn"
-                onClick={() => setEdited(false)}
+                onClick={() => {
+                  if (todoItem?.emg !== emergency) {
+                    setEmergency(todoItem?.emg);
+                  }
+                  setEdited(false);
+                }}
               >
                 <i className="fa-solid fa-xmark"></i>
               </button>

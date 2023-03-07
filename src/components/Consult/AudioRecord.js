@@ -3,7 +3,7 @@ import classes from "./AudioRecord.module.css";
 import dayjs from "dayjs";
 import Swal from "sweetalert2";
 
-const mimeType = "audio/webm";
+const mimeType = "audio/mp4";
 
 const AudioRecord = (props) => {
   const [permission, setPermission] = useState(false);

@@ -56,6 +56,7 @@ const MemoTodayTodo = (props) => {
 
   const setTodoListHandler = async (e) => {
     setTodoList(e);
+    console.log(e);
     //firestore에 업로드  e는 전체 배열 {[할일],[할일]}
     const new_data = { memoTodo: e };
     const memoTodoRef = doc(dbService, "memo", props.userUid);

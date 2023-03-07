@@ -56,7 +56,7 @@ const MemoTodayTodoItemList = ({
                           >
                             {/* // map을 이용하여 ToDoItem을 출력 */}
                             <MemoTodayTodoItem
-                              key={todoItem.id}
+                              key={todoItem.id + todoItem.text}
                               todoItem={todoItem}
                               todoList={todoList}
                               setTodoList={setTodoList}
