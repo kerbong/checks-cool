@@ -22,7 +22,9 @@ const DoingList = (props) => {
               ? "확인중"
               : list.result === "2"
               ? "개발중"
-              : "해결"}
+              : list.result === "3"
+              ? "해결"
+              : "메일전송"}
           </span>
         </li>
       ))}

@@ -1,8 +1,13 @@
-.ul-section {
+.ul-section,
+.date-title {
   display: flex;
   flex-direction: column;
   margin: 5px;
   padding: 5px;
+}
+
+.date-title {
+  align-items: center;
 }
 
 .li-section {
@@ -37,9 +42,9 @@
 
 .title-input {
   margin-left: 10px;
-  width: 55%;
-  font-size: 1.1rem;
-  height: 7vh;
+  width: 85%;
+  font-size: 1.2rem;
+  text-align: center;
 }
 
 .saveBtn {

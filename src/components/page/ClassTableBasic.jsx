@@ -150,7 +150,7 @@ const ClassTableBasic = (props) => {
         classStart: [...classStart],
         classTime: [...new_classTime],
       });
-      console.log("업데이트");
+      // console.log("업데이트");
     } else {
       await setDoc(classBasicRef, {
         월: [...월],
@@ -161,7 +161,7 @@ const ClassTableBasic = (props) => {
         classStart: [...classStart],
         classTime: [...new_classTime],
       });
-      console.log("새로 추가");
+      // console.log("새로 추가");
     }
 
     Swal.fire({

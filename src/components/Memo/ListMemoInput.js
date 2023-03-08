@@ -3,6 +3,8 @@ import classes from "./ListMemoInput.module.css";
 import Button from "../Layout/Button";
 import Swal from "sweetalert2";
 import Input from "../Layout/Input";
+import AttendCalendar from "components/Attendance/AttendCalendar";
+import dayjs from "dayjs";
 
 const ListMemoInput = (props) => {
   const getDateHandler = (date) => {
@@ -21,21 +23,19 @@ const ListMemoInput = (props) => {
   const [memoTitle, setMemoTitle] = useState(
     props.item.title || getDateHandler(new Date())
   );
+  const [todayYyyymmdd, setTodayYyyymmdd] = useState(new Date());
 
   const saveMemo = (auto) => {
     if (memoTitle) {
-      const tiemStamp = () => {
-        let today = new Date();
-        today.setHours(today.getHours() + 9);
-        return today.toISOString().replace("T", " ").substring(0, 19);
-      };
-
       let item_id;
       //기존의 아이템인 경우 기존 아이디 쓰고
       if (props?.item?.id) {
         item_id = props.item.id;
       } else {
-        item_id = tiemStamp();
+        item_id =
+          dayjs(todayYyyymmdd).format("YYYY-MM-DD") +
+          " " +
+          dayjs().format("HH:mm:ss");
       }
 
       let new_memo = {
@@ -65,7 +65,6 @@ const ListMemoInput = (props) => {
 
       // setStudentMemo((prev) => [...prev, new_memo]);
 
-      console.log(new_memo);
       // 수동저장이면...
       if (!auto) {
         props.onClose();
@@ -99,15 +98,6 @@ const ListMemoInput = (props) => {
     }).then((result) => {
       /* Read more about isConfirmed, isDenied below */
       if (result.isConfirmed) {
-        // Swal.fire({
-        //   icon: "success",
-        //   title: "자료가 삭제되었어요.",
-        //   text: "5초 후에 창이 사라집니다.",
-        //   confirmButtonText: "확인",
-        //   confirmButtonColor: "#85bd82",
-        //   timer: 5000,
-        // });
-
         props.removeData(item);
         props.onClose();
         props.setItemNull();
@@ -128,10 +118,16 @@ const ListMemoInput = (props) => {
       }, 10000);
     };
     modalDiv.addEventListener("keydown", checkInput);
-    modalDiv.addEventListener("click", checkInput);
 
     return () => clearTimeout(timer);
   }, []);
+
+  const calDateHandler = (date) => {
+    let weekd = dayjs(date).format("d");
+    let weekDays = ["일", "월", "화", "수", "목", "금", "토"];
+
+    setTodayYyyymmdd(dayjs(date).format("YYYY-MM-DD"));
+  };
 
   return (
     <>
@@ -145,14 +141,36 @@ const ListMemoInput = (props) => {
         >
           <i className="fa-regular fa-circle-xmark"></i>
         </p>
-        <input
-          type="text"
-          placeholder="명렬표 기록 제목"
-          onChange={(e) => setMemoTitle(e.target.value)}
-          value={memoTitle}
-          className={`${classes["title-input"]} title-input`}
-          autoFocus
-        />{" "}
+
+        {/* 날짜와 제목창 */}
+        <div className={classes["date-title"]}>
+          {/* 날짜 화면 보여주기 */}
+          {!props?.item?.id && (
+            <div className={classes["date"]}>
+              {/* 오늘 날짜 보여주는 부분 날짜 클릭하면 달력도 나옴 */}
+
+              {/* {titleDate} */}
+              {/* 오늘 날짜 보여주는 부분 날짜 클릭하면 달력도 나옴 */}
+              <span style={{ fontSize: "1.2rem" }}>
+                <AttendCalendar
+                  getDateValue={calDateHandler}
+                  about="main"
+                  setStart={new Date(todayYyyymmdd)}
+                />
+              </span>
+            </div>
+          )}
+          <input
+            type="text"
+            placeholder="명렬표 기록 제목"
+            onChange={(e) => setMemoTitle(e.target.value)}
+            value={memoTitle}
+            className={`${classes["title-input"]} title-input`}
+            style={{ height: props.item.id ? "7vh" : "3vh" }}
+            autoFocus
+          />{" "}
+        </div>
+
         <Button
           name={"삭제"}
           id={"del-checkItemBtn"}

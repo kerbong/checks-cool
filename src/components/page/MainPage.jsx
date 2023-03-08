@@ -9,13 +9,13 @@ import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import ExampleModal from "./ExampleModal";
 import byExcel from "../../assets/student/teacher-excel.gif";
-import mainImg from "../../assets/notice/consultRecord.jpg";
+import mainImg from "../../assets/notice/0308.jpg";
 import dayjs from "dayjs";
 import AttendCalendar from "components/Attendance/AttendCalendar";
 
-const update_title = `상담 녹음기능 추가!`;
+const update_title = `함께 성장해요!🍇`;
 
-const update_text = `상담부분에 녹음기능이 추가되었어요!!🎆<br/> <b>[상담] - [쓰기] </b> 로 들어가셔서 사용이 가능합니다. <br/> 전환 버튼, 마이크 권한, 녹음, 중지, 파일추가, 저장 순으로 클릭하시면 됩니다! <br/> <b>파일추가!!를 꼭 하시고 저장</b>하셔야 됩니다!! <br/> 또, 시간이 부족하여 기본적인 테스트만 거쳤기에 <b>실제 사용 전에 꼭 테스트를 거쳐주세요!!</b> <br/> (지속적으로 테스트 예정입니다.) <br/> 많은 의견을 주셔서 감사합니다!! <br/> 불편에도 <b>많은 사용해주셔서 감사합니다!!! </b>🤩`;
+const update_text = `학기초 다양한 <b>에러 수정</b>과 더불어 많은 선생님들이 의견 주신<br/> <b>새로운 카테고리 메모장</b>을 개발하고 있습니다!🫡 <br/> 기본적으로 먼저 의견 주신 부분들을 개발하지만, 많은 분들이 비슷한 의견을 주시면 더 필요한 것으로 판단하여 먼저 개발하게 됩니다!(양해부탁드립니다!) <br/> 최근 업로드 된, <b>[상담]-[녹음]</b> 기능과 <b>[잼잼]-[알림장]</b> 기능도 많은 사용, 개선의견 부탁드립니다!😊 <br/> 함께 더 나은 서비스를 만들어 주시는 모든선생님들께 감사드립니다!!🙏 함께 성장하는 첵스쿨이 되도록 노력하겠습니다!! <br/> 주변 선생님들께 <b> 입소문도 부탁드립니다!!</b>(좋은건 함께해야 제맛..!!) 🤩`;
 // "* 아, 이거 있으면 좋겠다! 하는 기능이 있으신가요? 내년에 사용해보고 싶은 기능을 추천해주세요! 가장 많은 추천을 받은 아이디어를 선정하여 추가할 계획입니다! '잼잼'-'이거해요' 에 적어주세요~ ";
 //오늘 날짜 yyyy-mm-dd로 만들기
 const getDateHandler = (date, titleOrQuery) => {
@@ -73,7 +73,7 @@ const MainPage = (props) => {
 
   //업데이트 내용 보여주기 로컬스토리지에서 showNotice를 스트링으로 저장해서 확인 후에 이전에 봤으면 안보여주기
   const [showNotice, setShowNotice] = useState(
-    localStorage.getItem("showNotice") === "mainUpdate0306" ? false : true
+    localStorage.getItem("showNotice") === "mainUpdate0308" ? false : true
   );
 
   //화면 사이즈가 변경되면.. 시간표의 기본 세팅을 열림으로 바꿔주기.
@@ -579,7 +579,7 @@ const MainPage = (props) => {
       {showNotice && (
         <ExampleModal
           onClose={() => {
-            localStorage.setItem("showNotice", "mainUpdate0306");
+            localStorage.setItem("showNotice", "mainUpdate0308");
             setShowNotice(false);
           }}
           imgSrc={mainImg}
