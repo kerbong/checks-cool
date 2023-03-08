@@ -15,7 +15,7 @@ const Input = React.forwardRef((props, ref) => {
   }, [props.defaultValue]);
 
   const maxRows = useCallback(() => {
-    let limitRow = 25;
+    let limitRow;
     if (props.fontSize === "40px") {
       limitRow = 9;
     } else if (props.fontSize === "50px") {
@@ -27,6 +27,10 @@ const Input = React.forwardRef((props, ref) => {
     } else if (props.fontSize === "80px") {
       limitRow = 5;
     }
+    if (/iPhone|iPad|iPod|Android/i.test(window.navigator.userAgent)) {
+      limitRow = 20;
+    }
+
     return +limitRow;
   }, []);
 
@@ -55,6 +59,7 @@ const Input = React.forwardRef((props, ref) => {
   //알림장용 로직..
   const rowAlert = () => {
     let limitRow = maxRows();
+
     let rows = noteRef.current.value.split("\n");
     let row_length = Math.ceil(
       (noteRef.current.clientWidth - 50) / (+props.fontSize.slice(0, 2) + 2)

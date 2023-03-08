@@ -167,6 +167,24 @@ const StudentExcelUpload = (props) => {
         <hr className={classes["hr"]} />
         <span dangerouslySetInnerHTML={{ __html: expl_1 }}></span>
         <span dangerouslySetInnerHTML={{ __html: expl_2 }}></span>
+        <button
+          className={
+            excelUploaded
+              ? `${classes.excelfileUploadBtnUploaded}`
+              : `${classes.excelfileUploadBtn}`
+          }
+        >
+          <a
+            href={
+              !props.isSubject
+                ? "https://docs.google.com/uc?export=download&id=1tdHVIke3tlak2xCvIV_GAj0UcRRSIjjZ"
+                : "https://docs.google.com/uc?export=download&id=1Wgk9DPx-wPl04ZhOsq0yjn0UePJwavD9"
+            }
+            className={classes["a-link"]}
+          >
+            양식파일 다운
+          </a>
+        </button>
         <hr className={classes["hr"]} />
         <span dangerouslySetInnerHTML={{ __html: expl_3 }}></span>
         <hr className={classes["hr"]} />
