@@ -14,25 +14,25 @@ const Input = React.forwardRef((props, ref) => {
     setValue(props.defaultValue);
   }, [props.defaultValue]);
 
-  const maxRows = useCallback(() => {
+  const maxRowsLength = () => {
     let limitRow;
     if (props.fontSize === "40px") {
-      limitRow = 9;
+      limitRow = "10-900";
     } else if (props.fontSize === "50px") {
-      limitRow = 8;
+      limitRow = "9-310";
     } else if (props.fontSize === "60px") {
-      limitRow = 7;
+      limitRow = "8-190";
     } else if (props.fontSize === "70px") {
-      limitRow = 6;
+      limitRow = "7-150";
     } else if (props.fontSize === "80px") {
-      limitRow = 5;
+      limitRow = "6-120";
     }
     if (/iPhone|iPad|iPod|Android/i.test(window.navigator.userAgent)) {
-      limitRow = 20;
+      limitRow = "25-400";
     }
 
-    return +limitRow;
-  }, []);
+    return limitRow;
+  };
 
   const changeHandler = () => {
     setValue(noteRef.current.value);
@@ -58,20 +58,14 @@ const Input = React.forwardRef((props, ref) => {
 
   //알림장용 로직..
   const rowAlert = () => {
-    let limitRow = maxRows();
-
+    let limitRow = maxRowsLength()?.split("-")?.[0];
+    let limitLength = maxRowsLength()?.split("-")?.[1];
+    console.log(props.fontSize);
     let rows = noteRef.current.value.split("\n");
     let row_length = Math.ceil(
       (noteRef.current.clientWidth - 50) / (+props.fontSize.slice(0, 2) + 2)
     );
-    let column_length = Math.ceil(
-      (noteRef.current.clientHeight - 50) / (+props.fontSize.slice(0, 2) + 8)
-    );
-    // console.log(noteRef.current.value.length);
-    // 칠판에 들어갈 전체 글자수. 가로 글자수 * 세로줄 글자수
-    let maxLength = +Math.floor(row_length * column_length);
 
-    // console.log(maxLength);
     //수정된 전체 줄수
     let fixed_rows = rows.length;
 
@@ -79,14 +73,15 @@ const Input = React.forwardRef((props, ref) => {
     rows.forEach((text) => {
       let text_row = Math.floor(text.length / row_length);
       if (text_row > 1) {
+        console.log("dd");
         fixed_rows += text_row;
       }
     });
-
+    console.log(limitRow);
     //윈도우 세로에 들어갈 줄 엔터 과다
-    if (fixed_rows > limitRow) {
+    if (+fixed_rows > +limitRow) {
       props.maxRowAlert("enter");
-    } else if (noteRef.current.value.length > maxLength) {
+    } else if (noteRef.current.value.length > +limitLength) {
       props.maxRowAlert("length");
     }
   };
@@ -98,7 +93,7 @@ const Input = React.forwardRef((props, ref) => {
     }
   }, [props.fontSize]);
 
-  const handleResizeHeight = useCallback((e) => {
+  const handleResizeHeight = (e) => {
     if (noteRef === null || noteRef.current === null) {
       return;
     }
@@ -107,11 +102,12 @@ const Input = React.forwardRef((props, ref) => {
       //스크롤을 가장 아래로 내리기..
       window.scrollTo(0, noteRef.current.scrollHeight);
       rowAlert();
+
       return;
     }
     noteRef.current.style.height = "10px";
     noteRef.current.style.height = noteRef.current.scrollHeight - 13 + "px";
-  }, []);
+  };
 
   return (
     <>

@@ -72,12 +72,17 @@ const Alarm = (props) => {
     );
     if (is_mobile) {
       setIsMobile(is_mobile);
-      document.getElementById("board-input").style.fontSize = "25px";
-      setFontSize("25px");
     } else {
       setIsMobile(false);
     }
   }, [window.navigator.userAgent]);
+
+  useEffect(() => {
+    if (isMobile) {
+      document.getElementById("board-input").style.fontSize = "25px";
+      setFontSize("25px");
+    }
+  }, [isMobile]);
 
   //5초마다 저장시키기
   useEffect(() => {
@@ -322,7 +327,7 @@ const Alarm = (props) => {
               전체삭제
             </button>
             <div className={classes["mg-5"]}>
-              * 5초 이상 입력이 없으면 자동저장됩니다.
+              * 5초 이상 입력이 없으면 자동저장
             </div>
           </div>
         </div>
