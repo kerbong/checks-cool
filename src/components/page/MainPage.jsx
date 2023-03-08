@@ -504,7 +504,7 @@ const MainPage = (props) => {
     }, 100);
 
     return () => clearTimeout(time);
-  }, [todayClassTable]);
+  }, [todayClassTable, hideClassTable]);
 
   //할일 목록 중요한 거 부터 보여주는 sort 함수
   const sortEmg = (todo_list) => {

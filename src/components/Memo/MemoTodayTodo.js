@@ -15,12 +15,22 @@ const MemoTodayTodo = (props) => {
 
     if (memoSnap.exists()) {
       onSnapshot(memoRef, (doc) => {
-        let exceptDeleted = doc
-          .data()
-          .memoTodo?.filter(
-            (data) => data.deleted === false || data.deleted === undefined
-          );
-        setTodoList(sortEmg(sortId(exceptDeleted)));
+        let hasDeleted = false;
+        let exceptDeleted = doc.data().memoTodo?.filter((data) => {
+          if (data.deleted) {
+            hasDeleted = true;
+          }
+          return data.deleted === false || data.deleted === undefined;
+        });
+        // 만약 deleted가 있으면.. 데이터에 새롭게 번호매기고 저장함.
+        if (hasDeleted) {
+          exceptDeleted = exceptDeleted?.map((item, index) => {
+            return { ...item, id: exceptDeleted.length - index };
+          });
+          setTodoListHandler(exceptDeleted);
+        } else {
+          setTodoList(sortEmg(sortId(exceptDeleted)));
+        }
       });
     }
   };
@@ -47,16 +57,10 @@ const MemoTodayTodo = (props) => {
     return sorted_lists;
   };
 
-  // //todolist가 바뀌면... 정렬하기
-  // useEffect(() => {
-  //   let new_lists = sortEmg(sortId(todoList))
-  //   if (todoList)
-
   // }, [todoList]);
-
   const setTodoListHandler = async (e) => {
-    setTodoList(e);
-    console.log(e);
+    setTodoList(sortEmg(sortId(e)));
+    // console.log(e);
     //firestore에 업로드  e는 전체 배열 {[할일],[할일]}
     const new_data = { memoTodo: e };
     const memoTodoRef = doc(dbService, "memo", props.userUid);
@@ -99,24 +103,24 @@ const MemoTodayTodo = (props) => {
     //index 번호 새롭게 붙이기 (내림차순)
     new_todoList = new_todoList?.map((item, index) => {
       return { ...item, id: new_todoList.length - index };
+      setTodoListHandler(new_todoList);
     });
-    setTodoListHandler(new_todoList);
   };
 
   return (
     <div className="homepage__container">
       {/* ToDo Item을 추가할 수 있는 input 박스 */}
       <MemoTodayTodoInput
-        todoList={todoList}
         setTodoList={setTodoListHandler}
+        todoList={todoList}
       />
 
       {/* 할 일 Item 리스트 */}
 
       <MemoTodayTodoItemList
         title={"할 일"}
-        todoList={todoList}
         setTodoList={setTodoListHandler}
+        todoList={todoList}
         checkedList={false} // (체크되지 않은) 할 일 목록
         dragEndHandler={dragEndHandler}
       />
@@ -125,8 +129,8 @@ const MemoTodayTodo = (props) => {
       {/* 완료한 Item 리스트 */}
       <MemoTodayTodoItemList
         title={"완료한 항목"}
-        todoList={todoList}
         setTodoList={setTodoListHandler}
+        todoList={todoList}
         checkedList={true} // (체크되어 있는)완료한 목록
       />
     </div>
