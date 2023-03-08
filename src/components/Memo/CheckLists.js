@@ -160,10 +160,10 @@ const CheckLists = (props) => {
             ? "중복된 이름으로 자료 저장됨"
             : "자료가 저장/수정됨"
         }`,
-        text: "5초 후에 창이 사라집니다.",
+        text: "3초 후에 창이 사라집니다.",
         confirmButtonText: "확인",
         confirmButtonColor: "#85bd82",
-        timer: 5000,
+        timer: 3000,
       });
 
       // console.log(item);
@@ -296,25 +296,7 @@ const CheckLists = (props) => {
 
     //동일한 이름의 체크리스트가 있을 경우 묻기
     if (same_checkTitle?.length > 0) {
-      Swal.fire({
-        icon: "warning",
-        title: "제목 중복",
-        text: `"${item.title}"로 동일한 이름의 체크리스트가 이미 존재합니다. 같은 제목으로 새로운 자료를 저장할까요?`,
-        showDenyButton: true,
-        confirmButtonText: "저장",
-        confirmButtonColor: "#db100cf2",
-        denyButtonColor: "#85bd82",
-        denyButtonText: `취소`,
-      }).then((result) => {
-        /* Read more about isConfirmed, isDenied below */
-        //저장버튼 누르면
-        if (result.isConfirmed) {
-          dataSaved("sameTitle");
-          //취소누르면 그냥 반환
-        } else {
-          return;
-        }
-      });
+      dataSaved("sameTitle");
     } else {
       dataSaved("new");
     }
@@ -540,10 +522,11 @@ const CheckLists = (props) => {
                 // 전담이 아니면 년도별에 따라 받아온거 보냄
                 students={!isSubject ? students : inputStudents}
                 onClose={() => setAddCheckItem(false)}
-                saveItemHandler={(item) => {
+                saveItemHandler={(item, auto) => {
                   saveItemHandler(item);
-
-                  setAddCheckItem(false);
+                  if (!auto) {
+                    setAddCheckItem(false);
+                  }
                 }}
                 unSubmitStudents={
                   item.length !== 0
@@ -697,9 +680,11 @@ const CheckLists = (props) => {
               <ListMemoInput
                 students={!isSubject ? students : inputStudents}
                 onClose={() => setAddListMemo(false)}
-                saveItemHandler={(item) => {
+                saveItemHandler={(item, auto) => {
                   saveItemHandler(item);
-                  setAddListMemo(false);
+                  if (!auto) {
+                    setAddListMemo(false);
+                  }
                 }}
                 item={item}
                 removeData={removeData}

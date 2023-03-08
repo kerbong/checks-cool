@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import classes from "./ListMemoInput.module.css";
 import Button from "../Layout/Button";
 import Swal from "sweetalert2";
@@ -22,7 +22,7 @@ const ListMemoInput = (props) => {
     props.item.title || getDateHandler(new Date())
   );
 
-  const saveMemo = () => {
+  const saveMemo = (auto) => {
     if (memoTitle) {
       const tiemStamp = () => {
         let today = new Date();
@@ -39,7 +39,7 @@ const ListMemoInput = (props) => {
       }
 
       let new_memo = {
-        title: memoTitle,
+        title: document.querySelector(".title-input").value,
         data: [],
         id: item_id,
       };
@@ -60,18 +60,20 @@ const ListMemoInput = (props) => {
             num: inputTag.id.split("-")[1],
             memo: inputTag.value,
           });
-          console.log(new_memo);
         }
       });
 
-      setStudentMemo((prev) => [...prev, new_memo]);
+      // setStudentMemo((prev) => [...prev, new_memo]);
 
-      // console.log(new_memo);
-      // console.log(studentMemo);
-
-      props.saveItemHandler(new_memo);
-      props.onClose();
-      props.setItemNull();
+      console.log(new_memo);
+      // 수동저장이면...
+      if (!auto) {
+        props.onClose();
+        props.setItemNull();
+        props.saveItemHandler(new_memo);
+      } else {
+        props.saveItemHandler(new_memo, auto);
+      }
     } else {
       Swal.fire({
         icon: "error",
@@ -113,7 +115,23 @@ const ListMemoInput = (props) => {
     });
   };
 
-  console.log(students);
+  //5초마다 저장시키기
+  useEffect(() => {
+    let modalDiv = document.querySelector(".modal");
+    let timer;
+    const checkInput = () => {
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        // console.log("10초 지남");
+
+        saveMemo(true);
+      }, 10000);
+    };
+    modalDiv.addEventListener("keydown", checkInput);
+    modalDiv.addEventListener("click", checkInput);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
     <>
@@ -132,7 +150,7 @@ const ListMemoInput = (props) => {
           placeholder="명렬표 기록 제목"
           onChange={(e) => setMemoTitle(e.target.value)}
           value={memoTitle}
-          className={classes["title-input"]}
+          className={`${classes["title-input"]} title-input`}
           autoFocus
         />{" "}
         <Button
@@ -158,12 +176,13 @@ const ListMemoInput = (props) => {
                 confirmButtonColor: "#85bd82",
               });
             } else {
-              saveMemo();
+              saveMemo(false);
               props.setItemNull();
             }
           }}
         />
       </h2>
+      <p>* 10초간 입력이 없으면 자동저장</p>
       <ul className={classes["ul-section"]}>
         {students?.length > 0 &&
           students?.map((student) => (

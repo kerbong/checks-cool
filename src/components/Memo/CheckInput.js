@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import StudentBtn from "../Student/StudentBtn";
 
 import classes from "./CheckLists.module.css";
@@ -48,7 +48,7 @@ const CheckInput = (props) => {
     setSubmitStudents([...new_submitStudents]);
   };
 
-  const saveCheckItem = () => {
+  const saveCheckItem = async (auto) => {
     if (checkTitle) {
       const tiemStamp = () => {
         let today = new Date();
@@ -75,10 +75,16 @@ const CheckInput = (props) => {
       if (props.isSubject) {
         new_checkItem["clName"] = props.clName;
       }
+      console.log(auto);
 
-      props.saveItemHandler(new_checkItem);
-      props.onClose();
-      props.setItemNull();
+      // 수동저장이면...
+      if (!auto) {
+        props.onClose();
+        props.setItemNull();
+        props.saveItemHandler(new_checkItem);
+      } else {
+        props.saveItemHandler(new_checkItem, auto);
+      }
     } else {
       Swal.fire({
         icon: "error",
@@ -127,17 +133,40 @@ const CheckInput = (props) => {
     //바꾸기 버튼 수정 필요함...
   };
 
+  //10초마다 저장시키기
+  useEffect(() => {
+    let timer;
+    const checkInput = () => {
+      clearTimeout(timer);
+      timer = setTimeout(async () => {
+        // console.log("10초 지남");
+        // if (props.unSubmitStudents) {
+        if (
+          JSON.stringify(props.unSubmitStudents) !==
+          JSON.stringify(unSubmitStudents)
+        ) {
+          await saveCheckItem(true);
+        }
+      }, 10000);
+    };
+    checkInput();
+    return () => clearTimeout(timer);
+  }, [unSubmitStudents]);
+
   return (
     <>
       <div className={classes.div}>
         <form
           onSubmit={(e) => {
             e.preventDefault();
-            saveCheckItem();
+            saveCheckItem(false);
           }}
         >
           {props.item.title ? (
-            <h2>{checkTitle}</h2>
+            <div className={classes.h2}>
+              <h2>{checkTitle}</h2>
+              <p>* 10초간 입력이 없으면 자동저장</p>
+            </div>
           ) : (
             <input
               type="text"
@@ -225,7 +254,7 @@ const CheckInput = (props) => {
                 confirmButtonColor: "#85bd82",
               });
             } else {
-              saveCheckItem();
+              saveCheckItem(false);
             }
           }}
         />

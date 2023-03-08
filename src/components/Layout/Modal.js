@@ -9,7 +9,7 @@ const Backdrop = (props) => {
 const ModalOverlay = (props) => {
   return (
     <div
-      className={`${classes.modal} ${
+      className={`modal ${classes.modal} ${
         props.addStyle ? classes[props.addStyle] : ""
       }`}
     >

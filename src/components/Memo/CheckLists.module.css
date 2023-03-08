@@ -20,10 +20,16 @@
   font-size: 1.2em;
 }
 
-.h3 {
+.h3,
+.h2 {
   margin: 7px 3px;
   display: flex;
   justify-content: center;
+}
+
+.h2 {
+  flex-direction: column;
+  align-items: center;
 }
 
 .checkLi {
@@ -362,5 +368,5 @@
   animation: slide-down 300ms ease-out forwards;
 }
 
-.budgetAll-div {
+.h2 {
 }
