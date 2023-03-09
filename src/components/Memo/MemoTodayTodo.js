@@ -103,8 +103,8 @@ const MemoTodayTodo = (props) => {
     //index 번호 새롭게 붙이기 (내림차순)
     new_todoList = new_todoList?.map((item, index) => {
       return { ...item, id: new_todoList.length - index };
-      setTodoListHandler(new_todoList);
     });
+    setTodoListHandler(new_todoList);
   };
 
   return (
