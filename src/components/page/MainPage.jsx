@@ -448,8 +448,8 @@ const MainPage = (props) => {
 
     Swal.fire({
       icon: "success",
-      title: "자료가 저장되었어요.",
-      text: "5초 후에 창이 사라집니다.",
+      title: "저장 완료",
+      text: "시간표 과목, 활동 정보가 저장되었습니다.(5초 후에 창이 사라집니다.)",
       confirmButtonText: "확인",
       confirmButtonColor: "#85bd82",
       timer: 5000,
@@ -548,6 +548,21 @@ const MainPage = (props) => {
   useEffect(() => {
     document.body.style.zoom = scaleValue;
   }, [scaleValue]);
+
+  //시간표 반응 없는 10초마다 저장시키기
+  useEffect(() => {
+    let ulTextareas = document.querySelector(".ul-textareas");
+    let timer;
+    const checkInput = () => {
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        // console.log("10초 지남");
+        saveClassMemoHandler();
+      }, 5000);
+    };
+    ulTextareas.addEventListener("keydown", checkInput);
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
     <div className={classes["whole-div"]}>
@@ -752,7 +767,7 @@ const MainPage = (props) => {
               {titleDate.slice(-2, -1) !== "토" &&
               titleDate.slice(-2, -1) !== "일" ? (
                 <>
-                  <ul className={classes["ul-section"]}>
+                  <ul className={`${classes["ul-section"]} ul-textareas`}>
                     {/* todayClassTable로 렌더링 */}
                     {todayClassTable?.classMemo?.map((clInfo, index) => (
                       <ClassItem
