@@ -392,5 +392,5 @@
   letter-spacing: -1px;
   padding: 10px;
   background-color: #da9a9a3b;
-  word-break: keep-all;
+  white-space: nowrap;
 }

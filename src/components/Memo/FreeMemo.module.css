@@ -1,9 +1,69 @@
 .menu-div {
   display: flex;
   align-items: center;
+  margin: 15px;
 }
 
 .category-div {
   overflow-x: scroll;
   display: flex;
+  margin-left: 10px;
+  width: 100%;
+}
+
+.color-area {
+  border: 1px;
+  background-color: #c0665b;
+  height: 100px;
+  border-radius: 50px;
+  margin: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  width: 95%;
+}
+
+.color-input {
+  padding: 3px;
+  border-radius: 3px;
+  margin-left: 10px;
+}
+
+.title-input {
+  width: 75vw;
+  font-size: 1.3rem;
+  padding: 15px;
+  height: 47px;
+  overflow-y: hidden;
+  resize: none;
+  border-radius: 10px;
+}
+
+.color-span {
+  margin: 10px;
+}
+
+.color-inputs {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  margin: 20px 5px;
+}
+
+.height {
+  height: 50px;
+  background-color: #c0665b;
+}
+
+.exit-btn {
+  position: absolute;
+  top: 25px;
+  right: 15px;
+  padding: 10px;
+  width: 50px;
+  height: 50px;
+  border-radius: 25px;
+  border-width: 0;
+  background-color: #e2e2e2;
 }
