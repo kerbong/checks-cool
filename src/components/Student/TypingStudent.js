@@ -22,6 +22,15 @@ const TypingStudent = (props) => {
 
     //학생추가하기
     const studentData = { num: studentNumValue, name: studentNameValue };
+
+    //수정이면.. 성별은 기존대로?
+    if (Object.keys(tempStudent).length > 0) {
+      studentData.woman = tempStudent.woman;
+    } else {
+      studentData.woman = false;
+    }
+    console.log(studentData);
+
     props.setAddStudentsInfo(studentData);
 
     //자동으로 번호 다음으로 입력해주기

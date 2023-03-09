@@ -89,6 +89,7 @@ const StudentLists = (props) => {
     if (studentSnap.exists()) {
       // console.log(studentSnap.data());
       let exceptNow = [];
+      console.log(studentSnap);
       studentSnap.data()?.studentDatas?.forEach((yearData) => {
         if (Object.keys(yearData)[0] !== Object.keys(data)[0]) {
           exceptNow.push(yearData);
@@ -112,14 +113,19 @@ const StudentLists = (props) => {
     //명부를 전담, 담임에 맞게 수정하는 함수
     const fixStudentsData = () => {
       if (!props.isSubject) {
-        // console.log(studentsInfo);
+        console.log(studentsInfo);
         let new_studentsInfo = [...studentsInfo];
-        // new_studentsInfo?.map((stu) => {
-        //   if (!stu.hasOwnProperty("woman")) {
-        //     stu["woman"] = false;
-        //   }
-        //   return stu;
-        // });
+        new_studentsInfo?.map((stu) => {
+          if (!stu.hasOwnProperty("woman")) {
+            stu["woman"] = false;
+          }
+          //혹시 pair정보가 있으면 삭제..!
+          if (stu.hasOwnProperty("pair")) {
+            delete stu.pair;
+          }
+
+          return stu;
+        });
 
         const fixed_data = {
           [setYear()]: sortNum(new_studentsInfo),
@@ -135,6 +141,11 @@ const StudentLists = (props) => {
           sortNum(Object.values(cl))?.map((stu) => {
             if (!stu.hasOwnProperty("woman")) {
               stu["woman"] = false;
+            }
+
+            //혹시 pair정보가 있으면 삭제..!
+            if (stu.hasOwnProperty("pair")) {
+              delete stu.pair;
             }
             return stu;
           });
