@@ -370,3 +370,27 @@
   justify-content: center;
   margin-right: 10px;
 }
+
+.freeMemo-add {
+  padding: 10px;
+  width: 45px;
+  height: 45px;
+  border-radius: 25px;
+  border-width: 0;
+  background-color: #ef1179;
+  color: whitesmoke;
+  font-size: 1rem;
+}
+
+.freeMemo-category {
+  width: auto;
+  height: 50px;
+  margin: 5px;
+  font-size: 0.9em;
+  border-radius: 10px;
+  border-width: 0;
+  letter-spacing: -1px;
+  padding: 10px;
+  background-color: #da9a9a3b;
+  word-break: keep-all;
+}

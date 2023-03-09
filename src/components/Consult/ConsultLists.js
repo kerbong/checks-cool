@@ -7,6 +7,8 @@ import { dbService } from "../../fbase";
 import { onSnapshot, doc } from "firebase/firestore";
 import { utils, writeFile } from "xlsx";
 import dayjs from "dayjs";
+import "dayjs/locale/ko";
+dayjs.locale("ko");
 
 const ConsultLists = (props) => {
   const [consults, setConsults] = useState([]);
@@ -149,10 +151,12 @@ const ConsultLists = (props) => {
   };
 
   const yearMonthDay = (yyyymmdd) => {
+    const date = dayjs(yyyymmdd).format("ddd");
+
     const year = yyyymmdd.split("-")[0].slice(2);
     const month = yyyymmdd.split("-")[1].replace(/(^0+)/, "");
     const day = yyyymmdd.split("-")[2].replace(/(^0+)/, "");
-    return year + "년 " + month + "월 " + day + "일  ";
+    return `${year}년 ${month}월 ${day}일(${date})`;
   };
 
   //이름 셀렉트 부분에 정렬하기 오름차?
@@ -247,12 +251,14 @@ const ConsultLists = (props) => {
   };
 
   const addDataHandler = (consult) => {
+    let before_id = consult.beforeId;
+
     //전체 베이스 자료에서 삭제하고 다시 추가
     setConsults((prev) => {
       let new_datas = [...prev];
       let data_index;
       prev.forEach((data, index) => {
-        if (data.id === consult.id) {
+        if (data.id === before_id) {
           data_index = index;
         }
       });
@@ -267,14 +273,32 @@ const ConsultLists = (props) => {
       let new_datas = [...prev];
       let data_index;
       prev.forEach((data, index) => {
-        if (data.id === consult.id) {
+        if (data.id === before_id) {
           data_index = index;
         }
       });
+
       new_datas[data_index] = isSubject
         ? { ...consult, clName: nowClassName }
         : consult;
       return new_datas;
+    });
+
+    //현재 보여주고 있는 자료에서 삭제하고 다시 추가
+    setShowOnScreen((prev) => {
+      let new_datas = [...prev];
+      let data_index;
+      prev.forEach((data, index) => {
+        if (data.id === before_id) {
+          data_index = index;
+        }
+      });
+
+      new_datas[data_index] = isSubject
+        ? { ...consult, clName: nowClassName }
+        : consult;
+
+      return sortDate(new_datas, "up");
     });
     props.addData(consult);
   };

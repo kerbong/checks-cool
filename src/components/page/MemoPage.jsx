@@ -9,19 +9,28 @@ import BudgetManage from "../Memo/BudgetManage";
 import submitMemo from "../../assets/memo/submitMemo.gif";
 import todayTodo from "../../assets/memo/todayTodo.gif";
 import listMemo from "../../assets/memo/listMemo.gif";
+import FreeMemo from "components/Memo/FreeMemo";
 
-const SHOW_WHAT = ["checkLists", "listMemo", "todayTodo", "budgetManage"];
+const SHOW_WHAT = [
+  "checkLists",
+  "listMemo",
+  "todayTodo",
+  "budgetManage",
+  "freeMemo",
+];
 const MENU_NAME = {
   checkLists: "제출<br/>ox",
   listMemo: "개별<br/>기록",
   todayTodo: "할일<br/>목록",
   budgetManage: "예산<br/>관리",
+  freeMemo: "메모<br/>폴더",
 };
 const ICONS = [
   <i className="fa-regular fa-square-check"></i>,
   <i className="fa-solid fa-clipboard-check"></i>,
   <i className="fa-solid fa-clipboard-list"></i>,
   <i className="fa-solid fa-money-check-dollar"></i>,
+  <i className="fa-regular fa-folder-open"></i>,
 ];
 
 const MemoPage = (props) => {
@@ -43,6 +52,8 @@ const MemoPage = (props) => {
       setShowWhatMemo("checkLists");
     } else if (state === "listMemo") {
       setShowWhatMemo("listMemo");
+    } else if (state === "freeMemo") {
+      setShowWhatMemo("freeMemo");
     } else {
       setShowWhatMemo("todayTodo");
     }
@@ -100,7 +111,9 @@ const MemoPage = (props) => {
               ? ICONS[1]
               : showWhatMemo === "todayTodo"
               ? ICONS[2]
-              : ICONS[3]}{" "}
+              : showWhatMemo === "budgetManage"
+              ? ICONS[3]
+              : ICONS[4]}{" "}
             {memoTitle(showWhatMemo)?.replace("<br/>", "") || ""}
           </>
         </button>
@@ -152,6 +165,8 @@ const MemoPage = (props) => {
       {showWhatMemo === SHOW_WHAT[3] && (
         <BudgetManage userUid={props.userUid} />
       )}
+
+      {showWhatMemo === SHOW_WHAT[4] && <FreeMemo userUid={props.userUid} />}
     </>
   );
 };

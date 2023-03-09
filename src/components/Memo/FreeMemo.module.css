@@ -1,0 +1,9 @@
+.menu-div {
+  display: flex;
+  align-items: center;
+}
+
+.category-div {
+  overflow-x: scroll;
+  display: flex;
+}

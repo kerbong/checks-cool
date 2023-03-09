@@ -1,15 +1,16 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import classes from "./ConsultLists.module.css";
 import FileForm from "components/Layout/FileForm";
 import Button from "components/Layout/Button";
 import Input from "../Layout/Input";
 import Swal from "sweetalert2";
+import AttendCalendar from "components/Attendance/AttendCalendar";
+import dayjs from "dayjs";
 
 const ConsultEdit = (props) => {
   const consult = props.consult;
-  const [attachedFileUrl, setAttachedFileUrl] = useState(
-    consult.attachedFileUrl
-  );
+  const [attachedFileUrl, setAttachedFileUrl] = useState("");
+  const [consultId, setConsultId] = useState(props.consult.id);
 
   const cancelEdit = () => {
     props.cancelEditor();
@@ -31,13 +32,17 @@ const ConsultEdit = (props) => {
     //새로운 데이터로 만들기
     const new_data = {
       ...consult,
+      id: consultId,
       option: optionValue,
       attachedFileUrl: consult_fileUrl,
       note: inputValue,
     };
 
-    //변경사항이 없을 경우 경고창으로 알려주고 저장하지 않기
-    if (JSON.stringify(consult) === JSON.stringify(new_data)) {
+    //변경사항이 없을 경우(내용도 같고, 날짜도 같은 경우) 경고창으로 알려주고 저장하지 않기
+    if (
+      JSON.stringify(consult) === JSON.stringify(new_data) &&
+      new_data.id === consult.id
+    ) {
       Swal.fire({
         icon: "error",
         title: "저장에 실패했어요.",
@@ -48,6 +53,9 @@ const ConsultEdit = (props) => {
       });
       return;
     }
+
+    //어찌되었건.. 기존 id를 첨부해서 보냄
+    new_data.beforeId = consult.id;
 
     //context랑 firestore & Storage에 수정하기
     props.addData(new_data);
@@ -65,11 +73,37 @@ const ConsultEdit = (props) => {
     cancelEdit();
   };
 
+  const imageOnError = (event) => {
+    event.currentTarget.style.display = "none";
+  };
+
+  useEffect(() => {
+    let addImgTag = document.getElementById("newFile");
+    if (addImgTag) {
+      addImgTag.style.maxHeight = "250px";
+    }
+  }, [attachedFileUrl]);
+
+  const calDateHandler = (date) => {
+    //상담 id 구성... yyyy-mm-dd시간:분번호
+    let editDate = dayjs(date).format("YYYY-MM-DD");
+    let new_id = editDate + consultId.slice(10, 15) + consult.num;
+    console.log(new_id);
+    setConsultId(new_id);
+  };
+
   return (
     <>
       <div className={classes.nameArea}>
         <span className={classes.nameIcon}>
           <i className="fa-regular fa-id-badge"></i>
+        </span>
+        <span className={classes["hide-cal"]}>
+          <AttendCalendar
+            getDateValue={calDateHandler}
+            about="main"
+            setStart={new Date(consultId.slice(0, 10))}
+          />
         </span>
         <span className={classes.nameSpan}>
           {consult.name} {" | "}
@@ -92,12 +126,20 @@ const ConsultEdit = (props) => {
       </div>
       {consult.attachedFileUrl && (
         <div className={classes.fileArea}>
-          <img
-            src={consult.attachedFileUrl}
-            width="100%"
-            max-height="20vh"
-            alt="filePreview"
-          />
+          <>
+            <img
+              src={consult.attachedFileUrl}
+              width="100%"
+              max-height="20vh"
+              alt="filePreview"
+              onError={imageOnError}
+            />
+            <audio
+              controls
+              src={consult.attachedFileUrl}
+              onError={imageOnError}
+            ></audio>
+          </>
         </div>
       )}
       {/* 상담 비고 등록한 부분 있으면 보여주기 */}
@@ -140,12 +182,15 @@ const ConsultEdit = (props) => {
           }}
         />
         {attachedFileUrl && (
-          <img
-            src={attachedFileUrl}
-            width="60%"
-            max-height="20vh"
-            alt="filePreview"
-          />
+          <>
+            <img
+              src={attachedFileUrl}
+              width="60%"
+              max-height="250px"
+              alt="filePreview"
+              id="newFile"
+            />
+          </>
         )}
       </div>
     </>

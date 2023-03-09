@@ -101,11 +101,22 @@ const ConsultingPage = (props) => {
     //만약 저장된 자료가 있었으면
     if (consultSnap.exists()) {
       //현재 저장되는 자료와 중복되는거 제외하고 거기에 새 자료 추가함
+      let before_id;
+      if (new_data.beforeId) {
+        before_id = new_data.beforeId;
+      } else {
+        before_id = new_data.id;
+      }
+
       let new_datas = [
         ...consultSnap
           .data()
-          .consult_data?.filter((consult) => consult.id !== new_data.id),
+          .consult_data?.filter((consult) => consult.id !== before_id),
       ];
+      if (new_data.beforeId) {
+        delete new_data.beforeId;
+      }
+
       new_datas.push(new_data);
       await setDoc(consultRef, {
         consult_data: new_datas,

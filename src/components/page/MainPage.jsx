@@ -329,7 +329,6 @@ const MainPage = (props) => {
     // 시작 시간 모음
     setClassStart([]);
 
-    // let new_classLists = [];
     let new_todayClassTable = {
       id: "",
       classMemo: CLASSLISTS?.map((cl) => {
@@ -338,6 +337,7 @@ const MainPage = (props) => {
     };
 
     let class_basic = [];
+    let cltime = [];
     const now_doc = await getDoc(classTableRef);
     if (now_doc.exists()) {
       //오늘 요일설정
@@ -353,20 +353,19 @@ const MainPage = (props) => {
         setClassStart([...now_doc?.data()?.classStart]);
       }
 
-      //오늘 시간표 기초 데이터 만들기
-
+      //오늘 시간표 기초 데이터(교시명) 만들기
       if (now_doc?.data()?.classTime) {
-        let cltime = now_doc?.data()?.classTime;
+        cltime = now_doc?.data()?.classTime;
         new_todayClassTable = {
           id: "",
           classMemo: cltime?.map((cl) => {
             return { memo: "", classNum: cl, subject: "" };
           }),
         };
-        setClassLists(cltime);
       } else {
-        setClassLists(CLASSLISTS);
+        cltime = CLASSLISTS;
       }
+      setClassLists(cltime);
 
       // 저장된 각 날짜의 시간표 데이터가 있으면
       if (now_doc?.data()?.datas) {
@@ -378,6 +377,12 @@ const MainPage = (props) => {
         );
         //오늘자료가 있는 경우 넣어주기
         if (todayClass.length !== 0) {
+          //기초시간표에서 교시명을 바꾼 경우.. 바꿔서 데이터에 저장해주기..!!
+          let new_classMemo = todayClass[0]?.classMemo?.map((cl, index) => {
+            return { ...cl, classNum: cltime[index] };
+          });
+          todayClass[0].classMemo = new_classMemo;
+
           setTodayClassTable({ ...todayClass[0] });
           return;
           // console.log(todayClass[0]);
@@ -433,12 +438,12 @@ const MainPage = (props) => {
     };
 
     //각각의 인덱스를 기준으로 각교시 과목 이름과 메모를 저장함.
+
     classLists.forEach((item, index) => {
       let subject = document.querySelector(`#classSubject-${item}`);
       let memo = document.querySelector(`#classMemo-${item}`);
 
       new_classMemo["classMemo"].push({
-        classNum: item,
         subject: subject.value.trim(),
         memo: memo.value.trim(),
       });
@@ -771,9 +776,9 @@ const MainPage = (props) => {
                     {/* todayClassTable로 렌더링 */}
                     {todayClassTable?.classMemo?.map((clInfo, index) => (
                       <ClassItem
-                        key={`item${clInfo?.classNum}`}
-                        myKey={`class${clInfo?.classNum}`}
-                        classNum={clInfo?.classNum}
+                        key={`item${classLists[index]}`}
+                        myKey={`class${classLists[index]}`}
+                        classNum={classLists[index]}
                         classStart={classStart?.[index]}
                         subject={
                           clInfo?.subject !== ""

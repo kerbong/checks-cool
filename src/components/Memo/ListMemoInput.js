@@ -38,6 +38,10 @@ const ListMemoInput = (props) => {
           dayjs().format("HH:mm:ss");
       }
 
+      let titleValue = document.querySelector(".title-input").value;
+
+      if (titleValue.trim().length === 0) return;
+
       let new_memo = {
         title: document.querySelector(".title-input").value,
         data: [],
