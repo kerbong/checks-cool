@@ -84,7 +84,7 @@ const FreeMemoInput = (props) => {
       return;
     }
 
-    let new_freeMemo = {
+    let new_memo = {
       title,
       text,
       category,
@@ -92,9 +92,47 @@ const FreeMemoInput = (props) => {
 
     //만약 기존 자료였던 경우 기존 이름 추가해서 보냄
     if (props.item) {
-      new_freeMemo.beforeTitle = props.item.title;
+      new_memo.beforeTitle = props.item.title;
     }
 
+    //기존자료 수정의 경우..
+    //만약 기존 자료 수정의 경우.. beforeTitle 존재함, 그럴 경우 기존의 데이터는 삭제하고
+    let isExist = false;
+    let new_freeMemo = [];
+    if (new_memo.beforeTitle) {
+      props.freeMemo?.forEach((item) => {
+        if (item.title !== new_memo.beforeTitle) {
+          new_freeMemo.push(item);
+        }
+      });
+      delete new_memo.beforeTitle;
+    } else {
+      props.freeMemo?.forEach((item) => {
+        if (item.title === new_memo.title) {
+          isExist = true;
+        } else {
+          new_freeMemo.push(item);
+        }
+      });
+    }
+    new_freeMemo.push(new_memo);
+
+    if (isExist) {
+      Swal.fire(
+        "제목 중복",
+        `기존 자료에 동일한 제목의 메모가 존재합니다. 제목을 수정해주세요.`,
+        "warning"
+      );
+      return;
+    }
+
+    Swal.fire(
+      `저장 완료`,
+      `${new_memo.title} 메모가 저장되었습니다.`,
+      "success"
+    );
+
+    setEdited(false);
     props.saveFreeMemoHandler(new_freeMemo);
   };
 
@@ -137,7 +175,7 @@ const FreeMemoInput = (props) => {
             />
           </>
         ) : (
-          <h3>{item?.title}</h3>
+          <h3 style={{ margin: 0 }}>{item?.title}</h3>
         )}
       </div>
 
@@ -147,7 +185,7 @@ const FreeMemoInput = (props) => {
           <>
             {/* 존재하는 카테고리를 다 보여주고, 그중에 클릭 한 것만 색깔을 나타냄.. 안하면 */}
             {exist_category?.map((categ) => {
-              let isInclude = category.includes(categ.name);
+              let isInclude = category?.includes(categ.name);
 
               return (
                 <span key={"addMemo" + categ.name}>
@@ -182,8 +220,8 @@ const FreeMemoInput = (props) => {
                     name={categ}
                     className={"freeMemo-category-edit"}
                     style={{
-                      backgroundColor: now_category.bgColor,
-                      color: now_category.fontColor,
+                      backgroundColor: now_category?.bgColor || "gray",
+                      color: now_category?.fontColor || "black",
                     }}
                   />
                 </div>
@@ -231,7 +269,11 @@ const FreeMemoInput = (props) => {
               name={"취소"}
               className={"freeMemo-saveDelete"}
               onclick={() => {
-                setEdited(false);
+                if (item) {
+                  setEdited(false);
+                } else {
+                  props.closeHandler();
+                }
               }}
             />
           </>

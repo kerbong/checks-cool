@@ -31,7 +31,7 @@
 }
 
 .title-input {
-  width: 55vw;
+  width: 70vw;
   font-size: 1rem;
   padding: 10px;
   height: 20px;
@@ -52,7 +52,7 @@
 
 .height {
   height: 50px;
-  background-color: #c0665b;
+  background-color: #da9a9a3b;
 }
 
 .exit-btn {
@@ -69,6 +69,10 @@
 
 .freeMemo-li {
   list-style: none;
+  justify-content: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .text-input {
@@ -91,17 +95,47 @@
 .title-div {
   display: flex;
   align-items: center;
-  margin: 5px 10px;
+  margin: 20px 10px;
 }
 .text-span {
   word-break: break-all;
 }
 
 .freeMemo-ul {
-  padding: 50px 0;
+  padding: 10px;
 }
 
 .h2 {
   display: flex;
   justify-content: center;
+}
+
+.hr {
+  margin: 10px 15px;
+}
+
+.category-name {
+  font-size: 1.5rem;
+  grid-column: 2/4;
+}
+
+.categoryEdit-div {
+  padding: 10px;
+  margin: 10px;
+  width: 90%;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 1.1em;
+  border-radius: 15px;
+  background-color: #b4b4b41a;
+}
+
+.grid-category {
+  display: grid;
+  margin: 15px 5px;
+  grid-template-columns: repeat(4, 1fr);
+  grid-gap: 5px;
+  align-items: center;
 }

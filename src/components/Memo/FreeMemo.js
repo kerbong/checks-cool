@@ -11,6 +11,7 @@ import Swal from "sweetalert2";
 const FreeMemo = (props) => {
   const [addCategory, setAddCategory] = useState(false);
   const [addItem, setAddItem] = useState(false);
+  const [editCategory, setEditCategory] = useState(false);
   const [nowCategory, setNowCategory] = useState({ name: "all" });
   const [freeMemo, setFreeMemo] = useState([]);
   const [category, setCategory] = useState([]);
@@ -39,95 +40,52 @@ const FreeMemo = (props) => {
   const setFreeMemoHandler = async (category, freeMemo) => {
     setCategory(category); //배열
     setFreeMemo(freeMemo); //배열
-    console.log(category);
-    console.log(freeMemo);
     //firestore에 업로드
     const new_data = { category: category, freeMemo: freeMemo };
     const freeMemoRef = doc(dbService, "freeMemo", props.userUid);
     await setDoc(freeMemoRef, new_data);
   };
 
-  //카테고리 저장함수
-  const saveCategoryHandler = (new_item) => {
-    //만약 기존 자료 수정의 경우.. beforeName 존재함, 그럴 경우 기존의 데이터는 삭제하고
-    let isExist = false;
-    let new_category = [];
-    if (new_item.beforeName) {
-      category.forEach((item) => {
-        if (item.name !== new_item.beforeName) {
-          new_category.push(item);
-        }
-      });
-      delete new_item.beforeName;
-    } else {
-      category.forEach((item) => {
-        if (item.name === new_item.name) {
-          isExist = true;
-        } else {
-          new_category.push(item);
-        }
-      });
-    }
-    new_category.push(new_item);
-
-    if (isExist) {
-      Swal.fire(
-        "이름 중복",
-        `기존 자료에 동일한 이름의 카테고리가 존재합니다. 이름을 수정해주세요.`,
-        "warning"
-      );
-      return;
-    }
-    //모달창 닫기
-    setAddCategory(false);
+  //카테고리 저장/수정 함수
+  const saveCategoryHandler = (new_category) => {
+    let new_item = new_category[new_category.length - 1];
     Swal.fire(
       `저장 완료`,
       `${new_item.name} 카테고리가 저장되었습니다.`,
       "success"
     );
 
-    setFreeMemoHandler(new_category, freeMemo);
+    //새로 카테고리 추가인 경우
+    let new_freeMemo;
+    if (addCategory) {
+      setAddCategory(false);
+      new_freeMemo = freeMemo;
+      //기존 카테고리 수정인 경우 현재 카테고리 수정
+    } else {
+      //   freeMemo도 수정해야함..
+      new_freeMemo = freeMemo.map((memo) => {
+        let new_memoCategory = memo.category.map((cate) => {
+          //기존이름과 같은게 있으면
+          //새로운 이름으로 바꿔서 map
+          if (cate === new_item.beforeName) {
+            return new_item.name;
+          } else {
+            //만약 이름이 새로우면.. 안바꿔도 됨
+            return cate;
+          }
+        });
+        let new_memo = { ...memo, category: new_memoCategory };
+        return new_memo;
+      });
+      delete new_item.beforeName;
+      setNowCategory(new_item);
+    }
+
+    setFreeMemoHandler(new_category, new_freeMemo);
   };
 
   // 새로운 메모 저장/수정하는 함수
-  const saveFreeMemoHandler = (new_item) => {
-    //기존자료 수정의 경우..
-    //만약 기존 자료 수정의 경우.. beforeTitle 존재함, 그럴 경우 기존의 데이터는 삭제하고
-    let isExist = false;
-    let new_freeMemo = [];
-    if (new_item.beforeTitle) {
-      freeMemo.forEach((item) => {
-        if (item.title !== new_item.beforeTitle) {
-          new_freeMemo.push(item);
-        }
-      });
-      delete new_item.beforeTitle;
-    } else {
-      freeMemo.forEach((item) => {
-        if (item.title === new_item.title) {
-          isExist = true;
-        } else {
-          new_freeMemo.push(item);
-        }
-      });
-    }
-    new_freeMemo.push(new_item);
-
-    if (isExist) {
-      Swal.fire(
-        "제목 중복",
-        `기존 자료에 동일한 제목의 메모가 존재합니다. 제목을 수정해주세요.`,
-        "warning"
-      );
-      return;
-    }
-
-    Swal.fire(
-      `저장 완료`,
-      `${new_item.title} 메모가 저장되었습니다.`,
-      "success"
-    );
-
+  const saveFreeMemoHandler = (new_freeMemo) => {
     setAddItem(false);
     setFreeMemoHandler(category, new_freeMemo);
   };
@@ -136,6 +94,40 @@ const FreeMemo = (props) => {
   const deleteHandler = (title) => {
     let new_freeMemo = freeMemo.filter((item) => item.title !== title);
     setFreeMemoHandler(category, new_freeMemo);
+  };
+
+  //카테고리 삭제 함수
+  const deleteCategoryHandler = () => {
+    //카테고리에서 삭제하고
+    const removeCategory = () => {
+      return category.filter((cate) => cate.name !== nowCategory.name);
+    };
+    //전체 메모에 있는 카테고리도 삭제하고
+    const removeCategoryInFreeMemo = () => {
+      return freeMemo.map((memo) => {
+        let new_memoCategory = memo.category.filter(
+          (cate) => cate !== nowCategory.name
+        );
+        let new_memo = { ...memo, category: new_memoCategory };
+        return new_memo;
+      });
+    };
+
+    Swal.fire({
+      icon: "warning",
+      title: "삭제 할까요?",
+      text: `카테고리를 지우면 기존 메모들에 존재하던 카테고리가 사라집니다.(기존 메모는 삭제되지 않습니다.) 카테고리 (${nowCategory.name}) 를 삭제할까요?`,
+      confirmButtonText: "삭제",
+      confirmButtonColor: "#85bd82",
+      showDenyButton: true,
+      denyButtonText: "취소",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        setFreeMemoHandler(removeCategory(), removeCategoryInFreeMemo());
+      } else {
+        return;
+      }
+    });
   };
 
   return (
@@ -187,6 +179,8 @@ const FreeMemo = (props) => {
             />
           </div>
 
+          {/* 입력된 카테고리 모음 버튼 */}
+
           {category?.map((item) => (
             <div key={item.name}>
               <Button
@@ -197,8 +191,8 @@ const FreeMemo = (props) => {
                   setNowCategory(item);
                 }}
                 style={{
-                  backgroundColor: item.bgColor,
-                  color: item.fontColor,
+                  backgroundColor: item?.bgColor || "white",
+                  color: item?.fontColor || "black",
                   fontWeight: "bold",
                 }}
               />
@@ -229,13 +223,59 @@ const FreeMemo = (props) => {
             }}
           />
         </div>
+
         {/* 메모 추가할 때 보여질 아이템 */}
         {addItem && (
           <div>
             <FreeMemoInput
               saveFreeMemoHandler={saveFreeMemoHandler}
               category={category}
+              freeMemo={freeMemo}
               closeHandler={() => setAddItem(false)}
+            />
+          </div>
+        )}
+
+        <hr />
+        {/* 선택된 카테고리 보여주고 수정, 삭제하는 기능 */}
+        <div className={classes["grid-category"]}>
+          {!editCategory && (
+            <span className={classes["category-name"]}>
+              {nowCategory.name === "all" ? "전체보기" : nowCategory.name}
+            </span>
+          )}
+
+          {/* 전체보기는 불가능! 수정, 삭제버튼 */}
+          {nowCategory.name !== "all" && !editCategory && (
+            <div className={classes["h2"]}>
+              <Button
+                name={"수정"}
+                className={"freeMemo-category"}
+                onclick={() => {
+                  setEditCategory(true);
+                }}
+              />
+
+              <Button
+                name={"삭제"}
+                className={"freeMemo-category"}
+                onclick={() => {
+                  deleteCategoryHandler();
+                }}
+              />
+            </div>
+          )}
+        </div>
+
+        {/* 카테고리 수정 할때 보이는 부분 */}
+        {nowCategory.name !== "all" && editCategory && (
+          <div>
+            <CategoryInput
+              caInputClose={() => setEditCategory(false)}
+              saveCategoryHandler={saveCategoryHandler}
+              nowCategory={nowCategory}
+              category={category}
+              freeMemo={freeMemo}
             />
           </div>
         )}
@@ -246,19 +286,20 @@ const FreeMemo = (props) => {
             ?.filter((memo) => memo.category.includes(nowCategory.name))
             ?.map((item) => (
               <div key={"memo" + item.title}>
+                <hr className={classes["hr"]} />
                 <FreeMemoInput
                   item={item}
                   category={category}
                   deleteHandler={deleteHandler}
+                  freeMemo={freeMemo}
                   saveFreeMemoHandler={saveFreeMemoHandler}
                 />
-                <hr />
               </div>
             ))}
         </ul>
       </div>
 
-      {/*  */}
+      {/* 사용설명 부분 */}
     </div>
   );
 };

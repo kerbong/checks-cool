@@ -19,6 +19,16 @@ const CategoryInput = (props) => {
   const [bgColor, setBgColor] = useState("#c0665b");
   const [fontColor, setFontColor] = useState("#F5F5F5");
   const [categoryName, setCategoryName] = useState("");
+  const [isEdited, setIsEdited] = useState(false);
+
+  useEffect(() => {
+    if (props.nowCategory) {
+      setIsEdited(true);
+      setBgColor(props.nowCategory.bgColor);
+      setFontColor(props.nowCategory.fontColor);
+      setCategoryName(props.nowCategory.name);
+    }
+  }, [props.nowCategory]);
 
   const bgColorChange = (e) => {
     setBgColor(e.target.value);
@@ -41,28 +51,81 @@ const CategoryInput = (props) => {
   };
 
   const saveCategoryHandler = () => {
-    let new_category = {
+    let new_item = {
       name: categoryName,
       bgColor: bgColor,
       fontColor: fontColor,
     };
+    //수정일 경우.. beforeName추가함
+    if (isEdited) {
+      new_item.beforeName = props.nowCategory.name;
+    }
 
+    //만약 기존 자료 수정의 경우.. beforeName 존재함, 그럴 경우 기존의 데이터는 삭제하고
+    let isExist = false;
+    let beforeName = new_item.beforeName;
+    let new_category = [];
+    if (beforeName) {
+      props.category.forEach((item) => {
+        if (item.name !== beforeName) {
+          new_category.push(item);
+        }
+      });
+    } else {
+      props.category.forEach((item) => {
+        if (item.name === new_item.name) {
+          isExist = true;
+        } else {
+          new_category.push(item);
+        }
+      });
+    }
+    new_category.push(new_item);
+
+    if (isExist) {
+      Swal.fire(
+        "이름 중복",
+        `기존 자료에 동일한 이름의 카테고리가 존재합니다. 이름을 수정해주세요.`,
+        "warning"
+      );
+      return;
+    }
+
+    setIsEdited(false);
     props.saveCategoryHandler(new_category);
+    props.caInputClose();
   };
 
   return (
-    <>
+    <div className={classes["categoryEdit-div"]}>
       <div>
         <div>
-          <button
-            className={classes["exit-btn"]}
-            onClick={() => {
-              props.caInputClose();
-            }}
-          >
-            <i className="fa-solid fa-xmark"></i>
-          </button>
-          <h2 className={classes["h2"]}>카테고리 추가</h2>
+          {!isEdited && (
+            <button
+              className={classes["exit-btn"]}
+              onClick={() => {
+                props.caInputClose();
+              }}
+            >
+              <i className="fa-solid fa-xmark"></i>
+            </button>
+          )}
+          {!isEdited && <h2 className={classes["h2"]}>카테고리 추가</h2>}
+
+          {!isEdited && <h3>카테고리 이름</h3>}
+          <div className={classes["h2"]}>
+            <input
+              id="title-input"
+              className={classes["title-input"]}
+              type="text"
+              defaultValue={props.nowCategory?.name || ""}
+              required
+              onInput={(e) => handleOnInput(e, 20)}
+              onChange={nameHandler}
+              placeholder={"20자 내로 작성해주세요."}
+            />
+          </div>
+
           {/* 카테고리 배경색 컬러 */}
           <h3>카테고리 색상 선택</h3>
           <h4> * 흰색 배경은 피해주세요!</h4>
@@ -97,21 +160,8 @@ const CategoryInput = (props) => {
           </div>
         </div>
         <br />
-        <h3>카테고리 이름</h3>
-        <div className={classes["h2"]}>
-          <input
-            id="title-input"
-            className={classes["title-input"]}
-            type="text"
-            required
-            onInput={(e) => handleOnInput(e, 20)}
-            onChange={nameHandler}
-            placeholder={"20자 내로 작성해주세요."}
-          />
-        </div>
       </div>
 
-      <br />
       <button
         className={`${classes["color-area"]} ${classes["height"]}`}
         onClick={() => {
@@ -120,7 +170,20 @@ const CategoryInput = (props) => {
       >
         저장
       </button>
-    </>
+
+      {isEdited && (
+        <>
+          <button
+            className={`${classes["color-area"]} ${classes["height"]}`}
+            onClick={() => {
+              props.caInputClose();
+            }}
+          >
+            취소
+          </button>
+        </>
+      )}
+    </div>
   );
 };
 

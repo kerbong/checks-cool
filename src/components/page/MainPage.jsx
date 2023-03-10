@@ -565,7 +565,7 @@ const MainPage = (props) => {
         saveClassMemoHandler();
       }, 5000);
     };
-    ulTextareas.addEventListener("keydown", checkInput);
+    ulTextareas?.addEventListener("keydown", checkInput);
     return () => clearTimeout(timer);
   }, []);
 
