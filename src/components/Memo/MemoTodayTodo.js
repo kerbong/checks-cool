@@ -22,15 +22,18 @@ const MemoTodayTodo = (props) => {
           }
           return data.deleted === false || data.deleted === undefined;
         });
+        //데이터 처리 오류로.. id만 남아있는 것들이 있으면 제거함
+        exceptDeleted = exceptDeleted.filter(
+          (item) => Object.keys(item).length !== 1
+        );
+
         // 만약 deleted가 있으면.. 데이터에 새롭게 번호매기고 저장함.
         if (hasDeleted) {
           exceptDeleted = exceptDeleted?.map((item, index) => {
             return { ...item, id: exceptDeleted.length - index };
           });
-          setTodoListHandler(exceptDeleted);
-        } else {
-          setTodoList(sortEmg(sortId(exceptDeleted)));
         }
+        setTodoListHandler(exceptDeleted);
       });
     }
   };
