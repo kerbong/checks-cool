@@ -9,7 +9,7 @@ const handleOnInput = (e, maxlength) => {
     e.target.value = e.target.value.substr(0, maxlength);
     Swal.fire(
       "입력 불가",
-      `글자수를 초과했어요! 내용을 ${maxlength}자 이내로 줄여주세요.`,
+      `글자수를 초과했어요! 내용을 줄여주세요.`,
       "warning"
     );
   }
@@ -40,6 +40,16 @@ const CategoryInput = (props) => {
     setCategoryName(e.target.value);
   };
 
+  const saveCategoryHandler = () => {
+    let new_category = {
+      name: categoryName,
+      bgColor: bgColor,
+      fontColor: fontColor,
+    };
+
+    props.saveCategoryHandler(new_category);
+  };
+
   return (
     <>
       <div>
@@ -52,8 +62,10 @@ const CategoryInput = (props) => {
           >
             <i className="fa-solid fa-xmark"></i>
           </button>
+          <h2 className={classes["h2"]}>카테고리 추가</h2>
           {/* 카테고리 배경색 컬러 */}
-          <h2>카테고리 색상 선택</h2>
+          <h3>카테고리 색상 선택</h3>
+          <h4> * 흰색 배경은 피해주세요!</h4>
           {/* 예시보여주는 div */}
           <div id="area1" className={classes["color-area"]}>
             {categoryName}
@@ -61,6 +73,7 @@ const CategoryInput = (props) => {
           <div className={classes["color-inputs"]}>
             <div>
               <span className={classes["color-span"]}>배경색</span>
+
               <input
                 id="color"
                 className={classes["color-input"]}
@@ -84,21 +97,26 @@ const CategoryInput = (props) => {
           </div>
         </div>
         <br />
-        <h2>카테고리 이름</h2>
-        <input
-          id="title-input"
-          className={classes["title-input"]}
-          type="text"
-          required
-          onInput={(e) => handleOnInput(e, 15)}
-          onChange={nameHandler}
-          placeholder={"15자 내로 작성해주세요."}
-        />
+        <h3>카테고리 이름</h3>
+        <div className={classes["h2"]}>
+          <input
+            id="title-input"
+            className={classes["title-input"]}
+            type="text"
+            required
+            onInput={(e) => handleOnInput(e, 20)}
+            onChange={nameHandler}
+            placeholder={"20자 내로 작성해주세요."}
+          />
+        </div>
       </div>
+
       <br />
       <button
         className={`${classes["color-area"]} ${classes["height"]}`}
-        onclick={() => {}}
+        onClick={() => {
+          saveCategoryHandler();
+        }}
       >
         저장
       </button>

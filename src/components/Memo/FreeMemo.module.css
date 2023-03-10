@@ -31,13 +31,12 @@
 }
 
 .title-input {
-  width: 75vw;
-  font-size: 1.3rem;
-  padding: 15px;
-  height: 47px;
-  overflow-y: hidden;
-  resize: none;
+  width: 55vw;
+  font-size: 1rem;
+  padding: 10px;
+  height: 20px;
   border-radius: 10px;
+  margin: 10px;
 }
 
 .color-span {
@@ -66,4 +65,43 @@
   border-radius: 25px;
   border-width: 0;
   background-color: #e2e2e2;
+}
+
+.freeMemo-li {
+  list-style: none;
+}
+
+.text-input {
+  width: 70vw;
+  font-size: 0.9rem;
+  padding: 10px;
+  height: 48px;
+  overflow-y: hidden;
+  resize: none;
+  border-radius: 10px;
+  margin: 15px;
+}
+
+.category-btns {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 5px 15px;
+}
+
+.title-div {
+  display: flex;
+  align-items: center;
+  margin: 5px 10px;
+}
+.text-span {
+  word-break: break-all;
+}
+
+.freeMemo-ul {
+  padding: 50px 0;
+}
+
+.h2 {
+  display: flex;
+  justify-content: center;
 }

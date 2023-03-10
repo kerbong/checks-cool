@@ -371,7 +371,9 @@
   margin-right: 10px;
 }
 
-.freeMemo-add {
+.freeMemo-add,
+.freeMemoCategory-add,
+.freeMemo-add-basic {
   padding: 10px;
   width: 45px;
   height: 45px;
@@ -382,7 +384,20 @@
   font-size: 1rem;
 }
 
-.freeMemo-category {
+.freeMemo-add,
+.freeMemo-add-basic {
+  position: absolute;
+  right: 20px;
+  z-index: 5;
+}
+
+.freeMemo-add-basic {
+  width: auto;
+}
+
+.freeMemo-category,
+.freeMemo-category-edit,
+.freeMemo-saveDelete {
   width: auto;
   height: 50px;
   margin: 5px;
@@ -393,4 +408,17 @@
   padding: 10px;
   background-color: #da9a9a3b;
   white-space: nowrap;
+}
+
+.freeMemo-category-edit {
+  height: 40px;
+  padding: 5px;
+  background-color: inherit;
+  font-size: 0.8em;
+}
+
+.freeMemo-saveDelete {
+  background-color: #ef1179;
+  color: whitesmoke;
+  font-weight: bold;
 }
