@@ -8,10 +8,32 @@ import { dbService } from "../../fbase";
 import { setDoc, onSnapshot, doc, getDoc } from "firebase/firestore";
 import Swal from "sweetalert2";
 
+const EXPLAINS = [
+  "* 카테고리 추가방법!",
+  "  1. 전체보기 왼쪽의 [+] 클릭",
+  "  2. 필요한 정보 입력 및 커스텀하고 저장",
+  "  (주의) 기존 카테고리와 제목 중복 안됨!",
+  "* 카테고리 수정방법!",
+  "  1. 전체보기 오른쪽 카테고리 찾고 클릭",
+  "  2. [새로운메모+] 아래에 생긴 카테고리 이름 클릭",
+  "  3. 카테고리 이름 옆 [수정] 클릭",
+  "  4. 정보 수정 후 저장",
+  "  (주의) 카테고리 이름 수정시 기존 메모의 카테고리 이름도 자동 수정",
+  "* 메모 추가방법!",
+  "  1. [새로운메모+] 클릭",
+  "  2. 필요한 정보 입력, 선택하고 저장",
+  "* 메모 수정방법!",
+  "  1. 해당 메모의 아무 곳이나 클릭",
+  "  2. 새로 생긴 [수정] 버튼 클릭",
+  "  3. 정보 수정 후 저장",
+];
+
 const FreeMemo = (props) => {
   const [addCategory, setAddCategory] = useState(false);
   const [addItem, setAddItem] = useState(false);
   const [editCategory, setEditCategory] = useState(false);
+  const [showCategoryEditBtn, setShowCategoryEditBtn] = useState(false);
+  const [explainOn, setExplainOn] = useState(false);
   const [nowCategory, setNowCategory] = useState({ name: "all" });
   const [freeMemo, setFreeMemo] = useState([]);
   const [category, setCategory] = useState([]);
@@ -37,6 +59,10 @@ const FreeMemo = (props) => {
     getFreeMemoDb();
   }, []);
 
+  useEffect(() => {
+    setShowCategoryEditBtn(false);
+  }, [nowCategory]);
+
   const setFreeMemoHandler = async (category, freeMemo) => {
     setCategory(category); //배열
     setFreeMemo(freeMemo); //배열
@@ -47,11 +73,10 @@ const FreeMemo = (props) => {
   };
 
   //카테고리 저장/수정 함수
-  const saveCategoryHandler = (new_category) => {
-    let new_item = new_category[new_category.length - 1];
+  const saveCategoryHandler = (new_category, newItemindex) => {
     Swal.fire(
       `저장 완료`,
-      `${new_item.name} 카테고리가 저장되었습니다.`,
+      `${new_category[newItemindex].name}  카테고리가 저장/수정 되었습니다.`,
       "success"
     );
 
@@ -67,8 +92,8 @@ const FreeMemo = (props) => {
         let new_memoCategory = memo.category.map((cate) => {
           //기존이름과 같은게 있으면
           //새로운 이름으로 바꿔서 map
-          if (cate === new_item.beforeName) {
-            return new_item.name;
+          if (cate === new_category[newItemindex].beforeName) {
+            return new_category[newItemindex].name;
           } else {
             //만약 이름이 새로우면.. 안바꿔도 됨
             return cate;
@@ -77,8 +102,8 @@ const FreeMemo = (props) => {
         let new_memo = { ...memo, category: new_memoCategory };
         return new_memo;
       });
-      delete new_item.beforeName;
-      setNowCategory(new_item);
+      delete new_category[newItemindex].beforeName;
+      setNowCategory(new_category[newItemindex]);
     }
 
     setFreeMemoHandler(new_category, new_freeMemo);
@@ -100,12 +125,12 @@ const FreeMemo = (props) => {
   const deleteCategoryHandler = () => {
     //카테고리에서 삭제하고
     const removeCategory = () => {
-      return category.filter((cate) => cate.name !== nowCategory.name);
+      return category?.filter((cate) => cate.name !== nowCategory.name);
     };
     //전체 메모에 있는 카테고리도 삭제하고
     const removeCategoryInFreeMemo = () => {
-      return freeMemo.map((memo) => {
-        let new_memoCategory = memo.category.filter(
+      return freeMemo?.map((memo) => {
+        let new_memoCategory = memo.category?.filter(
           (cate) => cate !== nowCategory.name
         );
         let new_memo = { ...memo, category: new_memoCategory };
@@ -124,6 +149,7 @@ const FreeMemo = (props) => {
     }).then((result) => {
       if (result.isConfirmed) {
         setFreeMemoHandler(removeCategory(), removeCategoryInFreeMemo());
+        setNowCategory({ name: "all" });
       } else {
         return;
       }
@@ -138,6 +164,7 @@ const FreeMemo = (props) => {
           <CategoryInput
             caInputClose={() => setAddCategory(false)}
             saveCategoryHandler={saveCategoryHandler}
+            category={category}
           />
           {/* 저장하는 핸들러 추가하기,  */}
         </Modal>
@@ -163,7 +190,7 @@ const FreeMemo = (props) => {
             }}
           />
         </div>
-        <div className={classes["category-div"]}>
+        <div className={`${classes["category-div"]}`}>
           {/* 전체보기 버튼 */}
           <div>
             <Button
@@ -191,6 +218,7 @@ const FreeMemo = (props) => {
                   setNowCategory(item);
                 }}
                 style={{
+                  letterSpacing: "0px",
                   backgroundColor: item?.bgColor || "white",
                   color: item?.fontColor || "black",
                   fontWeight: "bold",
@@ -237,35 +265,41 @@ const FreeMemo = (props) => {
         )}
 
         <hr />
-        {/* 선택된 카테고리 보여주고 수정, 삭제하는 기능 */}
-        <div className={classes["grid-category"]}>
-          {!editCategory && (
+        {!editCategory && (
+          // {/* 선택된 카테고리 보여주고 수정, 삭제하는 기능 */}
+          <div
+            className={classes["grid-category"]}
+            onClick={() => {
+              setShowCategoryEditBtn((prev) => !prev);
+            }}
+          >
             <span className={classes["category-name"]}>
               {nowCategory.name === "all" ? "전체보기" : nowCategory.name}
             </span>
-          )}
 
-          {/* 전체보기는 불가능! 수정, 삭제버튼 */}
-          {nowCategory.name !== "all" && !editCategory && (
-            <div className={classes["h2"]}>
-              <Button
-                name={"수정"}
-                className={"freeMemo-category"}
-                onclick={() => {
-                  setEditCategory(true);
-                }}
-              />
+            {showCategoryEditBtn &&
+              //   {/* 전체보기는 불가능! 수정, 삭제버튼 */}
+              nowCategory.name !== "all" && (
+                <div className={classes["h2"]}>
+                  <Button
+                    name={"수정"}
+                    className={"freeMemo-category"}
+                    onclick={() => {
+                      setEditCategory(true);
+                    }}
+                  />
 
-              <Button
-                name={"삭제"}
-                className={"freeMemo-category"}
-                onclick={() => {
-                  deleteCategoryHandler();
-                }}
-              />
-            </div>
-          )}
-        </div>
+                  <Button
+                    name={"삭제"}
+                    className={"freeMemo-category"}
+                    onclick={() => {
+                      deleteCategoryHandler();
+                    }}
+                  />
+                </div>
+              )}
+          </div>
+        )}
 
         {/* 카테고리 수정 할때 보이는 부분 */}
         {nowCategory.name !== "all" && editCategory && (
@@ -275,7 +309,6 @@ const FreeMemo = (props) => {
               saveCategoryHandler={saveCategoryHandler}
               nowCategory={nowCategory}
               category={category}
-              freeMemo={freeMemo}
             />
           </div>
         )}
@@ -296,10 +329,49 @@ const FreeMemo = (props) => {
                 />
               </div>
             ))}
+
+          {freeMemo?.filter((memo) => memo.category.includes(nowCategory.name))
+            ?.length === 0 && "*해당 카테고리가 포함된 메모가 없습니다!"}
         </ul>
       </div>
 
       {/* 사용설명 부분 */}
+      <div>
+        <h2
+          className={classes.h1}
+          onClick={() => setExplainOn((prev) => !prev)}
+        >
+          🪄 사용 설명서{" "}
+          <span className={classes.h1Span}>
+            {explainOn ? (
+              <i className="fa-solid fa-chevron-up"></i>
+            ) : (
+              <i className="fa-solid fa-chevron-down"></i>
+            )}{" "}
+          </span>
+        </h2>
+
+        {/* 실제 사용설명 내용 */}
+        <div
+          className={explainOn ? classes.explainDiv : classes.explainDivHide}
+        >
+          {EXPLAINS?.map((explain, index) => (
+            <span
+              key={`explain-${index}`}
+              className={classes.explainP}
+              style={{
+                fontWeight:
+                  (index === 0 && "bold") ||
+                  (index === 4 && "bold") ||
+                  (index === 10 && "bold") ||
+                  (index === 13 && "bold"),
+              }}
+            >
+              {explain}
+            </span>
+          ))}
+        </div>
+      </div>
     </div>
   );
 };

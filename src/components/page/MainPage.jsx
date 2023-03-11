@@ -325,7 +325,7 @@ const MainPage = (props) => {
     setTodayClassTable({});
 
     //입력한 개별날짜 시간표들
-    setClassTable([]);
+    // setClassTable([]);
     // 시작 시간 모음
     setClassStart([]);
 
@@ -449,7 +449,34 @@ const MainPage = (props) => {
       });
     });
     //데이터는 new_classMemo라는 객체에 저장
-    // console.log(new_classMemo);
+
+    let isDiff = false;
+
+    let new_classTable = [];
+    classTable.forEach((item) => {
+      if (item.id === new_classMemo.id) {
+        //혹시 내용이 다똑같으면 저장하지 않게 확인하기
+        // item.classMemo.forEach((memo, index) => {
+        //   if (memo.memo !== new_classMemo["classMemo"][index].memo) {
+        //     isDiff = true;
+        //   }
+        //   if (memo.subject !== new_classMemo["classMemo"][index].subject) {
+        //     isDiff = true;
+        //   }
+        // });
+      } else {
+        new_classTable.push(item);
+      }
+    });
+
+    new_classTable.push(new_classMemo);
+
+    // if (isDiff) {
+    //   console.log("다름");
+    // } else {
+    //   console.log("동일함");
+    //   return;
+    // }
 
     Swal.fire({
       icon: "success",
@@ -460,30 +487,14 @@ const MainPage = (props) => {
       timer: 5000,
     });
 
-    // console.log(classTable);
-
-    //최신 .. 클래스 테이블 전체 자료 가져오고
-    const new_classTable = [...classTable];
-    if (new_classTable.length !== 0) {
-      new_classTable.forEach((data, index) => {
-        // console.log(data.id);
-        // console.log(new_classMemo.id);
-        if (data.id === new_classMemo.id) {
-          // console.log("날짜가 같은 자료");
-          new_classTable.splice(index, 1);
-        }
-      });
-    }
-
-    new_classTable.push(new_classMemo);
-
     const new_classData = { datas: new_classTable };
 
-    // console.log(new_classTable);
-    // console.log(new_classData);
-
+    // console.log("수정 저장됨");
+    // setClassTable(new_classTable);
+    // // console.log(new_classData);
     const classMemoRef = doc(dbService, "classTable", props.userUid);
     const now_doc = await getDoc(classMemoRef);
+
     if (now_doc.exists()) {
       await updateDoc(classMemoRef, new_classData);
     } else {
@@ -561,13 +572,13 @@ const MainPage = (props) => {
     const checkInput = () => {
       clearTimeout(timer);
       timer = setTimeout(() => {
-        // console.log("10초 지남");
+        // console.log("자동저장");
         saveClassMemoHandler();
-      }, 5000);
+      }, 10000);
     };
     ulTextareas?.addEventListener("keydown", checkInput);
     return () => clearTimeout(timer);
-  }, []);
+  }, [hideClassTable]);
 
   return (
     <div className={classes["whole-div"]}>
@@ -772,6 +783,7 @@ const MainPage = (props) => {
               {titleDate.slice(-2, -1) !== "토" &&
               titleDate.slice(-2, -1) !== "일" ? (
                 <>
+                  * 수정, 변경 10초 후 자동저장
                   <ul className={`${classes["ul-section"]} ul-textareas`}>
                     {/* todayClassTable로 렌더링 */}
                     {todayClassTable?.classMemo?.map((clInfo, index) => (

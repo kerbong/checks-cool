@@ -21,21 +21,19 @@ button,
 select {
   color: black;
 }
-/* 아이폰에서 사파리 기본 스타일, 색깔 적용 등 제거*/
-/* input,
-textarea,
-button {
-  appearance: none;
-  -moz-appearance: none;
-  -webkit-appearance: none;
-  border-radius: 0;
-  -webkit-border-radius: 0;
-  -moz-border-radius: 0;
-}
 
-a {
-  color: inherit;
-} */
+::-webkit-scrollbar {
+  width: 1.5vw;
+  height: 1.5vh;
+}
+::-webkit-scrollbar-track {
+  background-color: #f0f0f0;
+  border-radius: 100px;
+}
+::-webkit-scrollbar-thumb {
+  background-color: #bcbcbc;
+  border-radius: 100px;
+}
 
 @font-face {
   font-family: "GowunDodum";

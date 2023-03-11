@@ -190,7 +190,7 @@
 }
 
 .explainDivHide {
-  transition: all 0.2s linear 0s;
+  transition: opacity 0.2s;
   visibility: hidden;
   position: fixed;
   opacity: 0;

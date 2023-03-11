@@ -19,6 +19,7 @@ const FreeMemoInput = (props) => {
   const [edited, setEdited] = useState(props.item ? false : true);
   const [title, setTitle] = useState("");
   const [text, setText] = useState("");
+  const [showEditDeleteBtn, setShowEditDeleteBtn] = useState(false);
   const [category, setCategory] = useState(
     props.item ? props.item.category : ["all"]
   );
@@ -99,10 +100,18 @@ const FreeMemoInput = (props) => {
     //만약 기존 자료 수정의 경우.. beforeTitle 존재함, 그럴 경우 기존의 데이터는 삭제하고
     let isExist = false;
     let new_freeMemo = [];
+    let newItem_index;
     if (new_memo.beforeTitle) {
-      props.freeMemo?.forEach((item) => {
+      props.freeMemo?.forEach((item, index) => {
         if (item.title !== new_memo.beforeTitle) {
           new_freeMemo.push(item);
+          //새로운 메모 제목이 기존 메모들 제목과 같으면
+          if (item.title === new_memo.title) {
+            isExist = true;
+          }
+        } else {
+          new_freeMemo.push(new_memo);
+          newItem_index = index;
         }
       });
       delete new_memo.beforeTitle;
@@ -114,8 +123,9 @@ const FreeMemoInput = (props) => {
           new_freeMemo.push(item);
         }
       });
+      new_freeMemo.push(new_memo);
+      newItem_index = new_freeMemo.length - 1;
     }
-    new_freeMemo.push(new_memo);
 
     if (isExist) {
       Swal.fire(
@@ -126,9 +136,14 @@ const FreeMemoInput = (props) => {
       return;
     }
 
+    let saveOrEdit = "저장";
+    // 기존 자료 수정이면
+    if (newItem_index !== new_freeMemo.length - 1) {
+      saveOrEdit = "수정";
+    }
     Swal.fire(
       `저장 완료`,
-      `${new_memo.title} 메모가 저장되었습니다.`,
+      `${new_memo.title} 메모가 ${saveOrEdit}되었습니다.`,
       "success"
     );
 
@@ -145,7 +160,8 @@ const FreeMemoInput = (props) => {
       text: `현재 메모 (${item.title}) 를 삭제할까요?`,
       confirmButtonText: "확인",
       confirmButtonColor: "#85bd82",
-      showDenyButton: false,
+      showDenyButton: true,
+      denyButtonText: "취소",
     }).then((result) => {
       if (result.isConfirmed) {
         setEdited(false);
@@ -157,7 +173,12 @@ const FreeMemoInput = (props) => {
   };
 
   return (
-    <li className={classes["freeMemo-li"]}>
+    <li
+      className={classes["freeMemo-li"]}
+      onClick={() => {
+        setShowEditDeleteBtn((prev) => !prev);
+      }}
+    >
       {/* 제목부분 */}
       <div className={classes["title-div"]}>
         {edited ? (
@@ -179,7 +200,7 @@ const FreeMemoInput = (props) => {
         )}
       </div>
 
-      {/* 카테고리부분 */}
+      {/* 카테고리 보여주는 부분 */}
       <div className={classes["category-btns"]}>
         {edited ? (
           <>
@@ -205,28 +226,38 @@ const FreeMemoInput = (props) => {
                 </span>
               );
             })}
+
+            {exist_category.length === 0 &&
+              "아직 카테고리가 없어요! 먼저 왼쪽 상단의 + 버튼으로 카테고리를 추가해주세요!"}
           </>
         ) : (
-          item.category
-            ?.filter((cate) => cate !== "all")
-            .map((categ) => {
-              let now_category = exist_category.filter(
-                (item) => item.name === categ
-              )[0];
-              return (
-                <div key={categ}>
-                  {" "}
-                  <Button
-                    name={categ}
-                    className={"freeMemo-category-edit"}
-                    style={{
-                      backgroundColor: now_category?.bgColor || "gray",
-                      color: now_category?.fontColor || "black",
-                    }}
-                  />
-                </div>
-              );
-            })
+          <>
+            {item.category
+              ?.filter((cate) => cate !== "all")
+              ?.map((categ) => {
+                let now_category = exist_category?.filter(
+                  (item) => item.name === categ
+                )[0];
+                return (
+                  <div key={categ}>
+                    {" "}
+                    <Button
+                      name={categ}
+                      className={"freeMemo-category-edit"}
+                      style={{
+                        backgroundColor: now_category?.bgColor || "gray",
+                        color: now_category?.fontColor || "black",
+                      }}
+                    />
+                  </div>
+                );
+              })}
+            {item.category.length === 1 && (
+              <span style={{ color: "gray" }}>
+                * 카테고리가 존재하지 않아요!
+              </span>
+            )}
+          </>
         )}
       </div>
 
@@ -279,22 +310,26 @@ const FreeMemoInput = (props) => {
           </>
         ) : (
           <>
-            <Button
-              name={"수정"}
-              className={"freeMemo-saveDelete"}
-              onclick={() => {
-                setEdited(true);
-              }}
-            />
-            {/* 삭제버튼 */}
-            {item && (
-              <Button
-                name={"삭제"}
-                className={"freeMemo-saveDelete"}
-                onclick={() => {
-                  deleteHandler();
-                }}
-              />
+            {showEditDeleteBtn && (
+              <>
+                <Button
+                  name={"수정"}
+                  className={"freeMemo-saveDelete"}
+                  onclick={() => {
+                    setEdited(true);
+                  }}
+                />
+                {/* 삭제버튼 */}
+                {item && (
+                  <Button
+                    name={"삭제"}
+                    className={"freeMemo-saveDelete"}
+                    onclick={() => {
+                      deleteHandler();
+                    }}
+                  />
+                )}
+              </>
             )}
           </>
         )}

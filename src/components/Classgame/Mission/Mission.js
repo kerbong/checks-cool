@@ -202,12 +202,9 @@ const Mission = (props) => {
         </Modal>
       )}
 
-      <h1 className={classes.h1}>
+      <h1 className={classes.h1} onClick={() => setExplainOn((prev) => !prev)}>
         🌞 오늘의 아침한마디{" "}
-        <span
-          className={classes.h1Span}
-          onClick={() => setExplainOn((prev) => !prev)}
-        >
+        <span className={classes.h1Span}>
           {explainOn ? (
             <i className="fa-solid fa-chevron-up"></i>
           ) : (

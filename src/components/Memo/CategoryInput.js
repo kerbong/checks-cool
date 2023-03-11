@@ -65,22 +65,30 @@ const CategoryInput = (props) => {
     let isExist = false;
     let beforeName = new_item.beforeName;
     let new_category = [];
+    let newItem_index;
     if (beforeName) {
-      props.category.forEach((item) => {
+      props.category?.forEach((item, index) => {
         if (item.name !== beforeName) {
           new_category.push(item);
+          if (item.name === new_item.name) {
+            isExist = true;
+          }
+        } else {
+          new_category.push(new_item);
+          newItem_index = index;
         }
       });
     } else {
-      props.category.forEach((item) => {
+      props.category?.forEach((item) => {
         if (item.name === new_item.name) {
           isExist = true;
         } else {
           new_category.push(item);
         }
       });
+      new_category.push(new_item);
+      newItem_index = new_category.length - 1;
     }
-    new_category.push(new_item);
 
     if (isExist) {
       Swal.fire(
@@ -92,7 +100,7 @@ const CategoryInput = (props) => {
     }
 
     setIsEdited(false);
-    props.saveCategoryHandler(new_category);
+    props.saveCategoryHandler(new_category, newItem_index);
     props.caInputClose();
   };
 
@@ -112,7 +120,7 @@ const CategoryInput = (props) => {
           )}
           {!isEdited && <h2 className={classes["h2"]}>카테고리 추가</h2>}
 
-          {!isEdited && <h3>카테고리 이름</h3>}
+          <h3>{!isEdited ? "카테고리 이름" : "카테고리 수정"}</h3>
           <div className={classes["h2"]}>
             <input
               id="title-input"
