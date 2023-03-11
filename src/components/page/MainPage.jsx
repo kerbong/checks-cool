@@ -431,11 +431,14 @@ const MainPage = (props) => {
   }, []);
 
   //시간표 저장 함수
-  const saveClassMemoHandler = async (classMemo) => {
+  const saveClassMemoHandler = async () => {
     let new_classMemo = {
       id: todayYyyymmdd,
       classMemo: [],
     };
+
+    const classMemoRef = doc(dbService, "classTable", props.userUid);
+    const now_doc = await getDoc(classMemoRef);
 
     //각각의 인덱스를 기준으로 각교시 과목 이름과 메모를 저장함.
 
@@ -448,22 +451,24 @@ const MainPage = (props) => {
         memo: memo.value.trim(),
       });
     });
-    //데이터는 new_classMemo라는 객체에 저장
 
     let isDiff = false;
 
     let new_classTable = [];
-    classTable.forEach((item) => {
+
+    //상태인 classTable을 사용할 경우... setTImeout으로 자동저장될 때 최신값을 가져오지 못해서.. (키를 누를 당시의 값을 기준으로 함.) 데이터베이스에 있는 최신 정보를 받아오도록.. 해야 할듯. (읽기 횟수가 늘어나기는 하겠지만..)
+
+    now_doc?.data()?.datas?.forEach((item) => {
       if (item.id === new_classMemo.id) {
         //혹시 내용이 다똑같으면 저장하지 않게 확인하기
-        // item.classMemo.forEach((memo, index) => {
-        //   if (memo.memo !== new_classMemo["classMemo"][index].memo) {
-        //     isDiff = true;
-        //   }
-        //   if (memo.subject !== new_classMemo["classMemo"][index].subject) {
-        //     isDiff = true;
-        //   }
-        // });
+        item.classMemo.forEach((cl, index) => {
+          if (cl.memo !== new_classMemo["classMemo"][index].memo) {
+            isDiff = true;
+          }
+          if (cl.subject !== new_classMemo["classMemo"][index].subject) {
+            isDiff = true;
+          }
+        });
       } else {
         new_classTable.push(item);
       }
@@ -471,12 +476,11 @@ const MainPage = (props) => {
 
     new_classTable.push(new_classMemo);
 
-    // if (isDiff) {
-    //   console.log("다름");
-    // } else {
-    //   console.log("동일함");
-    //   return;
-    // }
+    // 동일하면 저장하지 않음
+    if (!isDiff) {
+      // console.log("동일함");
+      return;
+    }
 
     Swal.fire({
       icon: "success",
@@ -490,10 +494,8 @@ const MainPage = (props) => {
     const new_classData = { datas: new_classTable };
 
     // console.log("수정 저장됨");
-    // setClassTable(new_classTable);
+    setClassTable(new_classTable);
     // // console.log(new_classData);
-    const classMemoRef = doc(dbService, "classTable", props.userUid);
-    const now_doc = await getDoc(classMemoRef);
 
     if (now_doc.exists()) {
       await updateDoc(classMemoRef, new_classData);
