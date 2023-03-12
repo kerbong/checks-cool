@@ -26,3 +26,11 @@ messaging.onBackgroundMessage(function (payload) {
 
   self.registration.showNotification(notificationTitle, notificationOptions);
 });
+
+// 푸시알림 클릭하면 이동할 주소 설정
+self.addEventListener("notificationclick", function (event) {
+  // console.log("notification click");
+  const url = "/checks-cool/";
+  event.notification.close();
+  event.waitUntil(clients.openWindow(url));
+});
