@@ -9,13 +9,15 @@ import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import ExampleModal from "./ExampleModal";
 import byExcel from "../../assets/student/teacher-excel.gif";
-import mainImg from "../../assets/notice/0308.jpg";
+import mainImg from "../../assets/notice/0312.jpg";
 import dayjs from "dayjs";
+import "dayjs/locale/ko";
 import AttendCalendar from "components/Attendance/AttendCalendar";
+dayjs.locale("ko");
 
-const update_title = `함께 성장해요!🍇`;
+const update_title = `[메모폴더] 기능 추가!`;
 
-const update_text = `학기초 다양한 <b>에러 수정</b>과 더불어 많은 선생님들이 의견 주신<br/> <b>새로운 카테고리 메모장</b>을 개발하고 있습니다!🫡 <br/> 기본적으로 먼저 의견 주신 부분들을 개발하지만, 많은 분들이 비슷한 의견을 주시면 더 필요한 것으로 판단하여 먼저 개발하게 됩니다! (양해부탁드려요!) <br/> 최근 업로드 된, <b>[상담]-[녹음]</b> 기능과 <b>[잼잼]-[알림장]</b> 기능도 많은 사용, 개선의견 부탁드립니다!😊 <br/> 함께 더 나은 서비스를 만들어 주시는 모든선생님들께 감사드리며..🙏 함께 성장하는 첵스쿨이 되도록 노력하겠습니다!! <br/> 주변 선생님들께 <b> 입소문도 부탁드려요~ </b>(좋은건 함께해야 제맛..!!) 🤩`;
+const update_text = `선생님들이 의견 주신 <b>자유로운 메모를 위한 메모 폴더</b>가 개발되었습니다!🫡 <br/> [메모] - [메모]로 가시면 됩니다! <br/> 😊 길~~게 혹은 다양하게 적어두고 싶은 내용을 <b>카테고리를 만들고 저장해보세요!!</b><br/> <b>교단일기, 교실별 자물쇠비번, 과목별 수업아이디어, 과목별 인디쌤 아이디, 학급 경영아이디어, 업무 흐름도 ...</b> 다양한 활용이 가능할 것 같습니다! <br/> 언제나 최선을 다해 오류 테스트를 거치지만.. 여러 생각지 못한 오류들이 발생합니다ㅠㅠ (양해부탁드려요!) <br/>  함께 더 나은 서비스를 만들어 주시는 모든선생님들께 감사드리며..🙏<br/>  새로운 한 주도 첵스쿨과 함께 평안하시길!!<br/>  🤩`;
 // "* 아, 이거 있으면 좋겠다! 하는 기능이 있으신가요? 내년에 사용해보고 싶은 기능을 추천해주세요! 가장 많은 추천을 받은 아이디어를 선정하여 추가할 계획입니다! '잼잼'-'이거해요' 에 적어주세요~ ";
 //오늘 날짜 yyyy-mm-dd로 만들기
 const getDateHandler = (date, titleOrQuery) => {
@@ -73,7 +75,7 @@ const MainPage = (props) => {
 
   //업데이트 내용 보여주기 로컬스토리지에서 showNotice를 스트링으로 저장해서 확인 후에 이전에 봤으면 안보여주기
   const [showNotice, setShowNotice] = useState(
-    localStorage.getItem("showNotice") === "mainUpdate0308" ? false : true
+    localStorage.getItem("showNotice") === "mainUpdate0312" ? false : true
   );
 
   //화면 사이즈가 변경되면.. 시간표의 기본 세팅을 열림으로 바꿔주기.
@@ -612,7 +614,7 @@ const MainPage = (props) => {
       {showNotice && (
         <ExampleModal
           onClose={() => {
-            localStorage.setItem("showNotice", "mainUpdate0308");
+            localStorage.setItem("showNotice", "mainUpdate0312");
             setShowNotice(false);
           }}
           imgSrc={mainImg}
@@ -865,11 +867,14 @@ const MainPage = (props) => {
                     }
                   >
                     {event.public ? "공용) " : "개인) "}
-                    {event.eventName}({event.option.slice(1)}) / D-
+                    {event.eventName}({event.option.slice(1)}) /{" "}
+                    {dayjs(event.id.slice(0, 10)).format("M월 D일(ddd)")} /{" "}
+                    {/* / D-
                     {dayjs(event.id.slice(0, 10)).diff(
                       todayYyyymmdd,
                       "day"
-                    )} / {event.note ? ` ${event.note}` : ""}
+                    )}  */}
+                    {event.note ? ` ${event.note}` : ""}
                   </span>
                   <span> </span>
                 </li>

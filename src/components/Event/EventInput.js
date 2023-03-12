@@ -156,59 +156,6 @@ const EventInput = (props) => {
     props.saveNewData(new_data);
   };
 
-  const showNotification = (name) => {
-    if (!Notification) {
-      return;
-    }
-
-    // 만약 이미 유저가 푸시 알림을 허용해놓지 않았다면,
-    if (Notification.permission !== "granted") {
-      // Chrome - 유저에게 푸시 알림을 허용하겠냐고 물어보고, 허용하지 않으면 return!
-      try {
-        Notification.requestPermission().then((permission) => {
-          if (permission !== "granted") return;
-        });
-      } catch (error) {
-        // Safari - 유저에게 푸시 알림을 허용하겠냐고 물어보고, 허용하지 않으면 return!
-        if (error instanceof TypeError) {
-          Notification.requestPermission().then((permission) => {
-            if (permission !== "granted") return;
-          });
-        } else {
-          console.error(error);
-        }
-      }
-    }
-
-    if (Notification && Notification.permission === "granted") {
-      const newOption = {
-        badge: "../../assets/notification/logo128.png",
-        icon: "../../assets/notification/logo512.png",
-        body: "일정이 내일 진행됩니다. 내용을 확인해주세요.",
-      };
-
-      let eventDay;
-      if (props.about.slice(0, 4) === "todo") {
-        let eventDate = document.querySelector("h1").getAttribute("class");
-        // 하루 전으로 만들기
-        eventDay = dayjs(changeYyyyMmDd(eventDate) + " 08:40")
-          .subtract(+props.when, "day")
-          .format("YYYY-MM-DD HH:mm");
-        console.log(eventDay);
-      }
-      const date = new Date(eventDay);
-
-      scheduleJob(date, () => {
-        // notificationRef에 Notification을 넣어준다. 이 친구는 이렇게 할당만해도 바로 실행된다.
-        const n = new Notification(name, newOption);
-        n.onclick = (event) => {
-          event.preventDefault(); // prevent the browser from focusing the Notification's tab
-          window.open("bit.ly/첵스쿨", "_blank");
-        };
-      });
-    }
-  };
-
   return (
     <>
       <li
