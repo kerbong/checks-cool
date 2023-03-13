@@ -130,14 +130,32 @@ const ClassTableBasic = (props) => {
       }
     });
 
-    // 교시 이름 설정하기
+    // 현재 입력된 교시 이름 설정하기
     let new_classTime = [];
+
     CLASSTIME.forEach((cl, index) => {
       let clt_name = document.querySelectorAll(
         `input[id="classTime-${index}"]`
       )[0].value;
       new_classTime.push(clt_name);
     });
+
+    let deleteDuplicate = [...new Set(new_classTime)];
+    console.log(new Set(new_classTime).length);
+    console.log(new_classTime.length);
+
+    // 혹시나 현재 입력된 교시 이름에 같은 이름이 있지 않도록 확인하기!
+    if (deleteDuplicate.length !== new_classTime.length) {
+      Swal.fire({
+        icon: "error",
+        title: "저장 실패",
+        text: "기초시간표의 교시 이름을 다르게 설정해주세요!",
+        confirmButtonText: "확인",
+        confirmButtonColor: "#85bd82",
+        timer: 5000,
+      });
+      return;
+    }
 
     const now_doc = await getDoc(classBasicRef);
     if (now_doc.exists() && Object.keys(now_doc?.data()).length > 0) {

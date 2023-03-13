@@ -61,3 +61,36 @@ select {
 .classSelect-title {
   grid-column: 2/3;
 }
+
+/* 외부강사 */
+.op1 {
+  background-color: #811a2a;
+}
+/* 자체행사 */
+.op2 {
+  background-color: #2a4353;
+}
+/* 교사일정 */
+.op3 {
+  background-color: #e9cfccd6;
+  color: black;
+  font-weight: bold;
+}
+
+.todoOption {
+  width: 30px;
+  height: 12px;
+  display: inline-block;
+  border-radius: 7px;
+  margin-right: 5px;
+  margin-left: 12px;
+}
+
+.todo-option {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  font-size: 0.8rem;
+  height: 30px;
+  width: 97%;
+}

@@ -13,6 +13,7 @@ import mainImg from "../../assets/notice/0312.jpg";
 import dayjs from "dayjs";
 import "dayjs/locale/ko";
 import AttendCalendar from "components/Attendance/AttendCalendar";
+import consultingOption from "consultingOption";
 dayjs.locale("ko");
 
 const update_title = `[메모폴더] 기능 추가!`;
@@ -434,8 +435,17 @@ const MainPage = (props) => {
 
   //시간표 저장 함수
   const saveClassMemoHandler = async () => {
+    //오늘 날짜 데이터를 받을 때... 상태를 쓰면 최신을 쓰지 못할 수 있음(setTImeout때문...)
+    //년 월 일
+    let nowDate = document.getElementById("todayYYYYMMDD").innerText;
+    let year = "20" + nowDate.split("년")[0];
+    let month = nowDate.split("월")[0].split(" ")[1];
+    let day = nowDate.split("일")[0].split(" ")[2];
+
+    let todayYYYYMMDD = dayjs(`${year}-${month}-${day}`).format("YYYY-MM-DD");
+
     let new_classMemo = {
-      id: todayYyyymmdd,
+      id: todayYYYYMMDD,
       classMemo: [],
     };
 
@@ -443,8 +453,13 @@ const MainPage = (props) => {
     const now_doc = await getDoc(classMemoRef);
 
     //각각의 인덱스를 기준으로 각교시 과목 이름과 메모를 저장함.
+    //시간표 정보가 저장되어 있으면.. 최신으로 사용함.
+    let recent_classLists = [...classLists];
+    if (now_doc.data().classTime.length > 0) {
+      recent_classLists = now_doc.data().classTime;
+    }
 
-    classLists.forEach((item, index) => {
+    recent_classLists.forEach((item, index) => {
       let subject = document.querySelector(`#classSubject-${item}`);
       let memo = document.querySelector(`#classMemo-${item}`);
 
@@ -454,15 +469,18 @@ const MainPage = (props) => {
       });
     });
 
+    //다르지 않아! 기본세팅
     let isDiff = false;
 
     let new_classTable = [];
 
     //상태인 classTable을 사용할 경우... setTImeout으로 자동저장될 때 최신값을 가져오지 못해서.. (키를 누를 당시의 값을 기준으로 함.) 데이터베이스에 있는 최신 정보를 받아오도록.. 해야 할듯. (읽기 횟수가 늘어나기는 하겠지만..)
 
-    now_doc?.data()?.datas?.forEach((item) => {
+    let datas = now_doc?.data()?.datas;
+
+    datas?.forEach((item) => {
       if (item.id === new_classMemo.id) {
-        //혹시 내용이 다똑같으면 저장하지 않게 확인하기
+        //혹시 내용이 다르면 저장할 수 있도록 세팅
         item.classMemo.forEach((cl, index) => {
           if (cl.memo !== new_classMemo["classMemo"][index].memo) {
             isDiff = true;
@@ -471,14 +489,25 @@ const MainPage = (props) => {
             isDiff = true;
           }
         });
+        //현재 시간표를 제외한 나머지를 푸시해두고
       } else {
         new_classTable.push(item);
       }
     });
 
+    if (datas?.length > 0) {
+      //기존 데이터가 있는데 현재 저장하고 있는 날짜의 자료가 없으면
+      if (datas?.filter((data) => data.id === new_classMemo.id).length === 0) {
+        isDiff = true;
+      }
+      //혹시 기존 데이터가 없으면 무조건 저장가능하도록
+    } else {
+      isDiff = true;
+    }
+
     new_classTable.push(new_classMemo);
 
-    // 동일하면 저장하지 않음
+    // 동일하면(다르지 않으면) 저장하지 않음
     if (!isDiff) {
       // console.log("동일함");
       return;
@@ -497,7 +526,6 @@ const MainPage = (props) => {
 
     // console.log("수정 저장됨");
     setClassTable(new_classTable);
-    // // console.log(new_classData);
 
     if (now_doc.exists()) {
       await updateDoc(classMemoRef, new_classData);
@@ -666,6 +694,7 @@ const MainPage = (props) => {
                 ? classes["events-today"]
                 : ""
             }
+            id="todayYYYYMMDD"
           >
             {/* {titleDate} */}
             {/* 오늘 날짜 보여주는 부분 날짜 클릭하면 달력도 나옴 */}

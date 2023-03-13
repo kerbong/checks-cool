@@ -250,7 +250,14 @@ const TodoPage = (props) => {
           if (ymd === eventDate && !existedBtn) {
             //달력날짜에 (번호+이름)의 버튼 추가하기
             const btn = document.createElement("button");
-            btn.className = `${classes.eventData} eventBtn`;
+            //옵션에 따라서 배경 색을 다르게 보여줌
+            btn.className = `${classes.eventData} ${
+              data.option.slice(0, 1) === "1"
+                ? classes.op1
+                : data.option.slice(0, 1) === "2"
+                ? classes.op2
+                : classes.op3
+            } eventBtn`;
             btn.innerText = data.eventName;
             btn.id = data.id;
             eventTag.appendChild(btn);
@@ -451,6 +458,23 @@ const TodoPage = (props) => {
           )}
         </button>
       </div>
+
+      {/* 일정 색깔 표시 알림 */}
+      <div className={classes["todo-option"]}>
+        <div>
+          <span className={`${classes["todoOption"]} ${classes["op1"]}`}></span>
+          외부강사
+        </div>
+        <div>
+          <span className={`${classes["todoOption"]} ${classes["op2"]}`}></span>
+          자체행사
+        </div>
+        <div>
+          <span className={`${classes["todoOption"]} ${classes["op3"]}`}></span>
+          교사일정
+        </div>
+      </div>
+
       {/* 달력날짜 누르면 나오는 모달 */}
       {dayEventIsShown && (
         <Modal onClose={dayEventHideHandler}>
