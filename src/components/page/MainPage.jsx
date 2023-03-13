@@ -455,7 +455,7 @@ const MainPage = (props) => {
     //각각의 인덱스를 기준으로 각교시 과목 이름과 메모를 저장함.
     //시간표 정보가 저장되어 있으면.. 최신으로 사용함.
     let recent_classLists = [...classLists];
-    if (now_doc.data().classTime.length > 0) {
+    if (now_doc?.data()?.classTime?.length > 0) {
       recent_classLists = now_doc.data().classTime;
     }
 

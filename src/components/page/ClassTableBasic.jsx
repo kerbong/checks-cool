@@ -141,8 +141,7 @@ const ClassTableBasic = (props) => {
     });
 
     let deleteDuplicate = [...new Set(new_classTime)];
-    console.log(new Set(new_classTime).length);
-    console.log(new_classTime.length);
+
 
     // 혹시나 현재 입력된 교시 이름에 같은 이름이 있지 않도록 확인하기!
     if (deleteDuplicate.length !== new_classTime.length) {
