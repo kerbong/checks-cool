@@ -60,7 +60,6 @@ const Input = React.forwardRef((props, ref) => {
   const rowAlert = () => {
     let limitRow = maxRowsLength()?.split("-")?.[0];
     let limitLength = maxRowsLength()?.split("-")?.[1];
-    console.log(props.fontSize);
     let rows = noteRef.current.value.split("\n");
     let row_length = Math.ceil(
       (noteRef.current.clientWidth - 50) / (+props.fontSize.slice(0, 2) + 2)
@@ -73,11 +72,9 @@ const Input = React.forwardRef((props, ref) => {
     rows.forEach((text) => {
       let text_row = Math.floor(text.length / row_length);
       if (text_row > 1) {
-        console.log("dd");
         fixed_rows += text_row;
       }
     });
-    console.log(limitRow);
     //윈도우 세로에 들어갈 줄 엔터 과다
     if (+fixed_rows > +limitRow) {
       props.maxRowAlert("enter");

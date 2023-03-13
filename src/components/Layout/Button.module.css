@@ -412,3 +412,17 @@
 
 .freeMemo-saveDelete {
 }
+
+.manageBtn,
+.manageBtn-clicked {
+  border-width: 0;
+  padding: 10px 10px 20px 10px;
+  font-size: 1.2rem;
+  border-radius: 10px 10px 0 0;
+}
+
+.manageBtn-clicked {
+  background-color: rgb(37 106 114);
+  color: whitesmoke;
+  font-weight: bold;
+}

@@ -1,0 +1,11 @@
+.class-select {
+  font-size: 1.2rem;
+  width: auto;
+  margin: 10px 0 20px 0;
+}
+
+.btns-div {
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+}

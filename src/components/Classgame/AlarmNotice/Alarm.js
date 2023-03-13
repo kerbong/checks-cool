@@ -188,16 +188,34 @@ const Alarm = (props) => {
   //수동저장함수
   const saveHandler = async () => {
     let textArea = document.getElementById("board-input");
+    //년 월 일
+    let nowDate = document.getElementById("todayYYYYMMDD").innerText;
+    let year = "20" + nowDate.split("년")[0];
+    let month = nowDate.split("월")[0].split(" ")[1];
+    let day = nowDate.split("일")[0].split(" ")[2];
+
+    let todayYYYYMMDD = dayjs(`${year}-${month}-${day}`).format("YYYY-MM-DD");
+
     //데이터 저장하기
     let today_data = {
-      id: todayYyyymmdd,
+      id: todayYYYYMMDD,
       text: textArea.value,
     };
 
     let new_datas = [];
 
-    [...alarmLists]?.forEach((data) => {
-      if (data.id !== todayYyyymmdd) {
+    //setTimeout에서 상태변화 못잡아내서.. 받아오기
+
+    const alarmRef = doc(dbService, "alarm", props.userUid);
+    const now_doc = await getDoc(alarmRef);
+
+    let new_alarmLists = [];
+    if (now_doc?.data()?.alarm_data?.length > 0) {
+      new_alarmLists = now_doc.data().alarm_data;
+    }
+
+    new_alarmLists?.forEach((data) => {
+      if (data.id !== todayYYYYMMDD) {
         new_datas.push(data);
       }
     });
@@ -239,6 +257,7 @@ const Alarm = (props) => {
                 ? classes["events-today"]
                 : ""
             }
+            id="todayYYYYMMDD"
           >
             {/* {titleDate} */}
             {/* 오늘 날짜 보여주는 부분 날짜 클릭하면 달력도 나옴 */}

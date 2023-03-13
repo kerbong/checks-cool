@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import classes from "./Student.module.css";
 
 import StudentBtn from "./StudentBtn";
@@ -10,11 +10,16 @@ const Student = (props) => {
         props.students?.map((stu) => (
           // <Button name={stu.num + stu.name} small={true} key={stu.num} />
           <StudentBtn
-            className={"button-student"}
+            className={
+              !props.manageEach ? "button-student" : "button-student-manageEach"
+            }
             name={stu.name}
             key={stu.num}
             num={stu.num}
-            onShowOption={props.showOption}
+            onShowOption={(e) => {
+              props.showOption(e);
+              e.target += "add";
+            }}
           />
         ))}
     </div>

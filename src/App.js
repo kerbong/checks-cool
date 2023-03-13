@@ -11,6 +11,14 @@ import Loading from "components/page/Loading";
 import Header from "./components/Layout/Header";
 
 // lazy 로딩 적용
+const ManageStudentInfo = lazy(() =>
+  import("components/page/ManageStudentInfo")
+);
+const ManageCheckListMemo = lazy(() =>
+  import("components/page/ManageCheckListMemo")
+);
+const ManageConsult = lazy(() => import("components/page/ManageConsult"));
+const ManageAttendance = lazy(() => import("components/page/ManageAttendance"));
 const MainPage = lazy(() => import("./components/page/MainPage"));
 const AttendancePage = lazy(() => import("./components/page/AttendancePage"));
 const ClassgamePage = lazy(() => import("./components/page/ClassgamePage"));
@@ -296,6 +304,50 @@ function App() {
                   path="consulting"
                   element={
                     <ConsultingPage
+                      students={students}
+                      userUid={userUid}
+                      isSubject={profile.isSubject || []}
+                    />
+                  }
+                />
+
+                <Route
+                  path="manageStudent"
+                  element={
+                    <ManageStudentInfo
+                      students={students}
+                      userUid={userUid}
+                      isSubject={profile.isSubject || []}
+                    />
+                  }
+                />
+
+                <Route
+                  path="manageCheckListMemo"
+                  element={
+                    <ManageCheckListMemo
+                      students={students}
+                      userUid={userUid}
+                      isSubject={profile.isSubject || []}
+                    />
+                  }
+                />
+
+                <Route
+                  path="manageConsult"
+                  element={
+                    <ManageConsult
+                      students={students}
+                      userUid={userUid}
+                      isSubject={profile.isSubject || []}
+                    />
+                  }
+                />
+
+                <Route
+                  path="manageAttendance"
+                  element={
+                    <ManageAttendance
                       students={students}
                       userUid={userUid}
                       isSubject={profile.isSubject || []}

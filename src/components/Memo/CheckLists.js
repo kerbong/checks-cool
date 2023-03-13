@@ -136,20 +136,6 @@ const CheckLists = (props) => {
     }
   }, [dataYears]);
 
-  const firestoreDataHandler = async (dataFor) => {
-    if (dataFor === "checkLists") {
-      const newCheckRef = doc(dbService, "checkLists", props.userUid);
-      await setDoc(newCheckRef, {
-        checkLists_data: [...checkLists],
-      });
-    } else if (dataFor === "listMemo") {
-      const newListRef = doc(dbService, "listMemo", props.userUid);
-      await setDoc(newListRef, {
-        listMemo_data: [...listMemo],
-      });
-    }
-  };
-
   const saveItemHandler = async (item) => {
     //자료 저장할 떄 실제로 실행되는 함수
     const dataSaved = async (newOrSame) => {

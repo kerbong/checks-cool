@@ -221,7 +221,16 @@ const MemoTodayTodoItem = ({ todoItem, todoList, setTodoList }) => {
             </>
           )
         ) : (
-          <div className="todoapp__item-done-btn"></div>
+          <>
+            {/* 완료된 항목에는.. 삭제버튼만 보임 */}
+            <button
+              type="button"
+              className="todoapp__item-delete-btn"
+              onClick={onClickDeleteButton}
+            >
+              <i className="fa-regular fa-trash-can"></i>
+            </button>
+          </>
         )
       }
     </div>
