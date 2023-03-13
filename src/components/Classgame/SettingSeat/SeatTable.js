@@ -42,6 +42,7 @@ const SeatTable = (props) => {
   const [tableRow, setTableRow] = useState(props.rowColumn.split("-")[0]);
   const [tableColumn, setTableColumn] = useState(props.rowColumn.split("-")[1]);
   const [items, setItems] = useState();
+  const [itemsFront, setItemsFront] = useState();
   const [tempStudent, setTempStudent] = useState({});
   const [tempBeforeName, setTempBeforeName] = useState("");
   const [switchStudent, setSwitchStudent] = useState({});
@@ -52,6 +53,7 @@ const SeatTable = (props) => {
   const [pairStudents, setPairStudents] = useState([]);
   const [randomJustStudent, setRandomJustStudent] = useState(true);
   const [pickSeatAll, setPickSeatAll] = useState("");
+  const [seeFromBack, setSeeFromBack] = useState(true);
 
   let navigate = useNavigate();
 
@@ -545,7 +547,11 @@ const SeatTable = (props) => {
     //하루에 최대 5개까지만 저장 가능함.
     let saved_today = 0;
     let saved_month = 0;
-    const today_yyyymmdd = getDateHandler(new Date());
+    //새로운 자료면 오늘날짜, 기존 자료면 기존 날짜로 저장
+    let today_yyyymmdd = !props.title
+      ? getDateHandler(new Date())
+      : props.saveDate.slice(0, 10);
+
     seatLists?.forEach((list) => {
       //날짜가 같은 경우
       if (list.saveDate.slice(0, 10) === today_yyyymmdd)
@@ -773,6 +779,74 @@ const SeatTable = (props) => {
     }
   };
 
+  //자리표 보는 기준 바꾸는 함수
+  const changeSeeFromHandler = () => {
+    //기존에 버튼을 눌렀던 적이 없으면 새롭게 itemsFromt를 만들고 아니면 seeFromBack만 바꾸기
+    if (!itemsFront) {
+      let items_students = [];
+
+      document
+        .getElementById(`items-${props.title}-div`)
+        .childNodes.forEach((item) => {
+          items_students.unshift(item.innerText);
+        });
+
+      // console.log(items_students);
+      // console.log(props.rowColumn);
+
+      let data_month;
+      let data_year;
+      let dataYear_students;
+      //학생 자료 받아와서.. 성별 넣어주기
+      data_month = props.saveDate.slice(5, 7);
+      data_year = props.saveDate.slice(0, 4);
+      //학년도 세팅한 후에 (1월까지)
+      if (+data_month <= 1) {
+        data_year = String(+data_year - 1);
+      }
+      //받아온 전체 학생 자료에서 현재 학년도 학생 자료만 만들어 주기
+      dataYear_students = props?.wholeStudents?.filter(
+        (yearStd) => Object.keys(yearStd)[0] === data_year
+      )?.[0]?.[data_year];
+
+      if (props.clName) {
+        dataYear_students = dataYear_students?.filter(
+          (cl) => Object.keys(cl)[0] === props.clName
+        )?.[0]?.[props.clName];
+      }
+      // console.log(dataYear_students);
+
+      setItemsFront(
+        items_students?.map((stu, index) => (
+          <div
+            key={`table-${stu}`}
+            className={`${classes["item"]} item ${
+              classes[
+                dataYear_students?.filter(
+                  (student) => student.name === stu
+                )?.[0]?.woman && "existWoman"
+              ]
+            }`}
+            id={`table-${props.title}-${index + 1}`}
+            onClick={(e) => itemAddStudentHandler(e)}
+          >
+            {" "}
+            {stu}{" "}
+          </div>
+        ))
+      );
+
+      document
+        .getElementById(props.title)
+        .style.setProperty("--columns", tableColumn);
+      document
+        .getElementById(props.title)
+        .style.setProperty("--rows", tableRow);
+    }
+
+    setSeeFromBack((prev) => !prev);
+  };
+
   return (
     <div id={props.title || "newSeats"}>
       {students.length === 0 && (
@@ -792,7 +866,15 @@ const SeatTable = (props) => {
 
           <Button
             name={"저장"}
-            onclick={saveSeatsHandler}
+            onclick={() => {
+              if (!seeFromBack) {
+                saveErrorSwal(
+                  "학생기준 보기 (칠판이 화면 위쪽에 있는 상태) 에서만 저장이 가능합니다!"
+                );
+                return;
+              }
+              saveSeatsHandler();
+            }}
             className={"settingSeat-btn"}
           />
           {props.title?.length > 0 && (
@@ -808,10 +890,21 @@ const SeatTable = (props) => {
       )}
 
       {props.title?.length > 0 && (
-        <>
-          <p>* 자리만 바꾸시면 수정하여 저장됩니다.</p>
-          <p>* 제목을 변경하고 저장하시면 새로 저장됩니다.</p>
-        </>
+        <div>
+          <div>
+            <p>* 자리만 바꾸시면 수정하여 저장됩니다.</p>
+            <p>* 제목을 변경하고 저장하시면 새로 저장됩니다.</p>
+          </div>
+
+          {/* 교사기준, 학생기준보기 변경 버튼 */}
+          <div>
+            <Button
+              name={seeFromBack ? "교사기준 보기" : "학생기준 보기"}
+              onclick={changeSeeFromHandler}
+              className={"settingSeat-btn"}
+            />
+          </div>
+        </div>
       )}
 
       {!props.isExist && (
@@ -1007,15 +1100,26 @@ const SeatTable = (props) => {
         </div>
       )}
 
-      <div className={classes["blackboard-area"]}>
-        <span className={classes["blackboard"]}>칠 판</span>
-      </div>
+      {/* 초기세팅.. 뒤에서 볼때면 칠판이 자리 뒤에 */}
+      {seeFromBack && (
+        <div className={classes["blackboard-area"]}>
+          <span className={classes["blackboard"]}>칠 판</span>
+        </div>
+      )}
+
       <div
         className={classes[`items-container`]}
         id={props.title?.length > 0 ? `items-${props.title}-div` : "items-div"}
       >
-        {items}
+        {seeFromBack ? items : itemsFront}
       </div>
+
+      {/* 교사용으로 앞에서 볼때면 칠판이 앞에 */}
+      {!seeFromBack && (
+        <div className={classes["blackboard-area"]}>
+          <span className={classes["blackboard"]}>칠 판</span>
+        </div>
+      )}
     </div>
   );
 };
