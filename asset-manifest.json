@@ -1,17 +1,17 @@
 {
   "files": {
     "main.css": "/checks-cool/static/css/main.96700987.css",
-    "main.js": "/checks-cool/static/js/main.bbef2376.js",
+    "main.js": "/checks-cool/static/js/main.1d964848.js",
     "static/css/128.a2d6390d.chunk.css": "/checks-cool/static/css/128.a2d6390d.chunk.css",
-    "static/js/128.05fe6a0a.chunk.js": "/checks-cool/static/js/128.05fe6a0a.chunk.js",
+    "static/js/128.e588ff79.chunk.js": "/checks-cool/static/js/128.e588ff79.chunk.js",
     "static/css/690.65462880.chunk.css": "/checks-cool/static/css/690.65462880.chunk.css",
-    "static/js/690.cab0ad39.chunk.js": "/checks-cool/static/js/690.cab0ad39.chunk.js",
+    "static/js/690.b9cce368.chunk.js": "/checks-cool/static/js/690.b9cce368.chunk.js",
     "static/css/422.a2d6390d.chunk.css": "/checks-cool/static/css/422.a2d6390d.chunk.css",
-    "static/js/422.0715d1f0.chunk.js": "/checks-cool/static/js/422.0715d1f0.chunk.js",
+    "static/js/422.a02895e2.chunk.js": "/checks-cool/static/js/422.a02895e2.chunk.js",
     "static/css/176.a2d6390d.chunk.css": "/checks-cool/static/css/176.a2d6390d.chunk.css",
-    "static/js/176.4b7ef90c.chunk.js": "/checks-cool/static/js/176.4b7ef90c.chunk.js",
-    "static/css/297.301c3dfe.chunk.css": "/checks-cool/static/css/297.301c3dfe.chunk.css",
-    "static/js/297.e5b1715d.chunk.js": "/checks-cool/static/js/297.e5b1715d.chunk.js",
+    "static/js/176.dc97fbdd.chunk.js": "/checks-cool/static/js/176.dc97fbdd.chunk.js",
+    "static/css/69.301c3dfe.chunk.css": "/checks-cool/static/css/69.301c3dfe.chunk.css",
+    "static/js/69.e3b3b1d2.chunk.js": "/checks-cool/static/js/69.e3b3b1d2.chunk.js",
     "static/css/113.762b0b8d.chunk.css": "/checks-cool/static/css/113.762b0b8d.chunk.css",
     "static/js/113.a05c2e63.chunk.js": "/checks-cool/static/js/113.a05c2e63.chunk.js",
     "static/css/368.ec762ed8.chunk.css": "/checks-cool/static/css/368.ec762ed8.chunk.css",
@@ -49,16 +49,16 @@
     "static/media/show.gif": "/checks-cool/static/media/show.f910c419a32315624f87.gif",
     "static/media/consultAdd.gif": "/checks-cool/static/media/consultAdd.88e54d44455fc22d2a09.gif",
     "static/media/teacher-ocr.gif": "/checks-cool/static/media/teacher-ocr.44349b1c0fe0652be90b.gif",
-    "static/media/0312.jpg": "/checks-cool/static/media/0312.c9d6b7858742bfc37c70.jpg",
     "static/media/todayTodo.gif": "/checks-cool/static/media/todayTodo.538cb7bb82a6b9a8bd5c.gif",
     "static/media/teacher-typing.gif": "/checks-cool/static/media/teacher-typing.f82dbc64495a78c6242f.gif",
     "static/media/teacher-excel.gif": "/checks-cool/static/media/teacher-excel.e6955cccf0ee0cffd757.gif",
+    "static/media/0314.jpg": "/checks-cool/static/media/0314.702ef3d0e1e87d365ebc.jpg",
     "static/media/Spinner250px.gif": "/checks-cool/static/media/Spinner250px.5d939b7f9050c12f01f4.gif",
     "static/media/excel_gender_example.jpg": "/checks-cool/static/media/excel_gender_example.f8ba40b1043a4a255572.jpg",
     "index.html": "/checks-cool/index.html"
   },
   "entrypoints": [
     "static/css/main.96700987.css",
-    "static/js/main.bbef2376.js"
+    "static/js/main.1d964848.js"
   ]
 }
