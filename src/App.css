@@ -35,6 +35,16 @@ select {
   border-radius: 100px;
 }
 
+.clicked {
+  background-color: #e67e72 !important;
+  font-weight: bold;
+}
+
+.none {
+  background-color: #e9cfcc !important;
+  font-weight: 400;
+}
+
 @font-face {
   font-family: "GowunDodum";
   src: url("./fonts/GowunDodum-Regular.ttf");

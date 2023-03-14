@@ -33,16 +33,6 @@
   white-space: nowrap;
 }
 
-.clicked {
-  background-color: #e67e72;
-  font-weight: bold;
-}
-
-.none {
-  background-color: #e9cfcc;
-  font-weight: 400;
-}
-
 @media screen and (min-width: 800px) {
   .button-student {
     width: 120px;

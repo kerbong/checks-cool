@@ -130,34 +130,12 @@ const TodoPage = (props) => {
     return _year + "-" + _month + "-" + _day;
   };
 
-  //다음달 버튼 누를 떄 실행되는 함수 설정
-  useEffect(() => {
-    //처음 화면을 로딩했을 때 월 이동버튼에 state 변경기능 추가
-    const moveMonth = document.querySelectorAll(
-      ".react-datepicker__navigation"
-    );
-
-    moveMonth[0].addEventListener("click", () => {
-      // console.log("이전달");
-      //이전 노드에서 가져와서 반영하니까.. 보정함
-      let currentM = getCurrentMonth();
-      let fixedM = fixCurrentMonth(currentM, -1);
-      //state 설정
-      setCurrentMonth(fixedM);
-    });
-
-    moveMonth[1].addEventListener("click", () => {
-      // console.log("다음달");
-      let currentM = getCurrentMonth();
-      let fixedM = fixCurrentMonth(currentM, +1);
-      setCurrentMonth(fixedM);
-    });
-  }, []);
-
   //달력에 클릭이벤트 추가(이벤트온데이) + 달력에 버튼 그려주기
   useEffect(() => {
     //현재 연월가져옴
+    // console.log(currentMonth);
     let currentM = getCurrentMonth();
+    // console.log(currentM);
     //state로 설정함
     setCurrentMonth(currentM);
 
@@ -400,6 +378,11 @@ const TodoPage = (props) => {
     fixEvents(data, data.eventDate, "del");
   };
 
+  //달력에서 받은 month로 currentMonth변경하기
+  const getMonthHandler = (month) => {
+    setCurrentMonth(month);
+  };
+
   return (
     <>
       {showExample && (
@@ -501,7 +484,11 @@ const TodoPage = (props) => {
         />
       )}
       {/* 달력부분 */}
-      <AttendCalendar inline={"true"} getDateValue={getDateHandler} />
+      <AttendCalendar
+        inline={"true"}
+        getDateValue={getDateHandler}
+        getMonthValue={getMonthHandler}
+      />
       <br />
 
       {/* 회의록부분 */}

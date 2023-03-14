@@ -26,6 +26,7 @@ const Attendance = (props) => {
           getDateValue={getDateHandler}
           about={props.about}
           isSubject={props.isSubject}
+          getMonthValue={() => {}}
         />
       </div>
       <div className={classes["datepick-explain"]}>

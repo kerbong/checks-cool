@@ -110,6 +110,7 @@ const EventItem = (props) => {
                 <AttendCalendar
                   getDateValue={getDateHandler}
                   setStart={new Date(changeDateFormat(keyId))}
+                  getMonthValue={() => {}}
                 />
               </div>
               {props.about.slice(0, 4) !== "todo"

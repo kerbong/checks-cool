@@ -14,7 +14,25 @@ const ManageEach = (props) => {
 
   const showOptionHandler = (e) => {
     setStudent(e.target.innerText);
+    if (student !== "") {
+      //이전학생을 원래대로 none click css속성 적용
+      let beforeSelectStd = document.getElementById(`std-${student}`);
+      beforeSelectStd.classList.remove("clicked");
+      beforeSelectStd.classList.add("none");
+    }
   };
+
+  useEffect(() => {
+    // 현재 클릭된 학생 clicked css 적용
+    if (student !== "") {
+      let selectStd = document.getElementById(`std-${student}`);
+      selectStd.classList.remove("none");
+      selectStd.classList.add("clicked");
+    }
+    //   beforeSelectStd.style.backgroundColor = "#e9cfcc";
+    //   beforeSelectStd.style.fontWeight = "400";
+    // }
+  }, [student]);
 
   //학급 선택시 실행되는 함수
   const selectClassHandler = () => {

@@ -266,6 +266,7 @@ const Alarm = (props) => {
                 getDateValue={calDateHandler}
                 about="main"
                 setStart={new Date(todayYyyymmdd)}
+                getMonthValue={() => {}}
               />
             </span>
           </span>

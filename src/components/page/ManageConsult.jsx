@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
 import ManageChangeBtns from "./ManageChangeBtns";
 import ManageEach from "./ManageEach";
+import { useLocation } from "react-router";
 
 const ManageConsult = (props) => {
+  const { state } = useLocation();
   //선택된 학생 정보  번호 한칸띄우고 이름
   const selectStudentHandler = (studentNumName) => {
     console.log(studentNumName);

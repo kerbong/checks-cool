@@ -4,6 +4,8 @@ import ManageChangeBtns from "./ManageChangeBtns";
 import dayjs from "dayjs";
 import { dbService } from "../../fbase";
 import { onSnapshot, setDoc, doc, getDoc } from "firebase/firestore";
+import { useLocation } from "react-router";
+import classes from "./ManageEach.module.css";
 
 const ManageCheckListMemo = (props) => {
   const [showListMemo, setShowListMemo] = useState(true);
@@ -12,6 +14,13 @@ const ManageCheckListMemo = (props) => {
   const [onListMemo, setOnListMemo] = useState([]);
   const [onCheckLists, setOnCheckLists] = useState([]);
   const [onStudent, setOnStudent] = useState("");
+
+  const { state } = useLocation();
+
+  useEffect(() => {
+    //받아온 학생정보?
+    console.log(state);
+  }, [state]);
 
   //선택된 학생 정보  번호 한칸띄우고 이름
   const selectStudentHandler = (studentNumName) => {
@@ -99,19 +108,33 @@ const ManageCheckListMemo = (props) => {
         selectStudentHandler={selectStudentHandler}
       />
       {/* 버튼 모음 보여주기 */}
-      <ManageChangeBtns />
+      <ManageChangeBtns onStudent={onStudent} />
 
       {showListMemo ? (
         <>
           {/* 학생 개별기록 부분 보여주기 */}
-          <div>
-            {onListMemo.map((list) => (
-              <div key={list.id + list.num}>
-                {list.id}
-                {list.memo}
-              </div>
+          <ul className={classes["bottom-content-ul"]}>
+            {onListMemo?.map((list) => (
+              <li
+                key={list.id + list.num}
+                id={list.id + list.num}
+                className={classes["bottom-content-li"]}
+              >
+                {/* 제출, 개별기록의 id(yyyy-mm-dd) */}
+                <div className={classes["flex-ml-10"]}>
+                  {list.id.slice(0, 10)}
+                </div>
+                {/* 제출, 개별기록 */}
+                <div className={classes["fs-13"]}>{list.memo}</div>
+              </li>
             ))}
-          </div>
+            {/* 자료 없음 표시 */}
+            {onListMemo?.length === 0 && (
+              <li className={classes["bottom-content-li"]}>
+                * 저장된 학생관련 정보가 없어요!
+              </li>
+            )}
+          </ul>
         </>
       ) : (
         <>

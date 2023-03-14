@@ -13,6 +13,7 @@ const Student = (props) => {
             className={
               !props.manageEach ? "button-student" : "button-student-manageEach"
             }
+            manageEach={props.manageEach}
             name={stu.name}
             key={stu.num}
             num={stu.num}

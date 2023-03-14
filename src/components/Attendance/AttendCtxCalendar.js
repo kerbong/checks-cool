@@ -168,31 +168,6 @@ const AttendCtxCalendar = (props) => {
   };
 
   useEffect(() => {
-    //처음 화면을 로딩했을 때 월 이동버튼에 state 변경기능 추가
-    const moveMonth = document.querySelectorAll(
-      ".react-datepicker__navigation"
-    );
-
-    // console.log(moveMonth);
-
-    moveMonth[0]?.addEventListener("click", () => {
-      // console.log("이전달 클릭");
-      //이전 노드에서 가져와서 반영하니까.. 보정함
-      let currentM = getCurrentMonth();
-      let fixedM = fixCurrentMonth(currentM, -1);
-      //state 설정
-      setCurrentMonth(fixedM);
-    });
-
-    moveMonth[1]?.addEventListener("click", () => {
-      // console.log("다음달 클릭");
-      let currentM = getCurrentMonth();
-      let fixedM = fixCurrentMonth(currentM, +1);
-      setCurrentMonth(fixedM);
-    });
-  }, []);
-
-  useEffect(() => {
     //현재 연월가져옴
     let currentM = getCurrentMonth();
     //state로 설정함
@@ -317,6 +292,11 @@ const AttendCtxCalendar = (props) => {
     let selectDay = year + "-" + month + "-" + day;
     return selectDay;
     //selectDay랑 저장된 이벤트랑 일치하는 지 확인하기
+  };
+
+  //달력에서 받은 month로 currentMonth변경하기
+  const getMonthHandler = (month) => {
+    setCurrentMonth(month);
   };
 
   //달력에서 모달 밖 클릭하면 함수
@@ -541,6 +521,7 @@ const AttendCtxCalendar = (props) => {
         inline={"true"}
         getDateValue={getDateHandler}
         isSubject={true}
+        getMonthValue={getMonthHandler}
       />
     </>
   );

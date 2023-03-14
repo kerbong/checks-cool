@@ -103,6 +103,7 @@ const ConsultEdit = (props) => {
             getDateValue={calDateHandler}
             about="main"
             setStart={new Date(consultId.slice(0, 10))}
+            getMonthValue={() => {}}
           />
         </span>
         <span className={classes.nameSpan}>

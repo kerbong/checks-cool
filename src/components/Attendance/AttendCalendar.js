@@ -37,12 +37,16 @@ const AttendCalendar = (props) => {
     props.getDateValue(dates);
   };
 
-  const now_year = () => {
-    //2월부터는 새로운 학년도로 인식
-    return +dayjs().format("MM") <= 1
-      ? String(+dayjs().format("YYYY") - 1)
-      : dayjs().format("YYYY");
+  const onMonthChange = (month) => {
+    props.getMonthValue(month);
   };
+
+  // const now_year = () => {
+  //   //2월부터는 새로운 학년도로 인식
+  //   return +dayjs().format("MM") <= 1
+  //     ? String(+dayjs().format("YYYY") - 1)
+  //     : dayjs().format("YYYY");
+  // };
 
   return (
     <>
@@ -51,6 +55,9 @@ const AttendCalendar = (props) => {
         onChange={onChange}
         filterDate={isWeekday}
         startDate={startDate}
+        showMonthDropdown
+        onMonthChange={onMonthChange}
+        dateFormatCalendar="yyyy년 "
         // minDate={props.isSubject ? new Date(now_year(), 2, 1) : false}
         // maxDate={props.isSubject ? new Date(+now_year() + 1, 1, 14) : false}
         endDate={props.about === "attendance" && endDate}

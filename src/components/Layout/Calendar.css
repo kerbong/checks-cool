@@ -17,6 +17,7 @@
   align-content: space-around;
   justify-content: center;
   overflow: hidden;
+  align-items: center;
 }
 .react-datepicker__current-month {
   margin-bottom: 3px;
@@ -54,6 +55,8 @@
 }
 .react-datepicker__current-month {
   font-size: 1em;
+  font-weight: 400;
+  margin: 0 10px;
 }
 .react-datepicker__navigation {
   top: 1em;
@@ -97,6 +100,19 @@
   background-color: inherit;
   border-width: inherit;
   font-size: 0.9em;
+}
+
+.react-datepicker__month-dropdown {
+  position: fixed;
+  width: 35%;
+  left: 50%;
+  top: 30px;
+  z-index: 5;
+  height: 80%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  font-size: 1.2rem;
 }
 
 @media screen and (min-width: 800px) {
