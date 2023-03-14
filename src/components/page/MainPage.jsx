@@ -9,16 +9,16 @@ import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import ExampleModal from "./ExampleModal";
 import byExcel from "../../assets/student/teacher-excel.gif";
-import mainImg from "../../assets/notice/0312.jpg";
+import mainImg from "../../assets/notice/0314.jpg";
 import dayjs from "dayjs";
 import "dayjs/locale/ko";
 import AttendCalendar from "components/Attendance/AttendCalendar";
 import consultingOption from "consultingOption";
 dayjs.locale("ko");
 
-const update_title = `[메모폴더] 기능 추가!`;
+const update_title = `감사합니다!😊`;
 
-const update_text = `선생님들이 의견 주신 <b>자유로운 메모를 위한 메모 폴더</b>가 개발되었습니다!🫡 <br/> [메모] - [메모]로 가시면 됩니다! <br/> 😊 길~~게 혹은 다양하게 적어두고 싶은 내용을 <b>카테고리를 만들고 저장해보세요!!</b><br/> <b>교단일기, 교실별 자물쇠비번, 과목별 수업아이디어, 과목별 인디쌤 아이디, 학급 경영아이디어, 업무 흐름도 ...</b> 다양한 활용이 가능할 것 같습니다! <br/> 언제나 최선을 다해 오류 테스트를 거치지만.. 여러 생각지 못한 오류들이 발생합니다ㅠㅠ (양해부탁드려요!) <br/>  함께 더 나은 서비스를 만들어 주시는 모든선생님들께 감사드리며..🙏<br/>  새로운 한 주도 첵스쿨과 함께 평안하시길!!<br/>  🤩`;
+const update_text = `자동저장 적용 및 다양한 오류로 불편을 겪은 선생님들.. 죄송합니다😭 </br> 현재 시간표와 알림장 등의 기능에서 자동저장, 저장 기능이 정상 작동합니다.(그래도 쓰기전에는 꼭 테스트 해주세요..!!) <br/>불편에도 항상 <b>응원해주시고 의견주시고 묵묵히 함께해주시는, 모든 선생님들께 진심으로 감사드립니다!!!</b>🤩 <br/> * [메모]폴더에서 카테고리 생성하실 때 <b>배경색, 글자색 변경이 가능</b>합니다! <br/> * 메뉴바 - 사람 아이콘 - 아이디를 누르시면 현재 테스트 중인, <b>학생 개별 조희 페이지</b>를 보실 수 있어요!(두 글자로 된 페이지 명칭을 추천해주세요!)`;
 // "* 아, 이거 있으면 좋겠다! 하는 기능이 있으신가요? 내년에 사용해보고 싶은 기능을 추천해주세요! 가장 많은 추천을 받은 아이디어를 선정하여 추가할 계획입니다! '잼잼'-'이거해요' 에 적어주세요~ ";
 //오늘 날짜 yyyy-mm-dd로 만들기
 const getDateHandler = (date, titleOrQuery) => {
@@ -76,7 +76,7 @@ const MainPage = (props) => {
 
   //업데이트 내용 보여주기 로컬스토리지에서 showNotice를 스트링으로 저장해서 확인 후에 이전에 봤으면 안보여주기
   const [showNotice, setShowNotice] = useState(
-    localStorage.getItem("showNotice") === "mainUpdate0312" ? false : true
+    localStorage.getItem("showNotice") === "mainUpdate0314" ? false : true
   );
 
   //화면 사이즈가 변경되면.. 시간표의 기본 세팅을 열림으로 바꿔주기.
@@ -469,6 +469,8 @@ const MainPage = (props) => {
       });
     });
 
+    // console.log(new_classMemo);
+
     //다르지 않아! 기본세팅
     let isDiff = false;
 
@@ -482,13 +484,18 @@ const MainPage = (props) => {
       if (item.id === new_classMemo.id) {
         //혹시 내용이 다르면 저장할 수 있도록 세팅
         item.classMemo.forEach((cl, index) => {
-          if (cl.memo !== new_classMemo["classMemo"][index].memo) {
+          if (cl?.memo !== new_classMemo?.["classMemo"]?.[index]?.memo) {
             isDiff = true;
           }
-          if (cl.subject !== new_classMemo["classMemo"][index].subject) {
+          if (cl?.subject !== new_classMemo?.["classMemo"]?.[index]?.subject) {
             isDiff = true;
           }
         });
+        // 혹시 기초시간표 변경으로 새로운 교시가 추가될 경우..
+        if (new_classMemo?.["classMemo"]?.length > item?.classMemo?.length) {
+          isDiff = true;
+        }
+
         //현재 시간표를 제외한 나머지를 푸시해두고
       } else {
         new_classTable.push(item);
@@ -642,7 +649,7 @@ const MainPage = (props) => {
       {showNotice && (
         <ExampleModal
           onClose={() => {
-            localStorage.setItem("showNotice", "mainUpdate0312");
+            localStorage.setItem("showNotice", "mainUpdate0314");
             setShowNotice(false);
           }}
           imgSrc={mainImg}
@@ -819,20 +826,43 @@ const MainPage = (props) => {
                   * 수정, 변경 10초 후 자동저장
                   <ul className={`${classes["ul-section"]} ul-textareas`}>
                     {/* todayClassTable로 렌더링 */}
-                    {todayClassTable?.classMemo?.map((clInfo, index) => (
-                      <ClassItem
-                        key={`item${classLists[index]}`}
-                        myKey={`class${classLists[index]}`}
-                        classNum={classLists[index]}
-                        classStart={classStart?.[index]}
-                        subject={
-                          clInfo?.subject !== ""
-                            ? clInfo?.subject
-                            : classBasic?.[index] || ""
-                        }
-                        memo={clInfo?.memo || ""}
-                      />
-                    ))}
+                    {todayClassTable?.classMemo?.map((clInfo, index) => {
+                      // 만약..기초시간표 변경으로.. 해당 교시가 사라졌다면.. 보여주지 않기
+                      if (!classLists[index]) return null;
+
+                      return (
+                        <ClassItem
+                          key={`item${classLists[index]}`}
+                          myKey={`class${classLists[index]}`}
+                          classNum={classLists[index]}
+                          classStart={classStart?.[index]}
+                          subject={
+                            clInfo?.subject !== ""
+                              ? clInfo?.subject
+                              : classBasic?.[index] || ""
+                          }
+                          memo={clInfo?.memo || ""}
+                        />
+                      );
+                    })}
+
+                    {/* 만약.. 해당 날짜의 자료는 5교시가 최대인데, 기초시간표에 6교시를 추가하면.. classLists로 해당 부분만 렌더링*/}
+                    {todayClassTable?.classMemo?.length < classLists.length &&
+                      classLists?.map((clName, index) => {
+                        // 만약.. 기존 자료에도 인덱스가 있으면
+                        if (todayClassTable?.classMemo?.[index]) return null;
+
+                        return (
+                          <ClassItem
+                            key={`item${clName}`}
+                            myKey={`class${clName}`}
+                            classNum={clName}
+                            classStart={classStart?.[index]}
+                            subject={classBasic?.[index] || ""}
+                            memo={""}
+                          />
+                        );
+                      })}
                   </ul>
                   <div className={classes["eventSave-div"]}>
                     <Button

@@ -33,32 +33,38 @@ const ClassTableBasic = (props) => {
   const [items, setItems] = useState(false);
   const [classBasic, setClassBasic] = useState([]);
   const [classStart, setClassStart] = useState([]);
-  const [classTime, setClassTime] = useState(CLASSTIME);
+  const [classTime, setClassTime] = useState([]);
+  const [itemsNumArray, setItemsNumArray] = useState([]);
 
   const WEEKDAYS = ["월", "화", "수", "목", "금"];
 
-  const itemsNumArray = [...Array(40).keys()]?.map((i) => i);
+  const makeItems = () => {
+    return itemsNumArray?.map((item, index) => (
+      <div className={classes["input-div"]} key={`table-${item}`}>
+        <input
+          className={classes["input"]}
+          type="text"
+          id={`table-${item}`}
+          placeholder={""}
+          defaultValue={classBasic[index]}
+        />
+      </div>
+    ));
+  };
+  // 만약 교시이름의 수가 8개가 아니면..(초기세팅값) 그 개수에 따라 *5해서 칸을 만들어줌.
+  useEffect(() => {
+    setItemsNumArray([...Array(classTime?.length * 5).keys()]?.map((i) => i));
+  }, [classTime]);
 
   //시간표의 인풋창들 만들기, 저장된 기존 기초시간표 자료가 있으면 재랜더링해서 값 넣어주기.
   useEffect(() => {
-    setItems(
-      itemsNumArray?.map((item, index) => (
-        <div className={classes["input-div"]} key={`table-${item}`}>
-          <input
-            className={classes["input"]}
-            type="text"
-            id={`table-${item}`}
-            placeholder={""}
-            defaultValue={classBasic[index]}
-          />
-        </div>
-      ))
-    );
-  }, [classBasic]);
+    setItems(makeItems());
+  }, [itemsNumArray]);
 
   //기존에 저장했던 기초시간표, 시작시각 불러와서 넣어주기
   useEffect(() => {
     const getClassTable = async () => {
+      setClassBasic([]);
       let classTableRef = doc(dbService, "classTable", props.userUid);
 
       const now_doc = await getDoc(classTableRef);
@@ -73,16 +79,15 @@ const ClassTableBasic = (props) => {
         setClassBasic([...new_classBasic]);
         setClassStart([...now_doc.data()?.classStart]);
       } else {
-        setClassBasic([]);
         setClassStart([...STARTBASE]);
       }
 
       if (now_doc?.data()?.classTime) {
         setClassTime(now_doc?.data()?.classTime);
+      } else {
+        setClassTime(CLASSTIME);
       }
     };
-
-    setClassBasic([]);
 
     getClassTable();
     // console.log(new_classBasic);
@@ -133,7 +138,7 @@ const ClassTableBasic = (props) => {
     // 현재 입력된 교시 이름 설정하기
     let new_classTime = [];
 
-    CLASSTIME.forEach((cl, index) => {
+    classTime?.forEach((cl, index) => {
       let clt_name = document.querySelectorAll(
         `input[id="classTime-${index}"]`
       )[0].value;
@@ -141,7 +146,6 @@ const ClassTableBasic = (props) => {
     });
 
     let deleteDuplicate = [...new Set(new_classTime)];
-
 
     // 혹시나 현재 입력된 교시 이름에 같은 이름이 있지 않도록 확인하기!
     if (deleteDuplicate.length !== new_classTime.length) {
@@ -156,28 +160,24 @@ const ClassTableBasic = (props) => {
       return;
     }
 
+    let all_datas = {
+      월: [...월],
+      화: [...화],
+      수: [...수],
+      목: [...목],
+      금: [...금],
+      classStart: [...classStart],
+      classTime: [...new_classTime],
+    };
+
+    // console.log(all_datas);
+
     const now_doc = await getDoc(classBasicRef);
     if (now_doc.exists() && Object.keys(now_doc?.data()).length > 0) {
-      await updateDoc(classBasicRef, {
-        월: [...월],
-        화: [...화],
-        수: [...수],
-        목: [...목],
-        금: [...금],
-        classStart: [...classStart],
-        classTime: [...new_classTime],
-      });
+      await updateDoc(classBasicRef, all_datas);
       // console.log("업데이트");
     } else {
-      await setDoc(classBasicRef, {
-        월: [...월],
-        화: [...화],
-        수: [...수],
-        목: [...목],
-        금: [...금],
-        classStart: [...classStart],
-        classTime: [...new_classTime],
-      });
+      await setDoc(classBasicRef, all_datas);
       // console.log("새로 추가");
     }
 
@@ -235,6 +235,68 @@ const ClassTableBasic = (props) => {
         setClassTime(CLASSTIME);
       }
     });
+  };
+
+  //마지막 교시 삭제 혹은 추가 함수
+  const delAddClassTimeHandler = (delAdd) => {
+    if (delAdd === "del") {
+      //만약.. 현재 아이템이 총 20개면 즉 화면에 표현되는 교시가 4교시면... 최소값이라 삭제불가
+      if (itemsNumArray.length <= 20) {
+        Swal.fire({
+          icon: "error",
+          title: "교시 삭제 실패",
+          text: "최소 4교시는 존재해야 합니다.",
+          confirmButtonText: "확인",
+          confirmButtonColor: "#85bd82",
+          timer: 5000,
+        });
+        return;
+
+        // 현재 칸에서 5칸씩 줄여줌.
+      } else {
+        // 과목이 들어가는 칸을 줄여줌
+        setItemsNumArray(
+          [...Array(itemsNumArray.length - 5).keys()]?.map((i) => i)
+        );
+
+        //교시 이름이 들어가는 칸도 줄여줌
+        setClassTime((prev) => {
+          prev.pop();
+          return prev;
+        });
+      }
+
+      // 교시 추가일 경우
+    } else if (delAdd === "add") {
+      // 만약 8교시까지 존재하면.. 최대!
+      if (itemsNumArray.length >= 40) {
+        Swal.fire({
+          icon: "error",
+          title: "교시 추가 실패",
+          text: "최대 8교시까지 추가가 가능합니다.",
+          confirmButtonText: "확인",
+          confirmButtonColor: "#85bd82",
+          timer: 5000,
+        });
+        return;
+      } else {
+        // 과목이 들어가는 칸을 추가함
+        setItemsNumArray(
+          [...Array(itemsNumArray.length + 5).keys()]?.map((i) => i)
+        );
+
+        //교시 이름이 들어가는 칸도 추가함
+        setClassTime((prev) => {
+          let new_clTimeName = String(prev.length + 1) + "교시";
+          //과목명 설정(key값이라 중복되면 안되서)
+          if (prev.includes(new_clTimeName)) {
+            new_clTimeName = String(prev.length + 2) + "교시";
+          }
+          prev.push(new_clTimeName);
+          return prev;
+        });
+      }
+    }
   };
 
   return (
@@ -329,6 +391,7 @@ const ClassTableBasic = (props) => {
         classStartHandler={classStartHandler}
         classTime={classTime}
         returnBaseHandler={returnBaseHandler}
+        delAddClassTimeHandler={delAddClassTimeHandler}
       />
     </>
   );

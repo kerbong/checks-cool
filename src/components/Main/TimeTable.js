@@ -11,40 +11,61 @@ const TimeTable = (props) => {
   };
 
   return (
-    <div className={classes["select-p-m"]}>
-      <Button
-        name={"전체 초기화"}
-        className={"reset-cl-button"}
-        onclick={() => props.returnBaseHandler()}
-      />
-      <form onSubmit={submitHandler} className={classes["select-p-m"]}>
-        <select ref={selectRef} className={classes["select"]}>
-          <option defaultChecked value={"all"}>
-            전체
-          </option>
+    <>
+      {/* 교시 추가 삭제부분 */}
+      <div className={classes["select-p-m"]}>
+        <Button
+          name={"마지막 교시 삭제"}
+          className={"reset-cl-button"}
+          onclick={() => {
+            props.delAddClassTimeHandler("del");
+          }}
+        />
+        <Button
+          name={"마지막 교시 추가"}
+          className={"reset-cl-button"}
+          onclick={() => {
+            props.delAddClassTimeHandler("add");
+          }}
+        />
+      </div>
 
-          {props?.classTime?.map((cl, index) => (
-            <option key={`option-${cl}`} value={index}>
-              {cl}
+      {/* 전체 초기화 및 시간설정부분 */}
+      <div className={classes["select-p-m"]}>
+        <Button
+          name={"전체 초기화"}
+          className={"reset-cl-button"}
+          onclick={() => props.returnBaseHandler()}
+        />
+        <form onSubmit={submitHandler} className={classes["select-p-m"]}>
+          <select ref={selectRef} className={classes["select"]}>
+            <option defaultChecked value={"all"}>
+              전체
             </option>
-          ))}
-        </select>
-        <Button
-          name={"+5"}
-          className={"time-pm-button"}
-          onclick={(e) => {
-            submitHandler(e, "plus", 5);
-          }}
-        />
-        <Button
-          name={"-5"}
-          className={"time-pm-button"}
-          onclick={(e) => {
-            submitHandler(e, "minus", 5);
-          }}
-        />
-      </form>
-    </div>
+
+            {props?.classTime?.map((cl, index) => (
+              <option key={`option-${cl}`} value={index}>
+                {cl}
+              </option>
+            ))}
+          </select>
+          <Button
+            name={"+5"}
+            className={"time-pm-button"}
+            onclick={(e) => {
+              submitHandler(e, "plus", 5);
+            }}
+          />
+          <Button
+            name={"-5"}
+            className={"time-pm-button"}
+            onclick={(e) => {
+              submitHandler(e, "minus", 5);
+            }}
+          />
+        </form>
+      </div>
+    </>
   );
 };
 
