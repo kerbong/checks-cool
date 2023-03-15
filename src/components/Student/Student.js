@@ -13,6 +13,9 @@ const Student = (props) => {
             className={
               !props.manageEach ? "button-student" : "button-student-manageEach"
             }
+            classAdd={
+              props.passStudent?.split(" ")[1] === stu.name ? true : false
+            }
             manageEach={props.manageEach}
             name={stu.name}
             key={stu.num}

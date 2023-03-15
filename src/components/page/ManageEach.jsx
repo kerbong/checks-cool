@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import Student from "components/Student/Student";
 import dayjs from "dayjs";
 import classes from "./ManageEach.module.css";
+import ManageChangeBtns from "./ManageChangeBtns";
 
 const ManageEach = (props) => {
   const [student, setStudent] = useState("");
@@ -12,27 +13,27 @@ const ManageEach = (props) => {
 
   const selectRef = useRef();
 
-  const showOptionHandler = (e) => {
-    setStudent(e.target.innerText);
-    if (student !== "") {
-      //이전학생을 원래대로 none click css속성 적용
-      let beforeSelectStd = document.getElementById(`std-${student}`);
-      beforeSelectStd.classList.remove("clicked");
-      beforeSelectStd.classList.add("none");
-    }
-  };
-
   useEffect(() => {
     // 현재 클릭된 학생 clicked css 적용
     if (student !== "") {
       let selectStd = document.getElementById(`std-${student}`);
-      selectStd.classList.remove("none");
-      selectStd.classList.add("clicked");
+      selectStd?.classList.remove("none");
+      selectStd?.classList.add("clicked");
     }
     //   beforeSelectStd.style.backgroundColor = "#e9cfcc";
     //   beforeSelectStd.style.fontWeight = "400";
     // }
   }, [student]);
+
+  const showOptionHandler = (e) => {
+    setStudent(e.target.innerText);
+    if (student !== "") {
+      //이전학생을 원래대로 none click css속성 적용
+      let beforeSelectStd = document.getElementById(`std-${student}`);
+      beforeSelectStd?.classList.remove("clicked");
+      beforeSelectStd?.classList.add("none");
+    }
+  };
 
   //학급 선택시 실행되는 함수
   const selectClassHandler = () => {
@@ -98,15 +99,26 @@ const ManageEach = (props) => {
     }
   };
 
-  //셀렉트 태그에서 값을 선택하면 해당 반의 자료만 화면에 보여주도록 events 상태 set하기
+  //셀렉트 태그에서 값을 선택하면 해당 반의 학생자료만 화면에 보여주도록 events 상태 set하기
   useEffect(() => {
     // console.log(nowClassName);
     selectEvents();
+    props.nowClassNameHandler(nowClassName);
   }, [nowClassName]);
 
   useEffect(() => {
     props.selectStudentHandler(student);
   }, [student]);
+
+  useEffect(() => {
+    setNowClassName(props.clName);
+  }, [props.clName]);
+
+  useEffect(() => {
+    if (props.passStudent !== "") {
+      setStudent(props.passStudent);
+    }
+  }, [props.passStudent]);
 
   return (
     <div>
@@ -142,8 +154,11 @@ const ManageEach = (props) => {
           showOption={showOptionHandler}
           isSubject={props.isSubject}
           manageEach={true}
+          passStudent={props.passStudent}
         />
       </div>
+      {/* 버튼 모음 보여주기 */}
+      <ManageChangeBtns onStudent={student} clName={nowClassName} />
 
       {/* 여기가 진짜. 학생을 클릭하면 해당 학생의 모든 정보를 모아서 보여주는 페이지
        */}

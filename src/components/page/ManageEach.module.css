@@ -14,15 +14,16 @@
   border-radius: 15px;
   background-color: #256a72;
   padding: 30px 10px;
-  margin-top: -1px;
+  margin-top: 0px;
   min-height: 30vh;
+  border-width: 0;
 }
 
 .bottom-content-li {
   list-style: none;
   padding: 10px;
   margin: 20px;
-  background-color: #efefef;
+  background-color: #efefeff0;
   border-radius: 20px;
 }
 
@@ -33,4 +34,19 @@
 
 .fs-13 {
   font-size: 1.3rem;
+  word-break: break-all;
+}
+
+.margin-15 {
+  margin: 15px;
+}
+
+.flex-center {
+  display: flex;
+  justify-content: center;
+}
+
+.width-max400 {
+  width: 100%;
+  max-width: 400px;
 }

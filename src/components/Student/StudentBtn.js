@@ -5,7 +5,7 @@ const StudentBtn = (props) => {
   return (
     <>
       <button
-        className={`${classes[props.className]} `}
+        className={`${classes[props.className]} ${props.classAdd && "clicked"}`}
         id={`std-${props.num} ${props.name}`}
         onClick={(e) => {
           props.onShowOption(e);

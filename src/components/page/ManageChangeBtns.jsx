@@ -6,13 +6,13 @@ import classes from "./ManageEach.module.css";
 const ManageChangeBtns = (props) => {
   const [nowOn, setNowOn] = useState("");
   const [onStudent, setOnStudent] = useState("");
+  const [clName, setClName] = useState("");
 
   let navigate = useNavigate();
 
   useEffect(() => {
     let where = window.location.href.split("/");
     setNowOn(where[where.length - 1]);
-    console.log(nowOn);
   }, [window.location.href]);
 
   useEffect(() => {
@@ -21,6 +21,12 @@ const ManageChangeBtns = (props) => {
     }
   }, [props.onStudent]);
 
+  useEffect(() => {
+    if (props.clName !== "") {
+      setClName(props.clName);
+    }
+  }, [props.clName]);
+
   return (
     <div className={classes["btns-div"]}>
       <Button
@@ -28,7 +34,11 @@ const ManageChangeBtns = (props) => {
         className={
           nowOn !== "manageStudent" ? "manageBtn" : "manageBtn-clicked"
         }
-        onclick={() => navigate(`/manageStudent`, { state: onStudent })}
+        onclick={() =>
+          navigate(`/manageStudent`, {
+            state: { student: onStudent, clName: clName || "" },
+          })
+        }
       />
       <Button
         name={"출결"}
@@ -36,7 +46,9 @@ const ManageChangeBtns = (props) => {
           nowOn !== "manageAttendance" ? "manageBtn" : "manageBtn-clicked"
         }
         onclick={() =>
-          navigate(`/manageAttendance`, { state: props.onStudent })
+          navigate(`/manageAttendance`, {
+            state: { student: onStudent, clName: clName || "" },
+          })
         }
       />
       <Button
@@ -44,7 +56,11 @@ const ManageChangeBtns = (props) => {
         className={
           nowOn !== "manageConsult" ? "manageBtn" : "manageBtn-clicked"
         }
-        onclick={() => navigate(`/manageConsult`, { state: props.onStudent })}
+        onclick={() =>
+          navigate(`/manageConsult`, {
+            state: { student: onStudent, clName: clName || "" },
+          })
+        }
       />
 
       <Button
@@ -53,7 +69,9 @@ const ManageChangeBtns = (props) => {
           nowOn !== "manageCheckListMemo" ? "manageBtn" : "manageBtn-clicked"
         }
         onclick={() =>
-          navigate(`/manageCheckListMemo`, { state: props.onStudent })
+          navigate(`/manageCheckListMemo`, {
+            state: { student: onStudent, clName: clName || "" },
+          })
         }
       />
     </div>
