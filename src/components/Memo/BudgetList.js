@@ -201,21 +201,29 @@ const BudgetList = (props) => {
 
                     <hr style={{ margin: "15px" }} />
                     <span className={classes["budgetList-title"]}>
-                      <div className={classes["budgetList-desc"]}>
-                        {/* 사이트 */}
-                        <span>{list.site}</span>
-                        {/* 개당가격 */}
-                        <span>{numberComma(list.each)}원</span>
-                        {/* 개당얼마 */}
-                        <span>{list.count}개</span>
-                        {/* 총액 */}
-                        <span>총 {numberComma(list.amount)}원</span>
-                      </div>
+                      {/* 사이트 */}
+                      <span className={classes["budget-span"]}>
+                        {list.site}
+                      </span>
                       {list.note && (
                         <div className={classes["budgetList-note"]}>
                           * {list.note}
                         </div>
                       )}
+                      <div className={classes["budgetList-desc"]}>
+                        {/* 개당가격 */}
+                        <span className={classes["budget-span"]}>
+                          {numberComma(list.each)}원
+                        </span>
+                        {/* 개당얼마 */}
+                        <span className={classes["budget-span"]}>
+                          {list.count}개
+                        </span>
+                        {/* 총액 */}
+                        <span className={classes["budget-span"]}>
+                          총 {numberComma(list.amount)}원
+                        </span>
+                      </div>
                     </span>
                   </li>
                 ) : (
