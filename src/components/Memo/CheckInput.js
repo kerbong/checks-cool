@@ -49,43 +49,12 @@ const CheckInput = (props) => {
   };
 
   const saveCheckItem = async (auto) => {
-    if (checkTitle) {
-      const tiemStamp = () => {
-        let today = new Date();
-        today.setHours(today.getHours() + 9);
-        return today.toISOString().replace("T", " ").substring(0, 19);
-      };
+    let tempId = localStorage.getItem("itemId");
 
-      let item_id;
-      //기존의 아이템인 경우 기존 아이디 쓰고
-      if (props?.item?.id) {
-        item_id = props.item.id;
-      } else {
-        item_id = tiemStamp();
-      }
+    let titleTag = document.getElementById("title-input");
 
-      const new_checkItem = {
-        title: checkTitle,
-        unSubmitStudents,
-        id: item_id,
-        // fixOrNew,
-      };
-
-      //전담일경우 학급만 추가로 저장
-      if (props.isSubject) {
-        new_checkItem["clName"] = props.clName;
-      }
-      console.log(auto);
-
-      // 수동저장이면...
-      if (!auto) {
-        props.onClose();
-        props.setItemNull();
-        props.saveItemHandler(new_checkItem);
-      } else {
-        props.saveItemHandler(new_checkItem, auto);
-      }
-    } else {
+    //타이틀 없으면(새로운 자료면) 오류내용 보여줌.
+    if (!checkTitle) {
       Swal.fire({
         icon: "error",
         title: "정보가 부족해요!",
@@ -95,6 +64,43 @@ const CheckInput = (props) => {
         timer: 5000,
       });
       return;
+    }
+
+    const tiemStamp = () => {
+      let today = new Date();
+      today.setHours(today.getHours() + 9);
+      return today.toISOString().replace("T", " ").substring(0, 19);
+    };
+
+    let item_id;
+    //기존의 아이템인 경우 기존 아이디 쓰고
+    if (props?.item?.id || tempId !== "null") {
+      item_id = props.item.id || tempId;
+    } else {
+      item_id = tiemStamp();
+    }
+
+    const new_checkItem = {
+      title: titleTag?.value || checkTitle,
+      unSubmitStudents,
+      id: item_id,
+      // fixOrNew,
+    };
+
+    //전담일경우 학급만 추가로 저장
+    if (props.isSubject) {
+      new_checkItem["clName"] = props.clName;
+    }
+    console.log(auto);
+
+    // 수동저장이면...
+    if (!auto) {
+      props.onClose();
+      props.setItemNull();
+      props.saveItemHandler(new_checkItem);
+    } else {
+      localStorage.setItem("itemId", item_id);
+      props.saveItemHandler(new_checkItem, auto);
     }
   };
 
@@ -164,13 +170,14 @@ const CheckInput = (props) => {
         >
           {props.item.title ? (
             <div className={classes.h2}>
-              <h2>{checkTitle}</h2>
+              <h2 id={"title-input"}>{checkTitle}</h2>
               <p>* 10초간 입력이 없으면 자동저장</p>
             </div>
           ) : (
             <input
               type="text"
               placeholder="제목"
+              id={"title-input"}
               value={checkTitle || ""}
               onChange={(e) => setCheckTitle(e.target.value)}
               className={classes.checkTitle}
@@ -181,6 +188,7 @@ const CheckInput = (props) => {
         <span
           className={classes.closeBtn}
           onClick={() => {
+            localStorage.setItem("itemId", "null");
             props.onClose();
             props.setItemNull();
           }}

@@ -136,152 +136,179 @@ const CheckLists = (props) => {
     }
   }, [dataYears]);
 
-  const saveItemHandler = async (item) => {
+  const saveItemHandler = async (new_item, auto) => {
     //자료 저장할 떄 실제로 실행되는 함수
     const dataSaved = async (newOrSame) => {
-      Swal.fire({
-        icon: "success",
-        title: `${
-          newOrSame !== "new"
-            ? "중복된 이름으로 자료 저장됨"
-            : "자료가 저장/수정됨"
-        }`,
-        text: "3초 후에 창이 사라집니다.",
-        confirmButtonText: "확인",
-        confirmButtonColor: "#85bd82",
-        timer: 3000,
-      });
+      //동일한 이름의 자료가 이미 있는, 새로운 저장이면 팝업 띄우기
 
-      // console.log(item);
-      //checkList 일경우
-      if (item.unSubmitStudents) {
-        //checklists자료 받아오기
-        let newCheckRef = doc(dbService, "checkLists", props.userUid);
-        const checkListsSnap = await getDoc(newCheckRef);
-        const checkListsData = checkListsSnap?.data()?.checkLists_data;
-        //기존자료가 있으면?!
-        if (checkListsData?.length > 0) {
-          // if (checkLists?.length > 0) {
-          item = { ...item, yearGroup: checkListsYear.current.value };
-          let new_datas = [...checkListsData];
-          let data_index = undefined;
-          new_datas.forEach((data, index) => {
-            if (data.id === item.id) {
-              data_index = index;
-            }
-          });
-          if (data_index === undefined) {
-            new_datas.push(item);
-          } else {
-            new_datas[data_index] = item;
-          }
-          await setDoc(newCheckRef, {
-            checkLists_data: [...new_datas],
-          });
-          // setCheckLists([...new_datas]);
-
-          let now_datas = [...nowOnCheckLists];
-          let now_data_index = undefined;
-          now_datas.forEach((data, index) => {
-            if (data.id === item.id) {
-              now_data_index = index;
-            }
-          });
-          if (now_data_index === undefined) {
-            now_datas.push(item);
-          } else {
-            now_datas[now_data_index] = item;
+      console.log(newOrSame);
+      if (newOrSame === "sameTitle" && !auto) {
+        Swal.fire({
+          icon: "warning",
+          title: "동일한 제목 존재",
+          text: "기존 자료에 동일한 제목이 자료가 존재합니다. 계속 저장 하시겠어요?",
+          confirmButtonText: "확인",
+          showDenyButton: true,
+          denyButtonText: "취소",
+          confirmButtonColor: "#85bd82",
+        }).then((result) => {
+          /* Read more about isConfirmed, isDenied below */
+          if (result.isConfirmed) {
+            saveLogic();
           }
 
-          setNowOnCheckLists([...now_datas]);
+          if (result.isDenied) return;
+        });
+      }
 
-          //처음 자료를 저장하는 경우
+      const saveLogic = async () => {
+        //checkList 일경우
+        if (new_item.unSubmitStudents) {
+          //기존자료가 있으면?!
+          if (datas?.length > 0) {
+            // if (checkLists?.length > 0) {
+            new_item = { ...new_item, yearGroup: checkListsYear.current.value };
+            let new_datas = [...datas];
+            let data_index = undefined;
+            new_datas.forEach((data, index) => {
+              if (data.id === new_item.id) {
+                data_index = index;
+              }
+            });
+            if (data_index === undefined) {
+              new_datas.push(new_item);
+            } else {
+              new_datas[data_index] = new_item;
+            }
+            await setDoc(firestoreRef, {
+              checkLists_data: [...new_datas],
+            });
+            // setCheckLists([...new_datas]);
+
+            let now_datas = [...nowOnCheckLists];
+            let now_data_index = undefined;
+            now_datas.forEach((data, index) => {
+              if (data.id === new_item.id) {
+                now_data_index = index;
+              }
+            });
+            if (now_data_index === undefined) {
+              now_datas.push(new_item);
+            } else {
+              now_datas[now_data_index] = new_item;
+            }
+
+            setNowOnCheckLists([...now_datas]);
+
+            //처음 자료를 저장하는 경우
+          } else {
+            //학년도 데이터 추가하기
+
+            await setDoc(firestoreRef, {
+              checkLists_data: [
+                { ...new_item, yearGroup: checkListsYear.current.value },
+              ],
+            });
+
+            setNowOnCheckLists([
+              { ...new_item, yearGroup: checkListsYear.current.value },
+            ]);
+            // }
+          }
+
+          //listMemo일 경우
         } else {
-          //학년도 데이터 추가하기
-
-          await setDoc(newCheckRef, {
-            checkLists_data: [
-              { ...item, yearGroup: checkListsYear.current.value },
-            ],
-          });
-
-          setNowOnCheckLists([
-            { ...item, yearGroup: checkListsYear.current.value },
-          ]);
-          // }
-        }
-
-        //listMemo일 경우
-      } else {
-        //listMemo자료 받아오기
-        let newListRef = doc(dbService, "listMemo", props.userUid);
-        const listMemoSnap = await getDoc(newListRef);
-        const listMemoData = listMemoSnap?.data()?.listMemo_data;
-        //기존자료가 있으면?!
-        if (listMemoData?.length > 0) {
-          item = { ...item, yearGroup: listMemoYear.current.value };
-          let new_datas = [...listMemoData];
-          let data_index = undefined;
-          new_datas.forEach((data, index) => {
-            if (data.id === item.id) {
-              data_index = index;
+          //기존자료가 있으면?!
+          if (datas?.length > 0) {
+            new_item = { ...new_item, yearGroup: listMemoYear.current.value };
+            let new_datas = [...datas];
+            let data_index = undefined;
+            new_datas.forEach((data, index) => {
+              if (data.id === new_item.id) {
+                data_index = index;
+              }
+            });
+            if (data_index === undefined) {
+              new_datas.push(new_item);
+            } else {
+              new_datas[data_index] = new_item;
             }
-          });
-          if (data_index === undefined) {
-            new_datas.push(item);
-          } else {
-            new_datas[data_index] = item;
-          }
 
-          await setDoc(newListRef, {
-            listMemo_data: [...new_datas],
-          });
+            await setDoc(firestoreRef, {
+              listMemo_data: [...new_datas],
+            });
 
-          let now_datas = [...nowOnListMemo];
-          let now_data_index = undefined;
-          now_datas.forEach((data, index) => {
-            if (data.id === item.id) {
-              now_data_index = index;
+            let now_datas = [...nowOnListMemo];
+            let now_data_index = undefined;
+            now_datas.forEach((data, index) => {
+              if (data.id === new_item.id) {
+                now_data_index = index;
+              }
+            });
+            if (now_data_index === undefined) {
+              now_datas.push(new_item);
+            } else {
+              now_datas[now_data_index] = new_item;
             }
-          });
-          if (now_data_index === undefined) {
-            now_datas.push(item);
+
+            setNowOnListMemo([...now_datas]);
+
+            //처음 자료를 저장하는 경우
           } else {
-            now_datas[now_data_index] = item;
+            await setDoc(firestoreRef, {
+              listMemo_data: [
+                { ...new_item, yearGroup: listMemoYear.current.value },
+              ],
+            });
+
+            setNowOnListMemo([
+              { ...new_item, yearGroup: listMemoYear.current.value },
+            ]);
+            // }
           }
-
-          setNowOnListMemo([...now_datas]);
-
-          //처음 자료를 저장하는 경우
-        } else {
-          await setDoc(newListRef, {
-            listMemo_data: [{ ...item, yearGroup: listMemoYear.current.value }],
-          });
-
-          setNowOnListMemo([
-            { ...item, yearGroup: listMemoYear.current.value },
-          ]);
-          // }
         }
+      };
+
+      //새로운 자료면 저장하기
+      if (newOrSame === "new") {
+        saveLogic();
       }
     }; // 자료 저장 실행 함수 끝
 
-    let datas;
-    if (item.unSubmitStudents) {
-      datas = [...checkLists];
+    //firebase에 있는 저장된 데이터
+    let datas = [];
+    let firestoreRef;
+    if (new_item.unSubmitStudents) {
+      //checklists자료 받아오기
+      firestoreRef = doc(dbService, "checkLists", props.userUid);
+      const checkListsSnap = await getDoc(firestoreRef);
+      datas = checkListsSnap?.data()?.checkLists_data;
     } else {
-      datas = [...listMemo];
+      //listMemo자료 받아오기
+      firestoreRef = doc(dbService, "listMemo", props.userUid);
+      const listMemoSnap = await getDoc(firestoreRef);
+      datas = listMemoSnap?.data()?.listMemo_data;
     }
+
+    console.log(datas);
+
     //같은 이름의 체크리스트 있는지 확인하고, 저장 묻기
     let regex = / /gi;
     let same_checkTitle = datas?.filter(
       (list) =>
-        list.title.replace(regex, "") === item.title.replace(regex, "") &&
-        list.id !== item.id
+        list.title.replace(regex, "") === new_item.title.replace(regex, "") &&
+        list.id !== new_item.id
     );
 
-    //동일한 이름의 체크리스트가 있을 경우 묻기
-    if (same_checkTitle?.length > 0) {
+    //기존에 있던 자료
+    let isExist = datas?.filter(
+      (list) =>
+        list.title.replace(regex, "") === new_item.title.replace(regex, "") &&
+        list.id === new_item.id
+    );
+
+    //동일한 이름의 체크리스트가 있는데.. 기존자료가 아니면 묻기
+    if (same_checkTitle?.length > 0 && isExist?.length === 0) {
       dataSaved("sameTitle");
     } else {
       dataSaved("new");
@@ -507,9 +534,12 @@ const CheckLists = (props) => {
               <CheckInput
                 // 전담이 아니면 년도별에 따라 받아온거 보냄
                 students={!isSubject ? students : inputStudents}
-                onClose={() => setAddCheckItem(false)}
+                onClose={() => {
+                  localStorage.setItem("itemId", "null");
+                  setAddCheckItem(false);
+                }}
                 saveItemHandler={(item, auto) => {
-                  saveItemHandler(item);
+                  saveItemHandler(item, auto);
                   if (!auto) {
                     setAddCheckItem(false);
                   }
@@ -661,17 +691,21 @@ const CheckLists = (props) => {
           {addListMemo && (
             <Modal
               addStyle={"addOverflow"}
-              onClose={() => setAddListMemo(false)}
+              onClose={() => {
+                localStorage.setItem("itemId", "null");
+                setAddListMemo(false);
+              }}
             >
               <ListMemoInput
                 students={!isSubject ? students : inputStudents}
                 onClose={() => setAddListMemo(false)}
                 saveItemHandler={(item, auto) => {
-                  saveItemHandler(item);
+                  saveItemHandler(item, auto);
                   if (!auto) {
                     setAddListMemo(false);
                   }
                 }}
+                nowOnListMemo={nowOnListMemo}
                 item={item}
                 removeData={removeData}
                 setItemNull={setItemNull}

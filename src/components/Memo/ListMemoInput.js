@@ -26,67 +26,60 @@ const ListMemoInput = (props) => {
   const [todayYyyymmdd, setTodayYyyymmdd] = useState(new Date());
 
   const saveMemo = (auto) => {
-    if (memoTitle) {
-      let item_id;
-      //기존의 아이템인 경우 기존 아이디 쓰고
-      if (props?.item?.id) {
-        item_id = props.item.id;
-      } else {
-        item_id =
-          dayjs(todayYyyymmdd).format("YYYY-MM-DD") +
-          " " +
-          dayjs().format("HH:mm:ss");
-      }
-
-      let titleValue = document.querySelector(".title-input").value;
-
-      if (titleValue.trim().length === 0) return;
-
-      let new_memo = {
-        title: document.querySelector(".title-input").value,
-        data: [],
-        id: item_id,
-      };
-
-      //전담일 경우에만 clName 추가함
-      if (props.isSubject) {
-        new_memo["clName"] = props.item?.clName || props.clName;
-      }
-
-      //모든 텍스트area를 선택함.
-      let memoInputAll = document.querySelectorAll(`textarea`);
-
-      //메모가 있는 항목들을 new_memo의 data에 추가함
-      memoInputAll.forEach((inputTag) => {
-        if (inputTag.value.trim() !== "") {
-          new_memo["data"].push({
-            name: inputTag.id.split("-")[0],
-            num: inputTag.id.split("-")[1],
-            memo: inputTag.value,
-          });
-        }
-      });
-
-      // setStudentMemo((prev) => [...prev, new_memo]);
-
-      // 수동저장이면...
-      if (!auto) {
-        props.onClose();
-        props.setItemNull();
-        props.saveItemHandler(new_memo);
-      } else {
-        props.saveItemHandler(new_memo, auto);
-      }
+    let tempId = localStorage.getItem("itemId");
+    let item_id;
+    //기존의 아이템이거나.. 임시로 저장된 tempIdTitle이 있으면 넣어주기
+    if (props?.item?.id || tempId !== "null") {
+      item_id = props.item.id || tempId;
     } else {
-      Swal.fire({
-        icon: "error",
-        title: "정보가 부족해요!",
-        text: "체크리스트 제목을 입력해주세요.",
-        confirmButtonText: "확인",
-        confirmButtonColor: "#85bd82",
-        timer: 5000,
-      });
-      return;
+      item_id =
+        dayjs(todayYyyymmdd).format("YYYY-MM-DD") +
+        " " +
+        dayjs().format("HH:mm:ss");
+    }
+
+    //새로운 아이템인데 10초간 입력이 없으면 자동저장하지 않음.
+
+    let titleTag = document.querySelector(".title-input");
+
+    //타이틀 태그가 없거나 빈칸이면 저장 안함
+    if (!titleTag || titleTag.value.trim().length === 0) return;
+
+    let new_memo = {
+      title: titleTag.value,
+      data: [],
+      id: item_id,
+    };
+
+    //전담일 경우에만 clName 추가함
+    if (props.isSubject) {
+      new_memo["clName"] = props.item?.clName || props.clName;
+    }
+
+    //모든 텍스트area를 선택함.
+    let memoInputAll = document.querySelectorAll(`textarea`);
+
+    //메모가 있는 항목들을 new_memo의 data에 추가함
+    memoInputAll.forEach((inputTag) => {
+      if (inputTag.value.trim() !== "") {
+        new_memo["data"].push({
+          name: inputTag.id.split("-")[0],
+          num: inputTag.id.split("-")[1],
+          memo: inputTag.value,
+        });
+      }
+    });
+
+    // setStudentMemo((prev) => [...prev, new_memo]);
+
+    // 수동저장이면...
+    if (!auto) {
+      props.onClose();
+      props.setItemNull();
+      props.saveItemHandler(new_memo);
+    } else {
+      localStorage.setItem("itemId", item_id);
+      props.saveItemHandler(new_memo, auto);
     }
   };
 
@@ -139,6 +132,7 @@ const ListMemoInput = (props) => {
         <p
           className={classes["listMemo-closeBtn"]}
           onClick={() => {
+            localStorage.setItem("itemId", "null");
             props.onClose();
             props.setItemNull();
           }}
