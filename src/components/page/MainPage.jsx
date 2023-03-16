@@ -458,7 +458,6 @@ const MainPage = (props) => {
     if (now_doc?.data()?.classTime?.length > 0) {
       recent_classLists = now_doc.data().classTime;
     }
-
     recent_classLists.forEach((item, index) => {
       let subject = document.querySelector(`#classSubject-${item}`);
       let memo = document.querySelector(`#classMemo-${item}`);
@@ -829,7 +828,11 @@ const MainPage = (props) => {
                     {/* todayClassTable로 렌더링 */}
                     {todayClassTable?.classMemo?.map((clInfo, index) => {
                       // 만약..기초시간표 변경으로.. 해당 교시가 사라졌다면.. 보여주지 않기
-                      if (!classLists[index]) return null;
+                      if (
+                        classLists[index] === undefined ||
+                        classLists[index] === null
+                      )
+                        return null;
 
                       return (
                         <ClassItem
