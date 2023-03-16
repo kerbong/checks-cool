@@ -138,12 +138,31 @@ const ClassTableBasic = (props) => {
     // 현재 입력된 교시 이름 설정하기
     let new_classTime = [];
 
+    // 빈칸이 있는지 확인하기
+    let isEmpty = false;
+
     classTime?.forEach((cl, index) => {
       let clt_name = document.querySelectorAll(
         `input[id="classTime-${index}"]`
       )[0].value;
+      // 빈칸이 있는지 확인하기
+      if (clt_name.trim() === "") {
+        isEmpty = true;
+      }
       new_classTime.push(clt_name);
     });
+
+    if (isEmpty) {
+      Swal.fire({
+        icon: "error",
+        title: "저장 실패",
+        text: "기초시간표의 교시 이름에 빈칸이 있는지 확인해주세요! 지속적으로 문제가 생길 경우 kerbong@gmail.com으로 알려주세요!",
+        confirmButtonText: "확인",
+        confirmButtonColor: "#85bd82",
+        timer: 5000,
+      });
+      return;
+    }
 
     let deleteDuplicate = [...new Set(new_classTime)];
 
@@ -159,6 +178,8 @@ const ClassTableBasic = (props) => {
       });
       return;
     }
+
+    //교시 이름에 빈칸이 있는지 확인하기!
 
     let all_datas = {
       월: [...월],
