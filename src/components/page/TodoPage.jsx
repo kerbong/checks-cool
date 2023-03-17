@@ -6,7 +6,7 @@ import { useEffect } from "react";
 import selectOption from "../../todoOption";
 import classes from "../Attendance/AttendCtxCalendar.module.css";
 import TodoPublicSetting from "../Todo/TodoPublicSetting";
-
+import BaseTodo from "components/Todo/BaseTodo";
 import publicSetting from "../../assets/todo/publicSetting.gif";
 import MeetingSummary from "../Todo/MeetingSummary";
 
@@ -32,6 +32,7 @@ const TodoPage = (props) => {
   const [showPublicEvent, setShowPublicEvent] = useState(false);
   const [showExample, setShowExample] = useState(false);
   const [showExplain, setShowExplain] = useState(false);
+  const [showBaseTodo, setShowBaseTodo] = useState(false);
 
   //처음 접속한 유저가 null 되지 않도록 세팅
   let roomInfo = localStorage.getItem("todoPublicRoom");
@@ -419,6 +420,11 @@ const TodoPage = (props) => {
           {showPublicEvent ? "우리 달력" : "내 달력"}
         </button>
 
+        {/* 한번에 일정 입력하기 부분 */}
+        <button id="switch-btn" onClick={() => setShowBaseTodo(true)}>
+          <i className="fa-solid fa-gear"></i> 일정등록
+        </button>
+
         {/* 설정, 공용or개인용 버튼 부분 */}
         <button id="switch-btn" onClick={() => setShowPublicSetting(true)}>
           <i className="fa-solid fa-gear"></i> 설정
@@ -457,6 +463,16 @@ const TodoPage = (props) => {
           교사일정
         </div>
       </div>
+
+      {/* 일정등록 누르면 나오는 모달 */}
+      {showBaseTodo && (
+        <Modal onClose={() => setShowBaseTodo(false)}>
+          <BaseTodo
+            about={showPublicEvent ? `todo${publicRoom}` : "todopersonal"}
+            userUid={props.userUid}
+          />
+        </Modal>
+      )}
 
       {/* 달력날짜 누르면 나오는 모달 */}
       {dayEventIsShown && (

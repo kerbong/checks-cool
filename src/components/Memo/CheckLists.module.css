@@ -6,6 +6,13 @@
   line-height: 0.1;
 }
 
+.div-left {
+  position: absolute;
+  left: 30px;
+  top: 25px;
+  font-weight: bold;
+}
+
 .closeBtn {
   color: black;
   font-size: 1.3em;
@@ -14,7 +21,7 @@
 }
 
 .checkTitle {
-  margin-left: 3%;
+  margin-left: 7%;
   border-radius: 5px;
   width: 80%;
   font-size: 1.2em;

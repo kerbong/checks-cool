@@ -29,7 +29,7 @@ const ListMemoInput = (props) => {
     let tempId = localStorage.getItem("itemId");
     let item_id;
     //기존의 아이템이거나.. 임시로 저장된 tempIdTitle이 있으면 넣어주기
-    if (props?.item?.id || tempId !== "null") {
+    if (props?.item?.id || (tempId !== "null" && !tempId)) {
       item_id = props.item.id || tempId;
     } else {
       item_id =
@@ -37,7 +37,10 @@ const ListMemoInput = (props) => {
         " " +
         dayjs().format("HH:mm:ss");
     }
-
+    //혹시나.. id가 null같은게 들어가 있으면 현재 시간으로 찍어줌..!
+    if (item_id === null || item_id === "null") {
+      item_id = dayjs().format("YYYY-MM-DD HH:mm:ss");
+    }
     //새로운 아이템인데 10초간 입력이 없으면 자동저장하지 않음.
 
     let titleTag = document.querySelector(".title-input");
@@ -129,17 +132,26 @@ const ListMemoInput = (props) => {
   return (
     <>
       <h2 className={classes["title-section"]}>
-        <p
-          className={classes["listMemo-closeBtn"]}
-          onClick={() => {
-            localStorage.setItem("itemId", "null");
-            props.onClose();
-            props.setItemNull();
-          }}
-        >
-          <i className="fa-regular fa-circle-xmark"></i>
-        </p>
+        <div className={classes["x-classDiv"]}>
+          <p
+            className={classes["listMemo-closeBtn"]}
+            onClick={() => {
+              localStorage.setItem("itemId", "null");
+              props.onClose();
+              props.setItemNull();
+            }}
+          >
+            <i className="fa-regular fa-circle-xmark"></i>
+          </p>
+          {props.isSubject && (
+            <div className={classes["fs-1"]}>
+              {" "}
+              {props.item?.clName || props.clName}
+            </div>
+          )}
+        </div>
 
+        {/* 전담이면 학급명도 보여줌 */}
         {/* 날짜와 제목창 */}
         <div className={classes["date-title"]}>
           {/* 날짜 화면 보여주기 */}

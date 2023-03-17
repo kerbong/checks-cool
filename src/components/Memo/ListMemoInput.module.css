@@ -4,6 +4,7 @@
   flex-direction: column;
   margin: 5px;
   padding: 5px;
+  width: 100%;
 }
 
 .date-title {
@@ -51,6 +52,17 @@
   width: 30%;
 }
 
+.x-classDiv {
+  width: 15%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.fs-1 {
+  font-size: 1rem;
+}
+
 .title-section {
   display: flex;
   position: sticky;
@@ -64,7 +76,8 @@
 }
 
 .listMemo-closeBtn {
-  margin-top: -40px;
+  margin-top: 0px;
+  margin-bottom: 10px;
 }
 
 @media screen and (min-width: 620px) {

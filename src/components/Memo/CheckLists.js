@@ -59,7 +59,11 @@ const CheckLists = (props) => {
         if (docSnap.exists()) {
           doc.data()?.checkLists_data?.forEach((data) => {
             years.push(data.yearGroup);
-
+            // 3.17에러.. 만약 id가 null인 경우가 있으면..
+            //혹시나.. id가 null같은게 들어가 있으면 현재 시간으로 찍어줌..!
+            if (data.id === null || data.id === "null") {
+              data.id = dayjs().format("YYYY-MM-DD HH:mm:ss");
+            }
             new_checkLists.push(data);
           });
           setCheckLists([...new_checkLists]);
@@ -91,7 +95,11 @@ const CheckLists = (props) => {
         if (docSnap.exists()) {
           doc.data()?.listMemo_data?.forEach((data) => {
             years.push(data.yearGroup);
-
+            // 3.17에러.. 만약 id가 null인 경우가 있으면..
+            //혹시나.. id가 null같은게 들어가 있으면 현재 시간으로 찍어줌..!
+            if (data.id === null || data.id === "null") {
+              data.id = dayjs().format("YYYY-MM-DD HH:mm:ss");
+            }
             new_listMemo.push(data);
           });
           setListMemo([...new_listMemo]);
@@ -141,12 +149,11 @@ const CheckLists = (props) => {
     const dataSaved = async (newOrSame) => {
       //동일한 이름의 자료가 이미 있는, 새로운 저장이면 팝업 띄우기
 
-      console.log(newOrSame);
       if (newOrSame === "sameTitle" && !auto) {
         Swal.fire({
           icon: "warning",
           title: "동일한 제목 존재",
-          text: "기존 자료에 동일한 제목이 자료가 존재합니다. 계속 저장 하시겠어요?",
+          text: "기존 자료에 동일한 제목의 자료가 존재합니다. 계속 저장 하시겠어요?",
           confirmButtonText: "확인",
           showDenyButton: true,
           denyButtonText: "취소",
@@ -180,6 +187,12 @@ const CheckLists = (props) => {
             } else {
               new_datas[data_index] = new_item;
             }
+
+            //3.17에러.. id가 null이거나 'null'인 자료 제외함
+            new_datas = new_datas.filter(
+              (data) => data.id !== null && data.id !== "null"
+            );
+
             await setDoc(firestoreRef, {
               checkLists_data: [...new_datas],
             });
@@ -233,6 +246,11 @@ const CheckLists = (props) => {
             } else {
               new_datas[data_index] = new_item;
             }
+
+            //3.17에러.. id가 null이거나 'null'인 자료 제외함
+            new_datas = new_datas.filter(
+              (data) => data.id !== null && data.id !== "null"
+            );
 
             await setDoc(firestoreRef, {
               listMemo_data: [...new_datas],
@@ -290,9 +308,7 @@ const CheckLists = (props) => {
       datas = listMemoSnap?.data()?.listMemo_data;
     }
 
-    console.log(datas);
-
-    //같은 이름의 체크리스트 있는지 확인하고, 저장 묻기
+    //같은 이름의 체크리스트 있는지 확인하고, 저장 묻기 (id까지 같으면.. 기존자료 수정임)
     let regex = / /gi;
     let same_checkTitle = datas?.filter(
       (list) =>

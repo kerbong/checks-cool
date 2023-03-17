@@ -74,9 +74,14 @@ const CheckInput = (props) => {
 
     let item_id;
     //기존의 아이템인 경우 기존 아이디 쓰고
-    if (props?.item?.id || tempId !== "null") {
+    if (props?.item?.id || (tempId !== "null" && !tempId)) {
       item_id = props.item.id || tempId;
     } else {
+      item_id = tiemStamp();
+    }
+
+    //혹시나.. id가 null같은게 들어가 있으면 현재 시간으로 찍어줌..!
+    if (item_id === null || item_id === "null") {
       item_id = tiemStamp();
     }
 
@@ -89,9 +94,9 @@ const CheckInput = (props) => {
 
     //전담일경우 학급만 추가로 저장
     if (props.isSubject) {
-      new_checkItem["clName"] = props.clName;
+      new_checkItem["clName"] =
+        document.getElementById("item-clName").innerText;
     }
-    console.log(auto);
 
     // 수동저장이면...
     if (!auto) {
@@ -170,18 +175,32 @@ const CheckInput = (props) => {
         >
           {props.item.title ? (
             <div className={classes.h2}>
+              {/* 전담이면 학급명 보여주기 */}
+              {props.isSubject && (
+                <span className={classes["div-left"]} id="item-clName">
+                  {props.item.clName}
+                </span>
+              )}
               <h2 id={"title-input"}>{checkTitle}</h2>
               <p>* 10초간 입력이 없으면 자동저장</p>
             </div>
           ) : (
-            <input
-              type="text"
-              placeholder="제목"
-              id={"title-input"}
-              value={checkTitle || ""}
-              onChange={(e) => setCheckTitle(e.target.value)}
-              className={classes.checkTitle}
-            />
+            <>
+              {/* 전담이면 학급명 보여주기 */}
+              {props.isSubject && (
+                <span className={classes["div-left"]} id="item-clName">
+                  {props.clName}
+                </span>
+              )}
+              <input
+                type="text"
+                placeholder="제목"
+                id={"title-input"}
+                value={checkTitle || ""}
+                onChange={(e) => setCheckTitle(e.target.value)}
+                className={classes.checkTitle}
+              />
+            </>
           )}
         </form>
 

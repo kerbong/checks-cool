@@ -618,6 +618,14 @@ const MainPage = (props) => {
     return () => clearTimeout(timer);
   }, [hideClassTable]);
 
+  //오늘 일정 중에...외부강사, 자체행사에 특정 교시가 적혀 있으면.. 그 교시를 classTable에 넣어줌
+  // (고민해봐야겠다... 그럼 일정을 엄청 잘 바꿔줘야 하는데...좋긴 한데.. 흠...)
+  useEffect(() => {
+    // 오늘데이터만 뽑아냄.
+    // let today_schedule = schedule?.filter((sc)=> sc.id.slice(0, 10) === todayYyyymmdd)
+    // today_schedule?.forEach((data)=> data.note)
+  }, [schedule]);
+
   return (
     <div className={classes["whole-div"]}>
       {props.showMainExample && (
