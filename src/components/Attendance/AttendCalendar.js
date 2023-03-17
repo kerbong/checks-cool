@@ -65,6 +65,7 @@ const AttendCalendar = (props) => {
         disabledKeyboardNavigation
         highlightDates={props.highlight}
         customInput={<ExampleCustomInput />}
+        fixedHeight={props.fixedHeight}
         inline={props.inline}
         locale={ko}
         dateFormat="yy년 MMMM d일(eee)"

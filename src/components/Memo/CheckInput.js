@@ -50,6 +50,9 @@ const CheckInput = (props) => {
 
   const saveCheckItem = async (auto) => {
     let tempId = localStorage.getItem("itemId");
+    // console.log(tempId);
+    //처음 새로운 자료 자동 저장할 때는 null 임..
+    //처음 자동 저장되면 처음 저장하면 시간으로 tempId 찍힘
 
     let titleTag = document.getElementById("title-input");
 
@@ -74,7 +77,7 @@ const CheckInput = (props) => {
 
     let item_id;
     //기존의 아이템인 경우 기존 아이디 쓰고
-    if (props?.item?.id || (tempId !== "null" && !tempId)) {
+    if (props?.item?.id || (tempId !== "null" && tempId)) {
       item_id = props.item.id || tempId;
     } else {
       item_id = tiemStamp();
@@ -103,6 +106,7 @@ const CheckInput = (props) => {
       props.onClose();
       props.setItemNull();
       props.saveItemHandler(new_checkItem);
+      localStorage.removeItem("itemId");
     } else {
       localStorage.setItem("itemId", item_id);
       props.saveItemHandler(new_checkItem, auto);
@@ -207,7 +211,7 @@ const CheckInput = (props) => {
         <span
           className={classes.closeBtn}
           onClick={() => {
-            localStorage.setItem("itemId", "null");
+            localStorage.removeItem("itemId");
             props.onClose();
             props.setItemNull();
           }}

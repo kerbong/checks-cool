@@ -26,10 +26,10 @@ const ListMemoInput = (props) => {
   const [todayYyyymmdd, setTodayYyyymmdd] = useState(new Date());
 
   const saveMemo = (auto) => {
-    let tempId = localStorage.getItem("itemId");
+    let tempId = localStorage.getItem("listId");
     let item_id;
     //기존의 아이템이거나.. 임시로 저장된 tempIdTitle이 있으면 넣어주기
-    if (props?.item?.id || (tempId !== "null" && !tempId)) {
+    if (props?.item?.id || (tempId !== "null" && tempId)) {
       item_id = props.item.id || tempId;
     } else {
       item_id =
@@ -80,8 +80,9 @@ const ListMemoInput = (props) => {
       props.onClose();
       props.setItemNull();
       props.saveItemHandler(new_memo);
+      localStorage.removeItem("listId");
     } else {
-      localStorage.setItem("itemId", item_id);
+      localStorage.setItem("listId", item_id);
       props.saveItemHandler(new_memo, auto);
     }
   };
@@ -136,7 +137,7 @@ const ListMemoInput = (props) => {
           <p
             className={classes["listMemo-closeBtn"]}
             onClick={() => {
-              localStorage.setItem("itemId", "null");
+              localStorage.removeItem("listId");
               props.onClose();
               props.setItemNull();
             }}
