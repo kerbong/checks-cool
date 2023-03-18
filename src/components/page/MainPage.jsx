@@ -73,6 +73,7 @@ const MainPage = (props) => {
   const [isLgWidth, setIsLgWidth] = useState(false);
   const [gridFr3or4, setGridFr3or4] = useState("");
   const [scaleValue, setScaleValue] = useState(document.body.style.zoom || 1);
+  const [classFromSchedule, setClassFromSchedule] = useState([]);
 
   //업데이트 내용 보여주기 로컬스토리지에서 showNotice를 스트링으로 저장해서 확인 후에 이전에 봤으면 안보여주기
   const [showNotice, setShowNotice] = useState(
@@ -239,23 +240,85 @@ const MainPage = (props) => {
     let future7days = last7days(todayYyyymmdd, "future");
 
     publicSnap?.data()?.todo_data?.forEach((data) => {
-      if (future7days?.includes(data.id.slice(0, 10))) {
-        const new_data = { ...data, public: true };
-        new_schedule.push(new_data);
-      }
+      const new_data = { ...data, public: true };
+      new_schedule.push(new_data);
     });
 
     // onSnapshot(personalRef, (doc) => {
     personalSnap?.data()?.todo_data?.forEach((data) => {
-      if (future7days?.includes(data.id.slice(0, 10))) {
-        const new_data = { ...data, public: false };
-        new_schedule.push(new_data);
-      }
+      const new_data = { ...data, public: false };
+      new_schedule.push(new_data);
     });
     // });
 
+    //혹시 set등록된 자료면.. 회차를 정보에 넣어주기!
+    let events_sets = [];
+    let events_sets_all = [];
+    new_schedule
+      ?.sort(
+        (a, b) => new Date(a.id.slice(0, 10)) - new Date(b.id.slice(0, 10))
+      )
+      ?.forEach((evt) => {
+        if (evt.set) {
+          events_sets_all.push(evt.set);
+        }
+      });
+    if (events_sets_all.length > 0) {
+      events_sets = [...new Set(events_sets_all)];
+    }
+
+    let set_events = [];
+    let noneSet_events = [];
+    let fixed_events = [];
+    let setFixed_events = [];
+    noneSet_events = new_schedule?.filter((evt) => !evt.set);
+    //예를 들어 얼티미트 가 set에 포함된 자료에는 다 번호를 매김.
+    events_sets?.forEach((setName) => {
+      let num = 1;
+      new_schedule?.forEach((evt) => {
+        if (evt?.set === setName) {
+          evt.setNum = num;
+          num += 1;
+          set_events.push(evt);
+        }
+      });
+    });
+
+    fixed_events = [...set_events, ...noneSet_events];
+
+    setFixed_events = fixed_events?.filter((data) =>
+      future7days?.includes(data.id.slice(0, 10))
+    );
+
+    // 시간표
+    let new_classFromSchedule = [...classLists.map((cl) => "")];
+    // 시간표에 보여줄.. 오늘 일정 중에 교시 데이터가 있으면 보여주기 위한 자료
+    setFixed_events
+      ?.filter((evt) => evt.id.slice(0, 10) === todayYyyymmdd)
+      ?.forEach((today_evt) => {
+        classLists?.forEach((cl, index) => {
+          // 만약 교시를 분별하는 @가 포함되어 있으면.. setNum도 있으면 함께 넣어주기
+          if (cl === today_evt.note?.split("@")?.[0]) {
+            new_classFromSchedule[index] = `${today_evt.eventName}@${
+              today_evt.note
+            }${
+              today_evt.setNum
+                ? `(${today_evt.setNum}/${
+                    events_sets_all?.filter(
+                      (evtName) => evtName === today_evt.set
+                    )?.length
+                  })`
+                : ""
+            }`;
+          }
+        });
+      });
+
+    //일정에 있는 자료 중 과목과 내용 정보 저장해두기
+    setClassFromSchedule(new_classFromSchedule);
+
     setSchedule(
-      new_schedule.sort((a, b) =>
+      setFixed_events.sort((a, b) =>
         dayjs(a.id.slice(0, 10)).diff(dayjs(b.id.slice(0, 10)), "day")
       )
     );
@@ -423,8 +486,8 @@ const MainPage = (props) => {
     });
 
     getAttendsFromDb(isSubject);
-    getScheduleFromDb();
     getClassTableFromDb();
+    getScheduleFromDb();
     getCheckListsFromDb();
     getListMemoFromDb();
   }, [todayYyyymmdd, props.isSubject]);
@@ -434,7 +497,7 @@ const MainPage = (props) => {
   }, []);
 
   //시간표 저장 함수
-  const saveClassMemoHandler = async () => {
+  const saveClassMemoHandler = async (auto) => {
     //오늘 날짜 데이터를 받을 때... 상태를 쓰면 최신을 쓰지 못할 수 있음(setTImeout때문...)
     //년 월 일
     let nowDate = document.getElementById("todayYYYYMMDD").innerText;
@@ -519,14 +582,16 @@ const MainPage = (props) => {
       return;
     }
 
-    Swal.fire({
-      icon: "success",
-      title: "저장 완료",
-      text: "시간표 과목, 활동 정보가 저장되었습니다.(5초 후에 창이 사라집니다.)",
-      confirmButtonText: "확인",
-      confirmButtonColor: "#85bd82",
-      timer: 5000,
-    });
+    if (!auto) {
+      Swal.fire({
+        icon: "success",
+        title: "저장 완료",
+        text: "시간표 과목, 활동 정보가 저장되었습니다.(5초 후에 창이 사라집니다.)",
+        confirmButtonText: "확인",
+        confirmButtonColor: "#85bd82",
+        timer: 5000,
+      });
+    }
 
     const new_classData = { datas: new_classTable };
 
@@ -611,7 +676,7 @@ const MainPage = (props) => {
       clearTimeout(timer);
       timer = setTimeout(() => {
         // console.log("자동저장");
-        saveClassMemoHandler();
+        saveClassMemoHandler("auto");
       }, 10000);
     };
     ulTextareas?.addEventListener("keydown", checkInput);
@@ -849,11 +914,20 @@ const MainPage = (props) => {
                           classNum={classLists[index]}
                           classStart={classStart?.[index]}
                           subject={
+                            // 우선순위 1.해당날짜의 저장한 자료 2.일정자료 3.기초시간표
                             clInfo?.subject !== ""
                               ? clInfo?.subject
+                              : classFromSchedule?.[index]?.includes("@")
+                              ? classFromSchedule?.[index]?.split("@")?.[0]
                               : classBasic?.[index] || ""
                           }
-                          memo={clInfo?.memo || ""}
+                          memo={
+                            clInfo?.memo !== ""
+                              ? clInfo?.memo
+                              : classFromSchedule?.[index]?.includes("@")
+                              ? classFromSchedule?.[index]?.split("@")?.[2]
+                              : ""
+                          }
                         />
                       );
                     })}
@@ -938,7 +1012,9 @@ const MainPage = (props) => {
                     }
                   >
                     {event.public ? "공용) " : "개인) "}
-                    {event.eventName}({event.option.slice(1)}) /{" "}
+                    {event.eventName}
+                    {event.setNum && ` ${event.setNum}회차`}(
+                    {event.option.slice(1)}) /{" "}
                     {dayjs(event.id.slice(0, 10)).format("M월 D일(ddd)")} /{" "}
                     {/* / D-
                     {dayjs(event.id.slice(0, 10)).diff(

@@ -67,6 +67,12 @@ const BaseTodo = (props) => {
 
   return (
     <div>
+      <h2 className={classes["flex-margin-15-center"]}>
+        반복일정 등록하기{" "}
+        <span className={classes["close-x"]} onClick={props.closeHandler}>
+          <i className="fa-regular fa-circle-xmark"></i>
+        </span>
+      </h2>
       {/* 공용) 개인) 선택 탭, 행사명 인풋, x 마크(닫기)  */}
       <div className={classes["flex-margin-15"]}>
         {/* 공용/개인 선택탭 */}
@@ -125,7 +131,7 @@ const BaseTodo = (props) => {
           {/* 메모 내용 탭 */}
           <input
             type="text"
-            placeholder="(예시) 2교시-체육관"
+            placeholder="(예시) 2교시@체육관"
             id={"memo-input"}
             value={memo || ""}
             onChange={(e) => setMemo(e.target.value)}
@@ -144,14 +150,26 @@ const BaseTodo = (props) => {
             className={"events-save"}
           />
         </div>
-        <p>
-          * 메모에 해당교시-내용 으로 입력하시면 일정 날짜 시간표(메인화면)의
-          해당교시에 행사명이 '과목'칸에 내용이 '메모'칸에 자동 입력됩니다.(해당
-          날짜에 기존에 저장된 시간표 내용이 없는 경우)
+        <p className={classes["fs-9"]}>
+          * <b>동아리활동, 생존수영, 진로상담프로그램</b> 등 반복적인 외부강사,
+          자체수업들을 한 번에 간편하게 등록하고 시간표와 연동하여 관리합니다.
         </p>
-        <p>* 해당교시 명칭이 기초시간표의 교시명과 정확히 일치해야 합니다.</p>
+        <p className={classes["fs-9"]}>
+          * 반복일정으로 등록한 일정은 따로 차시를 입력하지 않아도{" "}
+          <b>"행사명(현재차시/전체차시)"</b>로 표현됩니다.(
+          <u>반복일정으로 등록한 일정은 수정, 변경해도 자동적용</u>)
+        </p>
+        <p className={classes["fs-9"]}>
+          * 메모에 "<b>해당교시@내용</b>" 으로 입력하시면 시간표(메인화면)의
+          '과목'칸에 해당교시에 행사명, '메모'칸에 내용이 자동 입력됩니다.(단,
+          해당 날짜에{" "}
+          <u>미리 저장된 자료가 있다면, 반복일정보다 우선적으로 표시</u>)
+        </p>
+        <p className={classes["fs-9"]}>
+          * <b>해당교시 명칭</b>과 기초시간표에 <b>저장된 교시명</b>이{" "}
+          <u>정확하게 일치</u>해야 합니다.
+        </p>
       </div>
-      <p>* 개발중입니다...</p>
     </div>
   );
 };

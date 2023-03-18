@@ -54,4 +54,11 @@
 
 .close-x {
   padding: 5px;
+  position: absolute;
+  right: 5%;
+  top: 2%;
+}
+
+.fs-9 {
+  font-size: 0.9rem;
 }

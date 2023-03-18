@@ -108,11 +108,14 @@ const TodoPage = (props) => {
       let setFixed_events = [];
       noneSet_events = new_events?.filter((evt) => !evt.set);
       //예를 들어 얼티미트 가 set에 포함된 자료에는 다 번호를 매김.
+
       events_sets.forEach((setName) => {
         let num = 1;
         new_events.forEach((evt) => {
           if (evt?.set === setName) {
-            evt.setNum = num;
+            evt.setNum = `${num}/${
+              events_sets_all?.filter((evtName) => evtName === evt.set)?.length
+            }`;
             num += 1;
             set_events.push(evt);
           }
@@ -539,14 +542,14 @@ const TodoPage = (props) => {
           {showPublicEvent ? "우리 달력" : "내 달력"}
         </button>
 
-        {/* 한번에 일정 입력하기 부분 */}
-        <button id="switch-btn" onClick={() => setShowBaseTodo(true)}>
-          <i className="fa-solid fa-gear"></i> 일괄등록
-        </button>
-
         {/* 설정, 공용or개인용 버튼 부분 */}
         <button id="switch-btn" onClick={() => setShowPublicSetting(true)}>
           <i className="fa-solid fa-gear"></i> 설정
+        </button>
+
+        {/* 한번에 일정 입력하기 부분 */}
+        <button id="switch-btn" onClick={() => setShowBaseTodo(true)}>
+          <i className="fa-regular fa-window-restore"></i> 반복
         </button>
 
         <button
