@@ -99,6 +99,11 @@ const TodoLists = (props) => {
       note: noteValue,
     };
 
+    //set아이템 일경우 옵션 추가
+    if (item.set) {
+      fixed_data.set = item.set;
+    }
+
     // console.log(item.eventDate);
     //events eventOnDay 를 수정하는 함수
     // console.log(fixed_data);
@@ -251,6 +256,7 @@ const TodoLists = (props) => {
             note={event.note}
             option={event.option}
             about={props.about}
+            setNum={event.setNum || ""}
             selectOption={props.selectOption}
             fixIsShown={fixIsShown}
             saveFixedData={(item) => {

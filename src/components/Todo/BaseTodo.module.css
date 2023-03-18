@@ -1,0 +1,57 @@
+.select,
+.select-80 {
+  width: 60px;
+  border-radius: 10px;
+}
+
+.select-80 {
+  width: 80px;
+}
+
+.title-input,
+.memo-input {
+  width: calc(90% - 60px);
+  border-radius: 10px;
+}
+
+.memo-input {
+  width: calc(90% - 80px);
+}
+
+@media screen and (min-width: 800px) {
+  .select-80 {
+    width: 100px;
+  }
+  .memo-input {
+    width: calc(90% - 100px);
+  }
+}
+
+.flex-margin-15,
+.flex-margin-15-center {
+  display: flex;
+  margin: 15px;
+  justify-content: space-between;
+}
+.flex-margin-15-center {
+  justify-content: center;
+  font-size: 1.3rem;
+}
+
+.calendar {
+  font-size: 0.8rem;
+}
+
+.flex-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+}
+
+.margin-2-15 {
+  margin: 2px 15px;
+}
+
+.close-x {
+  padding: 5px;
+}

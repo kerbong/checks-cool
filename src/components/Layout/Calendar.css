@@ -8,7 +8,7 @@
   display: flow-root;
 }
 .react-datepicker__header {
-  padding-top: 0.8em;
+  padding-top: 0.5rem;
   width: 100%;
   height: 10vh;
   background-color: #e9cfccd6;
@@ -123,7 +123,7 @@
 
 .react-datepicker__month-container {
   /* min-width: 95vw; */
-  min-height: 50vh;
+  /* min-height: 50vh; */
   display: flex;
   flex-wrap: wrap;
   align-content: flex-start;
@@ -193,4 +193,8 @@
 
 #title-btn.title-memo {
   background-color: #cc7bd2cc;
+}
+
+.react-datepicker__day--highlighted {
+  background-color: #cc3d6f;
 }

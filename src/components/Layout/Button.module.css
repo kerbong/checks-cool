@@ -147,7 +147,8 @@
   float: right;
 }
 
-.checkList-button {
+.checkList-button,
+.events-save {
   width: auto;
   margin: 5px;
   font-size: 0.9em;
@@ -156,6 +157,13 @@
   letter-spacing: -1px;
   padding: 1vh;
   background-color: #da9a9a4a;
+}
+
+.events-save {
+  font-size: 1.1rem;
+  padding: 2vh;
+  width: 25vw;
+  background-color: #da9a9acf;
 }
 
 .del-checkItem-button {

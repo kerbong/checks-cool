@@ -9,6 +9,7 @@ import TodoPublicSetting from "../Todo/TodoPublicSetting";
 import BaseTodo from "components/Todo/BaseTodo";
 import publicSetting from "../../assets/todo/publicSetting.gif";
 import MeetingSummary from "../Todo/MeetingSummary";
+import Swal from "sweetalert2";
 
 import { dbService } from "../../fbase";
 import { onSnapshot, setDoc, doc, getDoc } from "firebase/firestore";
@@ -85,8 +86,42 @@ const TodoPage = (props) => {
         // console.log(data);
         new_events.push(data);
       });
-      // console.log(new_events);
-      setEvents([...new_events]);
+
+      //혹시 set등록된 자료면.. 회차를 정보에 넣어주기!
+      let events_sets = [];
+      let events_sets_all = [];
+      new_events
+        ?.sort(
+          (a, b) => new Date(a.id.slice(0, 10)) - new Date(b.id.slice(0, 10))
+        )
+        ?.forEach((evt) => {
+          if (evt.set) {
+            events_sets_all.push(evt.set);
+          }
+        });
+      if (events_sets_all.length > 0) {
+        events_sets = [...new Set(events_sets_all)];
+      }
+
+      let set_events = [];
+      let noneSet_events = [];
+      let setFixed_events = [];
+      noneSet_events = new_events?.filter((evt) => !evt.set);
+      //예를 들어 얼티미트 가 set에 포함된 자료에는 다 번호를 매김.
+      events_sets.forEach((setName) => {
+        let num = 1;
+        new_events.forEach((evt) => {
+          if (evt?.set === setName) {
+            evt.setNum = num;
+            num += 1;
+            set_events.push(evt);
+          }
+        });
+      });
+
+      setFixed_events = [...set_events, ...noneSet_events];
+
+      setEvents([...setFixed_events]);
     });
   };
 
@@ -204,7 +239,7 @@ const TodoPage = (props) => {
 
     //이벤트 요약해서 캘린더에 보여주기
     const eventDrawOnCalendar = () => {
-      events.forEach(function (data) {
+      events?.forEach(function (data) {
         //새로 업데이트한 로직(년 월 일 데이터에 따로 저장)
         const day = "0" + data?.id?.slice(8, 10);
 
@@ -237,7 +272,9 @@ const TodoPage = (props) => {
                 ? classes.op2
                 : classes.op3
             } eventBtn`;
-            btn.innerText = data.eventName;
+            //setNum이 있으면 그것까지 보여주기
+            let setNum = data.setNum ? `(${data.setNum})` : "";
+            btn.innerText = data.eventName + setNum;
             btn.id = data.id;
             eventTag.appendChild(btn);
             eventTag.style.backgroundColor = "#d38c85";
@@ -384,6 +421,88 @@ const TodoPage = (props) => {
     setCurrentMonth(month);
   };
 
+  //여러 행사 한 번에 입력툴 저장함수
+  const saveSetEventsHandler = async (datas, perPub) => {
+    let todoRef;
+
+    if (perPub === "personal") {
+      //유저 개인 자료는 자기 uid로 문서id 저장
+      todoRef = doc(dbService, "todo", props.userUid);
+    } else if (perPub === "public") {
+      //"경기초-6-2022"예시
+      //공용 자료는 공용문서전체 이름으로 문서id 저장
+      todoRef = doc(dbService, "todo", publicRoom);
+    }
+
+    //전해진 datas의 날짜만 모아둠
+    let datas_dates = datas?.map((data) => data.id);
+
+    let isExist = [];
+
+    const db_doc = await getDoc(todoRef);
+    let db_datas = db_doc?.data()?.todo_data || [];
+    let db_events = [];
+    db_datas?.forEach((data) => {
+      // console.log(data);
+      //중복되는건 isExist에 넣고
+      if (datas_dates?.includes(data.id)) {
+        isExist.push(data);
+        //중복되지 않는건 db_events에 넣고
+      } else {
+        db_events.push(data);
+      }
+    });
+
+    //본격적으로 중복되는 행사 (isExist) 제거하고 저장하는 함수
+    const saveEventsDb = async () => {
+      let new_datas = [...db_events, ...datas];
+      const fixed_data = { todo_data: new_datas };
+      await setDoc(todoRef, fixed_data);
+      successSwal();
+    };
+
+    //저장되면 보여줄 swal
+    const successSwal = () => {
+      Swal.fire({
+        icon: "success",
+        title: "저장 완료",
+        text: `${datas[0].eventName} 행사가 저장되었습니다.`,
+        confirmButtonText: "확인",
+        confirmButtonColor: "#85bd82",
+        showDenyButton: false,
+        timer: 3000,
+      });
+    };
+
+    // 저장하는 세트 일정이 공용 개별일정인지 확인하고. 해당 자료 snapshot한거랑 비교해서, id가 같은거 있으면 덮어쓰기, 아니면 저장하기.
+    if (isExist.length > 0) {
+      Swal.fire({
+        icon: "warning",
+        title: "중복자료 덮어쓰기",
+        text: `같은 날짜에 같은 이름을 가진 행사가 존재합니다. 덮어쓰시겠어요? ${isExist.map(
+          (item) => item?.id?.slice(0, 10) + " | " + item?.id?.slice(10)
+        )} `,
+        confirmButtonText: "확인",
+        confirmButtonColor: "#85bd82",
+        showDenyButton: true,
+        denyButtonText: "취소",
+      }).then((result) => {
+        /* Read more about isConfirmed, isDenied below */
+        if (result.isConfirmed) {
+          saveEventsDb();
+          setShowBaseTodo(false);
+        } else {
+          return;
+        }
+      });
+
+      // 중복되는 일정이 없을 경우 바로 저장하기
+    } else {
+      saveEventsDb();
+      setShowBaseTodo(false);
+    }
+  };
+
   return (
     <>
       {showExample && (
@@ -422,7 +541,7 @@ const TodoPage = (props) => {
 
         {/* 한번에 일정 입력하기 부분 */}
         <button id="switch-btn" onClick={() => setShowBaseTodo(true)}>
-          <i className="fa-solid fa-gear"></i> 일정등록
+          <i className="fa-solid fa-gear"></i> 일괄등록
         </button>
 
         {/* 설정, 공용or개인용 버튼 부분 */}
@@ -468,8 +587,11 @@ const TodoPage = (props) => {
       {showBaseTodo && (
         <Modal onClose={() => setShowBaseTodo(false)}>
           <BaseTodo
-            about={showPublicEvent ? `todo${publicRoom}` : "todopersonal"}
+            closeHandler={() => setShowBaseTodo(false)}
             userUid={props.userUid}
+            showPublicEvent={showPublicEvent}
+            selectOption={selectOption}
+            saveSetEventsHandler={saveSetEventsHandler}
           />
         </Modal>
       )}
