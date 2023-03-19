@@ -178,6 +178,16 @@
   float: left;
 }
 
+.stdInfo-btn {
+  color: white;
+  background-color: #1b5157;
+  padding: 10px;
+  border-radius: 10px;
+  font-size: 1.1rem;
+  margin: 5px;
+  border-width: 0;
+}
+
 .sortBtn,
 .sortBtn-consult {
   width: auto;

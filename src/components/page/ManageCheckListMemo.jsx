@@ -171,7 +171,7 @@ const ManageCheckListMemo = (props) => {
             icon={<i className="fa-solid fa-rotate"></i>}
             onclick={() => setShowListMemo((prev) => !prev)}
             className={"save-classItem-button"}
-            style={{ width: "200px" }}
+            style={{ width: "200px", backgroundColor: "#f3feff" }}
           />
         </div>
 

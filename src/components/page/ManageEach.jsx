@@ -26,7 +26,12 @@ const ManageEach = (props) => {
   }, [student]);
 
   const showOptionHandler = (e) => {
-    setStudent(e.target.innerText);
+    let clicked_student = e.target.innerText;
+    if (student === clicked_student) {
+      setStudent("");
+    } else {
+      setStudent(clicked_student);
+    }
     if (student !== "") {
       //이전학생을 원래대로 none click css속성 적용
       let beforeSelectStd = document.getElementById(`std-${student}`);

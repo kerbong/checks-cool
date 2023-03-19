@@ -182,7 +182,7 @@ const StudentExcelUpload = (props) => {
             }
             className={classes["a-link"]}
           >
-            양식파일 다운
+            양식파일 다운 <i className="fa-solid fa-download"></i>
           </a>
         </button>
         <hr className={classes["hr"]} />

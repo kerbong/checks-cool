@@ -172,12 +172,15 @@ const ManageAttendance = (props) => {
       />
 
       {/* 학생 출결부분 보여주기 */}
-      <ul className={classes["bottom-content-ul"]}>
+      <ul className={`${classes["bottom-content-ul"]} ${classes["flex-wrap"]}`}>
         {onStudent && (
           <>
             {/* 전체 출결 확인 출결옵션별 횟수 기록 */}
-            <li className={classes["bottom-content-li"]}>
-              {onStudent} | 출결 정보
+            <li
+              className={classes["bottom-content-li"]}
+              style={{ width: "80%" }}
+            >
+              {onStudent} | 출결 요약
               <hr className={classes["margin-15"]} />
               {onAttends?.length === 0 ? (
                 <div className={`${classes["fs-13"]} ${classes["margin-15"]}`}>
@@ -219,26 +222,29 @@ const ManageAttendance = (props) => {
               )}
             </li>
 
-            {/* 개별 출결기록 */}
-            {showOnAttends?.map((attend) => (
-              <li
-                key={attend.id}
-                id={attend.id}
-                className={classes["bottom-content-li"]}
-              >
-                {/* 출결의 id(yyyy-mm-dd)보여줌 */}
-                <div className={classes["flex-ml-10"]}>
-                  {attend.id.slice(0, 10)}
-                </div>
-                {/* 출결옵션 */}
-                <div className={classes["fs-13"]}>
-                  {attend.option.slice(1)} | {attend.note || "(메모 없음)"}
-                </div>
-                {/* 메모한 내용 */}
+            <div className={classes["btns-div"]} style={{ flexWrap: "wrap" }}>
+              {/* 개별 출결기록 */}
+              {showOnAttends?.map((attend) => (
+                <li
+                  key={attend.id}
+                  id={attend.id}
+                  className={classes["bottom-content-li"]}
+                  style={{ width: "260px", padding: "25px" }}
+                >
+                  {/* 출결의 id(yyyy-mm-dd)보여줌 */}
+                  <div className={classes["flex-ml-10"]}>
+                    {attend.id.slice(0, 10)}
+                  </div>
+                  {/* 출결옵션 */}
+                  <div className={classes["fs-13"]}>
+                    {attend.option.slice(1)} | {attend.note || "(메모 없음)"}
+                  </div>
+                  {/* 메모한 내용 */}
 
-                <div className={classes["fs-13"]}></div>
-              </li>
-            ))}
+                  <div className={classes["fs-13"]}></div>
+                </li>
+              ))}
+            </div>
             {/* 자료 없음 표시 */}
             {onAttends?.length === 0 && (
               <li className={classes["bottom-content-li"]}>
