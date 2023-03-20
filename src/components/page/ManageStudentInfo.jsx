@@ -9,13 +9,22 @@ import Button from "components/Layout/Button";
 import Swal from "sweetalert2";
 import { read, utils } from "xlsx";
 
+// 정렬 버튼 내용들 모음..
+const INFO_DATA_BTNS = [
+  ["생일(월별)", "month"],
+  ["학생연락처", "studTel"],
+  ["부모연락처", "parentsTel"],
+  ["형제자매", "bns"],
+  ["기타", "etc"],
+];
+
 const ManageStudentInfo = (props) => {
   const [onStudent, setOnStudent] = useState("");
+  const [onStudentInfo, setOnStudentInfo] = useState([]);
   const [onOption, setOnOption] = useState("");
   const [nowSubject, setNowSubject] = useState(false);
   const [clName, setClName] = useState("");
   const [studentsInfo, setStudentsInfo] = useState([]);
-  const [nowClassName, setNowClassName] = useState("");
 
   const { state } = useLocation();
 
@@ -59,6 +68,29 @@ const ManageStudentInfo = (props) => {
   useEffect(() => {
     getInfoFromDb();
   }, []);
+
+  //학생 선택되면.. 실행되는 함수
+  useEffect(() => {
+    if (onStudent === "") return;
+
+    let new_studentsInfo = studentsInfoBySubjectHandler();
+    //다른 탭(출결, 상담 등)에서 넘어올 때 학생정보가 아직 안오면 .. 현재 학생을 못찍어줌.
+    let new_onStudentInfo = new_studentsInfo?.filter(
+      (stud) => stud.name === onStudent?.split(" ")?.[1]
+    )?.[0];
+
+    setOnStudentInfo(new_onStudentInfo);
+  }, [onStudent]);
+
+  //다른 탭(출결, 상담 등)에서 넘어올 때 db에서 학생정보가 아직 안와있을 경우를 대비해서 .. db에서 자료 받아오고 나면 다시 실행
+  useEffect(() => {
+    let new_studentsInfo = studentsInfoBySubjectHandler();
+    let new_onStudentInfo = new_studentsInfo?.filter(
+      (stud) => stud.name === onStudent?.split(" ")?.[1]
+    )?.[0];
+
+    setOnStudentInfo(new_onStudentInfo);
+  }, [studentsInfo]);
 
   //받아온 학생, 학급 정보
   useEffect(() => {
@@ -262,9 +294,24 @@ const ManageStudentInfo = (props) => {
     }
   };
 
+  //전담 담임용으로 나눠서 학생정보 세팅하는 함수
+  const studentsInfoBySubjectHandler = () => {
+    let new_studentsInfo = [];
+    //전담이면 clName이 현재 학급인
+    if (nowSubject) {
+      new_studentsInfo = [
+        ...studentsInfo?.filter((stud) => stud.clName === clName),
+      ];
+    } else {
+      new_studentsInfo = [...studentsInfo];
+    }
+    return new_studentsInfo;
+  };
+
   //모든학생 생일보여주는 거 월별로 새롭게 정렬하고..
   const showStudentsBirth = () => {
-    let new_studentsInfo = [...studentsInfo];
+    let new_studentsInfo = studentsInfoBySubjectHandler();
+
     let monthBirthAll = new_studentsInfo?.map((stud) => stud.month);
     let monthBirth = [...new Set(monthBirthAll.sort((a, b) => a - b))];
 
@@ -280,6 +327,7 @@ const ManageStudentInfo = (props) => {
             {new_studentsInfo?.filter((stud) => stud.month === month)?.length}
             명)
           </h2>
+          <hr className={classes["margin-15"]} />
           <div className={`${classes["margin-15"]} ${classes["fs-11"]} `}>
             {new_studentsInfo?.map((stud) => {
               if (stud.month !== month) return null;
@@ -296,12 +344,24 @@ const ManageStudentInfo = (props) => {
         </div>
       );
     });
-    return monthBrithDiv;
+    return (
+      <>
+        <div className={`${classes["flex-wrap"]}`} style={{ width: "90%" }}>
+          <h2
+            className={`${classes["bottom-content-li"]} ${classes["flex-wrap"]}`}
+            style={{ width: "200px" }}
+          >
+            생일 (월별)
+          </h2>
+        </div>
+        {monthBrithDiv};
+      </>
+    );
   };
 
   //모든학생 학생연락처 보여주기
   const showStudentsTel = () => {
-    let new_studentsInfo = [...studentsInfo];
+    let new_studentsInfo = studentsInfoBySubjectHandler();
     let telAll = new_studentsInfo?.map((stud) => (
       <span
         key={stud.studTel}
@@ -342,21 +402,23 @@ const ManageStudentInfo = (props) => {
 
   //모든학생 부모연락처 보여주기
   const showParentsTel = () => {
-    let new_studentsInfo = [...studentsInfo];
+    let new_studentsInfo = studentsInfoBySubjectHandler();
     let telAll = new_studentsInfo?.map((stud) => (
       <div
         key={stud.momTel}
         className={`${classes["bottom-content-li"]} ${classes["flex-wrap"]} ${classes["fs-11"]}`}
         style={{ width: "300px" }}
       >
-        <h3 style={{ width: "300px" }}>
+        <h3 style={{ width: "300px", marginBottom: "-5px" }}>
           {stud.num} {stud.name}
+          <hr className={classes["margin-15"]} />
         </h3>{" "}
         <span
           className={`${classes["margin-5"]} ${classes["flex-wrap"]} ${classes["padd-5"]}`}
           style={{ width: "", alignItems: "center" }}
         >
-          <span className={`${classes["margin-5"]}`}>(부) {stud.dad}</span>
+          <span className={`${classes["margin-5"]}`}>(부) {stud.dad}</span>{" "}
+          &nbsp;&nbsp;
           <span className={`${classes["margin-5"]}`}>{stud.dadTel}</span>
         </span>
         <span
@@ -364,6 +426,7 @@ const ManageStudentInfo = (props) => {
           style={{ width: "", alignItems: "center" }}
         >
           <span className={`${classes["margin-5"]}`}>(모) {stud.mom}</span>
+          &nbsp;&nbsp;
           <span className={`${classes["margin-5"]}`}>{stud.momTel}</span>
         </span>
       </div>
@@ -386,26 +449,27 @@ const ManageStudentInfo = (props) => {
 
   //형제자매 관련 데이터 보여주기
   const showBnS = () => {
-    let new_studentsInfo = [...studentsInfo];
+    let new_studentsInfo = studentsInfoBySubjectHandler();
     let bnsAll = new_studentsInfo?.map((stud) => {
       if (stud.bns === "") return null;
 
       return (
-        <div
+        <span
           key={stud.num + "bns"}
-          className={`${classes["bottom-content-li"]} ${classes["flex-wrap"]} ${classes["fs-11"]}`}
-          style={{ width: "300px" }}
+          className={`${classes["margin-5"]} ${classes["flex-wrap"]} ${classes["padd-5"]}`}
+          style={{ width: "", alignItems: "center" }}
         >
-          <h3 style={{ width: "300px" }}>
+          <span>
             {stud.num} {stud.name}
-          </h3>{" "}
-          <span
-            className={`${classes["margin-5"]} ${classes["flex-wrap"]} ${classes["padd-5"]}`}
-            style={{ width: "", alignItems: "center" }}
-          >
-            <span className={`${classes["margin-5"]}`}> {stud.bns}</span>
           </span>
-        </div>
+          &nbsp;&nbsp;
+          <span
+            className={`${classes["margin-5"]}`}
+            style={{ marginLeft: "15px" }}
+          >
+            {stud.bns}
+          </span>
+        </span>
       );
     });
 
@@ -419,7 +483,12 @@ const ManageStudentInfo = (props) => {
             형제자매
           </h2>
         </div>
-        {bnsAll}
+        <div
+          className={`${classes["bottom-content-li"]} ${classes["flex-wrap"]} ${classes["fs-11"]}`}
+          style={{ width: "80%", justifyContent: "space-evenly" }}
+        >
+          {bnsAll}
+        </div>
         {new_studentsInfo?.filter((stud) => stud.bns !== "")?.length === 0 &&
           "* 자료가 없습니다."}
       </>
@@ -428,7 +497,7 @@ const ManageStudentInfo = (props) => {
 
   //기타 관련 데이터 보여주기
   const showEtc = () => {
-    let new_studentsInfo = [...studentsInfo];
+    let new_studentsInfo = studentsInfoBySubjectHandler();
     let bnsAll = new_studentsInfo?.map((stud) => {
       if (stud.etc === "") return null;
 
@@ -461,12 +530,83 @@ const ManageStudentInfo = (props) => {
             기타 정보
           </h2>
         </div>
+
         {bnsAll}
         {new_studentsInfo?.filter((stud) => stud.etc !== "")?.length === 0 &&
           "* 자료가 없습니다."}
       </>
     );
   };
+
+  const showOnStudentInfo = () => {
+    const htmlNums = [0, 1, 2];
+
+    const birthHtml = (
+      <>
+        <h3>생일</h3>
+        <hr className={classes["margin-15"]} />
+        <p>
+          {onStudentInfo?.month}월 {onStudentInfo?.day}일
+        </p>
+      </>
+    );
+    const telHtml = (
+      <>
+        <h3>연락처 모음</h3>
+        <hr className={classes["margin-15"]} />
+        <p>
+          <b>(부) {onStudentInfo?.dad || "-"}</b> &nbsp;&nbsp;{" "}
+          {onStudentInfo?.dadTel || "-"}
+        </p>
+        <p>
+          <b>(모) {onStudentInfo?.mom || "-"}</b> &nbsp;&nbsp;{" "}
+          {onStudentInfo?.momTel || "-"}
+        </p>
+        <p>
+          <b>학생</b> &nbsp;&nbsp; {onStudentInfo?.studTel || "-"}
+        </p>
+      </>
+    );
+    const bnsEtcHtml = (
+      <>
+        <h3>형제자매 | 기타정보</h3>
+        <hr className={classes["margin-15"]} />
+        <p>
+          <b>(형제자매) </b> &nbsp;&nbsp;{" "}
+          {onStudentInfo?.bns ? onStudentInfo?.bns : "-"}
+        </p>
+        <p>
+          <b>(기타정보) </b> &nbsp;&nbsp;{" "}
+          {onStudentInfo?.etc ? onStudentInfo?.etc : "-"}
+        </p>
+      </>
+    );
+    const htmlDatas = [telHtml, bnsEtcHtml, birthHtml];
+    return (
+      <div className={`${classes["flex-wrap"]}`}>
+        {htmlNums?.map((num) => (
+          <div
+            key={"htmlInfoData" + num}
+            className={`${classes["bottom-content-li"]}`}
+            style={{ width: "300px" }}
+          >
+            {htmlDatas[num]}
+          </div>
+        ))}
+        <p>
+          * 정보가 - 로 표시될 경우 업로드한 엑셀파일에 자료가 정확히
+          입력되었는지 확인해주세요. 지속적으로 문제가 생기시면, [잼잼] -
+          [이거해요] 혹은 kerbong@gmail.com으로 알려주세요!
+        </p>
+      </div>
+    );
+  };
+
+  //전담이 학급을 변경하면.. onStudentInfo 지우기
+  useEffect(() => {
+    // if (onStudent !== "") return
+    setOnStudentInfo([]);
+  }, [clName]);
 
   return (
     <div>
@@ -484,7 +624,10 @@ const ManageStudentInfo = (props) => {
       {/* 학생 관련 정보 보여주기 */}
       <ul className={classes["bottom-content-ul"]}>
         {/* 엑셀 다운, 업로드 부분 */}
-        <div className={`${classes["flex-center"]} ${classes["margin-15"]}`}>
+        <div
+          className={`${classes["flex-center"]}`}
+          style={{ margin: "-10px 0 15px 0" }}
+        >
           <Button
             name={
               <a
@@ -498,14 +641,7 @@ const ManageStudentInfo = (props) => {
                 양식파일 다운<i className="fa-solid fa-download"></i>
               </a>
             }
-            className={"save-classItem-button"}
-            style={{
-              width: "165px",
-              backgroundColor: "#f3feff",
-              padding: "1.5vh",
-              height: "auto",
-              fontSize: "0.8rem",
-            }}
+            className={"down-classItem-button"}
           />
           <label
             id="excelFileLabel"
@@ -529,55 +665,20 @@ const ManageStudentInfo = (props) => {
         {/* 전담용 화면 */}
         {nowSubject && (
           <>
-            {/* 전체 출결 확인 출결옵션별 횟수 기록 */}
-            <li className={classes["bottom-content-li"]}>
-              {/* 학생이 선택되지 않았으면 */}
-            </li>
-          </>
-        )}
-        {/* 담임용 화면 */}
-        {!nowSubject && (
-          <>
             {/* 학생이 선택되지 않았으면 요소들 버튼과 버튼 클릭시 옵션에 따라 전체 학생의 정보들 보여주기*/}
             {onStudent === "" && (
               <>
                 <div>
-                  <Button
-                    name={"생일(월별)"}
-                    onclick={() => {
-                      setOnOption("month");
-                    }}
-                    className={"stdInfo-btn"}
-                  />
-                  <Button
-                    name={"학생연락처"}
-                    onclick={() => {
-                      setOnOption("studTel");
-                    }}
-                    className={"stdInfo-btn"}
-                  />
-                  <Button
-                    name={"부모연락처"}
-                    onclick={() => {
-                      setOnOption("parentsTel");
-                    }}
-                    className={"stdInfo-btn"}
-                  />
-
-                  <Button
-                    name={"형제자매"}
-                    onclick={() => {
-                      setOnOption("bns");
-                    }}
-                    className={"stdInfo-btn"}
-                  />
-                  <Button
-                    name={"기타"}
-                    onclick={() => {
-                      setOnOption("etc");
-                    }}
-                    className={"stdInfo-btn"}
-                  />
+                  {INFO_DATA_BTNS.map((nameOption) => (
+                    <Button
+                      name={nameOption[0]}
+                      key={nameOption[0]}
+                      onclick={() => {
+                        setOnOption(nameOption[1]);
+                      }}
+                      className={"stdInfo-btn"}
+                    />
+                  ))}
                 </div>
 
                 {/* 전체학생의 정보들 보여주기 */}
@@ -591,8 +692,42 @@ const ManageStudentInfo = (props) => {
               </>
             )}
 
-            {/* 학생이 선택되었을 때 보여줄 것들 */}
-            {onStudent !== "" && <h2>* 개발중입니다.</h2>}
+            {/* 학생이 선택되면 학생 관련 모든 정보를 다 보여줌 */}
+            {onStudent !== "" && <>{showOnStudentInfo()}</>}
+          </>
+        )}
+        {/* 담임용 화면 */}
+        {!nowSubject && (
+          <>
+            {/* 학생이 선택되지 않았으면 요소들 버튼과 버튼 클릭시 옵션에 따라 전체 학생의 정보들 보여주기*/}
+            {onStudent === "" && (
+              <>
+                <div>
+                  {INFO_DATA_BTNS.map((nameOption) => (
+                    <Button
+                      name={nameOption[0]}
+                      key={nameOption[0]}
+                      onclick={() => {
+                        setOnOption(nameOption[1]);
+                      }}
+                      className={"stdInfo-btn"}
+                    />
+                  ))}
+                </div>
+
+                {/* 전체학생의 정보들 보여주기 */}
+                <div className={`${classes["flex-wrap"]}`}>
+                  {onOption === "month" && showStudentsBirth()}
+                  {onOption === "studTel" && showStudentsTel()}
+                  {onOption === "parentsTel" && showParentsTel()}
+                  {onOption === "bns" && showBnS()}
+                  {onOption === "etc" && showEtc()}
+                </div>
+              </>
+            )}
+
+            {/* 학생이 선택되면 학생 관련 모든 정보를 다 보여줌 */}
+            {onStudent !== "" && <>{showOnStudentInfo()}</>}
           </>
         )}
       </ul>

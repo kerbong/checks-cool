@@ -106,7 +106,7 @@ const ManageAttendance = (props) => {
         setOnAttendsOption(new_onAttendsOption);
       }
     }
-  }, [onStudent]);
+  }, [onStudent, attends]);
 
   useEffect(() => {
     //받아온 정보 { student: 학생번호 이름 , clName: 전담이면 반이름}
@@ -125,20 +125,6 @@ const ManageAttendance = (props) => {
   const selectStudentHandler = (studentNumName) => {
     setOnStudent(studentNumName);
   };
-
-  //현재 보여주는 학생의 출결 옵션을 선택하면.. 보여주는거 수정
-  useEffect(() => {
-    //받아온 정보 { student: 학생번호 이름 , clName: 전담이면 반이름}
-    let new_onStudent = state?.student;
-    let new_clName = state?.clName;
-    if (new_onStudent !== "") {
-      setOnStudent(new_onStudent);
-    }
-
-    if (new_clName !== "") {
-      setClName(new_clName);
-    }
-  }, [state]);
 
   //출결 옵션을 선택하면.. 보여주는 걸 바꿔주기
   useEffect(() => {

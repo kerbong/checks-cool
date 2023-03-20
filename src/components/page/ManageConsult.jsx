@@ -66,20 +66,7 @@ const ManageConsult = (props) => {
 
       setOnConsults(new_onConsults);
     }
-  }, [onStudent]);
-
-  useEffect(() => {
-    //받아온 정보 { student: 학생번호 이름 , clName: 전담이면 반이름}
-    let new_onStudent = state?.student;
-    let new_clName = state?.clName;
-
-    if (new_clName !== "") {
-      setClName(new_clName);
-    }
-    if (new_onStudent !== "") {
-      setOnStudent(new_onStudent);
-    }
-  }, [state]);
+  }, [onStudent, consults]);
 
   //선택된 학생 정보  번호 한칸띄우고 이름
   const selectStudentHandler = (studentNumName) => {
@@ -96,6 +83,19 @@ const ManageConsult = (props) => {
     setClName(classname);
   };
 
+  useEffect(() => {
+    //받아온 정보 { student: 학생번호 이름 , clName: 전담이면 반이름}
+    let new_onStudent = state?.student;
+    let new_clName = state?.clName;
+
+    if (new_clName !== "") {
+      setClName(new_clName);
+    }
+    if (new_onStudent !== "") {
+      setOnStudent(new_onStudent);
+    }
+  }, [state]);
+
   return (
     <div>
       {/* 학생 보여주는 부분 */}
@@ -111,48 +111,51 @@ const ManageConsult = (props) => {
 
       {/* 학생 상담부분 보여주기 */}
       <ul className={classes["bottom-content-ul"]}>
-        {onConsults?.map((consult) => (
-          <li
-            key={consult.id}
-            id={consult.id}
-            className={classes["bottom-content-li"]}
-          >
-            {/* 상담의 id(yyyy-mm-dd) 시간:분 보여줌 */}
-            <div className={classes["flex-ml-10"]}>
-              {`${consult.id.slice(0, 10)} ${consult.id.slice(10, 15)}`}
-            </div>
-            {/* 상담옵션 */}
-            <div className={classes["fs-13"]}>{consult.option.slice(1)}</div>
-            <hr className={classes["margin-15"]} />
-            {/* 메모한 내용 */}
-            <div className={classes["fs-13"]}>{consult.note}</div>
-            {/* 첨부한 사진이나 음성파일 있으면 보여주기 */}
-            {/* 이미지 / 녹음파일이 있으면 이미지 보여주기 */}
-            {consult.attachedFileUrl && (
-              <div className={classes["margin-15"]}>
-                <img
-                  className={classes["width-max400"]}
-                  src={consult.attachedFileUrl}
-                  height="auto"
-                  alt="filePreview"
-                  onError={imageOnError}
-                />
-                <audio
-                  controls
-                  className={classes["width-max400"]}
-                  src={consult.attachedFileUrl}
-                  onError={imageOnError}
-                ></audio>
+        <div className={`${classes["flex-wrap"]}`} style={{ width: "100%" }}>
+          {onConsults?.map((consult) => (
+            <li
+              key={consult.id}
+              id={consult.id}
+              className={classes["bottom-content-li"]}
+              style={{ minWidth: "240px", maxWidth: "540px" }}
+            >
+              {/* 상담의 id(yyyy-mm-dd) 시간:분 보여줌 */}
+              <div className={classes["flex-ml-10"]}>
+                {`${consult.id.slice(0, 10)} ${consult.id.slice(10, 15)}`}
               </div>
-            )}
-          </li>
-        ))}
-        {/* 자료 없음 표시 */}
-        {onConsults?.length === 0 && (
-          <li className={classes["bottom-content-li"]}>
-            * 학생의 상담기록이 없어요!
-          </li>
-        )}
+              {/* 상담옵션 */}
+              <div className={classes["fs-13"]}>{consult.option.slice(1)}</div>
+              <hr className={classes["margin-15"]} />
+              {/* 메모한 내용 */}
+              <div className={classes["fs-13"]}>{consult.note}</div>
+              {/* 첨부한 사진이나 음성파일 있으면 보여주기 */}
+              {/* 이미지 / 녹음파일이 있으면 이미지 보여주기 */}
+              {consult.attachedFileUrl && (
+                <div className={classes["margin-15"]}>
+                  <img
+                    className={classes["width-max400"]}
+                    src={consult.attachedFileUrl}
+                    height="auto"
+                    alt="filePreview"
+                    onError={imageOnError}
+                  />
+                  <audio
+                    controls
+                    className={classes["width-max400"]}
+                    src={consult.attachedFileUrl}
+                    onError={imageOnError}
+                  ></audio>
+                </div>
+              )}
+            </li>
+          ))}
+          {/* 자료 없음 표시 */}
+          {onConsults?.length === 0 && (
+            <li className={classes["bottom-content-li"]}>
+              * 학생의 상담기록이 없어요!
+            </li>
+          )}
+        </div>
       </ul>
     </div>
   );

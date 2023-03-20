@@ -130,7 +130,7 @@ const ManageCheckListMemo = (props) => {
         setOnCheckLists(new_onCheckLists);
       }
     }
-  }, [onStudent]);
+  }, [onStudent, listMemo]);
 
   useEffect(() => {
     //받아온 정보 { student: 학생번호 이름 , clName: 전담이면 반이름}
@@ -163,9 +163,16 @@ const ManageCheckListMemo = (props) => {
         nowClassNameHandler={nowClassNameHandler}
       />
 
+      {/* 전체 청록색 배경 */}
       <ul className={classes["bottom-content-ul"]}>
         {/* 제출 개별기록 전환 버튼 */}
-        <div className={classes["flex-center"]}>
+        <div
+          className={classes["flex-center"]}
+          style={{ margin: "-10px 0 15px 0" }}
+        >
+          {/* 검색창 */}
+
+          {/* 전환버튼 */}
           <Button
             name={showListMemo ? " 미제출 목록 보기" : " 개별기록 보기"}
             icon={<i className="fa-solid fa-rotate"></i>}
@@ -177,54 +184,85 @@ const ManageCheckListMemo = (props) => {
 
         {showListMemo ? (
           <>
-            {/* 학생 개별기록 부분 보여주기 */}
-            {onListMemo?.map((list) => (
-              <li
-                key={list.id + list.num}
-                id={list.id + list.num}
-                className={classes["bottom-content-li"]}
+            {/* 선택된 학생이 있으면 개별학생 정보 보여주기 */}
+            {onStudent !== "" && (
+              <div
+                className={`${classes["flex-wrap"]}`}
+                style={{ width: "100%" }}
               >
-                {/* 제출, 개별기록의 id(yyyy-mm-dd) */}
-                <div className={classes["flex-ml-10"]}>
-                  {list.id.slice(0, 10)}
-                </div>
-                {/* 제목 */}
-                <div className={classes["fs-13"]}>{list.title}</div>
-                <hr className={classes["margin-15"]} />
-                {/* 제출, 개별기록 */}
-                <div className={classes["fs-13"]}>{list.memo}</div>
-              </li>
-            ))}
-            {/* 자료 없음 표시 */}
-            {onListMemo?.length === 0 && (
-              <li className={classes["bottom-content-li"]}>
-                * 학생의 개별기록 정보가 없어요!
-              </li>
+                {/* 학생 개별기록 부분 보여주기 */}
+                {onListMemo?.map((list) => (
+                  <li
+                    key={list.id + list.num}
+                    id={list.id + list.num}
+                    className={classes["bottom-content-li"]}
+                    style={{ minWidth: "170px", maxWidth: "400px" }}
+                  >
+                    {/* 제출, 개별기록의 id(yyyy-mm-dd) */}
+                    <div className={classes["flex-ml-10"]}>
+                      {list.id.slice(0, 10)}
+                    </div>
+                    {/* 제목 */}
+                    <div className={classes["fs-13"]}>{list.title}</div>
+                    <hr className={classes["margin-15"]} />
+                    {/* 제출, 개별기록 */}
+                    <div className={classes["fs-13"]}>{list.memo}</div>
+                  </li>
+                ))}
+                {/* 자료 없음 표시 */}
+                {onListMemo?.length === 0 && (
+                  <li className={classes["bottom-content-li"]}>
+                    * 학생의 개별기록 정보가 없어요!
+                  </li>
+                )}
+              </div>
+            )}
+
+            {/* 선택된 학생이 없으면.. 검색쿼리 만들기 */}
+            {onStudent === "" && (
+              <>
+                <h2>전체학생 개별기록 모아보기</h2>
+                <h4>
+                  검색 후 여러 자료를 선택(클릭)하시면 선택한 자료가 한 번에
+                  보입니다.
+                </h4>
+              </>
             )}
           </>
         ) : (
           <>
-            {/* 학생 제출/미제출 부분 보여주기 */}
-            {onCheckLists?.map((list) => (
-              <li
-                key={list.id + list.num}
-                id={list.id + list.num}
-                className={classes["bottom-content-li"]}
+            {/* 선택된 학생이 있으면 개별학생 정보 보여주기 */}
+            {onStudent !== "" && (
+              <div
+                className={`${classes["flex-wrap"]}`}
+                style={{ width: "100%" }}
               >
-                {/* 제출, 개별기록의 id(yyyy-mm-dd) */}
-                <div className={classes["flex-ml-10"]}>
-                  {list.id.slice(0, 10)} | 미제출
-                </div>
-                {/* 제목 */}
-                <div className={classes["fs-13"]}>{list.title} </div>
-              </li>
-            ))}
-            {/* 자료 없음 표시 */}
-            {onCheckLists?.length === 0 && (
-              <li className={classes["bottom-content-li"]}>
-                * 학생의 미제출 정보가 없어요!
-              </li>
+                {/* 학생 제출/미제출 부분 보여주기 */}
+                {onCheckLists?.map((list) => (
+                  <li
+                    key={list.id + list.num}
+                    id={list.id + list.num}
+                    className={classes["bottom-content-li"]}
+                    style={{ width: "300px" }}
+                  >
+                    {/* 제출, 개별기록의 id(yyyy-mm-dd) */}
+                    <div className={classes["flex-ml-10"]}>
+                      {list.id.slice(0, 10)} | 미제출
+                    </div>
+                    {/* 제목 */}
+                    <div className={classes["fs-13"]}>{list.title} </div>
+                  </li>
+                ))}
+                {/* 자료 없음 표시 */}
+                {onCheckLists?.length === 0 && (
+                  <li className={classes["bottom-content-li"]}>
+                    * 학생의 미제출 정보가 없어요!
+                  </li>
+                )}
+              </div>
             )}
+            {/* 선택된 학생이 없을 경우 검색쿼리... 보여주기 */}
+            {onStudent === "" && ""}
           </>
         )}
       </ul>

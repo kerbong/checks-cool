@@ -172,12 +172,7 @@ const HeaderProfileBtn = (props) => {
             }`}
         >
           {/* email의 4번째 자리부터 *로 표시 */}
-          <li
-            className={classes["profile-dropdown-li-nonehover"]}
-            onClick={() => {
-              navigate(`/manageStudent`);
-            }}
-          >
+          <li className={classes["profile-dropdown-li-nonehover"]}>
             {props.user.email.slice(0, 4) +
               props.user.email.split("@")[0].slice(4).replace(/./g, "*")}
           </li>

@@ -17,8 +17,13 @@ const Header = (props) => {
   };
 
   useEffect(() => {
-    let where = window.location.href.split("/");
-    setNowOn(where[where.length - 1]);
+    let whereHref = window.location.href.split("/");
+    let where = whereHref[whereHref.length - 1];
+    if (where === "consulting") {
+      setNowOn("attendance");
+    } else {
+      setNowOn(where);
+    }
   }, [window.location.href]);
 
   return (
@@ -36,13 +41,13 @@ const Header = (props) => {
           <HeaderMenu
             icon={"fa-regular fa-address-book"}
             path={"attendance"}
-            menuText={"출석"}
+            menuText={"생기부"}
             nowOn={nowOn}
           />
           <HeaderMenu
-            icon={"fa-regular fa-comments"}
-            path={"consulting"}
-            menuText={"상담"}
+            icon={"fa-regular fa-compass"}
+            path={"manageStudent"}
+            menuText={"조회"}
             nowOn={nowOn}
           />
           <HeaderMenu

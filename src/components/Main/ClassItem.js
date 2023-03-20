@@ -40,6 +40,8 @@ const ClassItem = (props) => {
             input={{
               id: `classSubject-${props.classNum}`,
             }}
+            showOn={true}
+            startheight={"25px"}
             key={`classSubject-${props.classNum}`}
             myKey={`classSubject-${props.classNum}`}
             className={"class-subject"}

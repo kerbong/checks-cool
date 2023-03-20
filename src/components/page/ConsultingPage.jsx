@@ -8,7 +8,7 @@ import ExampleModal from "./ExampleModal";
 import consultAdd from "../../assets/consult/consultAdd.gif";
 import { dbService, storageService } from "../../fbase";
 import { doc, getDoc, setDoc } from "firebase/firestore";
-
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   deleteObject,
   ref,
@@ -28,7 +28,18 @@ const ConsultingPage = (props) => {
   const [nowStudents, setNowStudents] = useState([]);
   const [isSubject, setIsSubject] = useState(false);
 
+  const { state } = useLocation();
+  let navigate = useNavigate();
+
   const selectRef = useRef();
+
+  useEffect(() => {
+    if (state?.doWhat === "addConsult") {
+      setShowConsultList(false);
+    } else if (state?.doWhat === "showConsult") {
+      setShowConsultList(true);
+    }
+  }, [state]);
 
   const showOptionHandler = (e) => {
     setStudent(e.target.innerText);
@@ -243,24 +254,40 @@ const ConsultingPage = (props) => {
         />
       )}
       <div id="title-div">
-        <button
-          id="title-btn"
-          className="consult"
-          onClick={() => setShowExample(true)}
-        >
-          <i className="fa-regular fa-comments"></i> 금쪽상담소
+        <button id="title-btn" onClick={() => setShowExample(true)}>
+          <i className="fa-regular fa-address-book"></i> 생기부
         </button>
 
         <button id="switch-btn" onClick={showCalHandler}>
           {showConsultList ? (
             <>
-              <i className="fa-solid fa-list-ol"></i> 쓰기
+              <i className="fa-regular fa-comments"></i> 상담기록
             </>
           ) : (
             <>
-              <i className="fa-regular fa-rectangle-list"></i> 보기
+              <i className="fa-regular fa-rectangle-list"></i> 상담조회
             </>
           )}
+        </button>
+        <button
+          id="switch-btn"
+          onClick={() => {
+            navigate(`/attendance`, {
+              state: { doWhat: "addAttend" },
+            });
+          }}
+        >
+          <i className="fa-regular fa-calendar-days"></i> 출결기록
+        </button>
+        <button
+          id="switch-btn"
+          onClick={() => {
+            navigate(`/attendance`, {
+              state: { doWhat: "showAttend" },
+            });
+          }}
+        >
+          <i className="fa-solid fa-user"></i> 출결조회
         </button>
       </div>
 
@@ -287,8 +314,8 @@ const ConsultingPage = (props) => {
       {!showConsultList ? (
         //명렬표로 입력할 수 있도록 나오는 화면
         <>
+          <h1>상담 기록</h1>
           {/* 전담교사만 보이는 학급 셀렉트 */}
-
           {isSubject && (
             <div>
               <select

@@ -269,6 +269,7 @@
   box-shadow: inset 0px -5px #e3371d66;
 }
 
+.down-classItem-button,
 .save-classItem-button,
 .show-basicClass-button,
 .save-classTable-button,
@@ -289,6 +290,14 @@
   width: 33%;
 }
 
+.down-classItem-button {
+  width: 165px;
+  background-color: #f3feff;
+  padding: 1.5vh;
+  height: auto;
+  font-size: 0.8rem;
+}
+
 .show-basicClass-button {
   width: 35%;
 }
@@ -296,6 +305,12 @@
 .time-pm-button {
   width: 50px;
   border-radius: 25px;
+}
+
+@media screen and (min-width: 800px) {
+  .down-classItem-button {
+    width: 190px;
+  }
 }
 
 .save-classTable-button {
@@ -435,7 +450,7 @@
 .manageBtn,
 .manageBtn-clicked {
   border-width: 0;
-  padding: 10px 10px 15px 10px;
+  padding: 15px calc(20vw / 4);
   font-size: 1.2rem;
   border-radius: 10px 10px 0 0;
 }

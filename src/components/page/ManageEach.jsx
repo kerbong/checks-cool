@@ -117,21 +117,29 @@ const ManageEach = (props) => {
 
   useEffect(() => {
     setNowClassName(props.clName);
+    // 만약학급이 바뀌면.. 현재 학급에서 전달받은 학생이 없어지니까.. setStudents를 빈칸으로
+    setStudent("");
   }, [props.clName]);
 
   useEffect(() => {
     if (props.passStudent !== "") {
       setStudent(props.passStudent);
     }
+    // if (isSubject) {
+    //   if (
+    //     nowClStudents.filter(
+    //       (stu) => stu.name === props.passStudent.split(" ")[1]
+    //     )?.length === 0
+    //   ) {
+    //     setStudent("");
+    //   }
+    // }
   }, [props.passStudent]);
 
   return (
     <div>
       {/* 전담의 경우 학급 선택하는 부분 */}
       <div>
-        {/* 테스트 중이라는 것을 보여줌. */}
-        <p>* 학생 개별 조회(정확한 명칭 미정) 탭 신설 테스트화면</p>
-
         {/* 전담교사만 보이는 학급 셀렉트 */}
         {isSubject && (
           <div>

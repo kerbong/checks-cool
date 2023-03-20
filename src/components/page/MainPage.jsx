@@ -9,17 +9,17 @@ import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import ExampleModal from "./ExampleModal";
 import byExcel from "../../assets/student/teacher-excel.gif";
-import mainImg from "../../assets/notice/0314.jpg";
+import mainImg from "../../assets/notice/0321.jpg";
 import dayjs from "dayjs";
 import "dayjs/locale/ko";
 import AttendCalendar from "components/Attendance/AttendCalendar";
-import consultingOption from "consultingOption";
+// import consultingOption from "consultingOption";
 dayjs.locale("ko");
 
-const update_title = `감사합니다!😊`;
+const update_title = `메뉴바 수정 + 일정개선`;
 
-const update_text = `자동저장 적용 및 다양한 오류로 불편을 겪은 선생님들.. 죄송합니다😭 </br> 현재 시간표와 알림장 등의 기능에서 자동저장, 저장 기능이 정상 작동합니다.(그래도 쓰기전에는 꼭 테스트 해주세요..!!) <br/>불편에도 항상 <b>응원해주시고 의견주시고 묵묵히 함께해주시는, 모든 선생님들께 진심으로 감사드립니다!!!</b>🤩 <br/> * [메모]폴더에서 카테고리 생성하실 때 <b>배경색, 글자색 변경이 가능</b>합니다! <br/> * 메뉴바 - 사람 아이콘 - 아이디를 누르시면 현재 테스트 중인, <b>학생 개별 조희 페이지</b>를 보실 수 있어요!(두 글자로 된 페이지 명칭을 추천해주세요!)`;
-// "* 아, 이거 있으면 좋겠다! 하는 기능이 있으신가요? 내년에 사용해보고 싶은 기능을 추천해주세요! 가장 많은 추천을 받은 아이디어를 선정하여 추가할 계획입니다! '잼잼'-'이거해요' 에 적어주세요~ ";
+const update_text = `불편이.. 우려되지만, 더 익숙해지시기 전에..!! <b>메뉴바 수정(기능 재분류)</b>이 시작되었습니다!📙 <b>[생기부] 탭은 기존의 [출석] + [상담] 기능</b>📙 이 들어가 있습니다. [메모]에 존재하는 학생관련기록(제출, 개별기록)들을 포함하여 <u>추후에는 생기부 탭에서 모든 학생관련 기록이 가능</u>하게 됩니다.<br/><br/> 🧭<b>[조회] 탭에서는 기존의 [출결조회], [상담조회], [제출], [개별기록] 등을 학생 개별로 확인</b>🧭 하실 수 있습니다. 또 <b>학생 연락처, 형제자매, 생일 등을 업로드</b>할 수 있는 기능이 추가되었습니다. 앞으로 개선을 통해 <u>[조회] 탭에서 모든 학생관련기록 조회</u>를 하려고 합니다. <br/> [일정]과 [메모] 탭도, 각각 [업무], [교사] 등으로 수정 계획 중에 있습니다..<br/><br/> <b>[일정]탭이 개선</b>되었어요! <b>[일정]탭의 [반복]을 활용하시면 같은 내용의 행사를 한 번에 등록</b>할 수 있고, <u>자동으로 횟수(2/7 처럼)도 표시</u>됩니다. 또, 일정에 <u>시간표 연동 기능도 추가 되었어요!!</u> 자세한 내용은 페이지 내의 설명을 읽어주세요!! <br/>불편에도 항상 <b>응원해주시고 의견주시고 묵묵히 함께해주시는, 모든 선생님들께 진심으로 감사드립니다!!!</b>🤩 `;
+
 //오늘 날짜 yyyy-mm-dd로 만들기
 const getDateHandler = (date, titleOrQuery) => {
   let year = date.getFullYear();
@@ -77,7 +77,7 @@ const MainPage = (props) => {
 
   //업데이트 내용 보여주기 로컬스토리지에서 showNotice를 스트링으로 저장해서 확인 후에 이전에 봤으면 안보여주기
   const [showNotice, setShowNotice] = useState(
-    localStorage.getItem("showNotice") === "mainUpdate0314" ? false : true
+    localStorage.getItem("showNotice") === "mainUpdate0321" ? false : true
   );
 
   //화면 사이즈가 변경되면.. 시간표의 기본 세팅을 열림으로 바꿔주기.
@@ -296,13 +296,14 @@ const MainPage = (props) => {
     setFixed_events
       ?.filter((evt) => evt.id.slice(0, 10) === todayYyyymmdd)
       ?.forEach((today_evt) => {
+        // console.log(today_evt);
         classLists?.forEach((cl, index) => {
-          // 만약 교시를 분별하는 @가 포함되어 있으면.. setNum도 있으면 함께 넣어주기
+          // 만약 교시를 분별하는 @가 포함되어 있으면.. setNum도 있으면 함께 넣어주기 (저장된 교시명과 일정에 note에 저장한 교시명이 일치하는지 확인하기!!!!)
           if (cl === today_evt.note?.split("@")?.[0]) {
             new_classFromSchedule[index] = `${today_evt.eventName}@${
               today_evt.note
             }${
-              today_evt.setNum
+              today_evt?.setNum
                 ? `(${today_evt.setNum}/${
                     events_sets_all?.filter(
                       (evtName) => evtName === today_evt.set
@@ -310,6 +311,7 @@ const MainPage = (props) => {
                   })`
                 : ""
             }`;
+            // console.log(new_classFromSchedule[index]);
           }
         });
       });
@@ -676,7 +678,7 @@ const MainPage = (props) => {
       clearTimeout(timer);
       timer = setTimeout(() => {
         // console.log("자동저장");
-        saveClassMemoHandler("auto");
+        saveClassMemoHandler(true);
       }, 10000);
     };
     ulTextareas?.addEventListener("keydown", checkInput);
@@ -721,7 +723,7 @@ const MainPage = (props) => {
       {showNotice && (
         <ExampleModal
           onClose={() => {
-            localStorage.setItem("showNotice", "mainUpdate0314");
+            localStorage.setItem("showNotice", "mainUpdate0321");
             setShowNotice(false);
           }}
           imgSrc={mainImg}
@@ -959,7 +961,7 @@ const MainPage = (props) => {
                     <Button
                       name={"저장"}
                       className={"save-classItem-button"}
-                      onclick={saveClassMemoHandler}
+                      onclick={() => saveClassMemoHandler(false)}
                     />
                   </div>
                 </>

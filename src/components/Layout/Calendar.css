@@ -82,13 +82,21 @@
   padding: 5px;
   color: #000000bd;
   align-items: center;
-  width: auto;
-  margin: 13px 5px;
-  font-size: 1em;
+  width: 40px;
+  margin: 5px 5px;
+  font-size: 0.9em;
   border-radius: 10px;
   border-width: 0;
   letter-spacing: 1px;
   background-color: inherit;
+  line-height: 17px;
+}
+
+@media screen and (min-width: 800px) {
+  #switch-btn {
+    width: 45px;
+    line-height: 22px;
+  }
 }
 
 .react-datepicker__day--disabled {
@@ -173,6 +181,8 @@
   display: flex;
   justify-content: flex-end;
   flex-direction: row;
+  height: 70px;
+  align-items: center;
 }
 
 #title-btn.upload {

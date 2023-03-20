@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-
+import { useNavigate, useLocation } from "react-router-dom";
 import AttendCtxCalendar from "../Attendance/AttendCtxCalendar";
 import dayjs from "dayjs";
 import Attendance from "../Attendance/Attendance";
@@ -19,6 +19,19 @@ const StudentCalendarLayout = (props) => {
   const [showExample, setShowExample] = useState(false);
   const [nowStudents, setNowStudents] = useState([]);
   const [isSubject, setIsSubject] = useState(false);
+
+  let navigate = useNavigate();
+  const { state } = useLocation();
+
+  useEffect(() => {
+    if (state?.doWhat === "addAttend") {
+      setAllFalse();
+      setShowCalendar(true);
+    } else if (state?.doWhat === "showAttend") {
+      setAllFalse();
+      setShowEachStudent(true);
+    }
+  }, [state]);
 
   //학년도 설정함수
   const setYear = () => {
@@ -107,16 +120,38 @@ const StudentCalendarLayout = (props) => {
           }
         />
       )}
-      {/* 출결 달력 에서 보여줄 버튼, 내용 */}
+      {/* 출결 달력+명렬표 에서 보여줄 버튼, 내용 */}
       {showCalendar && (
         <>
           <div id="title-div">
             <button id="title-btn" onClick={() => setShowExample(true)}>
-              <i className="fa-regular fa-address-book"></i> 다왔니?
+              <i className="fa-regular fa-address-book"></i> 생기부
             </button>
 
             <button id="switch-btn" onClick={showEachStudentHandler}>
-              <i className="fa-solid fa-user"></i> 조회
+              <i className="fa-solid fa-user"></i> 출결조회
+            </button>
+
+            <button
+              id="switch-btn"
+              onClick={() => {
+                navigate(`/consulting`, {
+                  state: { doWhat: "addConsult" },
+                });
+              }}
+            >
+              <i className="fa-regular fa-comments"></i> 상담기록
+            </button>
+
+            <button
+              id="switch-btn"
+              onClick={() => {
+                navigate(`/consulting`, {
+                  state: { doWhat: "showConsult" },
+                });
+              }}
+            >
+              <i className="fa-regular fa-rectangle-list"></i> 상담조회
             </button>
           </div>
           {props.students.length === 0 && (
@@ -126,7 +161,13 @@ const StudentCalendarLayout = (props) => {
               <div>학생 명단을 먼저 입력해주세요!</div>
             </>
           )}
-          {!isSubject && <h2>출결 달력</h2>}
+
+          {!isSubject && (
+            <>
+              <br />
+              <h2>달력 출결기록</h2>
+            </>
+          )}
           {/* 현재학년도 학생만 보내줌 */}
           <AttendCtxCalendar
             selectOption={props.selectOption}
@@ -139,7 +180,7 @@ const StudentCalendarLayout = (props) => {
           {!isSubject && (
             <>
               <br />
-              <h2>명렬표 출석부</h2>
+              <h2>명렬표 출결기록</h2>
               <Student students={nowStudents} showOption={showOptionHandler} />
 
               <p>
@@ -162,11 +203,33 @@ const StudentCalendarLayout = (props) => {
         <>
           <div id="title-div">
             <button id="title-btn" onClick={() => setShowExample(true)}>
-              <i className="fa-regular fa-address-book"></i> 모아보기
+              <i className="fa-regular fa-address-book"></i> 생기부
             </button>
 
             <button id="switch-btn" onClick={showCalHandler}>
-              <i className="fa-regular fa-calendar-days"></i> 출결달력
+              <i className="fa-regular fa-calendar-days"></i> 출결기록
+            </button>
+
+            <button
+              id="switch-btn"
+              onClick={() => {
+                navigate(`/consulting`, {
+                  state: { doWhat: "addConsult" },
+                });
+              }}
+            >
+              <i className="fa-regular fa-comments"></i> 상담기록
+            </button>
+
+            <button
+              id="switch-btn"
+              onClick={() => {
+                navigate(`/consulting`, {
+                  state: { doWhat: "showConsult" },
+                });
+              }}
+            >
+              <i className="fa-regular fa-rectangle-list"></i> 상담조회
             </button>
           </div>
 
@@ -188,7 +251,7 @@ const StudentCalendarLayout = (props) => {
               <i className="fa-regular fa-address-book"></i> 안온사람?
             </button>
             <button id="switch-btn" onClick={showCalHandler}>
-              <i className="fa-regular fa-calendar-days"></i> 출결달력
+              <i className="fa-regular fa-calendar-days"></i> 출결기록
             </button>
             <button id="switch-btn" onClick={showEachStudentHandler}>
               <i className="fa-solid fa-user"></i> 조회

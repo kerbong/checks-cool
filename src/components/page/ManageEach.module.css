@@ -17,9 +17,11 @@
   border-radius: 15px;
   background-color: #256a72;
   padding: 30px 10px;
-  margin-top: 0px;
+  margin-top: -4px;
   min-height: 30vh;
   border-width: 0;
+  z-index: 1;
+  position: relative;
 }
 
 .bottom-content-li {
@@ -49,13 +51,14 @@
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
+  align-items: flex-start;
 }
 
 .margin-15 {
   margin: 15px;
 }
 .margin-5 {
-  margin: 5px;
+  margin: 2px;
 }
 
 .flex-center {
@@ -89,7 +92,14 @@
   letter-spacing: 2px;
   padding: 1.5vh;
   background-color: #f3feff;
-  /* float: right; */
+  justify-content: center;
   align-items: center;
   display: flex;
+}
+
+@media screen and (min-width: 800px) {
+  .excelfileUploadBtn {
+    font-size: 1.1rem;
+    width: 135px;
+  }
 }

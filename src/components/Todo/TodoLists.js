@@ -225,7 +225,7 @@ const TodoLists = (props) => {
             id={props.id}
             closeHandler={closeHandler}
             selectOption={props.selectOption}
-            placeholder="내용을 입력해주세요."
+            placeholder="(예시) 3교시@컴퓨터실"
             about={props.about}
             // dafaultValue={defaultOptionValue}
             saveNewData={(item) => {
