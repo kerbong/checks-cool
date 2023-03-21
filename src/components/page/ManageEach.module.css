@@ -41,12 +41,38 @@
   font-size: 1.3rem;
   word-break: break-all;
 }
+.fs-15 {
+  font-size: 1.5rem;
+  color: whitesmoke;
+}
 
 .fs-11 {
   font-size: 1.1rem;
   word-break: break-all;
 }
 
+.clicked-title {
+  margin: 5px 15px;
+  max-width: 130px;
+  min-width: 50px;
+}
+
+.search-title {
+  border-radius: 15px;
+  border-width: 0;
+  background-color: #d0d0d0;
+  margin: 5px 10px;
+}
+
+.search-btns {
+  padding: 13px;
+  margin: 0 5px;
+  border-radius: 25px;
+  border-width: 0;
+  background-color: rgb(29 81 87);
+  color: white;
+  font-weight: bold;
+}
 .flex-wrap {
   display: flex;
   justify-content: center;
@@ -102,4 +128,8 @@
     font-size: 1.1rem;
     width: 135px;
   }
+}
+
+.list-clicked {
+  background-color: #e9cfcc;
 }

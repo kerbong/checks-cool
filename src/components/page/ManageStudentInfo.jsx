@@ -308,6 +308,27 @@ const ManageStudentInfo = (props) => {
     return new_studentsInfo;
   };
 
+  //문자보내기용.. 모바일 ios android 확인
+  const checkMobile = () => {
+    let varUA = navigator.userAgent.toLowerCase(); //userAgent 값 얻기
+
+    if (varUA.indexOf("android") > -1) {
+      // 안드로이드
+      return "?";
+    } else if (
+      varUA.indexOf("iphone") > -1 ||
+      varUA.indexOf("ipad") > -1 ||
+      varUA.indexOf("ipod") > -1 ||
+      varUA.indexOf("ios") > -1
+    ) {
+      // IOS
+      return "&";
+    } else {
+      // IOS, 안드로이드 외
+      return "?";
+    }
+  };
+
   //모든학생 생일보여주는 거 월별로 새롭게 정렬하고..
   const showStudentsBirth = () => {
     let new_studentsInfo = studentsInfoBySubjectHandler();
@@ -376,6 +397,17 @@ const ManageStudentInfo = (props) => {
           style={{ marginLeft: "15px" }}
         >
           {stud.studTel}
+          &nbsp;&nbsp;
+          <a
+            className={classes["a-link"]}
+            href={`sms:${stud?.studTel}${checkMobile()}body=`}
+          >
+            <i className="fa-regular fa-comment-dots"></i>
+          </a>
+          &nbsp;&nbsp;
+          <a className={classes["a-link"]} href={`tel:${stud?.studTel}`}>
+            <i className="fa-solid fa-phone"></i>
+          </a>
         </span>
       </span>
     ));
@@ -420,6 +452,17 @@ const ManageStudentInfo = (props) => {
           <span className={`${classes["margin-5"]}`}>(부) {stud.dad}</span>{" "}
           &nbsp;&nbsp;
           <span className={`${classes["margin-5"]}`}>{stud.dadTel}</span>
+          &nbsp;&nbsp;
+          <a
+            className={classes["a-link"]}
+            href={`sms:${stud?.dadTel}${checkMobile()}body=안녕하세요 아버님`}
+          >
+            <i className="fa-regular fa-comment-dots"></i>
+          </a>
+          &nbsp;&nbsp;
+          <a className={classes["a-link"]} href={`tel:${stud?.dadTel}`}>
+            <i className="fa-solid fa-phone"></i>
+          </a>
         </span>
         <span
           className={`${classes["margin-5"]} ${classes["flex-wrap"]} ${classes["padd-5"]}`}
@@ -427,7 +470,20 @@ const ManageStudentInfo = (props) => {
         >
           <span className={`${classes["margin-5"]}`}>(모) {stud.mom}</span>
           &nbsp;&nbsp;
-          <span className={`${classes["margin-5"]}`}>{stud.momTel}</span>
+          <span className={`${classes["margin-5"]}`}>
+            {stud.momTel}
+            &nbsp;&nbsp;
+            <a
+              className={classes["a-link"]}
+              href={`sms:${stud?.momTel}${checkMobile()}body=안녕하세요 어머님`}
+            >
+              <i className="fa-regular fa-comment-dots"></i>
+            </a>
+            &nbsp;&nbsp;
+            <a className={classes["a-link"]} href={`tel:${stud?.momTel}`}>
+              <i className="fa-solid fa-phone"></i>
+            </a>
+          </span>
         </span>
       </div>
     ));
@@ -557,13 +613,59 @@ const ManageStudentInfo = (props) => {
         <p>
           <b>(부) {onStudentInfo?.dad || "-"}</b> &nbsp;&nbsp;{" "}
           {onStudentInfo?.dadTel || "-"}
+          &nbsp;&nbsp;
+          <a
+            className={classes["a-link"]}
+            href={`sms:${
+              onStudentInfo?.dadTel
+            }${checkMobile()}body=안녕하세요 아버님`}
+          >
+            <i className="fa-regular fa-comment-dots"></i>
+          </a>
+          &nbsp;&nbsp;
+          <a
+            className={classes["a-link"]}
+            href={`tel:${onStudentInfo?.dadTel}`}
+          >
+            <i className="fa-solid fa-phone"></i>
+          </a>
         </p>
         <p>
           <b>(모) {onStudentInfo?.mom || "-"}</b> &nbsp;&nbsp;{" "}
           {onStudentInfo?.momTel || "-"}
+          &nbsp;&nbsp;
+          <a
+            className={classes["a-link"]}
+            href={`sms:${
+              onStudentInfo?.momTel
+            }${checkMobile()}body=안녕하세요 어머님`}
+          >
+            <i className="fa-regular fa-comment-dots"></i>
+          </a>
+          &nbsp;&nbsp;
+          <a
+            className={classes["a-link"]}
+            href={`tel:${onStudentInfo?.momTel}`}
+          >
+            <i className="fa-solid fa-phone"></i>
+          </a>
         </p>
         <p>
           <b>학생</b> &nbsp;&nbsp; {onStudentInfo?.studTel || "-"}
+          &nbsp;&nbsp;
+          <a
+            className={classes["a-link"]}
+            href={`sms:${onStudentInfo?.studTel}${checkMobile()}body=`}
+          >
+            <i className="fa-regular fa-comment-dots"></i>
+          </a>
+          &nbsp;&nbsp;
+          <a
+            className={classes["a-link"]}
+            href={`tel:${onStudentInfo?.studTel}`}
+          >
+            <i className="fa-solid fa-phone"></i>
+          </a>
         </p>
       </>
     );
@@ -631,12 +733,12 @@ const ManageStudentInfo = (props) => {
           <Button
             name={
               <a
+                className={classes["a-link"]}
                 href={
                   !nowSubject
                     ? "https://docs.google.com/uc?export=download&id=1h6klLxXkld4ZUeWedjCiO3XN7-4GWO9M"
                     : "https://docs.google.com/uc?export=download&id=1TlTFGcZO3f6i_tToLyjwxKgVnvcz5TXX"
                 }
-                className={classes["a-link"]}
               >
                 양식파일 다운<i className="fa-solid fa-download"></i>
               </a>

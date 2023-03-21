@@ -1,0 +1,35 @@
+.thd {
+  padding: 0 20px;
+  margin: 0 1px;
+  max-width: 150px;
+}
+
+.name-td {
+  width: 90px;
+}
+
+.table {
+  font-size: 0.8em;
+  border-collapse: collapse;
+  border-radius: 15px;
+  background-color: silver;
+}
+
+.bg-white {
+  background-color: rgba(244, 244, 244, 0.884);
+}
+.bg-gray {
+  background-color: rgb(206 206 206);
+}
+
+.bg-title {
+  background-color: rgb(29 81 87);
+  color: whitesmoke;
+}
+
+.flex-center {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow-x: scroll;
+}
