@@ -1,26 +1,25 @@
 import React, { useState } from "react";
 import Loading from "components/page/Loading";
 
-const API_KEY = process.env.REACT_APP_OPENAI_API_KEY;
-
 const AssistanceAi = () => {
   const [tweet, setTweet] = useState("");
   const [sentiment, setSentiment] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
+  const API_KEY = process.env.REACT_APP_OPENAI_API_KEY;
   const callOpenAiApi = async () => {
     const APIBody = {
       model: "gpt-3.5-turbo",
       messages: [
         {
           role: "system",
-          content: "full summarizing",
+          content: "summarize as best as possible",
         },
         { role: "user", content: tweet },
       ],
       //   prompt: tweet,
       temperature: 0.7,
-      max_tokens: 200,
+      max_tokens: 300,
       top_p: 1.0,
       frequency_penalty: 0.0,
       presence_penalty: 0.0,
@@ -37,12 +36,14 @@ const AssistanceAi = () => {
       body: JSON.stringify(APIBody),
     })
       .then((data) => {
-        console.log(data);
         return data.json();
       })
       .then((data) => {
-        console.log(data);
-        setSentiment(data.choices[0].message.content); // Positive or negative
+        setIsLoading(false);
+        setSentiment(data?.choices?.[0]?.message?.content); // Positive or negative
+      })
+      .catch((error) => {
+        // console.log(error);
         setIsLoading(false);
       });
   };
@@ -50,11 +51,12 @@ const AssistanceAi = () => {
     <div style={{ marginTop: "-50px" }}>
       <h2>비서에게 물어봐요😎</h2>
       <span>
-        (테스트중입니다. 기간 대비 과도한 금액이 청구되면.. 사라질 서비스...)
+        (테스트중입니다. 기간 대비 과도한 금액이 청구되면..
+        <br /> 사라집니다.. 혹시 작동하지 않으면 허용치 초과입니다!)
       </span>
       <h3>
         갑자기 궁금한 게 생기시면 물어보세요!
-        <br />* 답변까지는 5초 전후가 소요됩니다.
+        <br />* 답변까지는 최대 10초가 소요됩니다.
       </h3>
 
       <div>
