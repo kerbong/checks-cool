@@ -208,8 +208,14 @@ const ManageCheckListMemo = (props) => {
       new_data?.push(memo);
     }
     // id를 기준으로 정렬해서 넣기
+    // 담임이면 날짜기준, 전담이면.. 날짜기준 후에 반별기준으로 다시
+    if (!nowIsSubject) {
+      setCompareListMemo(new_data.sort((a, b) => a.id > b.id));
+    } else {
+      let sorted_id = new_data.sort((a, b) => a.id > b.id);
 
-    setCompareListMemo(new_data.sort((a, b) => a.id > b.id));
+      setCompareListMemo(sorted_id?.sort((a, b) => a.clName < b.clName));
+    }
   };
 
   //학년도 설정함수
@@ -375,9 +381,10 @@ const ManageCheckListMemo = (props) => {
                       >
                         {compareListMemo?.map((list) => (
                           <div
-                            key={"compare" + list.title}
+                            key={"compare" + list.id}
                             className={classes["clicked-title"]}
                           >
+                            <b>{list?.clName && list.clName + ")"}</b>{" "}
                             {list.title}
                           </div>
                         ))}
@@ -407,6 +414,7 @@ const ManageCheckListMemo = (props) => {
                         >
                           {memo.id}
                           <br />
+                          <b>{memo.clName || ""}</b>
                           <h3>{memo.title}</h3>
                         </li>
                       ))}
@@ -427,6 +435,7 @@ const ManageCheckListMemo = (props) => {
                     <CompareListMemoTable
                       listMemo={compareListMemo}
                       students={students}
+                      isSubject={nowIsSubject}
                     />
                   </>
                 )}

@@ -539,14 +539,17 @@ const ManageStudentInfo = (props) => {
             형제자매
           </h2>
         </div>
-        <div
-          className={`${classes["bottom-content-li"]} ${classes["flex-wrap"]} ${classes["fs-11"]}`}
-          style={{ width: "80%", justifyContent: "space-evenly" }}
-        >
-          {bnsAll}
-        </div>
-        {new_studentsInfo?.filter((stud) => stud.bns !== "")?.length === 0 &&
-          "* 자료가 없습니다."}
+
+        {new_studentsInfo?.filter((stud) => stud.bns !== "")?.length === 0 ? (
+          "* 자료가 없습니다."
+        ) : (
+          <div
+            className={`${classes["bottom-content-li"]} ${classes["flex-wrap"]} ${classes["fs-11"]}`}
+            style={{ width: "80%", justifyContent: "space-evenly" }}
+          >
+            {bnsAll}
+          </div>
+        )}
       </>
     );
   };
