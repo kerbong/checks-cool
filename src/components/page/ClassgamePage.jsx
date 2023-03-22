@@ -8,6 +8,7 @@ import Doit from "../Classgame/Doit/Doit";
 import { useLocation } from "react-router-dom";
 import TitleBtn from "components/Memo/TitleBtn";
 import Alarm from "components/Classgame/AlarmNotice/Alarm";
+import AssistanceAi from "components/Classgame/AssistanceAi/AssistanceAi";
 
 const ClassgamePage = (props) => {
   const { state } = useLocation();
@@ -103,6 +104,11 @@ const ClassgamePage = (props) => {
                 className={"settingSeat"}
                 onclick={() => setShowAlarm(true)}
               />
+              <Button
+                name={"비서"}
+                className={"settingSeat"}
+                onclick={() => setSelectedMenu("ai")}
+              />
             </div>
           )}
 
@@ -121,6 +127,10 @@ const ClassgamePage = (props) => {
                 nickName={props.nickName}
                 email={props.email}
               />
+            )}
+
+            {selectedMenu === "ai" && (
+              <AssistanceAi userUid={props.userUid} nickName={props.nickName} />
             )}
           </div>
         </div>

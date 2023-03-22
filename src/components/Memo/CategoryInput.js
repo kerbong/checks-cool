@@ -106,69 +106,67 @@ const CategoryInput = (props) => {
 
   return (
     <div className={classes["categoryEdit-div"]}>
-      <div>
-        <div>
-          {!isEdited && (
-            <button
-              className={classes["exit-btn"]}
-              onClick={() => {
-                props.caInputClose();
-              }}
-            >
-              <i className="fa-solid fa-xmark"></i>
-            </button>
-          )}
-          {!isEdited && <h2 className={classes["h2"]}>카테고리 추가</h2>}
+      <div style={{ width: "100%" }}>
+        {!isEdited && (
+          <button
+            className={classes["exit-btn"]}
+            onClick={() => {
+              props.caInputClose();
+            }}
+          >
+            <i className="fa-solid fa-xmark"></i>
+          </button>
+        )}
+        {!isEdited && <h2 className={classes["h2"]}>카테고리 추가</h2>}
 
-          <h3>{!isEdited ? "카테고리 이름" : "카테고리 수정"}</h3>
-          <div className={classes["h2"]}>
+        <h3>{!isEdited ? "카테고리 이름" : "카테고리 수정"}</h3>
+        <div className={classes["h2"]}>
+          <input
+            id="title-input"
+            className={classes["title-input"]}
+            type="text"
+            defaultValue={props.nowCategory?.name || ""}
+            required
+            onInput={(e) => handleOnInput(e, 20)}
+            onChange={nameHandler}
+            placeholder={"20자 내로 작성해주세요."}
+          />
+        </div>
+
+        {/* 카테고리 배경색 컬러 */}
+        <h3>카테고리 색상 선택</h3>
+        <h4> * 흰색 배경은 피해주세요!</h4>
+        {/* 예시보여주는 div */}
+        <div id="area1" className={classes["color-area"]}>
+          {categoryName}
+        </div>
+        <div className={classes["color-inputs"]}>
+          <div>
+            <span className={classes["color-span"]}>배경색</span>
+
             <input
-              id="title-input"
-              className={classes["title-input"]}
-              type="text"
-              defaultValue={props.nowCategory?.name || ""}
-              required
-              onInput={(e) => handleOnInput(e, 20)}
-              onChange={nameHandler}
-              placeholder={"20자 내로 작성해주세요."}
+              id="color"
+              className={classes["color-input"]}
+              type="color"
+              value={bgColor || ""}
+              onChange={bgColorChange}
             />
           </div>
 
-          {/* 카테고리 배경색 컬러 */}
-          <h3>카테고리 색상 선택</h3>
-          <h4> * 흰색 배경은 피해주세요!</h4>
-          {/* 예시보여주는 div */}
-          <div id="area1" className={classes["color-area"]}>
-            {categoryName}
-          </div>
-          <div className={classes["color-inputs"]}>
-            <div>
-              <span className={classes["color-span"]}>배경색</span>
-
-              <input
-                id="color"
-                className={classes["color-input"]}
-                type="color"
-                value={bgColor || ""}
-                onChange={bgColorChange}
-              />
-            </div>
-
-            {/* 카테고리 글자색 컬러 */}
-            <div>
-              <span className={classes["color-span"]}>글자색</span>
-              <input
-                id="color2"
-                className={classes["color-input"]}
-                type="color"
-                value={fontColor || ""}
-                onChange={fontColorChange}
-              />
-            </div>
+          {/* 카테고리 글자색 컬러 */}
+          <div>
+            <span className={classes["color-span"]}>글자색</span>
+            <input
+              id="color2"
+              className={classes["color-input"]}
+              type="color"
+              value={fontColor || ""}
+              onChange={fontColorChange}
+            />
           </div>
         </div>
-        <br />
       </div>
+      <br />
 
       <button
         className={`${classes["color-area"]} ${classes["height"]}`}
