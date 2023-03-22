@@ -41,9 +41,11 @@ const CLASSLISTS = [
   "2교시",
   "3교시",
   "4교시",
+  "점심",
   "5교시",
   "6교시",
   "방과후",
+  "준비물",
 ];
 
 const MainPage = (props) => {
@@ -502,7 +504,10 @@ const MainPage = (props) => {
   const saveClassMemoHandler = async (auto) => {
     //오늘 날짜 데이터를 받을 때... 상태를 쓰면 최신을 쓰지 못할 수 있음(setTImeout때문...)
     //년 월 일
-    let nowDate = document.getElementById("todayYYYYMMDD").innerText;
+    let nowDate = document.getElementById("todayYYYYMMDD")?.innerText;
+    //다른 페이지로 이동해서 혹시 안보이면 사라지도록.. 왜 useEffect return이 작동을 안하지...
+    if (document.getElementById("todayYYYYMMDD") === null) return;
+
     let year = "20" + nowDate.split("년")[0];
     let month = nowDate.split("월")[0].split(" ")[1];
     let day = nowDate.split("일")[0].split(" ")[2];

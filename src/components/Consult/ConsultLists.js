@@ -364,6 +364,8 @@ const ConsultLists = (props) => {
   return (
     <>
       {/* 정렬하는 부분 */}
+
+      <h1>상담 조회</h1>
       <div className={classes["sortBtnArea"]}>
         <div className={classes["select-area"]}>
           <select

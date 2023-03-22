@@ -51,6 +51,11 @@
   word-break: break-all;
 }
 
+.fs-13-bold {
+  font-size: 1.3rem;
+  font-weight: bold;
+}
+
 .clicked-title {
   margin: 5px 15px;
   max-width: 130px;
@@ -87,9 +92,15 @@
   margin: 2px;
 }
 
+.flex-center-ml-10,
 .flex-center {
   display: flex;
   justify-content: center;
+}
+
+.flex-center-ml-10 {
+  align-items: center;
+  margin-left: 10%;
 }
 
 .width-max400 {

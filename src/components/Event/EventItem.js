@@ -98,7 +98,7 @@ const EventItem = (props) => {
           {/* 타이틀(이름) + 날짜 달력나오는거 column*/}
           <div className={`${classes["titleDate-area"]}`}>
             <h2 id={"eventName" + shownId}>{`😀 ${text} ${
-              props.setNum && `(${props.setNum})`
+              props?.setNum ? `(${props.setNum})` : ""
             }`}</h2>
 
             <div

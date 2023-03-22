@@ -128,6 +128,10 @@ const StudentCalendarLayout = (props) => {
               <i className="fa-regular fa-address-book"></i> 생기부
             </button>
 
+            <button id="switch-btn" onClick={showCalHandler}>
+              <i className="fa-regular fa-calendar-days"></i> 출결기록
+            </button>
+
             <button id="switch-btn" onClick={showEachStudentHandler}>
               <i className="fa-solid fa-user"></i> 출결조회
             </button>
@@ -140,18 +144,7 @@ const StudentCalendarLayout = (props) => {
                 });
               }}
             >
-              <i className="fa-regular fa-comments"></i> 상담기록
-            </button>
-
-            <button
-              id="switch-btn"
-              onClick={() => {
-                navigate(`/consulting`, {
-                  state: { doWhat: "showConsult" },
-                });
-              }}
-            >
-              <i className="fa-regular fa-rectangle-list"></i> 상담조회
+              <i className="fa-regular fa-comments"></i> 상담관리
             </button>
           </div>
           {props.students.length === 0 && (
@@ -210,6 +203,10 @@ const StudentCalendarLayout = (props) => {
               <i className="fa-regular fa-calendar-days"></i> 출결기록
             </button>
 
+            <button id="switch-btn" onClick={showEachStudentHandler}>
+              <i className="fa-solid fa-user"></i> 출결조회
+            </button>
+
             <button
               id="switch-btn"
               onClick={() => {
@@ -218,18 +215,7 @@ const StudentCalendarLayout = (props) => {
                 });
               }}
             >
-              <i className="fa-regular fa-comments"></i> 상담기록
-            </button>
-
-            <button
-              id="switch-btn"
-              onClick={() => {
-                navigate(`/consulting`, {
-                  state: { doWhat: "showConsult" },
-                });
-              }}
-            >
-              <i className="fa-regular fa-rectangle-list"></i> 상담조회
+              <i className="fa-regular fa-comments"></i> 상담관리
             </button>
           </div>
 

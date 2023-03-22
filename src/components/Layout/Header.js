@@ -21,6 +21,12 @@ const Header = (props) => {
     let where = whereHref[whereHref.length - 1];
     if (where === "consulting") {
       setNowOn("attendance");
+    } else if (
+      where === "manageAttendance" ||
+      where === "manageConsult" ||
+      where === "manageCheckListMemo"
+    ) {
+      setNowOn("manageStudent");
     } else {
       setNowOn(where);
     }

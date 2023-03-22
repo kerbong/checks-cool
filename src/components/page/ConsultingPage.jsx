@@ -51,7 +51,8 @@ const ConsultingPage = (props) => {
   };
 
   const showCalHandler = () => {
-    setShowConsultList(!showConsultList);
+    // setShowConsultList(!showConsultList);
+    setShowConsultList(false);
   };
 
   const addDataHandler = async (data) => {
@@ -258,17 +259,6 @@ const ConsultingPage = (props) => {
           <i className="fa-regular fa-address-book"></i> 생기부
         </button>
 
-        <button id="switch-btn" onClick={showCalHandler}>
-          {showConsultList ? (
-            <>
-              <i className="fa-regular fa-comments"></i> 상담기록
-            </>
-          ) : (
-            <>
-              <i className="fa-regular fa-rectangle-list"></i> 상담조회
-            </>
-          )}
-        </button>
         <button
           id="switch-btn"
           onClick={() => {
@@ -279,6 +269,7 @@ const ConsultingPage = (props) => {
         >
           <i className="fa-regular fa-calendar-days"></i> 출결기록
         </button>
+
         <button
           id="switch-btn"
           onClick={() => {
@@ -288,6 +279,11 @@ const ConsultingPage = (props) => {
           }}
         >
           <i className="fa-solid fa-user"></i> 출결조회
+        </button>
+        <button id="switch-btn" onClick={showCalHandler}>
+          <>
+            <i className="fa-regular fa-comments"></i> 상담관리
+          </>
         </button>
       </div>
 
@@ -343,6 +339,17 @@ const ConsultingPage = (props) => {
             students={!isSubject ? nowStudents : nowClStudents}
             showOption={showOptionHandler}
             isSubject={props.isSubject}
+          />
+          <br />
+          <br />
+          {/* 그동안의 기록들 볼 수 있는 화면 */}
+          <ConsultLists
+            userUid={props.userUid}
+            selectOption={consultingOption}
+            addData={(data) => addDataHandler(data)}
+            deleteConsult={(id, url) => deleteConsultHandler(id, url)}
+            isSubject={props.isSubject}
+            students={props.students}
           />
         </>
       ) : (

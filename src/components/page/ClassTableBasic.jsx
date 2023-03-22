@@ -13,9 +13,11 @@ const STARTBASE = [
   "2022-01-13 09:50",
   "2022-01-13 10:40",
   "2022-01-13 11:30",
+  "2022-01-13 12:10",
   "2022-01-13 13:10",
   "2022-01-13 14:00",
   "2022-01-13 14:50",
+  "2022-01-13 15:40",
 ];
 const CLASSTIME = [
   "아침",
@@ -23,9 +25,11 @@ const CLASSTIME = [
   "2교시",
   "3교시",
   "4교시",
+  "점심",
   "5교시",
   "6교시",
   "방과후",
+  "준비물",
 ];
 
 const ClassTableBasic = (props) => {
@@ -289,12 +293,12 @@ const ClassTableBasic = (props) => {
 
       // 교시 추가일 경우
     } else if (delAdd === "add") {
-      // 만약 8교시까지 존재하면.. 최대!
-      if (itemsNumArray.length >= 40) {
+      // 만약 10교시까지 존재하면.. 최대!
+      if (itemsNumArray.length >= 50) {
         Swal.fire({
           icon: "error",
           title: "교시 추가 실패",
-          text: "최대 8교시까지 추가가 가능합니다.",
+          text: "최대 10교시(10줄)까지 추가가 가능합니다.",
           confirmButtonText: "확인",
           confirmButtonColor: "#85bd82",
           timer: 5000,

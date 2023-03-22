@@ -8,6 +8,7 @@ import { useLocation } from "react-router";
 import classes from "./ManageEach.module.css";
 import CompareListMemoTable from "../Manage/CompareListMemoTable";
 import Swal from "sweetalert2";
+import { utils, writeFile } from "xlsx";
 
 const ManageCheckListMemo = (props) => {
   const [students, setStudents] = useState([]);
@@ -257,6 +258,58 @@ const ManageCheckListMemo = (props) => {
     });
   };
 
+  //엑셀로 저장하기 함수
+  const saveExcelHandler = () => {
+    // listmemo가 없으면 저장하지 않기
+    if (allListMemo?.length === 0) return;
+
+    // console.log(listMemo);
+    const new_datas = [];
+    allListMemo?.forEach((memo) => {
+      memo.data.forEach((stud) => {
+        let data = [+stud.num, stud.name, memo.title, stud.memo];
+        if (nowIsSubject) {
+          data.unshift(memo.clName);
+        }
+        new_datas.push(data);
+      });
+    });
+    if (nowIsSubject) {
+      new_datas.unshift(["반", "번호", "이름", "개별기록 제목", "기록내용"]);
+    } else {
+      new_datas.unshift(["번호", "이름", "개별기록 제목", "기록내용"]);
+    }
+    //새로운 가상 엑셀파일 생성
+    const book = utils.book_new();
+    const listMemo_datas = utils.aoa_to_sheet(new_datas);
+    //셀의 넓이 지정
+    listMemo_datas["!cols"] = [
+      { wpx: 40 },
+      { wpx: 50 },
+      { wpx: 100 },
+      { wpx: 300 },
+    ];
+    if (nowIsSubject) {
+      listMemo_datas["!cols"].unshift({ wpx: 40 });
+    }
+    //시트에 작성한 데이터 넣기
+    utils.book_append_sheet(book, listMemo_datas, "개별기록");
+
+    writeFile(
+      book,
+      `${setYear()}학년도 개별기록(${dayjs().format("YYYY-MM-DD")}).xlsx`
+    );
+  };
+
+  //화면의 table 요소를 excel 파일로 만들기
+  const tableToExcelHandler = () => {
+    let fileName = `개별기록 비교(${dayjs().format("YYYY-MM-DD")}).xlsx`;
+    let wb = utils.table_to_book(document.getElementById("listTable"), {
+      sheet: "개별기록 비교",
+    });
+    writeFile(wb, fileName);
+  };
+
   return (
     <div>
       {/* 학생 보여주는 부분 */}
@@ -279,18 +332,17 @@ const ManageCheckListMemo = (props) => {
         >
           {/* 전환버튼 */}
           <Button
-            name={showListMemo ? <span>제출보기</span> : " 개별기록 보기"}
+            name={showListMemo ? <span> 제출보기</span> : "  개별기록 보기"}
             icon={<i className="fa-solid fa-rotate"></i>}
             onclick={() => setShowListMemo((prev) => !prev)}
-            className={"save-classItem-button"}
-            style={{
-              width: "auto",
-              backgroundColor: "#f3feff",
-              height: "auto",
-              padding: "10px",
-              position: "absolute",
-              left: "2%",
-            }}
+            className={"change-checkList-button"}
+          />
+          {/* 엑셀저장버튼 */}
+          <Button
+            name={<span> 엑셀저장</span>}
+            icon={<i className="fa-solid fa-download"></i>}
+            onclick={saveExcelHandler}
+            className={"excelSave-button"}
           />
         </div>
 
@@ -431,6 +483,12 @@ const ManageCheckListMemo = (props) => {
                       className={classes["search-btns"]}
                     >
                       비교닫기
+                    </button>
+                    <button
+                      onClick={tableToExcelHandler}
+                      className={classes["search-btns"]}
+                    >
+                      <i className="fa-solid fa-download"></i> 현재자료 엑셀저장
                     </button>
                     <CompareListMemoTable
                       listMemo={compareListMemo}

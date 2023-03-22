@@ -37,7 +37,7 @@ const CompareListMemoTable = (props) => {
       <p style={{ color: "white" }}>
         * 자료가 보기 어려운 경우 화면 확대/축소를 활용해주세요
       </p>
-      <table className={classes["table"]}>
+      <table className={classes["table"]} id="listTable">
         {/* 가로 첫 줄 타이틀 만들기 */}
         <thead className={classes["bg-title"]}>
           <tr>

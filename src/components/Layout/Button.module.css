@@ -290,6 +290,29 @@
   width: 33%;
 }
 
+.excelSave-button,
+.change-checkList-button {
+  width: auto;
+  background-color: #f3feff;
+  height: auto;
+  padding: 10px;
+  position: absolute;
+
+  margin: 5px 10px;
+  font-size: 1rem;
+  border-radius: 10px;
+  border-width: 0;
+  letter-spacing: 2px;
+}
+
+.change-checkList-button {
+  left: 2%;
+}
+
+.excelSave-button {
+  right: 2%;
+}
+
 .down-classItem-button {
   width: 165px;
   background-color: #f3feff;
