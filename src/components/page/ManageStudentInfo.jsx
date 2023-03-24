@@ -193,10 +193,10 @@ const ManageStudentInfo = (props) => {
               let rows = utils.sheet_to_json(workBook.Sheets[sheetName]);
               // console.log(rows);
               let new_rows = rows?.map((row) => ({
-                num: String(row["번호"]),
+                num: String(row["번호"] || ""),
                 name: String(row["이름"] || row["성명"]),
-                month: String(row["월"]),
-                day: String(row["일"]),
+                month: String(row["월"] || ""),
+                day: String(row["일"] || ""),
                 studTel: String(row["학생연락처"] || ""),
                 mom: String(row["모성명"] || ""),
                 momTel: String(row["모연락처"] || ""),
@@ -240,10 +240,10 @@ const ManageStudentInfo = (props) => {
               let rows = utils.sheet_to_json(workBook.Sheets[sheetName]);
               // console.log(rows);
               let new_rows = rows?.map((row) => ({
-                num: String(row["번호"]),
+                num: String(row["번호"] || ""),
                 name: String(row["이름"] || row["성명"]),
-                month: String(row["월"]),
-                day: String(row["일"]),
+                month: String(row["월"] || ""),
+                day: String(row["일"] || ""),
                 studTel: String(row["학생연락처"] || ""),
                 mom: String(row["모성명"] || ""),
                 momTel: String(row["모연락처"] || ""),

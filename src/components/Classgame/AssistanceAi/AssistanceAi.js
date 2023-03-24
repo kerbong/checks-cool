@@ -1,19 +1,28 @@
 import React, { useState } from "react";
 import Loading from "components/page/Loading";
+import { dbService } from "../../../fbase";
+import { doc, getDoc } from "firebase/firestore";
+import Swal from "sweetalert2";
 
 const AssistanceAi = () => {
   const [tweet, setTweet] = useState("");
   const [sentiment, setSentiment] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  const API_KEY = process.env.REACT_APP_OPENAI_API_KEY;
+  // 버튼누르면 api 요청해서 받아와서 물어보기..
   const callOpenAiApi = async () => {
+    //firebase에 저장해두고 물어보기
+    let aiApiRef = doc(dbService, "apis", "apifromkerbonggmail");
+
+    const aiApiDoc = await getDoc(aiApiRef);
+    const API_KEY = aiApiDoc.data().open_ai_api;
+
     const APIBody = {
       model: "gpt-3.5-turbo",
       messages: [
         {
           role: "system",
-          content: "summarize as best as possible",
+          content: "최대한 요약해서 초등교사에게 설명",
         },
         { role: "user", content: tweet },
       ],
@@ -39,8 +48,17 @@ const AssistanceAi = () => {
         return data.json();
       })
       .then((data) => {
-        setIsLoading(false);
         setSentiment(data?.choices?.[0]?.message?.content); // Positive or negative
+        setIsLoading(false);
+        //15초 이후에 대답 없으면 취소
+        setTimeout(() => {
+          Swal.fire(
+            "요청 실패",
+            "답변시간이 초과되어 요청이 실패했습니다! 다른 질문을 준비해주세요!",
+            "warning"
+          );
+          setIsLoading(false);
+        }, 15000);
       })
       .catch((error) => {
         // console.log(error);
@@ -50,15 +68,17 @@ const AssistanceAi = () => {
   return (
     <div style={{ marginTop: "-50px" }}>
       <h2>비서에게 물어봐요😎</h2>
+
+      <h3>
+        갑자기 궁금한 게 생기시면 물어보세요!
+        <br />* 최대 10초가 소요됩니다.
+      </h3>
       <span>
         (테스트중입니다. 기간 대비 과도한 금액이 청구되면..
         <br /> 사라집니다.. 혹시 작동하지 않으면 허용치 초과입니다!)
       </span>
-      <h3>
-        갑자기 궁금한 게 생기시면 물어보세요!
-        <br />* 답변까지는 최대 10초가 소요됩니다.
-      </h3>
-
+      <br />
+      <br />
       <div>
         <textarea
           onChange={(e) => setTweet(e.target.value)}

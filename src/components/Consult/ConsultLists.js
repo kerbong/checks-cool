@@ -364,8 +364,9 @@ const ConsultLists = (props) => {
   return (
     <>
       {/* 정렬하는 부분 */}
-
-      <h1>상담 조회</h1>
+      <hr />
+      <h1>상담 조회 및 수정</h1>
+      <br />
       <div className={classes["sortBtnArea"]}>
         <div className={classes["select-area"]}>
           <select
@@ -434,7 +435,11 @@ const ConsultLists = (props) => {
         />
       </div>
       {nowOnConsult ? (
-        <p>* 정보보호를 위해 먼저 항목을 선택해주세요.</p>
+        <>
+          <br />
+          <p>* 정보보호를 위해 먼저 항목을 선택해주세요.</p>
+          <br />
+        </>
       ) : (
         <p>* 자료가 없습니다. </p>
       )}

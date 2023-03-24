@@ -49,7 +49,10 @@ const Input = React.forwardRef((props, ref) => {
   }, [props.showOn]);
 
   useEffect(() => {
-    handleResizeHeight();
+    // 이 설정 안해두면.. 모든 input도 css상관없이 작아짐;;
+    if (props.input.type === "textarea") {
+      handleResizeHeight();
+    }
   }, [areaFix]);
 
   useEffect(() => {

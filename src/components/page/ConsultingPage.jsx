@@ -27,6 +27,7 @@ const ConsultingPage = (props) => {
   const [nowClStudents, setNowClStudents] = useState([]);
   const [nowStudents, setNowStudents] = useState([]);
   const [isSubject, setIsSubject] = useState(false);
+  const [showStudentsLists, setShowStudentsLists] = useState(false);
 
   const { state } = useLocation();
   let navigate = useNavigate();
@@ -310,7 +311,19 @@ const ConsultingPage = (props) => {
       {!showConsultList ? (
         //명렬표로 입력할 수 있도록 나오는 화면
         <>
-          <h1>상담 기록</h1>
+          <h1 onClick={() => setShowStudentsLists((prev) => !prev)}>
+            상담 기록 {/* 학생 명부 보여주기 버튼 */}
+            <span style={{ fontSize: "1.3rem", color: "gray" }}>
+              <i
+                className={
+                  !showStudentsLists
+                    ? "fa-solid fa-chevron-down"
+                    : "fa-solid fa-chevron-up"
+                }
+              ></i>
+            </span>
+          </h1>
+          <span>* 학생명단 펼쳐보기</span>
           {/* 전담교사만 보이는 학급 셀렉트 */}
           {isSubject && (
             <div>
@@ -335,13 +348,14 @@ const ConsultingPage = (props) => {
                 "* 학급을 먼저 선택해주세요."}
             </div>
           )}
-          <Student
-            students={!isSubject ? nowStudents : nowClStudents}
-            showOption={showOptionHandler}
-            isSubject={props.isSubject}
-          />
-          <br />
-          <br />
+          {showStudentsLists && (
+            <Student
+              students={!isSubject ? nowStudents : nowClStudents}
+              showOption={showOptionHandler}
+              isSubject={props.isSubject}
+            />
+          )}
+
           {/* 그동안의 기록들 볼 수 있는 화면 */}
           <ConsultLists
             userUid={props.userUid}

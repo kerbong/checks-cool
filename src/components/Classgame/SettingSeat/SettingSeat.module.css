@@ -229,3 +229,13 @@
   position: fixed;
   opacity: 0;
 }
+
+.secret {
+  position: fixed;
+  top: 65px;
+  left: 5px;
+  padding: 18px 37px;
+  background-color: #ffffff00;
+  color: #ffffff00;
+  border-width: 0;
+}

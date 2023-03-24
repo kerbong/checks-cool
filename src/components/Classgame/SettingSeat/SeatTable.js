@@ -5,6 +5,7 @@ import Button from "../../Layout/Button";
 import { dbService } from "../../../fbase";
 import { setDoc, doc, onSnapshot } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
+import dayjs from "dayjs";
 
 const saveErrorSwal = (text) => {
   Swal.fire({
@@ -39,8 +40,12 @@ const imageUrls = [
 ];
 
 const SeatTable = (props) => {
-  const [tableRow, setTableRow] = useState(props.rowColumn.split("-")[0]);
-  const [tableColumn, setTableColumn] = useState(props.rowColumn.split("-")[1]);
+  const [tableRow, setTableRow] = useState(
+    props.rowColumn?.split("-")[0] || ""
+  );
+  const [tableColumn, setTableColumn] = useState(
+    props.rowColumn?.split("-")[1] || ""
+  );
   const [items, setItems] = useState();
   const [itemsFront, setItemsFront] = useState();
   const [tempStudent, setTempStudent] = useState({});
@@ -152,6 +157,11 @@ const SeatTable = (props) => {
     if (!props.isExist) {
       if (seatLists?.length > 0) {
         seatLists?.forEach((list) => {
+          // 만약.. 가로에 앉는 학생 수가 홀수면.. 짝에 포함시키지 않음!
+          if (list.rowColumn.split("-")[1] % 2 !== 0) return;
+          // 제목에 제외' 를 포함시킬 경우... 짝에 포함시키지 않음!
+          if (list.title.includes("@")) return;
+
           list.students.forEach((stu_name, list_index) => {
             //학생들 중에 먼저 현재 학생 찾고
             let nowStudent = new_students?.filter(
@@ -274,6 +284,7 @@ const SeatTable = (props) => {
 
   //뽑기 함수, 뽑힌 학생을 뽑아서 temp에 저장함
   const randomSeatHandler = (isWoman) => {
+    console.log("랜덤시트핸들러실행");
     let selectedStudent = {};
     let pair_students = [...pairStudents];
     let new_students = [...students];
@@ -282,13 +293,53 @@ const SeatTable = (props) => {
     if (isWoman === "all") {
       gender_students = new_students;
     }
+    console.log("기존");
+    console.log(gender_students);
+
+    //비밀자료에 있는 학생들은 제외해줌!
+    if (props.secretSeat) {
+      gender_students = gender_students?.filter(
+        (std) => !props.secretSeat?.students.includes(std.name)
+      );
+    }
 
     //남뽑기 여뽑기 기준 새로운 로직
     //남 혹은 여학생에서 학생 랜덤 뽑기
     const selectRnStudent = () => {
       let randNum = Math.floor(Math.random() * gender_students.length);
+
       return gender_students[randNum];
     };
+
+    console.log("비밀자료 제외학생");
+    console.log(gender_students);
+    //만약 비밀자료에 있는 학생들을 제외하고 모든 학생이 뽑혀버리면.. 비밀자료의 남은 학생들 자리에 넣기!
+    let secretPickDone = false;
+    let selectedSecretStd = {};
+    if (gender_students.length === 0 && props.secretSeat) {
+      gender_students = new_students?.filter((stu) => stu.woman === isWoman);
+      if (isWoman === "all") {
+        gender_students = new_students;
+      }
+      console.log("비밀자료에 남은 학생");
+      console.log(gender_students);
+      selectedSecretStd = selectRnStudent();
+      console.log("선택된학생");
+      console.log(selectedSecretStd);
+
+      setTempBeforeName(selectedSecretStd.name);
+      new_students = new_students?.filter(
+        (stu) => stu.name !== selectedSecretStd.name
+      );
+
+      selectedSwal(selectedSecretStd.num, selectedSecretStd.name);
+
+      setStudents([...new_students]);
+      setTempStudent({ ...selectedSecretStd });
+      secretPickDone = true;
+    }
+
+    if (secretPickDone) return selectedSecretStd;
 
     //학생을 옵션에 맞게 뽑고tempname에 이름 저장하고 학생목록에서 뽑힌 학생 제거하는 함수
     const removePickStudent = () => {
@@ -311,12 +362,7 @@ const SeatTable = (props) => {
       }
 
       setTempBeforeName(selectedStudent.name);
-      //학생목록에서 뽑힌 학생 제거하기
-      // new_students.forEach((stu, index) => {
-      //   if (stu.num === selectedStudent.num) {
-      //     new_students.splice(index, 1);
-      //   }
-      // });
+
       new_students = new_students?.filter(
         (stu) => +stu.num !== +selectedStudent.num
       );
@@ -467,6 +513,7 @@ const SeatTable = (props) => {
 
   //알아서 뽑고 알아서 자리에 넣어주는 함수
   const pickAndSeatHandler = (isWoman) => {
+    console.log("실행됨");
     const randomNum = (b) => {
       return Math.floor(Math.random() * Number(b));
     };
@@ -475,8 +522,25 @@ const SeatTable = (props) => {
     const seatHandler = (name) => {
       let existItems = document.querySelectorAll(".item");
       let leftSeats = [];
+      //혹시 비밀자료로 이미 선점된 학생이면 해당 자리에 바로 넣기
+      let isDone = false;
+      props.secretSeat?.students?.forEach((std, index) => {
+        if (std === name) {
+          let seat = document.getElementById(`table-${index + 1}`);
+          seat.innerText = name;
+          seat.style.backgroundColor = "#d4e8dcbd";
+          isDone = true;
+        }
+      });
+      //기존자리 정해진 학생이고 자리 정해서 넣었으면
+      if (isDone) return;
+
       //아직 학생 없는 숫자만 있는 자리들
-      existItems.forEach((item) => {
+      existItems.forEach((item, index) => {
+        // 혹시 비밀자료로.. 미리 선점된 자리가 있으면 그거 제외하고 고르기
+        if (props.secretSeat && isNaN(+props.secretSeat?.students?.[index]))
+          return;
+
         if (!isNaN(+item.innerText)) {
           leftSeats.push(item);
         }
@@ -487,17 +551,21 @@ const SeatTable = (props) => {
       randomSeat.style.backgroundColor = "#d4e8dcbd";
     };
 
+    console.log("에러지점1");
     //뽑힌 모든 학생의 자리가 결정되었으면 새로 학생뽑고
     if (selectSeatCheck()) {
+      console.log("에러지점2");
       //번호 범위에서 가능하지 않으면
       // 전체뽑기가 아닌 경우에만
       if (isWoman === true || isWoman === false) {
+        console.log("에러지점3");
         if (!randomIsPossible(isWoman)) {
           errorSwal(`모든 ${isWoman ? "여" : "남"}학생이 뽑혔어요! `);
 
           return false;
         }
       }
+      console.log("에러지점4");
 
       //학생 뽑아서 temp에 저장함
       randomSeatHandler(isWoman);
@@ -746,6 +814,55 @@ const SeatTable = (props) => {
       firstSeat.style.backgroundColor = "#d4e8dcbd";
     };
 
+    let isSecretNameExist = false;
+    //만약 비밀, 예비자료로 자리에 이미 학생이 세팅되어 있으면.. 바로 넣고 함수 종료하기! ()
+
+    if (props.secretSeat) {
+      let existItems = document.querySelectorAll(".item");
+      let leftSeats = [];
+      //아직 학생 없는 숫자만 있는 자리들
+      let isOver = false;
+      existItems.forEach((item) => {
+        if (isOver) return;
+        if (!isNaN(+item.innerText)) {
+          leftSeats.push(item);
+          isOver = true;
+        }
+      });
+      let firstSeat = leftSeats[0];
+      //비밀자료 index+1에서 해당 값이 가장 앞자리의 innerText에..
+      props.secretSeat?.students?.forEach((stdNameOrNum, index) => {
+        //비밀자료의 인덱스와 현재 자리의 인덱스가 같고 비밀자리표의 현재자리가 사람이름이면 자리에 이름 넣어주고,
+        if (index + 1 === +firstSeat.innerText && isNaN(+stdNameOrNum)) {
+          console.log(firstSeat);
+          //비밀자료의 인덱스와 현재 자리가 일치하면, 이름 넣어줌
+          firstSeat.innerText = stdNameOrNum;
+          firstSeat.style.backgroundColor = "#d4e8dcbd";
+          //이름이 일치하면 함수 뒷부분 실행하지 않음.
+          isSecretNameExist = true;
+
+          setTempBeforeName(stdNameOrNum);
+          let selectedStudent = {};
+          let new_students = [...students];
+          new_students = new_students?.filter((stu) => {
+            if (stu.name === stdNameOrNum) {
+              selectedStudent = { ...stu };
+            }
+            return stu.name !== stdNameOrNum;
+          });
+
+          selectedSwal(selectedStudent.num, selectedStudent.name);
+
+          setStudents([...new_students]);
+          setTempStudent({ ...selectedStudent });
+          // seatHandler(selectedStudent.name);
+          return;
+        }
+      });
+    }
+
+    if (isSecretNameExist) return;
+
     // 성별 번갈아 일 경우
     let selecStu;
     if (consider === "gender") {
@@ -847,8 +964,78 @@ const SeatTable = (props) => {
     setSeeFromBack((prev) => !prev);
   };
 
+  //비밀 저장함수..(이어하기) 다 안뽑혀도 저장 가능함.
+  const secretSaveHandler = async () => {
+    Swal.fire({
+      icon: "warning",
+      title: "저장 확인",
+      text: `예시자료로 저장하시겠어요? (기존 예시자료가 있으면 덮어쓰기 됩니다.)`,
+      confirmButtonText: "확인",
+      confirmButtonColor: "#85bd82",
+      showDenyButton: true,
+      denyButtonText: "취소",
+    }).then((result) => {
+      //저장 계속 진행하면
+      if (result.isConfirmed) {
+        savingSecretData();
+      } else {
+        return;
+      }
+    });
+
+    const savingSecretData = async () => {
+      let items_students = [];
+
+      document
+        .getElementById(
+          props.title?.length > 0 ? `items-${props.title}-div` : "items-div"
+        )
+        .childNodes.forEach((item) => {
+          items_students.push(item.innerText);
+        });
+
+      const data = {
+        students: items_students,
+        title: "-*-예시자료-*-",
+        rowColumn: tableRow + "-" + tableColumn,
+        saveDate: dayjs().format("YYYY-MM-DD"),
+      };
+
+      // 전담인경우 학급명을 추가해서 저장.
+      if (props.nowClassName) {
+        data["clName"] = props.nowClassName;
+      }
+
+      Swal.fire({
+        icon: "success",
+        title: "저장완료",
+        text: `비밀저장(예시자리표) 가 저장되었어요.`,
+        confirmButtonText: "확인",
+        confirmButtonColor: "#85bd82",
+        timer: 5000,
+      });
+
+      const existRef = doc(dbService, "seats", props.userUid);
+      let new_allSeats = [...allSeats];
+      // 일단 비밀저장할 경우.. 기존 예시자료 지우고, 추가함
+      new_allSeats = new_allSeats.filter(
+        (seat) => seat.title !== "-*-예시자료-*-"
+      );
+      new_allSeats.push(data);
+
+      setAllSeats([...new_allSeats]);
+      await setDoc(existRef, { seats_data: new_allSeats });
+
+      //처음화면으로 되돌아가기
+      props.addNewCancel();
+    };
+  };
+
   return (
     <div id={props.title || "newSeats"}>
+      <button className={classes["secret"]} onClick={secretSaveHandler}>
+        비밀버튼
+      </button>
       {students.length === 0 && (
         <div className={classes["title-div"]}>
           {/* 전담의 경우 반 정보 보여주기 */}
@@ -899,7 +1086,7 @@ const SeatTable = (props) => {
           {/* 교사기준, 학생기준보기 변경 버튼 */}
           <div>
             <Button
-              name={seeFromBack ? "교사기준 보기" : "학생기준 보기"}
+              name={seeFromBack ? "교사기준" : "학생기준"}
               onclick={changeSeeFromHandler}
               className={"settingSeat-btn"}
             />
@@ -1029,7 +1216,7 @@ const SeatTable = (props) => {
           <div className={classes["remain-student-div"]}>
             <>
               <div className={classes["randomPickBtn-div"]}>
-                {!randomJustStudent && "한명씩"}
+                {!randomJustStudent && "랜덤자리 한명씩"}
                 <Button
                   id="randomWomanPickBtn"
                   onclick={() =>
@@ -1058,14 +1245,14 @@ const SeatTable = (props) => {
                       : pickAndSeatHandler("all")
                   }
                   className={"settingSeat-btn"}
-                  name="아무나"
+                  name="성별랜덤"
                 />
               </div>
 
               {/* 자리까지 뽑기 버전에서만 가능한 전체 뽑기, 1번자리부터 순서대로 들어감! */}
               {!randomJustStudent && (
                 <div className={classes["randomPickBtn-div"]}>
-                  한번에
+                  1번부터 한번에
                   <Button
                     id="randomWomanPickBtn"
                     onclick={() => {
@@ -1082,7 +1269,7 @@ const SeatTable = (props) => {
                       randomAllHandler("mix");
                     }}
                     className={"settingSeat-btn"}
-                    name="아무나"
+                    name="성별랜덤"
                   />
                 </div>
               )}

@@ -85,74 +85,58 @@ const ManageAttendance = (props) => {
 
   //선택된 학생에 따라 정보를 필터해서 보여줌.
   useEffect(() => {
+    const optionSaveHandler = (datas) => {
+      //총 정리한 부분에서 option만 따옴
+      let new_datasOption = datas?.map((data) => data.option.slice(1));
+      setOnAttendsOption(new_datasOption);
+    };
+
+    let new_onAttends = [];
+
     if (onStudent !== "") {
       //담임이면
       if (!nowIsSubject) {
-        let new_onAttends =
+        new_onAttends =
           attends
             ?.filter((attend) => attend.name === onStudent.split(" ")[1])
-            ?.sort((a, b) => a.id.slice(0, 10) > b.id.slice(0, 10)) || [];
-        setOnAttends(new_onAttends);
-        setShowOnAttends(new_onAttends);
-
-        //총 정리한 부분에서 option만 따옴
-        let new_onAttendsOption = new_onAttends?.map((attend) =>
-          attend.option.slice(1)
-        );
-        setOnAttendsOption(new_onAttendsOption);
-
+            ?.sort((a, b) =>
+              a.id.slice(0, 10) > b.id.slice(0, 10) ? 1 : -1
+            ) || [];
         //전담이면
       } else {
-        let new_onAttends =
+        new_onAttends =
           attends
             ?.filter(
               (attend) =>
                 attend.name === onStudent.split(" ")[1] &&
                 attend.clName === clName
             )
-            ?.sort((a, b) => a.id.slice(0, 10) > b.id.slice(0, 10)) || [];
-        setOnAttends(new_onAttends);
-        setShowOnAttends(new_onAttends);
-
-        //총 정리한 부분에서 option만 따옴
-        let new_onAttendsOption = new_onAttends?.map((attend) =>
-          attend.option.slice(1)
-        );
-        setOnAttendsOption(new_onAttendsOption);
+            ?.sort((a, b) =>
+              a.id.slice(0, 10) > b.id.slice(0, 10) ? 1 : -1
+            ) || [];
       }
 
       // 선택된 학생이 없을 경우
     } else {
       //담임이면
       if (!nowIsSubject) {
-        let new_onAttends = [...attends].sort(
-          (a, b) => a.id.slice(0, 10) > b.id.slice(0, 10)
+        new_onAttends = [...attends].sort((a, b) =>
+          a.id.slice(0, 10) > b.id.slice(0, 10) ? 1 : -1
         );
-        setOnAttends(new_onAttends);
-        setShowOnAttends(new_onAttends);
-
-        //총 정리한 부분에서 option만 따옴
-        let new_onAttendsOption = new_onAttends?.map((attend) =>
-          attend.option.slice(1)
-        );
-        setOnAttendsOption(new_onAttendsOption);
 
         //전담이면
       } else {
-        let new_onAttends =
+        new_onAttends =
           attends
             ?.filter((attend) => attend.clName === clName)
-            ?.sort((a, b) => a.id.slice(0, 10) > b.id.slice(0, 10)) || [];
-        setOnAttends(new_onAttends);
-        setShowOnAttends(new_onAttends);
-
-        //총 정리한 부분에서 option만 따옴
-        let new_onAttendsOption = new_onAttends?.map((attend) =>
-          attend.option.slice(1)
-        );
-        setOnAttendsOption(new_onAttendsOption);
+            ?.sort((a, b) =>
+              a.id.slice(0, 10) > b.id.slice(0, 10) ? 1 : -1
+            ) || [];
       }
     }
+    setOnAttends(new_onAttends);
+    setShowOnAttends(new_onAttends);
+    optionSaveHandler(new_onAttends);
   }, [onStudent, attends, clName]);
 
   useEffect(() => {

@@ -20,6 +20,10 @@ const SeatLists = (props) => {
       const new_seats = [];
       const years = [];
       doc?.data()?.seats_data?.forEach((data) => {
+        //예시자료(비밀자료) 는 걸러줌!
+
+        if (data.title.includes("-*-예시자료-*-")) return;
+
         //22.2.1~23.1.31까지 년도로 묶음
         let data_year = data.saveDate.slice(0, 4);
         let data_month = data.saveDate.slice(5, 7);
@@ -35,6 +39,7 @@ const SeatLists = (props) => {
         }
         new_seats.push(new_data);
       });
+
       //학년도를 저장해둠.
       setDataYears([...new Set(years)]);
       setSeatLists([...new_seats]);
