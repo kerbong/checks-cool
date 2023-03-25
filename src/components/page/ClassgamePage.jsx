@@ -18,15 +18,15 @@ const ClassgamePage = (props) => {
 
   const ICONS = [
     <i className="fa-sharp fa-solid fa-chair"></i>,
-    <i class="fa-solid fa-chalkboard"></i>,
+    <i className="fa-solid fa-chalkboard"></i>,
   ];
 
   useEffect(() => {
-    // if (state === "main") {
-    //   setSelectedMenu("simsim");
-    // } else if (state === "morning") {
-    //   setSelectedMenu("mission");
-    // }
+    if (state === "main") {
+      setSelectedMenu("simsim");
+    } else if (state === "morning") {
+      setSelectedMenu("mission");
+    }
   }, [state]);
 
   return (

@@ -330,7 +330,9 @@ const Simsim = (props) => {
           </span>
         </span>
         <div>
-          <p className={showExplain ? classes["p-active"] : classes["p-hide"]}>
+          <div
+            className={showExplain ? classes["p-active"] : classes["p-hide"]}
+          >
             <p className={classes["p"]}>
               * 화면 중앙의 우측, 혹은 좌측 부분을 클릭 / 왼쪽이나 오른쪽으로
               슬라이드 하시면 다음, 이전 내용으로 이동합니다.
@@ -345,7 +347,7 @@ const Simsim = (props) => {
               * 4월부터 이전 달에 좋아요를 많이 받은 게시글들을 모아서
               보여드립니다.
             </p>
-          </p>
+          </div>
         </div>
       </div>
     </>
