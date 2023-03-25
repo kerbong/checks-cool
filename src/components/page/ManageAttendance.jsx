@@ -370,7 +370,10 @@ const ManageAttendance = (props) => {
               style={{ alignItems: "flex-end" }}
             >
               {/* 전체 출결 확인 출결옵션별 횟수 기록 */}
-              <li className={classes["bottom-content-li"]}>
+              <li
+                className={classes["bottom-content-li"]}
+                style={{ minWidth: "350px" }}
+              >
                 <div className={classes["flex-center-ml-10"]}>
                   <span className={classes["fs-13-bold"]}>
                     {clName ? `${clName} | 출결 요약` : "우리반 출결 요약"}
@@ -462,6 +465,7 @@ const ManageAttendance = (props) => {
                     <>
                       {/* 월별 버튼 */}
                       <Button
+                        key={`${month}월`}
                         id={`${month}월`}
                         className={
                           showAttendMonth === month

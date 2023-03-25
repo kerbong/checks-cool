@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import classes from "./CheckLists.module.css";
+import classes from "./Memo.module.css";
 import BudgetInput from "./BudgetInput";
 import Swal from "sweetalert2";
 import BudgetListInput from "./BudgetListInput";

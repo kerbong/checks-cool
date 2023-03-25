@@ -1,5 +1,5 @@
 import React from "react";
-import classes from "./CheckLists.module.css";
+import classes from "./Memo.module.css";
 
 const TitleBtn = (props) => {
   return (

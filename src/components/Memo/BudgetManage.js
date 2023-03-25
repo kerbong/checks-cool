@@ -9,7 +9,7 @@ import {
   deleteDoc,
 } from "firebase/firestore";
 import Swal from "sweetalert2";
-import classes from "./CheckLists.module.css";
+import classes from "./Memo.module.css";
 import BudgetInput from "./BudgetInput";
 import BudgetListInput from "./BudgetListInput";
 import BudgetList from "./BudgetList";

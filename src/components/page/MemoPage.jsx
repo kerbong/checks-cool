@@ -1,6 +1,5 @@
-import CheckLists from "components/Memo/CheckLists";
 import React, { useState, useEffect } from "react";
-import { useLocation } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import MemoTodayTodo from "../Memo/MemoTodayTodo";
 import ExampleModal from "./ExampleModal";
 import TitleBtn from "../Memo/TitleBtn";
@@ -11,52 +10,29 @@ import todayTodo from "../../assets/memo/todayTodo.gif";
 import listMemo from "../../assets/memo/listMemo.gif";
 import FreeMemo from "components/Memo/FreeMemo";
 
-const SHOW_WHAT = [
-  "checkLists",
-  "listMemo",
-  "todayTodo",
-  "budgetManage",
-  "freeMemo",
-];
+const SHOW_WHAT = ["budgetManage", "todoList", "todayTodo", "freeMemo"];
 const MENU_NAME = {
-  checkLists: "제출<br/>ox",
-  listMemo: "개별<br/>기록",
-  todayTodo: "할일<br/>목록",
   budgetManage: "예산<br/>관리",
+  todoList: "일정<br/>관리",
+  todayTodo: "할일<br/>메모",
   freeMemo: "메모<br/>폴더",
 };
-const ICONS = [
-  <i className="fa-regular fa-square-check"></i>,
-  <i className="fa-solid fa-clipboard-check"></i>,
-  <i className="fa-solid fa-clipboard-list"></i>,
-  <i className="fa-solid fa-money-check-dollar"></i>,
-  <i className="fa-regular fa-folder-open"></i>,
-];
+const ICONS = {
+  budgetManage: <i className="fa-solid fa-money-check-dollar"></i>,
+  todoList: <i className="fa-regular fa-calendar-check"></i>,
+  todayTodo: <i className="fa-solid fa-clipboard-list"></i>,
+  freeMemo: <i className="fa-regular fa-folder-open"></i>,
+};
 
 const MemoPage = (props) => {
   const { state } = useLocation();
-  const [showWhatMemo, setShowWhatMemo] = useState("");
-  // const [showMemos, setShowMemos] = useState(
-  //   state === "checkLists" || state === "listMemo" ? false : true
-  // );
-  // const [showChecklists, setshowChecklists] = useState(
-  //   state === "checkLists" ? true : false
-  // );
-  // const [showAchives, setShowAchives] = useState(
-  //   state === "listMemo" ? true : false
-  // );
+  const [showWhatMemo, setShowWhatMemo] = useState("todayTodo");
   const [showExample, setShowExample] = useState(false);
 
+  let navigate = useNavigate();
   useEffect(() => {
-    if (state === "checkLists") {
-      setShowWhatMemo("checkLists");
-    } else if (state === "listMemo") {
-      setShowWhatMemo("listMemo");
-    } else if (state === "freeMemo") {
-      setShowWhatMemo("freeMemo");
-    } else {
-      setShowWhatMemo("todayTodo");
-    }
+    if (state === null) return;
+    setShowWhatMemo(state);
   }, [state]);
 
   const exampleHandler = () => {
@@ -72,15 +48,7 @@ const MemoPage = (props) => {
       {showExample && (
         <ExampleModal
           onClose={() => setShowExample(false)}
-          imgSrc={
-            showWhatMemo === SHOW_WHAT[0]
-              ? submitMemo
-              : showWhatMemo === SHOW_WHAT[1]
-              ? listMemo
-              : showWhatMemo === SHOW_WHAT[2]
-              ? todayTodo
-              : ""
-          }
+          imgSrc={showWhatMemo === SHOW_WHAT[2] ? todayTodo : "준비중입니다."}
           text={
             <>
               <p
@@ -103,39 +71,24 @@ const MemoPage = (props) => {
       )}
 
       <div id="title-div">
-        <button id="title-btn" className="title-memo" onClick={exampleHandler}>
+        <button id="title-btn" onClick={exampleHandler}>
           <>
-            {showWhatMemo === "checkLists"
-              ? ICONS[0]
-              : showWhatMemo === "listMemo"
-              ? ICONS[1]
-              : showWhatMemo === "todayTodo"
-              ? ICONS[2]
-              : showWhatMemo === "budgetManage"
-              ? ICONS[3]
-              : ICONS[4]}{" "}
+            {ICONS[showWhatMemo]}&nbsp;
             {memoTitle(showWhatMemo)?.replace("<br/>", "") || ""}
           </>
         </button>
-        <div
-          style={{
-            height: "70px",
-            display: "flex",
-            alignItems: "center",
-            width: "auto",
-            justifyContent: "flex-end",
-            lineHeight: "20px",
-            fontSize: "0.9rem",
-          }}
-        >
+        <div id="title-func-btns">
           {/* 메뉴 선택하는 버튼들 */}
           {SHOW_WHAT?.map((what, index) => (
             <TitleBtn
               setShowWhatMemo={() => {
                 setShowWhatMemo(what);
+                if (what === "todoList") {
+                  navigate(`/todo`);
+                }
               }}
               key={what}
-              icon={ICONS[index]}
+              icon={ICONS[what]}
               what={what}
               menu_name={MENU_NAME[what]}
             />
@@ -144,29 +97,15 @@ const MemoPage = (props) => {
       </div>
 
       {showWhatMemo === SHOW_WHAT[0] && (
-        <CheckLists
-          students={props.students}
-          userUid={props.userUid}
-          about="checkLists"
-          isSubject={props.isSubject}
-        />
-      )}
-      {showWhatMemo === SHOW_WHAT[2] && (
-        <MemoTodayTodo userUid={props.userUid} />
-      )}
-      {showWhatMemo === SHOW_WHAT[1] && (
-        <CheckLists
-          students={props.students}
-          userUid={props.userUid}
-          about="listMemo"
-          isSubject={props.isSubject}
-        />
-      )}
-      {showWhatMemo === SHOW_WHAT[3] && (
         <BudgetManage userUid={props.userUid} />
       )}
 
-      {showWhatMemo === SHOW_WHAT[4] && <FreeMemo userUid={props.userUid} />}
+      {showWhatMemo === SHOW_WHAT[1] && ""}
+
+      {showWhatMemo === SHOW_WHAT[2] && (
+        <MemoTodayTodo userUid={props.userUid} />
+      )}
+      {showWhatMemo === SHOW_WHAT[3] && <FreeMemo userUid={props.userUid} />}
     </>
   );
 };

@@ -158,7 +158,7 @@ const SeatTable = (props) => {
       if (seatLists?.length > 0) {
         seatLists?.forEach((list) => {
           // 만약.. 가로에 앉는 학생 수가 홀수면.. 짝에 포함시키지 않음!
-          if (list.rowColumn.split("-")[1] % 2 !== 0) return;
+          if (+list.rowColumn.split("-")[1] % 2 !== 0) return;
           // 제목에 제외' 를 포함시킬 경우... 짝에 포함시키지 않음!
           if (list.title.includes("@")) return;
 
@@ -284,7 +284,6 @@ const SeatTable = (props) => {
 
   //뽑기 함수, 뽑힌 학생을 뽑아서 temp에 저장함
   const randomSeatHandler = (isWoman) => {
-    console.log("랜덤시트핸들러실행");
     let selectedStudent = {};
     let pair_students = [...pairStudents];
     let new_students = [...students];
@@ -293,8 +292,6 @@ const SeatTable = (props) => {
     if (isWoman === "all") {
       gender_students = new_students;
     }
-    console.log("기존");
-    console.log(gender_students);
 
     //비밀자료에 있는 학생들은 제외해줌!
     if (props.secretSeat) {
@@ -311,8 +308,6 @@ const SeatTable = (props) => {
       return gender_students[randNum];
     };
 
-    console.log("비밀자료 제외학생");
-    console.log(gender_students);
     //만약 비밀자료에 있는 학생들을 제외하고 모든 학생이 뽑혀버리면.. 비밀자료의 남은 학생들 자리에 넣기!
     let secretPickDone = false;
     let selectedSecretStd = {};
@@ -321,11 +316,7 @@ const SeatTable = (props) => {
       if (isWoman === "all") {
         gender_students = new_students;
       }
-      console.log("비밀자료에 남은 학생");
-      console.log(gender_students);
       selectedSecretStd = selectRnStudent();
-      console.log("선택된학생");
-      console.log(selectedSecretStd);
 
       setTempBeforeName(selectedSecretStd.name);
       new_students = new_students?.filter(
@@ -513,7 +504,6 @@ const SeatTable = (props) => {
 
   //알아서 뽑고 알아서 자리에 넣어주는 함수
   const pickAndSeatHandler = (isWoman) => {
-    console.log("실행됨");
     const randomNum = (b) => {
       return Math.floor(Math.random() * Number(b));
     };
@@ -551,21 +541,17 @@ const SeatTable = (props) => {
       randomSeat.style.backgroundColor = "#d4e8dcbd";
     };
 
-    console.log("에러지점1");
     //뽑힌 모든 학생의 자리가 결정되었으면 새로 학생뽑고
     if (selectSeatCheck()) {
-      console.log("에러지점2");
       //번호 범위에서 가능하지 않으면
       // 전체뽑기가 아닌 경우에만
       if (isWoman === true || isWoman === false) {
-        console.log("에러지점3");
         if (!randomIsPossible(isWoman)) {
           errorSwal(`모든 ${isWoman ? "여" : "남"}학생이 뽑혔어요! `);
 
           return false;
         }
       }
-      console.log("에러지점4");
 
       //학생 뽑아서 temp에 저장함
       randomSeatHandler(isWoman);
@@ -834,7 +820,6 @@ const SeatTable = (props) => {
       props.secretSeat?.students?.forEach((stdNameOrNum, index) => {
         //비밀자료의 인덱스와 현재 자리의 인덱스가 같고 비밀자리표의 현재자리가 사람이름이면 자리에 이름 넣어주고,
         if (index + 1 === +firstSeat.innerText && isNaN(+stdNameOrNum)) {
-          console.log(firstSeat);
           //비밀자료의 인덱스와 현재 자리가 일치하면, 이름 넣어줌
           firstSeat.innerText = stdNameOrNum;
           firstSeat.style.backgroundColor = "#d4e8dcbd";

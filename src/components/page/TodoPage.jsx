@@ -10,6 +10,7 @@ import BaseTodo from "components/Todo/BaseTodo";
 import publicSetting from "../../assets/todo/publicSetting.gif";
 import MeetingSummary from "../Todo/MeetingSummary";
 import Swal from "sweetalert2";
+import { useNavigate } from "react-router-dom";
 
 import { dbService } from "../../fbase";
 import { onSnapshot, setDoc, doc, getDoc } from "firebase/firestore";
@@ -34,6 +35,8 @@ const TodoPage = (props) => {
   const [showExample, setShowExample] = useState(false);
   const [showExplain, setShowExplain] = useState(false);
   const [showBaseTodo, setShowBaseTodo] = useState(false);
+
+  let navigate = useNavigate();
 
   //처음 접속한 유저가 null 되지 않도록 세팅
   let roomInfo = localStorage.getItem("todoPublicRoom");
@@ -533,56 +536,121 @@ const TodoPage = (props) => {
       )}
       <div id="title-div">
         {/* 화면 좌측 상단 타이틀 나오는 부분 */}
-        <button
-          id="title-btn"
-          className="todo"
-          onClick={() => setShowExample(true)}
-        >
-          <i className="fa-regular fa-calendar-check"></i>{" "}
-          {showPublicEvent ? "우리 달력" : "내 달력"}
+        <button id="title-btn" onClick={() => setShowExample(true)}>
+          <>
+            <i className="fa-regular fa-calendar-check"></i>{" "}
+            {showPublicEvent ? "공용달력" : "개인달력"}
+          </>
         </button>
 
-        {/* 설정, 공용or개인용 버튼 부분 */}
-        <button id="switch-btn" onClick={() => setShowPublicSetting(true)}>
-          <i className="fa-solid fa-gear"></i> 설정
-        </button>
-
-        {/* 한번에 일정 입력하기 부분 */}
-        <button id="switch-btn" onClick={() => setShowBaseTodo(true)}>
-          <i className="fa-regular fa-window-restore"></i> 반복
-        </button>
-
-        <button
-          id="switch-btn"
-          onClick={() => {
-            setShowPublicEvent((prev) => !prev);
+        <div
+          style={{
+            height: "70px",
+            display: "flex",
+            alignItems: "center",
+            width: "auto",
+            justifyContent: "flex-end",
+            lineHeight: "20px",
+            fontSize: "0.9rem",
           }}
         >
-          {showPublicEvent ? (
-            <>
-              <i className="fa-solid fa-chalkboard-user"></i> 개인용
-            </>
-          ) : (
-            <>
-              <i className="fa-solid fa-school-flag"></i> 공용
-            </>
-          )}
-        </button>
+          {/* 메뉴 선택하는 버튼들 */}
+          <span
+            className={classes["memo-headerBtn"]}
+            onClick={() => {
+              navigate(`/memo`, {
+                state: "budgetManage",
+              });
+            }}
+          >
+            <i className="fa-solid fa-money-check-dollar"></i> 예산
+          </span>
+          <span
+            className={classes["memo-headerBtn"]}
+            onClick={() => {
+              navigate(`/todo`);
+            }}
+          >
+            <i className="fa-regular fa-calendar-check"></i> 일정
+          </span>
+          <span
+            className={classes["memo-headerBtn"]}
+            onClick={() => {
+              navigate(`/memo`, {
+                state: "todayTodo",
+              });
+            }}
+          >
+            <i className="fa-solid fa-clipboard-check"></i> 할일
+          </span>
+          <span
+            className={classes["memo-headerBtn"]}
+            onClick={() => {
+              navigate(`/memo`, {
+                state: "freeMemo",
+              });
+            }}
+          >
+            <i className="fa-regular fa-folder-open"></i> 메모
+          </span>
+        </div>
       </div>
 
-      {/* 일정 색깔 표시 알림 */}
+      {/* 페이지의 일정부분 관련 버튼 및 설명 */}
+
       <div className={classes["todo-option"]}>
-        <div>
-          <span className={`${classes["todoOption"]} ${classes["op1"]}`}></span>
-          외부강사
+        <div
+          className={classes["todo-option"]}
+          style={{ justifyContent: "flex-start" }}
+        >
+          {/* 설정, 공용or개인용 버튼 부분 */}
+          <span id="switch-btn" onClick={() => setShowPublicSetting(true)}>
+            <i className="fa-solid fa-gear"></i> 설정
+          </span>
+
+          {/* 한번에 일정 입력하기 부분 */}
+          <span id="switch-btn" onClick={() => setShowBaseTodo(true)}>
+            <i className="fa-regular fa-window-restore"></i> 반복
+          </span>
+
+          <span
+            id="switch-btn"
+            onClick={() => {
+              setShowPublicEvent((prev) => !prev);
+            }}
+          >
+            {showPublicEvent ? (
+              <>
+                <i className="fa-solid fa-chalkboard-user"></i> 개인
+              </>
+            ) : (
+              <>
+                <i className="fa-solid fa-school-flag"></i> 공용
+              </>
+            )}
+          </span>
         </div>
-        <div>
-          <span className={`${classes["todoOption"]} ${classes["op2"]}`}></span>
-          자체행사
-        </div>
-        <div>
-          <span className={`${classes["todoOption"]} ${classes["op3"]}`}></span>
-          교사일정
+        {/* 일정 색깔 표시 알림 */}
+
+        <div className={classes["todo-option"]}>
+          <div className={classes["todo-option-expl"]}>
+            <span
+              className={`${classes["todoOption"]} ${classes["op1"]}`}
+            ></span>
+            외부강사
+          </div>
+          <div className={classes["todo-option-expl"]}>
+            <span
+              className={`${classes["todoOption"]} ${classes["op2"]}`}
+            ></span>
+            자체행사
+          </div>
+          <div className={classes["todo-option-expl"]}>
+            <span
+              className={`${classes["todoOption"]} ${classes["op3"]}`}
+            ></span>
+            교사일정
+          </div>
         </div>
       </div>
 

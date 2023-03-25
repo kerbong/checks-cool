@@ -22,7 +22,9 @@ const ManageAttendance = lazy(() => import("components/page/ManageAttendance"));
 const MainPage = lazy(() => import("./components/page/MainPage"));
 const AttendancePage = lazy(() => import("./components/page/AttendancePage"));
 const ClassgamePage = lazy(() => import("./components/page/ClassgamePage"));
+const WeTeacher = lazy(() => import("./components/page/WeTeacher"));
 const ConsultingPage = lazy(() => import("./components/page/ConsultingPage"));
+const CheckListMemo = lazy(() => import("./components/page/CheckListMemo"));
 const MemoPage = lazy(() => import("./components/page/MemoPage"));
 const TodoPage = lazy(() => import("./components/page/TodoPage"));
 const Profile = lazy(() => import("./components/page/Profile"));
@@ -283,6 +285,18 @@ function App() {
                     />
                   }
                 />
+                <Route
+                  path="weteacher"
+                  element={
+                    <WeTeacher
+                      students={students}
+                      userUid={userUid}
+                      email={user.email}
+                      nickName={profile?.nickName || ""}
+                      isSubject={profile?.isSubject || []}
+                    />
+                  }
+                />
 
                 <Route
                   path="classTable"
@@ -359,6 +373,16 @@ function App() {
                   path="memo"
                   element={
                     <MemoPage
+                      students={students}
+                      userUid={userUid}
+                      isSubject={profile.isSubject || []}
+                    />
+                  }
+                />
+                <Route
+                  path="checkListMemo"
+                  element={
+                    <CheckListMemo
                       students={students}
                       userUid={userUid}
                       isSubject={profile.isSubject || []}

@@ -121,7 +121,7 @@ const MemoTodayTodo = (props) => {
       {/* 할 일 Item 리스트 */}
 
       <MemoTodayTodoItemList
-        title={"할 일"}
+        title={"오늘 할 일"}
         setTodoList={setTodoListHandler}
         todoList={todoList}
         checkedList={false} // (체크되지 않은) 할 일 목록

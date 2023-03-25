@@ -93,6 +93,77 @@ const StudentCalendarLayout = (props) => {
     setShowStudentsList(true);
   };
 
+  const titleDivBtns = (
+    <div id="title-div">
+      <button id="title-btn" onClick={() => setShowExample(true)}>
+        <i className="fa-regular fa-address-book"></i> 생기부
+      </button>
+
+      <div
+        style={{
+          height: "70px",
+          display: "flex",
+          alignItems: "center",
+          width: "auto",
+          justifyContent: "flex-end",
+          lineHeight: "20px",
+          fontSize: "0.9rem",
+        }}
+      >
+        <span id="switch-btn" onClick={showCalHandler}>
+          <i className="fa-regular fa-calendar-days"></i> 출결
+          <br />
+          기록
+        </span>
+
+        <span id="switch-btn" onClick={showEachStudentHandler}>
+          <i className="fa-solid fa-user"></i> 출결
+          <br />
+          조회
+        </span>
+
+        <span
+          id="switch-btn"
+          onClick={() => {
+            navigate(`/consulting`, {
+              state: { doWhat: "addConsult" },
+            });
+          }}
+        >
+          <i className="fa-regular fa-comments"></i> 상담
+          <br />
+          관리
+        </span>
+        {/* 제출ox */}
+        <span
+          id="switch-btn"
+          onClick={() => {
+            navigate(`/checkListMemo`, {
+              state: { about: "checkLists" },
+            });
+          }}
+        >
+          <i className="fa-regular fa-square-check"></i> 제출
+          <br />
+          ox
+        </span>
+        {/* 개별기록 */}
+        <span
+          id="switch-btn"
+          onClick={() => {
+            navigate(`/checkListMemo`, {
+              state: { about: "listMemo" },
+            });
+          }}
+        >
+          <i className="fa-solid fa-clipboard-check"></i> 개별
+          <br />
+          기록
+        </span>
+      </div>
+    </div>
+  );
+
   return (
     <>
       {showExample && (
@@ -120,33 +191,12 @@ const StudentCalendarLayout = (props) => {
           }
         />
       )}
+
+      {titleDivBtns}
+
       {/* 출결 달력+명렬표 에서 보여줄 버튼, 내용 */}
       {showCalendar && (
         <>
-          <div id="title-div">
-            <button id="title-btn" onClick={() => setShowExample(true)}>
-              <i className="fa-regular fa-address-book"></i> 생기부
-            </button>
-
-            <button id="switch-btn" onClick={showCalHandler}>
-              <i className="fa-regular fa-calendar-days"></i> 출결기록
-            </button>
-
-            <button id="switch-btn" onClick={showEachStudentHandler}>
-              <i className="fa-solid fa-user"></i> 출결조회
-            </button>
-
-            <button
-              id="switch-btn"
-              onClick={() => {
-                navigate(`/consulting`, {
-                  state: { doWhat: "addConsult" },
-                });
-              }}
-            >
-              <i className="fa-regular fa-comments"></i> 상담관리
-            </button>
-          </div>
           {props.students.length === 0 && (
             <>
               <div>학생 명단이 존재하지 않네요!</div>
@@ -194,31 +244,6 @@ const StudentCalendarLayout = (props) => {
       {/* 개별학생 출석부 에서 보여줄 버튼,내용 */}
       {showEachStudent && (
         <>
-          <div id="title-div">
-            <button id="title-btn" onClick={() => setShowExample(true)}>
-              <i className="fa-regular fa-address-book"></i> 생기부
-            </button>
-
-            <button id="switch-btn" onClick={showCalHandler}>
-              <i className="fa-regular fa-calendar-days"></i> 출결기록
-            </button>
-
-            <button id="switch-btn" onClick={showEachStudentHandler}>
-              <i className="fa-solid fa-user"></i> 출결조회
-            </button>
-
-            <button
-              id="switch-btn"
-              onClick={() => {
-                navigate(`/consulting`, {
-                  state: { doWhat: "addConsult" },
-                });
-              }}
-            >
-              <i className="fa-regular fa-comments"></i> 상담관리
-            </button>
-          </div>
-
           {/* 전체 학년도 학생목록 */}
           <AttendEachLists
             userUid={props.userUid}

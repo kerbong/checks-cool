@@ -19,7 +19,7 @@ const Header = (props) => {
   useEffect(() => {
     let whereHref = window.location.href.split("/");
     let where = whereHref[whereHref.length - 1];
-    if (where === "consulting") {
+    if (where === "consulting" || where === "checkListMemo") {
       setNowOn("attendance");
     } else if (
       where === "manageAttendance" ||
@@ -27,6 +27,8 @@ const Header = (props) => {
       where === "manageCheckListMemo"
     ) {
       setNowOn("manageStudent");
+    } else if (where === "todo") {
+      setNowOn("memo");
     } else {
       setNowOn(where);
     }
@@ -57,12 +59,6 @@ const Header = (props) => {
             nowOn={nowOn}
           />
           <HeaderMenu
-            icon={"fa-regular fa-calendar-check"}
-            path={"todo"}
-            menuText={"일정"}
-            nowOn={nowOn}
-          />
-          <HeaderMenu
             icon={"fa-regular fa-note-sticky"}
             path={"memo"}
             menuText={"메모"}
@@ -70,10 +66,16 @@ const Header = (props) => {
           />
 
           <HeaderMenu
+            icon={"fa-solid fa-cookie-bite"}
+            path={"weteacher"}
+            menuText={"We-T"}
+            nowOn={nowOn}
+          />
+          <HeaderMenu
             icon={"fa-solid fa-gamepad"}
             path={"classgame"}
             from={""}
-            menuText={"잼잼"}
+            menuText={"Wi-S"}
             nowOn={nowOn}
           />
         </ul>

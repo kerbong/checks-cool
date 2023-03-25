@@ -260,32 +260,76 @@ const ConsultingPage = (props) => {
           <i className="fa-regular fa-address-book"></i> 생기부
         </button>
 
-        <button
-          id="switch-btn"
-          onClick={() => {
-            navigate(`/attendance`, {
-              state: { doWhat: "addAttend" },
-            });
+        <div
+          style={{
+            height: "70px",
+            display: "flex",
+            alignItems: "center",
+            width: "auto",
+            justifyContent: "flex-end",
+            lineHeight: "20px",
+            fontSize: "0.9rem",
           }}
         >
-          <i className="fa-regular fa-calendar-days"></i> 출결기록
-        </button>
+          <span
+            id="switch-btn"
+            onClick={() => {
+              navigate(`/attendance`, {
+                state: { doWhat: "addAttend" },
+              });
+            }}
+          >
+            <i className="fa-regular fa-calendar-days"></i> 출결
+            <br />
+            기록
+          </span>
 
-        <button
-          id="switch-btn"
-          onClick={() => {
-            navigate(`/attendance`, {
-              state: { doWhat: "showAttend" },
-            });
-          }}
-        >
-          <i className="fa-solid fa-user"></i> 출결조회
-        </button>
-        <button id="switch-btn" onClick={showCalHandler}>
-          <>
-            <i className="fa-regular fa-comments"></i> 상담관리
-          </>
-        </button>
+          <span
+            id="switch-btn"
+            onClick={() => {
+              navigate(`/attendance`, {
+                state: { doWhat: "showAttend" },
+              });
+            }}
+          >
+            <i className="fa-solid fa-user"></i> 출결
+            <br />
+            조회
+          </span>
+          <span id="switch-btn" onClick={showCalHandler}>
+            <>
+              <i className="fa-regular fa-comments"></i> 상담
+              <br />
+              관리
+            </>
+          </span>
+          {/* 제출ox */}
+          <span
+            id="switch-btn"
+            onClick={() => {
+              navigate(`/checkListMemo`, {
+                state: { about: "checkLists" },
+              });
+            }}
+          >
+            <i className="fa-regular fa-square-check"></i> 제출
+            <br />
+            ox
+          </span>
+          {/* 개별기록 */}
+          <span
+            id="switch-btn"
+            onClick={() => {
+              navigate(`/checkListMemo`, {
+                state: { about: "listMemo" },
+              });
+            }}
+          >
+            <i className="fa-solid fa-clipboard-check"></i> 개별
+            <br />
+            기록
+          </span>
+        </div>
       </div>
 
       {optionIsShown && (

@@ -35,6 +35,19 @@ const AssistanceAi = () => {
     };
 
     setIsLoading(true);
+    //15초 이후에 대답 없으면 취소
+    let timer;
+    const cancelSwalHandler = () => {
+      timer = setTimeout(() => {
+        Swal.fire(
+          "요청 실패",
+          "답변시간이 초과되어 요청이 실패했습니다! 다른 질문을 준비해주세요!",
+          "warning"
+        );
+        setIsLoading(false);
+      }, 15000);
+    };
+    cancelSwalHandler();
 
     await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
@@ -50,15 +63,8 @@ const AssistanceAi = () => {
       .then((data) => {
         setSentiment(data?.choices?.[0]?.message?.content); // Positive or negative
         setIsLoading(false);
-        //15초 이후에 대답 없으면 취소
-        setTimeout(() => {
-          Swal.fire(
-            "요청 실패",
-            "답변시간이 초과되어 요청이 실패했습니다! 다른 질문을 준비해주세요!",
-            "warning"
-          );
-          setIsLoading(false);
-        }, 15000);
+        //답변 완료 시 타이머 해제
+        clearTimeout(timer);
       })
       .catch((error) => {
         // console.log(error);
@@ -71,7 +77,7 @@ const AssistanceAi = () => {
 
       <h3>
         갑자기 궁금한 게 생기시면 물어보세요!
-        <br />* 최대 10초가 소요됩니다.
+        <br />* 최대 15초가 소요됩니다.
       </h3>
       <span>
         (테스트중입니다. 기간 대비 과도한 금액이 청구되면..
@@ -79,7 +85,9 @@ const AssistanceAi = () => {
       </span>
       <br />
       <br />
-      <div>
+      <div
+        style={{ display: "flex", justifyContent: "center", margin: "20px" }}
+      >
         <textarea
           onChange={(e) => setTweet(e.target.value)}
           cols={50}

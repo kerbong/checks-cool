@@ -223,15 +223,17 @@ const ConsultLists = (props) => {
         `${consult.id.slice(0, 10)} ${consult.id.slice(10, 15)}`,
         consult.note,
       ];
+      if (isSubject) {
+        data.unshift(consult.clName);
+      }
       new_datas.push(data);
     });
-    new_datas.unshift([
-      "번호",
-      "이름",
-      "관련",
-      "날짜(년월일 시각)",
-      "기록내용",
-    ]);
+
+    let data_title = ["번호", "이름", "관련", "날짜(년월일 시각)", "기록내용"];
+    if (isSubject) {
+      data_title.unshift("반");
+    }
+    new_datas.unshift(data_title);
 
     //새로운 가상 엑셀파일 생성
     const book = utils.book_new();
@@ -244,6 +246,9 @@ const ConsultLists = (props) => {
       { wpx: 100 },
       { wpx: 150 },
     ];
+    if (isSubject) {
+      consult_datas["!cols"].unshift({ wpx: 30 });
+    }
     //시트에 작성한 데이터 넣기
     utils.book_append_sheet(book, consult_datas, "상담기록");
 

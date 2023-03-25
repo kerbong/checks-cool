@@ -2,13 +2,9 @@ import React, { useState, useEffect } from "react";
 import Button from "../Layout/Button";
 import classes from "../Classgame/SettingSeat/SettingSeat.module.css";
 import SettingSeat from "../Classgame/SettingSeat/SettingSeat";
-import Simsim from "../Classgame/Simsim/Simsim";
-import Mission from "../Classgame/Mission/Mission";
-import Doit from "../Classgame/Doit/Doit";
 import { useLocation } from "react-router-dom";
 import TitleBtn from "components/Memo/TitleBtn";
 import Alarm from "components/Classgame/AlarmNotice/Alarm";
-import AssistanceAi from "components/Classgame/AssistanceAi/AssistanceAi";
 
 const ClassgamePage = (props) => {
   const { state } = useLocation();
@@ -16,28 +12,21 @@ const ClassgamePage = (props) => {
   //알림장 세팅
   const [showAlarm, setShowAlarm] = useState(false);
 
-  const SHOW_WHAT = ["settingSeat", "simsim", "mission", "doThis"];
+  const SHOW_WHAT = ["settingSeat", "alarm"];
 
-  const MENU_NAME = [
-    "자리<br/>뽑기",
-    "심심<br/>해요",
-    "아침<br/>한마디",
-    "이거<br/>해요",
-  ];
+  const MENU_NAME = ["자리<br/>뽑기", "알림장"];
 
   const ICONS = [
     <i className="fa-sharp fa-solid fa-chair"></i>,
-    <i className="fa-solid fa-face-meh"></i>,
-    <i className="fa-solid fa-mug-saucer"></i>,
-    <i className="fa-solid fa-thumbs-up"></i>,
+    <i class="fa-solid fa-chalkboard"></i>,
   ];
 
   useEffect(() => {
-    if (state === "main") {
-      setSelectedMenu("simsim");
-    } else if (state === "morning") {
-      setSelectedMenu("mission");
-    }
+    // if (state === "main") {
+    //   setSelectedMenu("simsim");
+    // } else if (state === "morning") {
+    //   setSelectedMenu("mission");
+    // }
   }, [state]);
 
   return (
@@ -49,15 +38,13 @@ const ClassgamePage = (props) => {
           <div id="title-div">
             <button id="title-btn" className="">
               {/* onClick={exampleHandler}>/ */}
-              {selectedMenu === "settingSeat" && <>{ICONS[0]}자리뽑기</>}
+              {selectedMenu === "settingSeat" && <>{ICONS[0]} 자리뽑기</>}
+              {selectedMenu === "alarm" && <>{ICONS[1]} 알림장</>}
               {selectedMenu === "" && (
                 <>
-                  <i className="fa-solid fa-gamepad"></i> 잼잼
+                  <i className="fa-solid fa-gamepad"></i> With-Student
                 </>
               )}
-              {selectedMenu === "simsim" && <>{ICONS[1]} 심심해요</>}
-              {selectedMenu === "mission" && <>{ICONS[2]}아침한마디</>}
-              {selectedMenu === "doThis" && <>{ICONS[3]} 이거해요</>}
             </button>
 
             <div className={classes["title-btns"]}>
@@ -84,30 +71,11 @@ const ClassgamePage = (props) => {
                 className={"settingSeat"}
                 onclick={() => setSelectedMenu("settingSeat")}
               />
-              <Button
-                name={"심심해요"}
-                className={"settingSeat"}
-                onclick={() => setSelectedMenu("simsim")}
-              />
-              <Button
-                name={"아침한마디"}
-                className={"settingSeat"}
-                onclick={() => setSelectedMenu("mission")}
-              />
-              <Button
-                name={"이거해요"}
-                className={"settingSeat"}
-                onclick={() => setSelectedMenu("doThis")}
-              />
+
               <Button
                 name={"알림장"}
                 className={"settingSeat"}
                 onclick={() => setShowAlarm(true)}
-              />
-              <Button
-                name={"비서"}
-                className={"settingSeat"}
-                onclick={() => setSelectedMenu("ai")}
               />
             </div>
           )}
@@ -116,21 +84,11 @@ const ClassgamePage = (props) => {
             {selectedMenu === "settingSeat" && (
               <SettingSeat students={props.students} userUid={props.userUid} />
             )}
-
-            {selectedMenu === "simsim" && <Simsim userUid={props.userUid} />}
-
-            {selectedMenu === "mission" && <Mission userUid={props.userUid} />}
-
-            {selectedMenu === "doThis" && (
-              <Doit
+            {selectedMenu === "alarm" && (
+              <Alarm
+                alarmClose={() => setSelectedMenu("")}
                 userUid={props.userUid}
-                nickName={props.nickName}
-                email={props.email}
               />
-            )}
-
-            {selectedMenu === "ai" && (
-              <AssistanceAi userUid={props.userUid} nickName={props.nickName} />
             )}
           </div>
         </div>

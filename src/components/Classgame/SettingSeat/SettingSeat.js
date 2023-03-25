@@ -50,7 +50,7 @@ const SettingSeat = (props) => {
   }, [students]);
 
   useEffect(() => {
-    console.log(secretSeat);
+    // console.log(secretSeat);
     if (Object.keys(secretSeat)?.length === 0) return;
     //전담 담임에 따라 전체 학생 목록도 세팅함.
     if (secretSeat.clName) {
@@ -62,9 +62,9 @@ const SettingSeat = (props) => {
 
   //최종 자리에 앉는 학생 세팅
   const seatStudentsHandler = (clName) => {
-    console.log("ddd");
+    // console.log("ddd");
     if (clName === "") {
-      console.log(students);
+      // console.log(students);
       setSeatStudents(students);
     } else {
       setSeatStudents(

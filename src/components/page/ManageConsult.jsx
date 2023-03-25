@@ -6,6 +6,7 @@ import { dbService } from "../../fbase";
 import { onSnapshot, setDoc, doc, getDoc } from "firebase/firestore";
 import classes from "./ManageEach.module.css";
 import Button from "components/Layout/Button";
+import { utils, writeFile } from "xlsx";
 
 const ManageConsult = (props) => {
   const [onStudent, setOnStudent] = useState("");
@@ -131,7 +132,50 @@ const ManageConsult = (props) => {
   };
 
   //엑셀저장함수
-  const saveExcelHandler = () => {};
+  const saveExcelHandler = () => {
+    const new_datas = [];
+    consults.forEach((consult) => {
+      let data = [
+        consult.num,
+        consult.name,
+        consult.option.slice(1),
+        `${consult.id.slice(0, 10)} ${consult.id.slice(10, 15)}`,
+        consult.note,
+      ];
+      if (nowIsSubject) {
+        data.unshift(consult.clName);
+      }
+      new_datas.push(data);
+    });
+
+    let data_title = ["번호", "이름", "관련", "날짜(년월일 시각)", "기록내용"];
+    if (nowIsSubject) {
+      data_title.unshift("반");
+    }
+    new_datas.unshift(data_title);
+
+    //새로운 가상 엑셀파일 생성
+    const book = utils.book_new();
+    const consult_datas = utils.aoa_to_sheet(new_datas);
+    //셀의 넓이 지정
+    consult_datas["!cols"] = [
+      { wpx: 40 },
+      { wpx: 60 },
+      { wpx: 60 },
+      { wpx: 100 },
+      { wpx: 150 },
+    ];
+    if (nowIsSubject) {
+      consult_datas["!cols"].unshift({ wpx: 30 });
+    }
+    //시트에 작성한 데이터 넣기
+    utils.book_append_sheet(book, consult_datas, "상담기록");
+
+    writeFile(
+      book,
+      `${nowYear()}학년도 상담기록(${dayjs().format("YYYY-MM-DD")}).xlsx`
+    );
+  };
 
   useEffect(() => {
     //받아온 정보 { student: 학생번호 이름 , clName: 전담이면 반이름}
@@ -170,7 +214,10 @@ const ManageConsult = (props) => {
                 style={{ alignItems: "flex-end" }}
               >
                 {/* 전체 상담 확인 상담옵션별 횟수 기록 */}
-                <li className={classes["bottom-content-li"]}>
+                <li
+                  className={classes["bottom-content-li"]}
+                  style={{ minWidth: "350px" }}
+                >
                   <div className={classes["flex-center-ml-10"]}>
                     <span className={classes["fs-13-bold"]}>
                       {clName ? `${clName} | 상담 요약` : "우리반 상담 요약"}
@@ -224,6 +271,7 @@ const ManageConsult = (props) => {
                                 .length
                             })`}
                             onclick={() => {
+                              setShowConsultMonth("");
                               setShowConsultOption(option);
                             }}
                           />
@@ -267,6 +315,7 @@ const ManageConsult = (props) => {
                       <>
                         {/* 월별 버튼 */}
                         <Button
+                          key={`${month}월`}
                           id={`${month}월`}
                           className={
                             showConsultMonth === month
@@ -275,6 +324,7 @@ const ManageConsult = (props) => {
                           }
                           name={`${month}월`}
                           onclick={() => {
+                            setShowConsultOption("");
                             setShowConsultMonth(month);
                           }}
                         />

@@ -122,7 +122,7 @@ const CheckLists = (props) => {
 
   useEffect(() => {
     getDatasFromDb();
-  }, []);
+  }, [props.about]);
 
   //처음 보여줄 학년도 설정(올해 자료있으면 보여줌)
   useEffect(() => {
