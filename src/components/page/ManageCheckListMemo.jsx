@@ -9,11 +9,13 @@ import classes from "./ManageEach.module.css";
 import CompareListMemoTable from "../Manage/CompareListMemoTable";
 import Swal from "sweetalert2";
 import { utils, writeFile } from "xlsx";
+import DoughnutChart from "../Manage/DoughnutChart";
 
 const ManageCheckListMemo = (props) => {
   const [students, setStudents] = useState([]);
   const [showListMemo, setShowListMemo] = useState(true);
   const [checkLists, setCheckLists] = useState([]);
+  const [allCheckLists, setAllCheckLists] = useState([]);
   const [listMemo, setListMemo] = useState([]);
   const [allListMemo, setAllListMemo] = useState([]);
   const [onAllListMemo, setOnAllListMemo] = useState([]);
@@ -64,20 +66,22 @@ const ManageCheckListMemo = (props) => {
     onSnapshot(checkListsRef, (doc) => {
       if (checkListsSnap.exists()) {
         let new_checkLists = [];
-        doc
+        let now_year_data = doc
           .data()
-          ?.checkLists_data?.filter((data) => data.yearGroup === nowYear())
-          ?.forEach((list) =>
-            list.unSubmitStudents.forEach((stu) => {
-              let new_data = { ...stu, id: list.id, title: list.title };
-              //전담이면 clName도 추가함
-              if (nowIsSubject) {
-                new_data.clName = list.clName;
-              }
-              new_checkLists.push(new_data);
-            })
-          );
+          ?.checkLists_data?.filter((data) => data.yearGroup === nowYear());
 
+        now_year_data?.forEach((list) =>
+          list.unSubmitStudents.forEach((stu) => {
+            let new_data = { ...stu, id: list.id, title: list.title };
+            //전담이면 clName도 추가함
+            if (nowIsSubject) {
+              new_data.clName = list.clName;
+            }
+            new_checkLists.push(new_data);
+          })
+        );
+
+        setAllCheckLists([...now_year_data]);
         setCheckLists([...new_checkLists]);
       }
     });
@@ -145,6 +149,10 @@ const ManageCheckListMemo = (props) => {
         );
         setOnCheckLists(new_onCheckLists);
       }
+    }
+
+    if (!showListMemo) {
+      doughnut_datas();
     }
   }, [onStudent, listMemo]);
 
@@ -310,6 +318,35 @@ const ManageCheckListMemo = (props) => {
     writeFile(wb, fileName);
   };
 
+  //도넛차트로 보낼 데이터셋,
+  const doughnut_datas = () => {
+    let submitNum = 0;
+    let unSubmitNum = 0;
+    allCheckLists?.forEach((list) => {
+      // 전담인데.. 현재 선택된 학급과 자료 학급이 다르면 리턴
+      if (nowIsSubject && list?.clName !== clName) return;
+      list?.unSubmitStudents?.filter(
+        (stu) => stu.name === onStudent.split(" ")[1]
+      )?.length > 0
+        ? (unSubmitNum += 1)
+        : (submitNum += 1);
+    });
+
+    const new_datas = {
+      labels: ["제출", "미제출"],
+      datasets: [
+        {
+          label: "개수",
+          // 제출개수, 미제출개수 보내기
+          data: [submitNum, unSubmitNum],
+          backgroundColor: ["#ffcd56", "#4bc0c0"],
+          borderWidth: 0,
+        },
+      ],
+    };
+    return new_datas;
+  };
+
   return (
     <div>
       {/* 학생 보여주는 부분 */}
@@ -389,7 +426,7 @@ const ManageCheckListMemo = (props) => {
                 {!showCompareListMemo ? (
                   <>
                     <h2 className={classes["fs-15"]}>
-                      전체학생 개별기록 모아보기
+                      전체학생 개별기록 모아보기🪄
                     </h2>
                     <h4 style={{ color: "white" }}>
                       * 검색 후 여러 자료를 선택(클릭)하시고
@@ -508,6 +545,14 @@ const ManageCheckListMemo = (props) => {
                 className={`${classes["flex-wrap"]}`}
                 style={{ width: "100%" }}
               >
+                {/* 전체 제출ox 자료 중에.. 현재학생 미제출 개수 원그래프 차트로 보여주기 */}
+                <li
+                  id={"notChecked"}
+                  className={classes["bottom-content-li"]}
+                  style={{ width: "200px" }}
+                >
+                  <DoughnutChart data={doughnut_datas()} />
+                </li>
                 {/* 학생 제출/미제출 부분 보여주기 */}
                 {onCheckLists?.map((list) => (
                   <li
