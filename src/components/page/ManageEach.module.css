@@ -4,6 +4,12 @@
   margin: 10px 0 20px 0;
 }
 
+.flex-d-column {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
 .btns-div {
   display: flex;
   align-items: center;
@@ -48,6 +54,11 @@
 
 .fs-11 {
   font-size: 1.1rem;
+  word-break: break-all;
+}
+
+.fs-9 {
+  font-size: 0.9rem;
   word-break: break-all;
 }
 

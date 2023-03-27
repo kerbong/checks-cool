@@ -177,6 +177,8 @@
   font-weight: bold;
   right: 45px;
   position: relative;
+  border-radius: 15px;
+  text-align: center;
 }
 
 .year-select {
@@ -185,6 +187,7 @@
   width: 22%;
   height: 60px;
   font-size: 1rem;
+  border-radius: 15px;
 }
 .budgetList-desc {
   display: flex;
@@ -232,6 +235,11 @@
   right: 58px;
   top: 160px;
 }
+
+.budget-add {
+  top: 176px;
+}
+
 .budget-del {
   position: relative;
   right: 0;
@@ -275,19 +283,23 @@
 
 .newBudget-title {
   width: 50%;
+  border-radius: 10px;
 }
 
 .newBudget-site,
 .newBudget-each,
 .newBudget-amount {
   width: 20%;
+  border-radius: 10px;
 }
 
 .newBudget-count {
+  border-radius: 10px;
   width: 10%;
 }
 .newBudget-note {
   width: 60%;
+  border-radius: 10px;
 }
 
 .budgetList-newdiv,

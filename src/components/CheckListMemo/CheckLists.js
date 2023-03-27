@@ -651,7 +651,7 @@ const CheckLists = (props) => {
             )}
           </div>
 
-          <div>
+          <div className={classes["flex-wrap"]}>
             {/* 제출 미제출 체크리스트들 보여주기 */}
             {nowOnCheckLists &&
               sortList(nowOnCheckLists)?.map((item) => (
@@ -816,7 +816,7 @@ const CheckLists = (props) => {
               onclick={saveExcelHandler}
             />
           </div>
-          <div>
+          <div className={classes["flex-wrap"]}>
             {/* 명렬표에서 입력한 자료들도 보여주기 */}
             {nowOnListMemo &&
               sortList(nowOnListMemo)?.map((item) => (

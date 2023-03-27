@@ -7,6 +7,7 @@ import { useLocation } from "react-router";
 import classes from "./ManageEach.module.css";
 import Button from "components/Layout/Button";
 import { utils, writeFile } from "xlsx";
+import Swal from "sweetalert2";
 
 const ManageAttendance = (props) => {
   const [onStudent, setOnStudent] = useState("");
@@ -17,6 +18,8 @@ const ManageAttendance = (props) => {
   const [onAttendsOption, setOnAttendsOption] = useState([]);
   const [showAttendOption, setShowAttendOption] = useState("");
   const [showAttendMonth, setShowAttendMonth] = useState("");
+  const [showDelete, setShowDelete] = useState(false);
+  const [deleteChecked, setDeleteChecked] = useState([]);
 
   const { state } = useLocation();
 
@@ -260,6 +263,36 @@ const ManageAttendance = (props) => {
     );
   };
 
+  //삭제함수
+  const deleteHandler = (allOrChecked) => {
+    // 삭제하는 실제함수
+    const deleteAttend = (allOrChecked) => {
+      // 전체 정보 받아오고, deleteChecked 있는거 제외해서 자료로 만들고 firebase저장 및 attends 상태에 저장.
+      // 상태 함수도.. 수정해줘야함..! setShowOnAttends랑 setOnAttends에는 onAttends에서 deletedChecked 제외한거 넣어주고,
+    };
+
+    //전체삭제인 경우
+    if (allOrChecked === "all") {
+      Swal.fire({
+        icon: "warning",
+        title: "전체 삭제할까요?",
+        text: `${
+          onStudent.split(" ")[1]
+        } 학생의 출결 기록을 모두 삭제할까요? 삭제 후에는 기록을 복구할 수 없습니다. 신중히 선택해주세요!`,
+        confirmButtonText: "확인",
+        confirmButtonColor: "#85bd82",
+        denyButtonText: "취소",
+        showDenyButton: true,
+      }).then((result) => {
+        if (result.isConfirmed) {
+          Swal.fire("개발중", "기능 개발중입니다...", "info");
+        } else {
+          return;
+        }
+      });
+    }
+  };
+
   return (
     <div>
       {/* 학생 보여주는 부분 */}
@@ -326,6 +359,36 @@ const ManageAttendance = (props) => {
                     ))}
                   </div>
                 )}
+              </li>
+              <li
+                className={classes["bottom-content-li"]}
+                style={{ minWidth: "100px" }}
+              >
+                {/* <div className={classes["fs-9"]}>
+                  * 수정은 생기부 페이지를 활용해주세요.
+                </div> */}
+                {/* <hr className={classes["margin-15"]} /> */}
+                <div className={classes["flex-d-column"]}>
+                  {/* 전체삭제버튼 */}
+                  <Button
+                    id={"attend-delete"}
+                    className={"sortBtn"}
+                    name={!showDelete ? "전체삭제" : "확인"}
+                    onclick={() => {
+                      deleteHandler("all");
+                    }}
+                  />
+                  {/* 삭제버튼 */}
+                  <Button
+                    id={"attend-delete"}
+                    className={"sortBtn"}
+                    name={showDelete ? "취소" : "선택삭제"}
+                    onclick={() => {
+                      Swal.fire("개발중", "기능 개발중입니다...", "info");
+                      // setShowDelete((prev) => !prev);
+                    }}
+                  />
+                </div>
               </li>
             </div>
 
