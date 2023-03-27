@@ -79,11 +79,13 @@ const SettingSeat = (props) => {
     let seatsRef = doc(dbService, "seats", props.userUid);
     const secretSeatDoc = await getDoc(seatsRef);
     if (secretSeatDoc.exists()) {
-      secretSeatDoc.data()?.seats_data?.forEach((data) => {
-        //예시자료만.. 저장해두기
-        if (data.title === "-*-예시자료-*-") {
-          setSecretSeat(data);
-        }
+      onSnapshot(seatsRef, (doc) => {
+        doc?.data()?.seats_data?.forEach((data) => {
+          //예시자료만.. 저장해두기
+          if (data.title === "-*-예시자료-*-") {
+            setSecretSeat({ ...data });
+          }
+        });
       });
     }
   };
@@ -91,7 +93,7 @@ const SettingSeat = (props) => {
   //예시자료 있는지 받아와서 저장하기
   useEffect(() => {
     getSecretSeat();
-  }, []);
+  }, [addNew]);
 
   //사용방법
   const showHowToUse = (
@@ -196,6 +198,15 @@ const SettingSeat = (props) => {
               name={"예시자료"}
               className={"settingSeat"}
               onclick={() => {
+                // 저장된 예시자료가 없으면.. 안띄우기
+                if (Object.keys(secretSeat).length === 0) {
+                  Swal.fire(
+                    "자료 확인",
+                    "예시자료로 저장된 자료가 있는지 확인해주세요! (추가하기 -> 자리뽑기로 저장) 혹시 저장하셨다면 메뉴의 다른 탭 (생기부-조회 등)을 클릭한 후 다시 접속해주세요! 문제가 지속되면 kerbong@gmail.com으로 알려주세요~"
+                  );
+                  return;
+                }
+
                 setAddNew(true);
                 setShowTable(true);
                 setInit(false);
@@ -230,18 +241,16 @@ const SettingSeat = (props) => {
         // 저장된 자료를 불러와서 리스트로 보여주기
         //firebase에서 자료 가져오고 그거 state에 저장해두고 그거 li태그에 감싸서 보여주기
         <>
-          <div className={`${classes["title-div"]} ${classes["mt--25"]}`}></div>
-          <SeatTable
-            rowColumn={rowColumn}
-            students={seatStudents}
-            userUid={props.userUid}
-            addNewCancel={() => {
-              setAddNew(false);
+          <button
+            className={classes["seatsAdd-btn"]}
+            onClick={() => {
+              setAddNew(true);
               setShowTable(false);
-              setInit(true);
             }}
-            nowClassName={nowClassName}
-          />
+          >
+            <i className="fa-solid fa-plus"></i>
+          </button>
+          <SeatLists userUid={props.userUid} wholeStudents={props.students} />
         </>
       )}
 

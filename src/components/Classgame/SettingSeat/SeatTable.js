@@ -951,6 +951,8 @@ const SeatTable = (props) => {
 
   //비밀 저장함수..(이어하기) 다 안뽑혀도 저장 가능함.
   const secretSaveHandler = async () => {
+    if (props.isExist) return;
+
     Swal.fire({
       icon: "warning",
       title: "저장 확인",

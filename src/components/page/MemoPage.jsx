@@ -32,6 +32,7 @@ const MemoPage = (props) => {
   let navigate = useNavigate();
   useEffect(() => {
     if (state === null) return;
+    console.log(state);
     setShowWhatMemo(state);
   }, [state]);
 
