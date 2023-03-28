@@ -189,6 +189,7 @@
 }
 
 .sortBtn,
+.sortBtn-del,
 .sortBtn-consult {
   width: auto;
   height: 50px;
@@ -199,6 +200,10 @@
   letter-spacing: -1px;
   padding: 10px;
   background-color: #da9a9a3b;
+}
+
+.sortBtn-del {
+  height: 43px;
 }
 
 .sortBtn-consult {

@@ -154,6 +154,12 @@ const SettingSeat = (props) => {
           * 예시사용법 3. * [자리뽑기]를 눌러서 저장하는 예시자료는 덮어쓰기
           됩니다!
         </p>
+
+        <p className={classes[`gameMenu`]}>
+          * 예시사용법 4. * 저장했던 예시자료를 불러와서 이어하고 싶으신가요??
+          학생을 자리에 넣지 않은 상태에서 키보드의 + 버튼을 눌러주시면
+          이어하기가 가능합니다!
+        </p>
       </div>
     </>
   );
@@ -284,7 +290,7 @@ const SettingSeat = (props) => {
             }}
             nowClassName={nowClassName}
           />
-
+          {/* 사용방법 */}
           {showHowToUse}
         </>
       )}

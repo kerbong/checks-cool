@@ -63,6 +63,68 @@ const SeatTable = (props) => {
   let navigate = useNavigate();
 
   useEffect(() => {
+    //비밀자료 아니면 작동안함
+    if (!props.secretSeat) return;
+
+    //아직, 렌더링 되지 않은 상태면 반환
+    if (items?.length === 0 || !items) return;
+
+    //자리에 학생이름이 이미 들어있어도 작동안함.
+    let allSeats = document.querySelectorAll(".item");
+    let isInitState = true;
+    allSeats?.forEach((seat) => {
+      if (isNaN(+seat?.innerText)) {
+        isInitState = false;
+      }
+    });
+    if (!isInitState) return;
+
+    let isWorked = false;
+    let showSecretHandler = (e) => {
+      //+를 누르면 저장되었던 예시자료 이어할지 물어보기 이어한다고 하면, 자리에 학생들 넣어주기
+      //한번 일단 선택해서 넣으면 이벤트리스너 해제하기. 혹은 작동하지 않도록 하기
+      if (isWorked) return;
+      if (e.keyCode === 107) {
+        Swal.fire({
+          icon: "warning",
+          title: "예시자료 불러오기",
+          text: "저장된 예시자료를 불러와서 이어할까요?",
+          confirmButtonText: "확인",
+          confirmButtonColor: "#85bd82",
+          showDenyButton: true,
+          denyButtonText: "취소",
+        }).then((result) => {
+          if (result.isConfirmed) {
+            let new_students = [...students];
+            let lastStudent = {};
+            //자리에 비밀,예시자료 학생들 넣기
+            allSeats?.forEach((item, index) => {
+              let now_studentName = props.secretSeat?.students?.[index];
+              item.innerText = now_studentName;
+              if (!isNaN(+now_studentName)) return;
+              new_students = new_students?.filter((stu) => {
+                if (stu.name === now_studentName) {
+                  lastStudent = stu;
+                }
+                return stu.name !== now_studentName;
+              });
+              // 마지막 학생을 템프에 넣기
+              setTempStudent(lastStudent);
+              setTempBeforeName(now_studentName);
+            });
+            // 자료에 있던 학생 빼고 남은학생 설정하기
+            setStudents(new_students);
+            isWorked = true;
+          }
+        });
+      }
+    };
+    document.addEventListener("keydown", showSecretHandler);
+
+    return () => document.removeEventListener("keydown", showSecretHandler);
+  }, [items]);
+
+  useEffect(() => {
     let noSetGender = false;
     students.forEach((stu) => {
       if (!stu.hasOwnProperty("woman")) {
@@ -870,12 +932,13 @@ const SeatTable = (props) => {
   };
 
   //자리까지 뽑는데 계속 이어서 한 번만 클릭하면 모두 뽑히는 함수
-  const randomAllHandler = (consider) => {
+  const randomAllHandler = (consider, isWoman) => {
     //consider가 gender면 남/여 학생 번갈아 뽑아서 남은 자리의 번호 순서대로 쭉 남은 학생이 없을 때까지 반복함.
 
     if (consider === "gender") {
       //여기서 한번 뽑아두고, useEffect로 students 변화를 받아서, pickSeatAll state가 gender 혹은 mix면.. 학생을 뽑고 앉히는걸 시킴 => sudents 줄어듬 => useEffect실행됨 => 반복..
-      pickAndSeat("gender", true);
+
+      pickAndSeat("gender", isWoman);
     } else if (consider === "mix") {
       pickAndSeat("mix", "all");
     }
@@ -1241,16 +1304,25 @@ const SeatTable = (props) => {
                 <div className={classes["randomPickBtn-div"]}>
                   1번부터 한번에
                   <Button
-                    id="randomWomanPickBtn"
+                    id="randomMan_WoPickBtn"
                     onclick={() => {
                       setPickSeatAll("gender");
-                      randomAllHandler("gender");
+                      randomAllHandler("gender", false);
                     }}
                     className={"settingSeat-btn"}
                     name="남+여"
                   />
                   <Button
-                    id="randomWomanPickBtn"
+                    id="randomWo_manPickBtn"
+                    onclick={() => {
+                      setPickSeatAll("gender");
+                      randomAllHandler("gender", true);
+                    }}
+                    className={"settingSeat-btn"}
+                    name="여+남"
+                  />
+                  <Button
+                    id="randomAllPickBtn"
                     onclick={() => {
                       setPickSeatAll("mix");
                       randomAllHandler("mix");

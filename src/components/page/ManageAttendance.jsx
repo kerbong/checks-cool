@@ -20,7 +20,7 @@ const ManageAttendance = (props) => {
   const [showAttendMonth, setShowAttendMonth] = useState("");
   const [showDelete, setShowDelete] = useState(false);
   const [deleteChecked, setDeleteChecked] = useState([]);
-
+  const [uploadDatas, setUploadDatas] = useState({});
   const { state } = useLocation();
 
   const nowYear = (dataId) => {
@@ -88,6 +88,7 @@ const ManageAttendance = (props) => {
 
   //선택된 학생에 따라 정보를 필터해서 보여줌.
   useEffect(() => {
+    setDeleteChecked([]);
     const optionSaveHandler = (datas) => {
       //총 정리한 부분에서 option만 따옴
       let new_datasOption = datas?.map((data) => data.option.slice(1));
@@ -263,11 +264,79 @@ const ManageAttendance = (props) => {
     );
   };
 
+  const upload_data = async (fixed_data) => {
+    let attendRef = doc(dbService, "attend", props.userUid);
+    await setDoc(attendRef, fixed_data);
+  };
+
+  useEffect(() => {
+    if (Object.keys(uploadDatas)?.length === 0) return;
+    upload_data(uploadDatas);
+  }, [uploadDatas]);
+
   //삭제함수
-  const deleteHandler = (allOrChecked) => {
+  const deleteHandler = async (allOrChecked) => {
+    if (allOrChecked !== "all" && deleteChecked?.length === 0) return;
+    if (onAttends?.length === 0) return;
+
+    let new_attends = [...attends];
     // 삭제하는 실제함수
-    const deleteAttend = (allOrChecked) => {
+    const deleteAttend = async (allOrChecked) => {
       // 전체 정보 받아오고, deleteChecked 있는거 제외해서 자료로 만들고 firebase저장 및 attends 상태에 저장.
+      if (allOrChecked === "all") {
+        new_attends = new_attends?.filter(
+          (attend) => attend.name !== onStudent.split(" ")[1]
+        );
+        // 만약 특정 선택된 것들만 제거일 경우...
+      } else {
+        // deleteChecked에는 id만 저장되어 있음.
+        new_attends = new_attends?.filter(
+          (attend) => !deleteChecked.includes(attend.id)
+        );
+      }
+
+      //  ===============오류.. 삭제안됨;;ㅠㅠ ======
+      // let attendRef = doc(dbService, "attend", props.userUid);
+      // if (nowIsSubject) {
+      //   // 먼저.. clname이 같은거만 추려내기
+      //   new_attends = new_attends?.filter((atd) => atd.clName === clName);
+      //   console.log(new_attends);
+
+      //   //현재 학급자료만 제거하고 추가해주기
+      //   let new_clAttends = [];
+      //   onSnapshot(attendRef, (doc) => {
+      //     let dbDatas = doc.data()?.attend_data;
+      //     new_clAttends = dbDatas?.filter((cl) => {
+      //       let data_clName = Object.keys(cl)?.[0];
+      //       let new_cl;
+      //       if (data_clName !== clName) {
+      //         new_cl = cl;
+      //         //현재학급명 찾고
+      //       } else {
+      //         console.log(new_attends);
+      //         new_cl = {
+      //           [clName]: [...new_attends],
+      //         };
+      //       }
+      //       console.log(new_cl);
+      //       return new_cl;
+      //     });
+
+      //     const fixed_data = { attend_data: new_clAttends };
+      //     console.log(fixed_data);
+      //     setUploadDatas(fixed_data);
+      //   });
+      // } else {
+      //   const fixed_data = { attend_data: new_attends };
+      //   console.log(fixed_data);
+      //   setUploadDatas(fixed_data);
+      // }
+
+      //담임이면 바로 firestore에 업로드 가능해서, 전담만 추가 조절
+      const fixed_data = { attend_data: new_attends };
+      console.log(fixed_data);
+      setUploadDatas(fixed_data);
+
       // 상태 함수도.. 수정해줘야함..! setShowOnAttends랑 setOnAttends에는 onAttends에서 deletedChecked 제외한거 넣어주고,
     };
 
@@ -283,14 +352,58 @@ const ManageAttendance = (props) => {
         confirmButtonColor: "#85bd82",
         denyButtonText: "취소",
         showDenyButton: true,
-      }).then((result) => {
+      }).then(async (result) => {
         if (result.isConfirmed) {
-          Swal.fire("개발중", "기능 개발중입니다...", "info");
+          // Swal.fire("개발중", "기능 개발중입니다...", "info");
+          setShowDelete(false);
+          await deleteAttend("all");
+        } else {
+          return;
+        }
+      });
+      //선택삭제인 경우
+    } else {
+      Swal.fire({
+        icon: "warning",
+        title: "선택 삭제할까요?",
+        text: `${
+          onStudent.split(" ")[1]
+        } 학생의 선택된 출결 기록을 삭제할까요? 삭제 후에는 기록을 복구할 수 없습니다. 신중히 선택해주세요!`,
+        confirmButtonText: "확인",
+        confirmButtonColor: "#85bd82",
+        denyButtonText: "취소",
+        showDenyButton: true,
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          // Swal.fire("개발중", "기능 개발중입니다...", "info");
+          setShowDelete(false);
+          setDeleteChecked([]);
+          await deleteAttend("checked");
         } else {
           return;
         }
       });
     }
+  };
+
+  //각 listMemo클릭하면 저장해두는 함수
+  const deleteCheckedHandler = (atd) => {
+    if (!showDelete) return;
+    //기존에 존재하면 isExist true, 없었으면 false
+
+    let isExist =
+      deleteChecked?.filter((checked) => checked === atd.id)?.length > 0
+        ? true
+        : false;
+    let new_data = [...deleteChecked];
+    //같은게 있으면 제거해주고
+    if (isExist) {
+      new_data = new_data?.filter((checked) => checked !== atd.id);
+      //새로운 거면 추가해주기
+    } else {
+      new_data?.push(atd.id);
+    }
+    setDeleteChecked(new_data);
   };
 
   return (
@@ -360,45 +473,66 @@ const ManageAttendance = (props) => {
                   </div>
                 )}
               </li>
-              <li
-                className={classes["bottom-content-li"]}
-                style={{ minWidth: "100px" }}
-              >
-                {/* <div className={classes["fs-9"]}>
+
+              {/* 삭제버튼 모음.. 현재학생의 출결정보가 있을 때만 보여줌. */}
+              {onAttends?.length > 0 && !nowIsSubject && (
+                <li
+                  className={classes["bottom-content-li"]}
+                  style={{ minWidth: "100px" }}
+                >
+                  {/* <div className={classes["fs-9"]}>
                   * 수정은 생기부 페이지를 활용해주세요.
                 </div> */}
-                {/* <hr className={classes["margin-15"]} /> */}
-                <div className={classes["flex-d-column"]}>
-                  {/* 전체삭제버튼 */}
-                  <Button
-                    id={"attend-delete"}
-                    className={"sortBtn"}
-                    name={!showDelete ? "전체삭제" : "확인"}
-                    onclick={() => {
-                      deleteHandler("all");
-                    }}
-                  />
-                  {/* 삭제버튼 */}
-                  <Button
-                    id={"attend-delete"}
-                    className={"sortBtn"}
-                    name={showDelete ? "취소" : "선택삭제"}
-                    onclick={() => {
-                      Swal.fire("개발중", "기능 개발중입니다...", "info");
-                      // setShowDelete((prev) => !prev);
-                    }}
-                  />
-                </div>
-              </li>
+                  {/* <hr className={classes["margin-15"]} /> */}
+
+                  <div className={classes["flex-d-column"]}>
+                    {/* 전체삭제버튼 */}
+                    <Button
+                      id={"attend-delete"}
+                      className={"sortBtn"}
+                      name={!showDelete ? "전체삭제" : "확인"}
+                      onclick={() => {
+                        !showDelete
+                          ? deleteHandler("all")
+                          : deleteHandler("checked");
+                      }}
+                    />
+                    {/* 삭제버튼 */}
+                    <Button
+                      id={"attend-delete"}
+                      className={"sortBtn"}
+                      name={showDelete ? "취소" : "선택삭제"}
+                      onclick={() => {
+                        // Swal.fire("개발중", "기능 개발중입니다...", "info");
+                        //현재 삭제 가능인테 취소 누른거면.. 다시 비워둠.
+                        if (showDelete) {
+                          setDeleteChecked([]);
+                          setShowDelete(false);
+                        } else {
+                          setShowDelete(true);
+                        }
+                      }}
+                    />
+                  </div>
+                </li>
+              )}
             </div>
 
             <div className={classes["btns-div"]} style={{ flexWrap: "wrap" }}>
               {/* 개별 출결기록 */}
               {showOnAttends?.map((attend) => (
                 <li
-                  key={attend.id}
+                  key={`${attend.id}${clName ? clName : ""}`}
                   id={attend.id}
-                  className={classes["bottom-content-li"]}
+                  className={`${classes["bottom-content-li"]} ${
+                    deleteChecked?.filter((checked) => checked === attend.id)
+                      ?.length > 0
+                      ? classes["list-clicked"]
+                      : ""
+                  }`}
+                  onClick={() => {
+                    deleteCheckedHandler(attend);
+                  }}
                   style={{ width: "260px", padding: "25px" }}
                 >
                   {/* 출결의 id(yyyy-mm-dd)보여줌 */}
