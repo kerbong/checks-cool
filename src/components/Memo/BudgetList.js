@@ -92,26 +92,30 @@ const BudgetList = (props) => {
                       <span>사용기한 : {budget.until}</span>
                     </div>
                     <div className={classes["budgetList-buttonDiv"]}>
-                      {/* 수정버튼 */}
-                      <button
-                        className={classes["budget-del"]}
-                        onClick={() => {
-                          setIsBudgetEditing(true);
-                          props.showBudgetEditHandler();
-                        }}
-                      >
-                        <i className="fa-solid fa-pencil"></i>
-                      </button>
+                      {!props.showEditDelete && (
+                        <>
+                          {/* 수정버튼 */}
+                          <button
+                            className={classes["budget-del"]}
+                            onClick={() => {
+                              setIsBudgetEditing(true);
+                              props.showBudgetEditHandler();
+                            }}
+                          >
+                            <i className="fa-solid fa-pencil"></i>
+                          </button>
 
-                      {/* 삭제버튼 */}
-                      <button
-                        className={classes["budget-del"]}
-                        onClick={() => {
-                          props.deleteBugetHandler();
-                        }}
-                      >
-                        <i className="fa-solid fa-trash-can"></i>
-                      </button>
+                          {/* 삭제버튼 */}
+                          <button
+                            className={classes["budget-del"]}
+                            onClick={() => {
+                              props.deleteBugetHandler();
+                            }}
+                          >
+                            <i className="fa-solid fa-trash-can"></i>
+                          </button>
+                        </>
+                      )}
                     </div>
                   </div>
                   <div className={classes["budgetList-upDiv"]}>

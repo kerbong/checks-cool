@@ -5,6 +5,7 @@ import Swal from "sweetalert2";
 import Input from "../Layout/Input";
 import AttendCalendar from "components/Attendance/AttendCalendar";
 import dayjs from "dayjs";
+import holidays2023 from "holidays2023";
 
 const ListMemoInput = (props) => {
   const getDateHandler = (date) => {
@@ -16,7 +17,8 @@ const ListMemoInput = (props) => {
     return `${month}월 ${day}일(${weekDays[weekd]})`;
   };
 
-  // console.log(props.students);
+  const [showCal, setShowCal] = useState(false);
+  const [currentMonth, setCurrentMonth] = useState(dayjs().format("YYYY-MM"));
 
   const [students, setStudents] = useState(props.students);
   const [studentMemo, setStudentMemo] = useState(props.item || []);
@@ -130,6 +132,33 @@ const ListMemoInput = (props) => {
     setTodayYyyymmdd(dayjs(date).format("YYYY-MM-DD"));
   };
 
+  //달력에서 받은 month로 currentMonth변경하기
+  const getMonthHandler = (month) => {
+    setCurrentMonth(dayjs(month).format("YYYY-MM"));
+  };
+
+  //휴일 달력에 그려주기!
+  useEffect(() => {
+    if (!currentMonth) return;
+    holidays2023?.forEach((holiday) => {
+      if (holiday[0] === currentMonth) {
+        let holiday_queryName = holiday[1].split("*");
+        let holidayTag = document.querySelectorAll(holiday_queryName[0])[0];
+        if (!holidayTag) return;
+        // console.log(holidayTag.classList.contains("eventAdded"));
+        if (holidayTag.classList.contains("eventAdded")) return;
+
+        const btn = document.createElement("button");
+        btn.className = `${classes.holidayData} eventBtn`;
+        btn.innerText = holiday_queryName[1];
+        holidayTag?.appendChild(btn);
+        holidayTag.style.borderRadius = "5px";
+
+        holidayTag.classList.add("eventAdded");
+      }
+    });
+  }, [currentMonth, showCal]);
+
   return (
     <>
       <h2 className={classes["title-section"]}>
@@ -157,7 +186,10 @@ const ListMemoInput = (props) => {
         <div className={classes["date-title"]}>
           {/* 날짜 화면 보여주기 */}
           {!props?.item?.id && (
-            <div className={classes["date"]}>
+            <div
+              className={classes["date"]}
+              onClick={() => setShowCal((prev) => !prev)}
+            >
               {/* 오늘 날짜 보여주는 부분 날짜 클릭하면 달력도 나옴 */}
 
               {/* {titleDate} */}
@@ -167,7 +199,7 @@ const ListMemoInput = (props) => {
                   getDateValue={calDateHandler}
                   about="main"
                   setStart={new Date(todayYyyymmdd)}
-                  getMonthValue={() => {}}
+                  getMonthValue={getMonthHandler}
                 />
               </span>
             </div>

@@ -6,30 +6,23 @@ import { dbService } from "../../fbase";
 import { onSnapshot, setDoc, doc, getDoc } from "firebase/firestore";
 import { useLocation } from "react-router";
 import classes from "./ManageEach.module.css";
-import CompareListMemoTable from "../Manage/CompareListMemoTable";
-import Swal from "sweetalert2";
 import { utils, writeFile } from "xlsx";
 import DoughnutChart from "../Manage/DoughnutChart";
+import SearchCheckListMemo from "components/Manage/SearchCheckListMemo";
 
 const ManageCheckListMemo = (props) => {
   const [students, setStudents] = useState([]);
   const [showListMemo, setShowListMemo] = useState(true);
   const [checkLists, setCheckLists] = useState([]);
-  const [allCheckLists, setAllCheckLists] = useState([]);
+  const [originCheckLists, setOriginCheckLists] = useState([]);
   const [listMemo, setListMemo] = useState([]);
-  const [allListMemo, setAllListMemo] = useState([]);
-  const [onAllListMemo, setOnAllListMemo] = useState([]);
+  const [originListMemo, setOriginListMemo] = useState([]);
   const [onListMemo, setOnListMemo] = useState([]);
-  const [compareListMemo, setCompareListMemo] = useState([]);
-  const [showCompareListMemo, setShowCompareListMemo] = useState(false);
   const [onCheckLists, setOnCheckLists] = useState([]);
   const [onStudent, setOnStudent] = useState("");
   const [clName, setClName] = useState("");
-  const [searchWord, setSearchWord] = useState("");
 
   const { state } = useLocation();
-
-  const searchRef = useRef();
 
   //선택된 학생 정보  번호 한칸띄우고 이름
   const selectStudentHandler = (studentNumName) => {
@@ -80,15 +73,17 @@ const ManageCheckListMemo = (props) => {
             new_checkLists.push(new_data);
           })
         );
-
-        setAllCheckLists([...now_year_data]);
+        //학생용 가공데이터
         setCheckLists([...new_checkLists]);
+
+        //전체학생 검색 등 쿼리를 위한 원래 데이터
+        setOriginCheckLists([...now_year_data]);
       }
     });
 
     //listMemo 인 경우
     setListMemo([]);
-    setAllListMemo([]);
+    setOriginListMemo([]);
     let listMemoRef = doc(dbService, "listMemo", props.userUid);
     const listMemoDoc = await getDoc(listMemoRef);
     onSnapshot(listMemoRef, (doc) => {
@@ -111,8 +106,7 @@ const ManageCheckListMemo = (props) => {
         //개별학생 자료로 가공한거
         setListMemo([...new_listMemo]);
         //전체학생 검색 등 쿼리를 위한 원래 데이터
-        setAllListMemo([...now_year_data]);
-        setOnAllListMemo([...now_year_data]);
+        setOriginListMemo([...now_year_data]);
       }
     });
   };
@@ -174,59 +168,6 @@ const ManageCheckListMemo = (props) => {
     setClName(classname);
   };
 
-  //검색부분 함수
-  const searchWordHandler = () => {
-    let word = searchRef.current.value;
-    setSearchWord(word);
-  };
-
-  //검색하는 단어가 입력되면.. 전체 자료에서 해당하는 게 있는 것들만 보여주기
-  useEffect(() => {
-    //검색이 빈칸이면 전체 보여주고
-    if (searchWord === "") {
-      setOnAllListMemo([...allListMemo]);
-    } else {
-      //해당 단어를 포함하고 있으면.. 그걸 다 보여줌
-      let new_onAllListMemo = allListMemo?.filter((memo) =>
-        memo.title.includes(searchWord)
-      );
-      setOnAllListMemo([...new_onAllListMemo]);
-    }
-  }, [searchWord]);
-
-  //검색이 끝나고 완료를 클릭하면 실행되는 함수
-  useEffect(() => {
-    if (!showCompareListMemo) return;
-
-    // 선택한 비교자료들을 화면에 보여주기
-  }, [showCompareListMemo]);
-
-  //각 listMemo클릭하면 저장해두는 함수
-  const compareListMemoHandler = (memo) => {
-    //기존에 존재하면 isExist true, 없었으면 false
-    let isExist =
-      compareListMemo?.filter((list) => list.id === memo.id)?.length > 0
-        ? true
-        : false;
-    let new_data = [...compareListMemo];
-    //같은게 있으면 제거해주고
-    if (isExist) {
-      new_data = new_data?.filter((list) => list.id !== memo.id);
-      //새로운 거면 추가해주기
-    } else {
-      new_data?.push(memo);
-    }
-    // id를 기준으로 정렬해서 넣기
-    // 담임이면 날짜기준, 전담이면.. 날짜기준 후에 반별기준으로 다시
-    if (!nowIsSubject) {
-      setCompareListMemo(new_data.sort((a, b) => a.id > b.id));
-    } else {
-      let sorted_id = new_data.sort((a, b) => a.id > b.id);
-
-      setCompareListMemo(sorted_id?.sort((a, b) => a.clName < b.clName));
-    }
-  };
-
   //학년도 설정함수
   const setYear = () => {
     return +dayjs().format("MM") <= 2
@@ -244,36 +185,14 @@ const ManageCheckListMemo = (props) => {
     setStudents(now_students);
   }, [props.students]);
 
-  //초기화 함수
-  const resetHandler = () => {
-    if (compareListMemo?.length === 0) return;
-
-    Swal.fire({
-      icon: "warning",
-      title: "초기화 할까요?",
-      text: "선택했던 항목들을 모두 선택 취소할까요?",
-      confirmButtonText: "확인",
-      confirmButtonColor: "#85bd82",
-      showDenyButton: true,
-      denyButtonText: "취소",
-    }).then((result) => {
-      /* Read more about isConfirmed, isDenied below */
-      if (result.isConfirmed) {
-        setCompareListMemo([]);
-      } else {
-        return;
-      }
-    });
-  };
-
   //엑셀로 저장하기 함수
   const saveExcelHandler = () => {
     // listmemo가 없으면 저장하지 않기
-    if (allListMemo?.length === 0) return;
+    if (originListMemo?.length === 0) return;
 
     // console.log(listMemo);
     const new_datas = [];
-    allListMemo?.forEach((memo) => {
+    originListMemo?.forEach((memo) => {
       memo.data.forEach((stud) => {
         let data = [+stud.num, stud.name, memo.title, stud.memo];
         if (nowIsSubject) {
@@ -309,20 +228,11 @@ const ManageCheckListMemo = (props) => {
     );
   };
 
-  //화면의 table 요소를 excel 파일로 만들기
-  const tableToExcelHandler = () => {
-    let fileName = `개별기록 비교(${dayjs().format("YYYY-MM-DD")}).xlsx`;
-    let wb = utils.table_to_book(document.getElementById("listTable"), {
-      sheet: "개별기록 비교",
-    });
-    writeFile(wb, fileName);
-  };
-
   //도넛차트로 보낼 데이터셋,
   const doughnut_datas = () => {
     let submitNum = 0;
     let unSubmitNum = 0;
-    allCheckLists?.forEach((list) => {
+    originCheckLists?.forEach((list) => {
       // 전담인데.. 현재 선택된 학급과 자료 학급이 다르면 리턴
       if (nowIsSubject && list?.clName !== clName) return;
       list?.unSubmitStudents?.filter(
@@ -422,123 +332,18 @@ const ManageCheckListMemo = (props) => {
             {/* 선택된 학생이 없으면.. 검색쿼리 만들기 */}
             {onStudent === "" && (
               <>
-                {/* 비교하는 화면이 아니면 */}
-                {!showCompareListMemo ? (
-                  <>
-                    <h2 className={classes["fs-15"]}>
-                      전체학생 개별기록 모아보기🪄
-                    </h2>
-                    <h4 style={{ color: "white" }}>
-                      * 검색 후 여러 자료를 선택(클릭)하시고
-                      <br />
-                      완료를 눌러주세요.(pc추천) <br />
-                    </h4>
-                    {/* 검색창 */}
-
-                    <input
-                      type="text"
-                      ref={searchRef}
-                      placeholder="제목 검색"
-                      onChange={searchWordHandler}
-                      className={classes["search-title"]}
-                    />
-                    {/* 완료버튼 */}
-                    <button
-                      onClick={() => setShowCompareListMemo(true)}
-                      className={classes["search-btns"]}
-                    >
-                      완료
-                    </button>
-
-                    {/* 초기화버튼 */}
-                    <button
-                      onClick={resetHandler}
-                      className={classes["search-btns"]}
-                    >
-                      초기화
-                    </button>
-                    {/* 선택한 자료 타이틀만 보여주기 */}
-                    <div className={classes["bottom-content-li"]}>
-                      <h3 className={classes["margin-15"]}>
-                        선택된 자료{" "}
-                        {compareListMemo?.length > 0 &&
-                          `(${compareListMemo?.length})`}
-                      </h3>
-                      <div
-                        className={classes["flex-center"]}
-                        style={{ flexWrap: "wrap" }}
-                      >
-                        {compareListMemo?.map((list) => (
-                          <div
-                            key={"compare" + list.id}
-                            className={classes["clicked-title"]}
-                          >
-                            <b>{list?.clName && list.clName + ")"}</b>{" "}
-                            {list.title}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* 전체 자료 보여지는 부분 */}
-                    <div
-                      className={`${classes["flex-wrap"]}`}
-                      style={{ width: "100%" }}
-                    >
-                      {onAllListMemo?.map((memo) => (
-                        <li
-                          key={memo.id}
-                          id={memo.id}
-                          className={`${classes["bottom-content-li"]} ${
-                            compareListMemo?.filter(
-                              (list) => list.id === memo.id
-                            )?.length > 0
-                              ? classes["list-clicked"]
-                              : ""
-                          }`}
-                          style={{ width: "200px" }}
-                          onClick={() => {
-                            compareListMemoHandler(memo);
-                          }}
-                        >
-                          {memo.id}
-                          <br />
-                          <b>{memo.clName || ""}</b>
-                          <h3>{memo.title}</h3>
-                        </li>
-                      ))}
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    {/* 비교하는 화면이면 */}
-                    <button
-                      onClick={() => {
-                        setCompareListMemo([]);
-                        setShowCompareListMemo(false);
-                      }}
-                      className={classes["search-btns"]}
-                    >
-                      비교닫기
-                    </button>
-                    <button
-                      onClick={tableToExcelHandler}
-                      className={classes["search-btns"]}
-                    >
-                      <i className="fa-solid fa-download"></i> 현재자료 엑셀저장
-                    </button>
-                    <CompareListMemoTable
-                      listMemo={compareListMemo}
-                      students={students}
-                      isSubject={nowIsSubject}
-                    />
-                  </>
-                )}
+                <SearchCheckListMemo
+                  about="listMemo"
+                  allCheckListMemo={originListMemo}
+                  students={students}
+                  nowIsSubject={nowIsSubject}
+                />
               </>
             )}
           </>
         ) : (
           <>
+            {/* checkList 관련 렌더링 */}
             {/* 선택된 학생이 있으면 개별학생 정보 보여주기 */}
             {onStudent !== "" && (
               <div
@@ -577,8 +382,18 @@ const ManageCheckListMemo = (props) => {
                 )}
               </div>
             )}
-            {/* 선택된 학생이 없을 경우 검색쿼리... 보여주기 */}
-            {onStudent === "" && ""}
+
+            {/* 선택된 학생이 없으면.. 검색쿼리 */}
+            {onStudent === "" && (
+              <>
+                <SearchCheckListMemo
+                  about="checkLists"
+                  allCheckListMemo={originCheckLists}
+                  students={students}
+                  nowIsSubject={nowIsSubject}
+                />
+              </>
+            )}
           </>
         )}
       </ul>

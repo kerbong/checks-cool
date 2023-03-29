@@ -44,7 +44,7 @@ const WeTeacher = (props) => {
             {/* onClick={exampleHandler}>/ */}
             {selectedMenu === "" && (
               <>
-                <i className="fa-solid fa-cookie-bite"></i> We-Teacher
+                <i className="fa-solid fa-cookie-bite"></i> 교사랑
               </>
             )}
             {selectedMenu === "simsim" && <>{ICONS[0]} 심심해요</>}

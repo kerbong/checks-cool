@@ -128,6 +128,10 @@ const SettingSeat = (props) => {
           학생이 1번자리부터 모든 학생이 쭉- 자동으로 들어갑니다.
         </p>
         <p className={classes[`gameMenu`]}>
+          * [1번부터 한번에]를 사용하실 때 다른 화면으로의 이동을
+          피해주세요!(사이트 멈춤 가능성이 있어요!)
+        </p>
+        <p className={classes[`gameMenu`]}>
           * 두 자리를 차례로 선택하면 자리를 바꿀 수 있습니다.(빈자리로 옮기기도
           가능)
         </p>

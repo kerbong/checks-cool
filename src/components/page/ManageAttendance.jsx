@@ -564,7 +564,7 @@ const ManageAttendance = (props) => {
             {/* 정렬하는 버튼들... 전체랑.. 월별, 옵션별 보여주기 */}
             <div
               className={classes["flex-wrap"]}
-              style={{ alignItems: "flex-end" }}
+              style={{ alignItems: "center" }}
             >
               {/* 전체 출결 확인 출결옵션별 횟수 기록 */}
               <li

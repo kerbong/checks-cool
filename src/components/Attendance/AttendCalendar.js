@@ -16,6 +16,7 @@ const AttendCalendar = (props) => {
   }, [props.setStart]);
 
   const isWeekday = (date) => {
+    if (props.filterNone) return date;
     const day = date.getDay(date);
     return day !== 0 && day !== 6;
   };

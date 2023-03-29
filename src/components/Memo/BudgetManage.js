@@ -29,14 +29,6 @@ const BudgetManage = (props) => {
   const budgetSelectRef = useRef();
   const budgetYearRef = useRef();
 
-  const getYyyymmdd = (date) => {
-    let year = date.getFullYear();
-    let month = ("0" + (date.getMonth() + 1)).slice(-2);
-    let day = ("0" + date.getDate()).slice(-2);
-
-    return year + "-" + month + "-" + day;
-  };
-
   //firestore에서 해당 이벤트 자료 받아오기
   const getBudgetsFromDb = async () => {
     //db에서 todo DB가져오고 작성자가 현재 유저와 동일한지 확인하고 events에 추가하기
@@ -359,6 +351,7 @@ const BudgetManage = (props) => {
       )}
       {/* 지금까지 사용한 예산목록 */}
       <BudgetList
+        showEditDelete={showInput}
         budget={nowOnBudget}
         deleteHandler={(budget) => deleteHandler(budget)}
         saveBudgetHandler={saveBudgetHandler}

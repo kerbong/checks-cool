@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import AttendCalendar from "../Attendance/AttendCalendar";
 import Modal from "../Layout/Modal";
-
+import holidays2023 from "holidays2023";
 import EventLists from "../Event/EventLists";
 import classes from "./AttendCtxCalendar.module.css";
 
@@ -244,12 +244,6 @@ const AttendCtxCalendar = (props) => {
         // // 2022-08-03
         const eventDate = data?.id?.slice(0, 10);
 
-        // //이벤트 달과 현재 달력의 달이 같으면
-        // if (eventDate.slice(0, 7) === month) {
-
-        //   // 날짜를 day 변수로 저장 0+03
-        //   const day = 0 + eventDate.slice(8);
-
         // 이벤트 날짜와 같은 날짜 클래스를 지닌 태그를 찾음
         const eventDayTag = document.querySelectorAll(
           `.react-datepicker__day--${day}`
@@ -342,13 +336,6 @@ const AttendCtxCalendar = (props) => {
             const fixed_data = { attend_data: new_data };
 
             await setDoc(attendTodoRef, fixed_data);
-            // await setDoc(attendTodoRef, fixed_data).then(() => {
-            //   const event = { ...data, eventDate: eventDate };
-            //   new_events[new_events.length - 1] = event;
-            // });
-
-            // const event = { ...data, eventDate: eventDate };
-            // new_events[event_index] = event;
           } else {
             let new_wholeEvents = [];
             new_wholeEvents = [
@@ -469,6 +456,28 @@ const AttendCtxCalendar = (props) => {
   const removeEventHandler = (data) => {
     fixEvents(data, data.eventDate, "del");
   };
+
+  //휴일 달력에 그려주기!
+  useEffect(() => {
+    if (!currentMonth) return;
+    holidays2023?.forEach((holiday) => {
+      if (holiday[0] === currentMonth) {
+        let holiday_queryName = holiday[1].split("*");
+        let holidayTag = document.querySelectorAll(holiday_queryName[0])[0];
+        if (!holidayTag) return;
+        // console.log(holidayTag.classList.contains("eventAdded"));
+        if (holidayTag.classList.contains("eventAdded")) return;
+
+        const btn = document.createElement("button");
+        btn.className = `${classes.holidayData} eventBtn`;
+        btn.innerText = holiday_queryName[1];
+        holidayTag?.appendChild(btn);
+        holidayTag.style.borderRadius = "5px";
+
+        holidayTag.classList.add("eventAdded");
+      }
+    });
+  }, [currentMonth]);
 
   return (
     <>

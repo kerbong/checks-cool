@@ -7,6 +7,7 @@ import Swal from "sweetalert2";
 import { dbService } from "../../../fbase";
 import { onSnapshot, doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import { utils, writeFile } from "xlsx";
+import holidays2023 from "holidays2023";
 
 const getDateHandler = (date, titleOrQuery) => {
   let year = date.getFullYear();
@@ -35,6 +36,8 @@ const Alarm = (props) => {
   const [fontSize, setFontSize] = useState("50px");
   const [alarmLists, setAlarmLists] = useState([]);
   const [todayAlarm, setTodayAlarm] = useState({});
+  const [showCal, setShowCal] = useState(false);
+  const [currentMonth, setCurrentMonth] = useState(dayjs().format("YYYY-MM"));
 
   const getAlarmFromDb = async () => {
     let alarmRef = doc(dbService, "alarm", props.userUid);
@@ -232,6 +235,30 @@ const Alarm = (props) => {
     }
   };
 
+  //달력에서 받은 month로 currentMonth변경하기
+  const getMonthHandler = (month) => {
+    setCurrentMonth(dayjs(month).format("YYYY-MM"));
+  };
+
+  //휴일 달력에 그려주기!
+  useEffect(() => {
+    if (!currentMonth) return;
+
+    holidays2023?.forEach((holiday) => {
+      if (holiday[0] === currentMonth) {
+        let holiday_queryName = holiday[1].split("*");
+        let holidayTag = document.querySelectorAll(holiday_queryName[0])[0];
+        if (!holidayTag) return;
+
+        const btn = document.createElement("button");
+        btn.className = `${classes.holidayData} eventBtn`;
+        btn.innerText = holiday_queryName[1];
+        holidayTag?.appendChild(btn);
+        holidayTag.style.borderRadius = "5px";
+      }
+    });
+  }, [currentMonth, showCal]);
+
   return (
     <div>
       {/* 잼잼 첫 화면으로 넘어가는 x 버튼 div */}
@@ -249,7 +276,10 @@ const Alarm = (props) => {
       {/* 알림장 전체 div */}
       <div className={classes["alarm-all"]}>
         {/* 날짜 화면 보여주기 */}
-        <div className={classes["date"]}>
+        <div
+          className={classes["date"]}
+          onClick={() => setShowCal((prev) => !prev)}
+        >
           {/* 오늘 날짜 보여주는 부분 날짜 클릭하면 달력도 나옴 */}
           <span
             className={
@@ -266,7 +296,7 @@ const Alarm = (props) => {
                 getDateValue={calDateHandler}
                 about="main"
                 setStart={new Date(todayYyyymmdd)}
-                getMonthValue={() => {}}
+                getMonthValue={getMonthHandler}
               />
             </span>
           </span>

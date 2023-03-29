@@ -3,10 +3,13 @@ import Swal from "sweetalert2";
 import classes from "./Memo.module.css";
 import AttendCalendar from "../Attendance/AttendCalendar";
 import dayjs from "dayjs";
+import holidays2023 from "holidays2023";
 
 const BudgetInput = (props) => {
   const [attendDate, setAttendDate] = useState(new Date());
   const [budget, setBudget] = useState(props?.budget || {});
+  const [showCal, setShowCal] = useState(false);
+  const [currentMonth, setCurrentMonth] = useState(dayjs().format("YYYY-MM"));
 
   useEffect(() => {
     if (Object.keys(budget).length > 0) {
@@ -113,6 +116,42 @@ const BudgetInput = (props) => {
     amountRef.current.value = +(eachRef.current.value * countRef.current.value);
   };
 
+  //달력에서 받은 month로 currentMonth변경하기
+  const getMonthHandler = (month) => {
+    setCurrentMonth(dayjs(month).format("YYYY-MM"));
+  };
+
+  //휴일 달력에 그려주기!
+  useEffect(() => {
+    if (!currentMonth) return;
+    holidays2023?.forEach((holiday) => {
+      if (holiday[0] === currentMonth) {
+        let holiday_queryName = holiday[1].split("*");
+        let holidayTag = document.querySelectorAll(holiday_queryName[0])[0];
+        if (!holidayTag) return;
+        // console.log(holidayTag.classList.contains("eventAdded"));
+        if (holidayTag.classList.contains("eventAdded")) return;
+
+        const btn = document.createElement("button");
+        btn.className = `${classes.holidayData} eventBtn`;
+        btn.innerText = holiday_queryName[1];
+        holidayTag?.appendChild(btn);
+        holidayTag.style.borderRadius = "5px";
+
+        holidayTag.classList.add("eventAdded");
+      }
+    });
+  }, [currentMonth, showCal]);
+
+  useEffect(() => {
+    let weekDayNames = document.querySelector(".react-datepicker__day-names");
+    let weekDayName = document.querySelectorAll(".react-datepicker__day-name");
+    if (!weekDayNames || !weekDayName) return;
+    weekDayNames.style.width = "95%";
+    weekDayName[0].style.width = "14%";
+    weekDayName[6].style.width = "14%";
+  }, [showCal]);
+
   return (
     <>
       {/* 자료 추가인 경우에만 저장버튼 보여주기 */}
@@ -146,12 +185,16 @@ const BudgetInput = (props) => {
         )}
         <span className={classes["budgetList-desc"]}>
           {/* 날짜 선택 달력부분 */}
-          <div className={classes["newBudget-date"]}>
+          <div
+            className={classes["newBudget-date"]}
+            onClick={() => setShowCal((prev) => !prev)}
+          >
             <AttendCalendar
+              filterNone={true}
               getDateValue={getDateHandler}
               about={props.about}
               setStart={props.about === "edit" && new Date(budget.date)}
-              getMonthValue={() => {}}
+              getMonthValue={getMonthHandler}
             />
           </div>
           {/* 품목명 적는 부분 */}

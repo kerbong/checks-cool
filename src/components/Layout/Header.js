@@ -68,14 +68,14 @@ const Header = (props) => {
           <HeaderMenu
             icon={"fa-solid fa-cookie-bite"}
             path={"weteacher"}
-            menuText={"We-T"}
+            menuText={"교사랑"}
             nowOn={nowOn}
           />
           <HeaderMenu
             icon={"fa-solid fa-gamepad"}
             path={"classgame"}
             from={""}
-            menuText={"Wi-S"}
+            menuText={"제자랑"}
             nowOn={nowOn}
           />
         </ul>

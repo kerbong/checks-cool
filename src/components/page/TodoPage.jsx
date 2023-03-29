@@ -10,6 +10,8 @@ import BaseTodo from "components/Todo/BaseTodo";
 import publicSetting from "../../assets/todo/publicSetting.gif";
 import MeetingSummary from "../Todo/MeetingSummary";
 import Swal from "sweetalert2";
+import holidays2023 from "holidays2023";
+
 import { useNavigate } from "react-router-dom";
 
 import { dbService } from "../../fbase";
@@ -508,6 +510,25 @@ const TodoPage = (props) => {
       setShowBaseTodo(false);
     }
   };
+
+  //휴일 달력에 그려주기!
+  useEffect(() => {
+    if (!currentMonth) return;
+
+    holidays2023?.forEach((holiday) => {
+      if (holiday[0] === currentMonth) {
+        let holiday_queryName = holiday[1].split("*");
+
+        let holidayTag = document.querySelectorAll(holiday_queryName[0])[0];
+
+        const btn = document.createElement("button");
+        btn.className = `${classes.holidayData} eventBtn`;
+        btn.innerText = holiday_queryName[1];
+        holidayTag?.appendChild(btn);
+        holidayTag.style.borderRadius = "5px";
+      }
+    });
+  }, [currentMonth, showPublicEvent]);
 
   return (
     <>

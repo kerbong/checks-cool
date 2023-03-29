@@ -24,6 +24,18 @@
   width: 98%;
 }
 
+.holidayData {
+  width: 94%;
+  font-size: 0.5em;
+  background-color: #dd3300d9;
+  font-weight: bold;
+  color: azure;
+  border-radius: 10px;
+  border-width: 0;
+  padding: 3px;
+  margin: 2px;
+  white-space: pre-line;
+}
 .alarm-all {
   margin-top: 25px;
   display: flex;

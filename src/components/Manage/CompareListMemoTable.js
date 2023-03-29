@@ -112,6 +112,8 @@ const CompareListMemoTable = (props) => {
 
   // 모든 자료가 숫자로 되어 있는지 판단함.
   useEffect(() => {
+    //checkLists는 숫자가 아니므로.. 표그리기 패스
+    if (props.about !== "listMemo") return;
     if (!props.listMemo) return;
 
     let isOnlyNum = true;
@@ -197,8 +199,12 @@ const CompareListMemoTable = (props) => {
     <div className={classes["flex-center"]}>
       <p style={{ color: "white" }}>
         * 자료가 보기 어려운 경우 화면 확대/축소를 활용해주세요.
-        <br />* 숫자(점수)로만 저장된 개별기록을 두 개 이상 선택하면, 차트가
-        자동으로 생성됩니다.
+        {props.about === "listMemo" && (
+          <>
+            <br />* 숫자(점수)로만 저장된 개별기록을 두 개 이상 선택하면, 차트가
+            자동으로 생성됩니다.
+          </>
+        )}
       </p>
 
       {/* 차트로 그려주기.. 만약 데이터가 모두 숫자 또는 '' 로만 되어있으면 */}
@@ -220,7 +226,9 @@ const CompareListMemoTable = (props) => {
               <>
                 <th>이름</th>
                 {props.listMemo?.map((list) => (
-                  <th key={"title" + list.id} className={`${classes["thd"]}`}>
+                  <th key={"titleth" + list.id} className={`${classes["thd"]}`}>
+                    {list.id.slice(0, 10)}
+                    <br />
                     {list.title}
                   </th>
                 ))}
@@ -237,7 +245,12 @@ const CompareListMemoTable = (props) => {
                       props.listMemo?.[index - 1].clName !== list.clName && (
                         <th>이름</th>
                       )}{" "}
-                    <th key={"title" + list.id} className={`${classes["thd"]}`}>
+                    <th
+                      key={"titleth" + list.id}
+                      className={`${classes["thd"]}`}
+                    >
+                      {list.id.slice(0, 10)}
+                      <br />
                       {`${list.clName}) ${list.title}`}
                     </th>
                   </>
@@ -264,9 +277,23 @@ const CompareListMemoTable = (props) => {
                   {/* 각 내용에서 학생 있는지 찾아서 자료 넣어주기 */}
                   {props.listMemo?.map((list) => (
                     <td key={"memo" + list.id} className={`${classes["thd"]}`}>
-                      {list?.data?.filter(
-                        (data) => data.name === stud.name
-                      )?.[0]?.memo || "-"}
+                      {/* listMemo인 경우 */}
+                      {props.about === "listMemo" ? (
+                        <>
+                          {list?.data?.filter(
+                            (data) => data.name === stud.name
+                          )?.[0]?.memo || "-"}
+                        </>
+                      ) : (
+                        <>
+                          {/* checkLists인 경우 */}
+                          {list?.unSubmitStudents?.filter(
+                            (unSub_std) => unSub_std.name === stud.name
+                          )?.length === 0
+                            ? "O"
+                            : "X"}
+                        </>
+                      )}
                     </td>
                   ))}
                 </tr>
@@ -290,7 +317,10 @@ const CompareListMemoTable = (props) => {
                       {index === 0 && (
                         <>
                           {/* 이름써주기 */}
-                          <td className={classes["name-td"]}>
+                          <td
+                            key={"clStdName" + index}
+                            className={classes["name-td"]}
+                          >
                             {listMemoClStudents?.[index]?.[num_index]?.name}
                           </td>
                         </>
@@ -298,19 +328,44 @@ const CompareListMemoTable = (props) => {
                       {/* 2번쨰 자료부터는 이전 자료랑 학급이 다를 때만 이름 보여줌 */}
                       {index > 0 &&
                         props.listMemo?.[index - 1].clName !== list.clName && (
-                          <td className={classes["name-td"]}>
+                          <td
+                            key={"clStdName" + index}
+                            className={classes["name-td"]}
+                          >
                             {listMemoClStudents?.[index]?.[num_index]?.name}
                           </td>
                         )}{" "}
                       {/* 메모 내용 보여줌 */}
-                      <td className={`${classes["thd"]}`}>
+                      <td
+                        key={"clStdMemo" + index}
+                        className={`${classes["thd"]}`}
+                      >
                         {listMemoClStudents?.[index]?.[num_index] && (
                           <>
-                            {list?.data?.filter(
-                              (data) =>
-                                data.name ===
-                                listMemoClStudents?.[index]?.[num_index]?.name
-                            )?.[0]?.memo || "-"}
+                            {props.about === "listMemo" ? (
+                              <>
+                                {/* listMemo인 경우 */}
+                                {list?.data?.filter(
+                                  (data) =>
+                                    data.name ===
+                                    listMemoClStudents?.[index]?.[num_index]
+                                      ?.name
+                                )?.[0]?.memo || "-"}
+                              </>
+                            ) : (
+                              <>
+                                {/* checkLists인 경우 */}
+
+                                {list?.unSubmitStudents?.filter(
+                                  (unSub_std) =>
+                                    unSub_std.name ===
+                                    listMemoClStudents?.[index]?.[num_index]
+                                      ?.name
+                                )?.length === 0
+                                  ? "O"
+                                  : "X"}
+                              </>
+                            )}
                           </>
                         )}
                       </td>

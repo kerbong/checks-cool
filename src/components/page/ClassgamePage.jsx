@@ -42,7 +42,7 @@ const ClassgamePage = (props) => {
               {selectedMenu === "alarm" && <>{ICONS[1]} 알림장</>}
               {selectedMenu === "" && (
                 <>
-                  <i className="fa-solid fa-gamepad"></i> With-Student
+                  <i className="fa-solid fa-gamepad"></i> 제자랑
                 </>
               )}
             </button>
