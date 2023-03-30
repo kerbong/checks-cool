@@ -279,10 +279,22 @@ const ManageCheckListMemo = (props) => {
         >
           {/* 전환버튼 */}
           <Button
-            name={showListMemo ? <span> 제출보기</span> : "  개별기록 보기"}
-            icon={<i className="fa-solid fa-rotate"></i>}
-            onclick={() => setShowListMemo((prev) => !prev)}
-            className={"change-checkList-button"}
+            name={<span> 제출 </span>}
+            onclick={() => setShowListMemo(false)}
+            className={
+              showListMemo
+                ? "change-checkList-button"
+                : "change-checkList-button-clicked"
+            }
+          />
+          <Button
+            name={<span> 개별기록 </span>}
+            onclick={() => setShowListMemo(true)}
+            className={
+              !showListMemo
+                ? "change-listMemo-button"
+                : "change-listMemo-button-clicked"
+            }
           />
           {/* 엑셀저장버튼 */}
           <Button

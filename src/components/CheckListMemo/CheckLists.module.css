@@ -124,6 +124,30 @@
   justify-content: center;
   align-items: center;
 }
+.date-title {
+  display: flex;
+  flex-direction: column;
+  margin: -10px 0 -5px 0;
+  padding: 5px;
+  width: 100%;
+}
+
+.date-title {
+  align-items: center;
+}
+
+.holidayData {
+  width: 94%;
+  font-size: 0.5em;
+  background-color: #dd3300d9;
+  font-weight: bold;
+  color: azure;
+  border-radius: 10px;
+  border-width: 0;
+  padding: 3px;
+  margin: 2px;
+  white-space: pre-line;
+}
 
 .upDownDivHr {
   width: 40%;

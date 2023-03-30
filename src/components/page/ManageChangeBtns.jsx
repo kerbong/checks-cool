@@ -64,7 +64,7 @@ const ManageChangeBtns = (props) => {
       />
 
       <Button
-        name={"제출/개별"}
+        icon={"제출/개별"}
         className={
           nowOn !== "manageCheckListMemo" ? "manageBtn" : "manageBtn-clicked"
         }

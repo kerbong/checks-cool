@@ -26,8 +26,28 @@ const CompareListMemoTable = (props) => {
   const [listMemoClStudents, setListMemoClStudents] = useState([]);
   const [trNums, setTrNums] = useState([]);
   const [datas, setDatas] = useState({});
-  const [canDrawChart, setCanDrawChart] = useState(false);
-  // const [dataClNames, setDataClNames] = useState([]);
+  const [canDrawLine, setCanDrawLine] = useState(false);
+  const [canDrawBar, setCanDrawBar] = useState(false);
+  const [dataClNames, setDataClNames] = useState([]);
+  const [explainOn, setExplainOn] = useState(false);
+
+  const explainP = () => {
+    return (
+      <>
+        <p style={{ color: "white" }}>
+          * 자료가 보기 어려운 경우 화면 확대/축소를 활용해주세요.
+        </p>
+        <p style={{ color: "white" }}>
+          * 제출/미제출 👉 같은 반의 제출기록을 2개 이상 선택하면 차트가
+          자동으로 생성됩니다.
+        </p>
+        <p style={{ color: "white" }}>
+          * 개별기록 👉 숫자(점수)로만 저장된 개별기록을 두 개 이상 선택하면,
+          차트가 자동으로 생성됩니다.
+        </p>
+      </>
+    );
+  };
 
   const defaultLegendClickHandler = ChartJS.defaults.plugins.legend.onClick;
   var newLegendClickHandler = function (e, legendItem, legend) {
@@ -57,7 +77,10 @@ const CompareListMemoTable = (props) => {
       legend: {
         position: "top",
         labels: {
-          fontSize: 20,
+          fontSize: 30,
+          usePointStyle: true,
+          // 범례 도형 모양과 관련된 속성으로, false일 경우엔 기본 직사각형 도형으로 표시됩니다.
+          padding: 20,
         },
         onClick: newLegendClickHandler,
       },
@@ -70,7 +93,58 @@ const CompareListMemoTable = (props) => {
         top: 20,
         bottom: 20,
       },
+      fontSize: 25,
+    },
+    scales: {
+      y: {
+        axis: "y",
+        afterDataLimits: (scale) => {
+          // y축의 최대값은 데이터의 최대값에 딱 맞춰져서 그려지므로
+          // y축 위쪽 여유공간이 없어 좀 답답한 느낌이 들 수 있는데요,
+          // 이와 같이 afterDataLimits 콜백을 사용하여 y축의 최대값을 좀 더 여유있게 지정할 수 있습니다!
+          scale.max = scale.max * 1.1;
+        },
+        ticks: {
+          beginAtZero: true,
+          stepSize: 1, //y축 간격
+        },
+      },
+    },
+  };
+
+  const bar_options = {
+    responsive: true,
+    layout: {
+      padding: {
+        left: 40,
+        right: 40,
+        top: 20,
+        bottom: 20,
+      },
       fontSize: 15,
+    },
+    // x,y축 설정
+    scales: {
+      y: {
+        axis: "y",
+        afterDataLimits: (scale) => {
+          // y축의 최대값은 데이터의 최대값에 딱 맞춰져서 그려지므로
+          // y축 위쪽 여유공간이 없어 좀 답답한 느낌이 들 수 있는데요,
+          // 이와 같이 afterDataLimits 콜백을 사용하여 y축의 최대값을 좀 더 여유있게 지정할 수 있습니다!
+          scale.max = scale.max * 1.1;
+        },
+        title: {
+          // 이 축의 단위 또는 이름도 title 속성을 이용하여 표시할 수 있습니다.
+          display: true,
+          align: "end",
+          color: "#808080",
+          text: "(개)",
+        },
+        ticks: {
+          beginAtZero: true,
+          stepSize: 1, //y축 간격
+        },
+      },
     },
   };
 
@@ -79,13 +153,13 @@ const CompareListMemoTable = (props) => {
     if (!props.isSubject) return;
 
     const new_listMemoClStudents = [];
-    // const new_dataClNames = [];
+    const new_dataClNames = [];
     let new_trNums = [];
 
     let studentsNums = 0;
     //자료의 반 이름을 모아두고
     props.listMemo?.forEach((list) => {
-      // new_dataClNames?.push(list.clName);
+      new_dataClNames?.push(list.clName);
       new_listMemoClStudents?.push(
         Object.values(
           props.students?.filter(
@@ -96,7 +170,7 @@ const CompareListMemoTable = (props) => {
     });
 
     setListMemoClStudents([...new_listMemoClStudents]);
-    // setDataClNames([...new_dataClNames]);
+    setDataClNames([...new Set(new_dataClNames)]);
 
     //자료의 반 학생들의 이름을 모아두기
     new_listMemoClStudents.forEach((clStd) => {
@@ -110,7 +184,7 @@ const CompareListMemoTable = (props) => {
     setTrNums([...new_trNums]);
   }, [props.isSubject]);
 
-  // 모든 자료가 숫자로 되어 있는지 판단함.
+  // 모든 자료가 숫자로 되어 있는지 판단해서 listMemo 숫자 표로그려주는 데이터 만들기
   useEffect(() => {
     //checkLists는 숫자가 아니므로.. 표그리기 패스
     if (props.about !== "listMemo") return;
@@ -137,18 +211,36 @@ const CompareListMemoTable = (props) => {
           var RGB_2 = Math.floor(Math.random() * (255 + 1));
           var RGB_3 = Math.floor(Math.random() * (255 + 1));
 
+          let new_stdData = props.listMemo?.map((list) => {
+            let memo_num = 0;
+            list.data?.forEach((stud_data) => {
+              if (stud_data.name === stud.name) {
+                memo_num = +stud_data.memo;
+              }
+            });
+
+            return memo_num;
+          });
+
+          // 총계
+          let stdScoreSum = props.listMemo
+            ?.map((list) => {
+              let returnValue = 0;
+              let isExist = list?.data?.filter((std) => std.name === stud.name);
+              if (isExist?.length > 0) {
+                returnValue = isExist?.[0]?.memo;
+              }
+              return returnValue;
+            })
+            .reduce((ac, cur) => +ac + +cur);
+
+          new_stdData.push(stdScoreSum);
+
+          new_stdData.push((stdScoreSum / props.listMemo?.length).toFixed(1));
+
           return {
             label: stud.name,
-            data: props.listMemo?.map((list) => {
-              let memo_num = 0;
-              list.data?.forEach((stud_data) => {
-                if (stud_data.name === stud.name) {
-                  memo_num = +stud_data.memo;
-                }
-              });
-
-              return memo_num;
-            }),
+            data: new_stdData,
             borderColor: "rgba(" + RGB_1 + "," + RGB_2 + "," + RGB_3 + ")",
             backgroundColor: "white",
           };
@@ -156,10 +248,53 @@ const CompareListMemoTable = (props) => {
 
         //전담이면
       } else {
+        // 1반 자료만 다루기.. 나머지는 고민해보자 ㅠㅠ
+        //그렇게 되면.. 가로축에는 번호, 세로축은 점수,
+        // 각 선그래프는 반이 되어야 할 것 같다.
+
+        if (dataClNames?.length !== 1) return;
+
+        new_datasets = listMemoClStudents?.[0]?.map((stud, index) => {
+          // 랜덤컬러 설정..?
+          var RGB_1 = Math.floor(Math.random() * (255 + 1));
+          var RGB_2 = Math.floor(Math.random() * (255 + 1));
+          var RGB_3 = Math.floor(Math.random() * (255 + 1));
+
+          let new_stdData = props.listMemo?.map((list) => {
+            let memo_num = 0;
+            list.data?.forEach((stud_data) => {
+              if (stud_data.name === stud.name) {
+                memo_num = +stud_data.memo;
+              }
+            });
+
+            return memo_num;
+          });
+
+          // 총계/
+          let stdScoreSum = props.listMemo
+            ?.map((list) => {
+              return (
+                list?.data?.filter((std) => std.name === stud.name)?.[0]
+                  ?.memo || 0
+              );
+            })
+            ?.reduce((ac, cur) => +ac + +cur);
+
+          new_stdData.push(stdScoreSum);
+
+          new_stdData.push((stdScoreSum / props.listMemo?.length).toFixed(1));
+
+          return {
+            label: stud.name,
+            data: new_stdData,
+            borderColor: "rgba(" + RGB_1 + "," + RGB_2 + "," + RGB_3 + ")",
+            backgroundColor: "white",
+          };
+        });
       }
 
       //전체평균 포함하기
-
       new_datasets.unshift({
         label: "전체평균",
         data: props.listMemo?.map((list) => {
@@ -183,35 +318,124 @@ const CompareListMemoTable = (props) => {
         backgroundColor: "#000000e0",
       });
 
+      let data_labels = props.listMemo?.map(
+        (list) => list.id.slice(5, 10) + " " + list.title
+      );
+      data_labels.push("총계", "개별평균");
+
       const data = {
-        // 라벨.. 가로축 해당. 리스트메모 제목 써주면 됨
-        labels: props.listMemo?.map((list) => list.title),
+        // 라벨.. 가로축 해당. 리스트메모 제목 + 총계, 평균 써주면 됨
+        labels: data_labels,
         datasets: new_datasets,
       };
 
       setDatas(data);
 
-      setCanDrawChart(true);
+      setCanDrawLine(true);
     }
-  }, [props.listMemo]);
+  }, [props.listMemo, dataClNames]);
+
+  // 체크리스트 o,x 데이터 총계로 그래프 만들기! 가로축이 학생이름 세로축이 제출 개수
+  useEffect(() => {
+    //listMemo는 패스
+    if (props.about === "listMemo") return;
+    if (!props.listMemo) return;
+
+    //숫자로만 된 데이터면 가능 띄우고, 데이터만들어서 넘어주기
+    if (props.listMemo?.length > 1) {
+      let new_dataset;
+      // 담임이면
+      if (!props.isSubject) {
+        new_dataset = {
+          type: "bar",
+          label: "제출/미제출 합계",
+          data: props.students?.map((stud) => {
+            return props.listMemo?.filter((list) => {
+              return list?.unSubmitStudents?.filter(
+                (unSub_std) => unSub_std.name === stud.name
+              )?.length === 0
+                ? true
+                : false;
+            })?.length;
+          }),
+          barThickness: 25,
+          borderColor: "red",
+          backgroundColor: "rgb(255, 99, 132)",
+          borderWidth: 2,
+        };
+
+        const data = {
+          // 라벨.. 가로축 해당. 학생이름 써주면 됨
+          labels: props.students?.map((stud) => stud.name),
+          datasets: [new_dataset],
+        };
+
+        setDatas(data);
+        setCanDrawBar(true);
+        // 전담이면
+      } else {
+        if (dataClNames.length !== 1) return;
+        new_dataset = {
+          type: "bar",
+          label: "제출/미제출 합계",
+          data: listMemoClStudents[0]?.map((stud) => {
+            return props.listMemo?.filter((list) =>
+              list?.unSubmitStudents?.filter(
+                (unSub_std) => unSub_std.name === stud.name
+              )?.length === 0
+                ? true
+                : false
+            )?.length;
+          }),
+          barThickness: 25,
+          borderColor: "red",
+          backgroundColor: "rgb(255, 99, 132)",
+          borderWidth: 2,
+        };
+        const data = {
+          // 라벨.. 가로축 해당. 학생이름 써주면 됨
+          labels: listMemoClStudents[0]?.map((stud) => stud.name),
+          datasets: [new_dataset],
+        };
+
+        setDatas(data);
+        setCanDrawBar(true);
+      }
+    }
+  }, [props.listMemo, dataClNames]);
 
   return (
     <div className={classes["flex-center"]}>
-      <p style={{ color: "white" }}>
-        * 자료가 보기 어려운 경우 화면 확대/축소를 활용해주세요.
-        {props.about === "listMemo" && (
-          <>
-            <br />* 숫자(점수)로만 저장된 개별기록을 두 개 이상 선택하면, 차트가
-            자동으로 생성됩니다.
-          </>
-        )}
-      </p>
+      <div>
+        <h2 onClick={() => setExplainOn((prev) => !prev)}>
+          {" "}
+          😮 사용 방법 및 주의사항{" "}
+          <span>
+            {explainOn ? (
+              <i className="fa-solid fa-chevron-up"></i>
+            ) : (
+              <i className="fa-solid fa-chevron-down"></i>
+            )}{" "}
+          </span>
+        </h2>
+        {explainOn && explainP()}
+      </div>
 
       {/* 차트로 그려주기.. 만약 데이터가 모두 숫자 또는 '' 로만 되어있으면 */}
-      {canDrawChart && (
+      {canDrawLine && (
         <>
           <div style={{ backgroundColor: "white" }}>
             <Line options={options} data={datas} />
+          </div>
+          <br />
+        </>
+      )}
+
+      {/* 바형 으로 체크리스트 총합 그려주기..  */}
+      {canDrawBar && (
+        <>
+          <div style={{ backgroundColor: "white" }}>
+            <Line options={bar_options} data={datas} />
           </div>
           <br />
         </>
@@ -232,6 +456,19 @@ const CompareListMemoTable = (props) => {
                     {list.title}
                   </th>
                 ))}
+                {/* 체크리스트인 경우 제출한 총 개수 넣어주기 */}
+                {props.about !== "listMemo" && (
+                  <>
+                    <th className={`${classes["thd"]}`}>제출 개수</th>
+                  </>
+                )}
+                {/* 개별기록의 경우 총계, 평균 넣어주기 */}
+                {props.about === "listMemo" && (
+                  <>
+                    <th className={`${classes["thd"]}`}>총계</th>
+                    <th className={`${classes["thd"]}`}>개별평균</th>
+                  </>
+                )}
               </>
             )}
 
@@ -255,6 +492,19 @@ const CompareListMemoTable = (props) => {
                     </th>
                   </>
                 ))}
+                {/* 체크리스트인 경우 제출한 총 개수 넣어주기 */}
+                {props.about !== "listMemo" && dataClNames.length === 1 && (
+                  <>
+                    <th className={`${classes["thd"]}`}>제출 개수</th>
+                  </>
+                )}
+                {/* 개별기록의 경우 총계, 평균 넣어주기 */}
+                {props.about === "listMemo" && dataClNames.length === 1 && (
+                  <>
+                    <th className={`${classes["thd"]}`}>총계</th>
+                    <th className={`${classes["thd"]}`}>개별평균</th>
+                  </>
+                )}
               </>
             )}
           </tr>
@@ -273,7 +523,9 @@ const CompareListMemoTable = (props) => {
                   }`}
                 >
                   {/* 이름써주기 */}
-                  <td className={classes["name-td"]}>{stud.name}</td>
+                  <td key={"std" + stud.name} className={classes["name-td"]}>
+                    {stud.name}
+                  </td>
                   {/* 각 내용에서 학생 있는지 찾아서 자료 넣어주기 */}
                   {props.listMemo?.map((list) => (
                     <td key={"memo" + list.id} className={`${classes["thd"]}`}>
@@ -296,6 +548,52 @@ const CompareListMemoTable = (props) => {
                       )}
                     </td>
                   ))}
+                  {/* 체크리스트인 경우 총계 */}
+                  {props.about !== "listMemo" && (
+                    <td key={"eachSumCheck"} className={`${classes["thd"]}`}>
+                      {props.listMemo
+                        ?.map((list) => {
+                          return list?.unSubmitStudents?.filter(
+                            (unSub_std) => unSub_std.name === stud.name
+                          ).length === 0
+                            ? 1
+                            : 0;
+                        })
+                        .reduce((ac, cur) => +ac + +cur)}
+                    </td>
+                  )}
+                  {/* 개별기록의 경우 총계 평균 넣어주기 */}
+                  {props.about === "listMemo" && (
+                    <>
+                      {/* 총계 */}
+                      <td key={"eachSumList"} className={`${classes["thd"]}`}>
+                        {props.listMemo
+                          ?.map((list) => {
+                            return (
+                              list?.data?.filter(
+                                (std) => std.name === stud.name
+                              )?.[0]?.memo || 0
+                            );
+                          })
+                          .reduce((ac, cur) => +ac + +cur)}
+                      </td>
+                      {/* 개별평균값 */}
+                      <td key={"eachAverList"} className={`${classes["thd"]}`}>
+                        {(
+                          props.listMemo
+                            ?.map((list) => {
+                              return (
+                                list?.data?.filter(
+                                  (std) => std.name === stud.name
+                                )?.[0]?.memo || 0
+                              );
+                            })
+                            .reduce((ac, cur) => +ac + +cur) /
+                          props.listMemo?.length
+                        ).toFixed(1)}
+                      </td>
+                    </>
+                  )}
                 </tr>
               ))}
             </>
@@ -371,6 +669,61 @@ const CompareListMemoTable = (props) => {
                       </td>
                     </>
                   ))}
+                  {/* 체크리스트인 경우 총계, 한 반 자료인 경우에만 보여주기 */}
+                  {dataClNames.length === 1 && props.about !== "listMemo" && (
+                    <td
+                      key={"whole" + num_index}
+                      className={`${classes["thd"]}`}
+                    >
+                      {
+                        props.listMemo?.filter((list) => {
+                          return list?.unSubmitStudents?.filter(
+                            (unSub_std) =>
+                              unSub_std.name ===
+                              listMemoClStudents[0]?.[num_index]?.name
+                          )?.length === 0
+                            ? true
+                            : false;
+                        })?.length
+                      }
+                    </td>
+                  )}
+                  {/* 개별기록의 경우 총계 평균 넣어주기 */}
+                  {props.about === "listMemo" && dataClNames.length === 1 && (
+                    <>
+                      {/* 총계 */}
+                      <td key={"eachSumList"} className={`${classes["thd"]}`}>
+                        {props.listMemo
+                          ?.map((list) => {
+                            return (
+                              list?.data?.filter(
+                                (std) =>
+                                  std.name ===
+                                  listMemoClStudents[0]?.[num_index]?.name
+                              )?.[0]?.memo || 0
+                            );
+                          })
+                          .reduce((ac, cur) => +ac + +cur)}
+                      </td>
+                      {/* 개별평균값 */}
+                      <td key={"eachAverList"} className={`${classes["thd"]}`}>
+                        {(
+                          props.listMemo
+                            ?.map((list) => {
+                              return (
+                                list?.data?.filter(
+                                  (std) =>
+                                    std.name ===
+                                    listMemoClStudents[0]?.[num_index]?.name
+                                )?.[0]?.memo || 0
+                              );
+                            })
+                            .reduce((ac, cur) => +ac + +cur) /
+                          props.listMemo?.length
+                        ).toFixed(1)}
+                      </td>
+                    </>
+                  )}
                 </tr>
               ))}
             </>

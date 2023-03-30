@@ -19,13 +19,12 @@ const ListMemoInput = (props) => {
 
   const [showCal, setShowCal] = useState(false);
   const [currentMonth, setCurrentMonth] = useState(dayjs().format("YYYY-MM"));
-
+  const [todayYyyymmdd, setTodayYyyymmdd] = useState(new Date());
   const [students, setStudents] = useState(props.students);
   const [studentMemo, setStudentMemo] = useState(props.item || []);
   const [memoTitle, setMemoTitle] = useState(
     props.item.title || getDateHandler(new Date())
   );
-  const [todayYyyymmdd, setTodayYyyymmdd] = useState(new Date());
 
   const saveMemo = (auto) => {
     let tempId = localStorage.getItem("listId");
@@ -126,9 +125,6 @@ const ListMemoInput = (props) => {
   }, []);
 
   const calDateHandler = (date) => {
-    let weekd = dayjs(date).format("d");
-    let weekDays = ["일", "월", "화", "수", "목", "금", "토"];
-
     setTodayYyyymmdd(dayjs(date).format("YYYY-MM-DD"));
   };
 

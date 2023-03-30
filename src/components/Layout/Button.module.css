@@ -296,7 +296,10 @@
 }
 
 .excelSave-button,
-.change-checkList-button {
+.change-checkList-button,
+.change-checkList-button-clicked,
+.change-listMemo-button-clicked,
+.change-listMemo-button {
   width: auto;
   background-color: #f3feff;
   height: auto;
@@ -309,9 +312,26 @@
   border-width: 0;
   letter-spacing: 2px;
 }
-
 .change-checkList-button {
-  left: 2%;
+  left: 5px;
+  background-color: #1b5157;
+}
+
+.change-checkList-button-clicked {
+  left: 5px;
+  font-weight: bold;
+  font-size: 1.3rem;
+}
+
+.change-listMemo-button {
+  left: 5px;
+  background-color: #1b5157;
+}
+
+.change-listMemo-button-clicked {
+  left: 75px;
+  font-weight: bold;
+  font-size: 1.3rem;
 }
 
 .excelSave-button {

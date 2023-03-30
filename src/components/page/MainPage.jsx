@@ -9,23 +9,22 @@ import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import ExampleModal from "./ExampleModal";
 import byExcel from "../../assets/student/teacher-excel.gif";
-import mainImg from "../../assets/notice/0327.jpg";
+import mainImg from "../../assets/notice/0331main.jpg";
 import dayjs from "dayjs";
 import "dayjs/locale/ko";
 import AttendCalendar from "components/Attendance/AttendCalendar";
 // import consultingOption from "consultingOption";
 dayjs.locale("ko");
 
-const update_title = `메뉴수정 / 자리뽑기Update `;
+const update_title = `[조회]-[제출/개별] Update!`;
 
-const update_text = `불편을 우려하여.. 최대한 빠르게 메뉴 재구성을 진행했습니다!! <br/><br/> 
-1.<br/><b>📙생기부📙</b> 탭은 기존의 <br/> <b>[출석] [상담] [개별기록] [제출] </b>기능 이 들어가 있습니다. <u>학생과 관련된 정보를 입력</u>하는 곳입니다! <br/><br/> 
-<b>🧭조회🧭</b> 탭 에서는 기존의<br/> <b>[학생정보] [출결] [상담] [제출] [개별기록]  을 조회</b> 하실 수 있습니다. <u>학생과 관련된 정보를 개별, 학급별 조회</u>하는 곳입니다! +++ 개별기록 조회에서 숫자로만 이루어진 데이터를 두 개 이상 선택하면.. <b>멋진 차트가 자동으로 딱!!! 평가 입력에 활용</b>해보세요~ <br/><br/>
-<b>📝메모📝</b> 탭 에서는 기존의<br/> <b>[예산] [일정달력] [할일] [메모폴더]  </b>를 사용하실 수 있습니다. <u>업무나 개인일정과 관련된 정보 등을 기록</u>하는 곳입니다! <br/><br/> 
-기존의 잼잼에 있던, 다양한 기능들도, <b>교사만 👉 [교사랑]</b> /  <b>학생과 함께 👉 [제자랑]</b> 로 나누어 담았습니다! 메뉴를 누르셔서 직접 탐색해보세요~!! <br/><br/>2.<br/> We-T 메뉴와 제자랑 메뉴의 이름<br/>(두~세글자)을 추천해주세요!!!<br/><br/>* 최대한, 빠르게 개발하고 수정하느라.. 모든 테스트를 거치지 못했습니다ㅠㅠ 기존 기능이기에.. 잘 작동할 것이라 생각하고, 저도 주중에 테스트 해보겠습니다! <br/><br/> 
-3.<br/><b> 원하는 학생을 먼저 배치해두고 랜덤처럼 뽑는</b>, 비밀기능이 추가되었습니다!!<br/> 자세한 기능설명은 <b>[제자랑] - [자리뽑기] - 추가하기에서 '사용방법'</b>을 확인해주세요! <br/><br/>
-
-<br/>불편에도 항상 <b>응원해주시고 의견주시고 묵묵히 함께해주시는, 모든 선생님들께 진심으로 감사드립니다!!!</b>🤩 `;
+const update_text = `* 메뉴바의 로그인 버튼 -
+"공지사항"에 들어오시면 내용을 다시 보실 수 있어요.<br/><br/> 메뉴바의 [조회] - [제출/개별] 탭에  기능이 추가, 개선되었습니다! 
+<br/><b>제출/개별</b> 탭에서 기존에 입력했던 자료들을 효과적으로 모아볼 수 있습니다!.<br/> <br/>제출 예시) 1. 매일 <b>제목을 '알림장'</b>으로 제출자료 만들기(추후 검색 쉬움) <br/>2. [조회] - [제출/개별] 이동 <br/>3. 왼쪽 상단 [제출] 클릭 <br/>4. 제목검색에 '알림장' 입력 <br/>5. 비교할 자료 선택 후 완료버튼 클릭! <br/><br/>
+개별기록 예시) 1. <b>제목을 '수학 1단원평가'</b>처럼 개별기록 자료 만들기<u>(숫자로만 입력하기!!)</u> <br/>2. [조회] - [제출/개별] 이동 <br/>3. 제목검색에 '단원평가' 입력 <br/>4. 비교할 자료 선택 후 완료버튼 클릭! <br/><br/>
+이 외에도 [조회] 탭에서 다양한 기능이 가능합니다! 학생별 조회 기능을 통해 쉽게 자료를 확인해보세요!
+<br/> 
+<br/><b>항상 응원해주시고 함께해주시는, 모든 선생님들께 진심으로 감사드립니다!!!</b>🤩 `;
 
 //오늘 날짜 yyyy-mm-dd로 만들기
 const getDateHandler = (date, titleOrQuery) => {
@@ -86,7 +85,7 @@ const MainPage = (props) => {
 
   //업데이트 내용 보여주기 로컬스토리지에서 showNotice를 스트링으로 저장해서 확인 후에 이전에 봤으면 안보여주기
   const [showNotice, setShowNotice] = useState(
-    localStorage.getItem("showNotice") === "20230327" ? false : true
+    localStorage.getItem("showNotice") === "20230331" ? false : true
   );
 
   //화면 사이즈가 변경되면.. 시간표의 기본 세팅을 열림으로 바꿔주기.
@@ -735,7 +734,7 @@ const MainPage = (props) => {
       {showNotice && (
         <ExampleModal
           onClose={() => {
-            localStorage.setItem("showNotice", "20230327");
+            localStorage.setItem("showNotice", "20230331");
             setShowNotice(false);
           }}
           imgSrc={mainImg}

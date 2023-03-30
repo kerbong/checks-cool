@@ -204,28 +204,30 @@ const ManageAttendance = (props) => {
   //엑셀로 저장하기 함수
   const saveExcelHandler = () => {
     const new_datas = [];
-    attends?.forEach((atd) => {
-      let data = [
-        +atd.num,
-        atd.name,
-        atd.option.slice(1),
-        `${atd.id.slice(5, 7)}월`,
-        `${atd.id.slice(8, 10)}일`,
-        atd.note,
-      ];
-      if (nowIsSubject) {
-        data.unshift(atd.clName);
-      }
-      new_datas.push(data);
-    });
+    attends
+      ?.sort((a, b) => (a.id.slice(0, 10) > b.id.slice(0, 10) ? 1 : -1))
+      ?.forEach((atd) => {
+        let data = [
+          +atd.num,
+          atd.name,
+          `${atd.id.slice(5, 7)}월`,
+          `${atd.id.slice(8, 10)}일`,
+          atd.option.slice(1),
+          atd.note,
+        ];
+        if (nowIsSubject) {
+          data.unshift(atd.clName);
+        }
+        new_datas.push(data);
+      });
 
     if (!nowIsSubject) {
       new_datas.unshift([
         "번호",
         "이름",
-        "출결옵션",
         "날짜(월)",
         "날짜(일)",
+        "출결옵션",
         "비고",
       ]);
     } else {
@@ -233,9 +235,9 @@ const ManageAttendance = (props) => {
         "반",
         "번호",
         "이름",
-        "출결옵션",
         "날짜(월)",
         "날짜(일)",
+        "출결옵션",
         "비고",
       ]);
     }
@@ -246,9 +248,9 @@ const ManageAttendance = (props) => {
     attend_datas["!cols"] = [
       { wpx: 30 },
       { wpx: 60 },
+      { wpx: 40 },
+      { wpx: 40 },
       { wpx: 60 },
-      { wpx: 40 },
-      { wpx: 40 },
       { wpx: 100 },
     ];
     if (nowIsSubject) {
