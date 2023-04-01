@@ -40,6 +40,12 @@ const imageUrls = [
 ];
 
 const SeatTable = (props) => {
+  const [genderEmptySeat, setGenderEmptySeat] = useState(false);
+  const [nowSeatGender, setNowSeatGender] = useState([
+    +props.rowColumn?.split("-")?.[0] * +props.rowColumn?.split("-")?.[1],
+    0,
+    +props.rowColumn?.split("-")?.[0] * +props.rowColumn?.split("-")?.[1],
+  ]);
   const [tableRow, setTableRow] = useState(
     props.rowColumn?.split("-")[0] || ""
   );
@@ -61,6 +67,16 @@ const SeatTable = (props) => {
   const [seeFromBack, setSeeFromBack] = useState(true);
 
   let navigate = useNavigate();
+
+  //자리에 성별 설정을 true로 만들기 seatList거나, 비밀자료인 경우
+  useEffect(() => {
+    if (props.isExist) {
+      setGenderEmptySeat(true);
+    }
+    if (props.secretSeat?.genderEmptySeat?.length > 0) {
+      setGenderEmptySeat(true);
+    }
+  }, [props.isExist, props.secretSeat]);
 
   useEffect(() => {
     //비밀자료 아니면 작동안함
@@ -151,6 +167,7 @@ const SeatTable = (props) => {
   }, []);
 
   useEffect(() => {
+    //
     //   가로의 칸 column 과 세로의 줄 row를 곱하고 그 개수만큼 item을 만들어서 칸을 만들어줌.
     let itemsNumArray = [...Array(+tableRow * +tableColumn)]?.map(
       (v, i) => i + 1
@@ -189,7 +206,7 @@ const SeatTable = (props) => {
                 (stu) => stu.name === props.seatStudents[+item - 1]
               )?.[0]?.woman && "existWoman"
             ]
-          }`}
+          } ${props.secretSeat?.genderEmptySeat?.[+item - 1]}`}
           id={
             props.title?.length > 0
               ? `table-${props.title}-${item}`
@@ -210,7 +227,7 @@ const SeatTable = (props) => {
     document
       .getElementById(props.title || "newSeats")
       .style.setProperty("--rows", tableRow);
-  }, []);
+  }, [genderEmptySeat]);
 
   useEffect(() => {
     let new_students = [...students];
@@ -258,7 +275,7 @@ const SeatTable = (props) => {
 
   const getSeatsFromDb = () => {
     let seatsRef = doc(dbService, "seats", props.userUid);
-
+    setAllSeats([]);
     onSnapshot(seatsRef, (doc) => {
       const all_seats = [];
 
@@ -349,50 +366,59 @@ const SeatTable = (props) => {
     let selectedStudent = {};
     let pair_students = [...pairStudents];
     let new_students = [...students];
+    let gender_students = [];
     //성별에 따라 새로운 배열 만들고
-    let gender_students = new_students?.filter((stu) => stu.woman === isWoman);
+    gender_students = new_students?.filter((stu) => stu.woman === isWoman);
     if (isWoman === "all") {
       gender_students = new_students;
     }
 
-    //비밀자료에 있는 학생들은 제외해줌!
-    if (props.secretSeat) {
-      gender_students = gender_students?.filter(
-        (std) => !props.secretSeat?.students.includes(std.name)
-      );
-    }
+    // //비밀자료에 있는 학생들은 제외해줌!
+    // if (props.secretSeat) {
+    //   gender_students = gender_students?.filter(
+    //     (std) => !props.secretSeat?.students.includes(std.name)
+    //   );
+    // }
 
     //남뽑기 여뽑기 기준 새로운 로직
     //남 혹은 여학생에서 학생 랜덤 뽑기
     const selectRnStudent = () => {
+      //만약 비밀자료가 있는데, 비밀자료에서 비어있는 자리의 학생을 뽑을 때, 비밀자료에 포함된 학생을 제외한 학생들 중에서 뽑아야 함
+      if (props.secretSeat) {
+        gender_students = gender_students?.filter(
+          (std) => !props.secretSeat?.students?.includes(std.name)
+        );
+        console.log(gender_students);
+      }
+
       let randNum = Math.floor(Math.random() * gender_students.length);
 
       return gender_students[randNum];
     };
 
     //만약 비밀자료에 있는 학생들을 제외하고 모든 학생이 뽑혀버리면.. 비밀자료의 남은 학생들 자리에 넣기!
-    let secretPickDone = false;
-    let selectedSecretStd = {};
-    if (gender_students.length === 0 && props.secretSeat) {
-      gender_students = new_students?.filter((stu) => stu.woman === isWoman);
-      if (isWoman === "all") {
-        gender_students = new_students;
-      }
-      selectedSecretStd = selectRnStudent();
+    // let secretPickDone = false;
+    // let selectedSecretStd = {};
+    // if (gender_students.length === 0 && props.secretSeat) {
+    //   gender_students = new_students?.filter((stu) => stu.woman === isWoman);
+    //   if (isWoman === "all") {
+    //     gender_students = new_students;
+    //   }
+    //   selectedSecretStd = selectRnStudent();
 
-      setTempBeforeName(selectedSecretStd.name);
-      new_students = new_students?.filter(
-        (stu) => stu.name !== selectedSecretStd.name
-      );
+    //   setTempBeforeName(selectedSecretStd.name);
+    //   new_students = new_students?.filter(
+    //     (stu) => stu.name !== selectedSecretStd.name
+    //   );
 
-      selectedSwal(selectedSecretStd.num, selectedSecretStd.name);
+    //   selectedSwal(selectedSecretStd.num, selectedSecretStd.name);
 
-      setStudents([...new_students]);
-      setTempStudent({ ...selectedSecretStd });
-      secretPickDone = true;
-    }
+    //   setStudents([...new_students]);
+    //   setTempStudent({ ...selectedSecretStd });
+    //   secretPickDone = true;
+    // }
 
-    if (secretPickDone) return selectedSecretStd;
+    // if (secretPickDone) return selectedSecretStd;
 
     //학생을 옵션에 맞게 뽑고tempname에 이름 저장하고 학생목록에서 뽑힌 학생 제거하는 함수
     const removePickStudent = () => {
@@ -408,9 +434,13 @@ const SeatTable = (props) => {
       //selectedStudent에 랜덤 학생 넣기
       getRnStudent();
 
+      //비밀모드면.. 무시하기
+      let isDuplicate = 0;
       //만약 새로운짝 옵션상태고 짝을 했던 경우 다시 뽑기
       while (isNewPair && selectedStudent?.pair?.includes(tempBeforeName)) {
+        isDuplicate += 1;
         if (new_students.length === 1) break;
+        if (isDuplicate > 20) break;
         getRnStudent();
       }
 
@@ -438,73 +468,155 @@ const SeatTable = (props) => {
     let existItems = clickedSeat.parentNode.childNodes;
     let selectedSeats = 0;
 
-    existItems.forEach((item) => {
-      //학생 이름이 저장되어 있으면
-      if (isNaN(+item.innerText)) {
-        selectedSeats += 1;
-      }
-    });
-    // console.log(students.length);
-
-    setStudents((prev) => {
-      //남은학생
-      let new_students = [...prev];
-
-      //이미저장된 기존 자료이거나
-      // 전체학생 - 안뽑힌학생 = 뽑힌자리 인 경우 뽑힌 학생 모두가 자리배치가 끝나 있으면 자리 바꾸기
-
+    // 자리에 성별 세팅하기
+    if (!genderEmptySeat) {
+      //여자, 혹은 empty가 없으면 남자
+      //1번클릭 여자, 2번 클릭 empty, 3번클릭 남자
+      // 남자자리 였으면
       if (
-        props?.isExist ||
-        selectedSeats === props.students.length - new_students.length
+        !clickedSeat.classList.contains("woman") &&
+        !clickedSeat.classList.contains("empty")
       ) {
-        let clickedName = clickedSeat.innerText;
-        let clickedItemId = clickedSeat.getAttribute("id");
+        clickedSeat.classList.add("woman");
+        //여자였으면
+      } else if (clickedSeat.classList.contains("woman")) {
+        clickedSeat.classList.remove("woman");
+        clickedSeat.classList.add("empty");
 
-        // 선택된 학생이 없으면 선택하고
-        setSwitchStudent((prev_stu) => {
-          if (Object.keys(prev_stu).length === 0) {
-            //선택한 학생을 노란색으로 표시하기
-            clickedSeat.style.backgroundColor = "#ebee3fbd";
-            return { ...{ name: clickedName, id: clickedItemId } };
-            //선택된 학생이 있으면 현재 학생과 스위치!
-          } else {
-            clickedSeat.innerText = prev_stu.name;
-            document.getElementById(prev_stu.id).innerText = clickedName;
-            document.getElementById(prev_stu.id).style.backgroundColor =
-              "#d4e8dcbd";
-            clickedSeat.style.backgroundColor = "#d4e8dcbd";
-            return { ...{} };
-          }
-        });
-      } else {
-        if (isNaN(+clickedSeat.innerText)) {
-          return [...prev];
+        //empty 빈자리 였으면
+      } else if (clickedSeat.classList.contains("empty")) {
+        clickedSeat.classList.remove("empty");
+      }
+
+      // 자리와 우리반 성별, 전체 학생수가 같은지 확인하기
+      let all_seat = document.querySelectorAll(".item");
+      let now_seatMan = 0;
+      let now_seatWoman = 0;
+      let now_seatEmpty = 0;
+
+      all_seat.forEach((seatTag) => {
+        if (seatTag.classList.contains("woman")) {
+          now_seatWoman += 1;
+        } else if (seatTag.classList.contains("empty")) {
+          now_seatEmpty += 1;
+        } else {
+          now_seatMan += 1;
         }
-        //학생이름 넣어주기
-        let existItems = document.querySelectorAll(".item");
+      });
 
-        setTempStudent((temp) => {
-          let student = { ...temp };
-          existItems.forEach((item) => {
-            //혹시 현재 뽑힌 학생이 다른 곳에 이름이 미리 들어가 있으면 번호로 다시 바꿈
-            if (item.innerText === student.name) {
-              item.style.backgroundColor = "#ffffff";
-              item.innerText = item.getAttribute("id").slice(6);
+      setNowSeatGender([now_seatMan, now_seatWoman, now_seatEmpty]);
+
+      // 성별 세팅이 완료된 경우면.. 자리바꾸고,
+    } else {
+      //빈자리는 바꾸기 불가
+      if (clickedSeat.classList.contains("empty")) return;
+
+      existItems.forEach((item) => {
+        //학생 이름이 저장되어 있으면
+        if (isNaN(+item.innerText)) {
+          selectedSeats += 1;
+        }
+      });
+      // console.log(students.length);
+
+      setStudents((prev) => {
+        //남은학생
+        let new_students = [...prev];
+
+        //이미저장된 기존 자료이거나
+        // 전체학생 - 안뽑힌학생 = 뽑힌자리 인 경우 뽑힌 학생 모두가 자리배치가 끝나 있으면 자리 바꾸기
+
+        if (
+          props?.isExist ||
+          selectedSeats === props.students.length - new_students.length
+        ) {
+          let clickedName = clickedSeat.innerText;
+          let clickedItemId = clickedSeat.getAttribute("id");
+          let clickedItemWoman = clickedSeat.classList.contains("woman")
+            ? true
+            : false;
+
+          // 선택된 학생이 없으면 선택하고
+          setSwitchStudent((prev_stu) => {
+            if (Object.keys(prev_stu).length === 0) {
+              //선택한 학생의 박스 테두리를 초록색으로 설정하기
+              //선택된 학생이 없으면자리가 숫자면.. 선택하지 않기
+              // if (!isNaN(+clickedName)) return { ...{} };
+              clickedSeat.style.borderWidth = "3px";
+              clickedSeat.style.borderColor = "#46a046";
+              return {
+                ...{
+                  name: clickedName,
+                  id: clickedItemId,
+                  woman: clickedItemWoman,
+                },
+              };
+              //선택된 학생이 있으면 현재 학생과 스위치!
+            } else {
+              if (prev_stu.woman && !clickedSeat.classList.contains("woman"))
+                return {
+                  ...{
+                    name: clickedName,
+                    id: clickedItemId,
+                    woman: clickedItemWoman,
+                  },
+                };
+              if (!prev_stu.woman && clickedSeat.classList.contains("woman"))
+                return {
+                  ...{
+                    name: clickedName,
+                    id: clickedItemId,
+                    woman: clickedItemWoman,
+                  },
+                };
+
+              clickedSeat.innerText = prev_stu.name;
+              document.getElementById(prev_stu.id).innerText = clickedName;
+              clickedSeat.style.borderWidth = "3px";
+              clickedSeat.style.borderColor = "#46a046";
+              return { ...{} };
             }
           });
-
-          //임시 학생이 뽑혀있는 경우에만 해당 칸에 이름 넣기
-          if (Object.keys(student).length !== 0) {
-            clickedSeat.innerText = student.name;
-            clickedSeat.style.backgroundColor = "#d4e8dcbd";
+          //그냥 뽑힌 학생 자리에 새롭게 넣는거..!!
+        } else {
+          //비어있는 자리가 아니면 빼고
+          if (isNaN(+clickedSeat.innerText)) {
+            return [...prev];
           }
 
-          return { ...temp };
-        });
-      }
+          //비어 있는 자리에 학생이름 넣어주기
+          let existItems = document.querySelectorAll(".item");
 
-      return [...prev];
-    });
+          setTempStudent((temp) => {
+            let student = { ...temp };
+
+            //혹시 현재 뽑힌 학생이 다른 곳에 이름이 미리 들어가 있으면 번호로 다시 바꿈
+            // 만약, 현재 학생의 성별과 다른 성별의 자리를 선택하려고 하면 안눌림
+            if (student.woman && !clickedSeat.classList.contains("woman"))
+              return { ...temp };
+            if (!student.woman && clickedSeat.classList.contains("woman"))
+              return { ...temp };
+
+            existItems.forEach((item) => {
+              if (item.innerText === student.name) {
+                item.style.backgroundColor = "#ffffff";
+                item.innerText = item.getAttribute("id").slice(6);
+              }
+            });
+
+            //임시 학생이 뽑혀있는 경우에만 해당 칸에 이름 넣기
+            if (Object.keys(student).length !== 0) {
+              clickedSeat.innerText = student.name;
+              clickedSeat.style.backgroundColor = "#d4e8dcbd";
+            }
+
+            return { ...temp };
+          });
+        }
+
+        return [...prev];
+      });
+    }
   };
 
   const errorSwal = (text) => {
@@ -536,7 +648,7 @@ const SeatTable = (props) => {
             left top
             no-repeat
           `,
-      timer: 5000,
+      timer: 3000,
     });
   };
 
@@ -571,9 +683,7 @@ const SeatTable = (props) => {
     };
 
     //자리결정해서 이름 넣기 함수
-    const seatHandler = (name) => {
-      let existItems = document.querySelectorAll(".item");
-      let leftSeats = [];
+    const seatHandler = (name, isWoman) => {
       //혹시 비밀자료로 이미 선점된 학생이면 해당 자리에 바로 넣기
       let isDone = false;
       props.secretSeat?.students?.forEach((std, index) => {
@@ -587,12 +697,44 @@ const SeatTable = (props) => {
       //기존자리 정해진 학생이고 자리 정해서 넣었으면
       if (isDone) return;
 
+      //빈자리 뺀 자리만 넣어주기
+      let existItems = [];
+      document.querySelectorAll(".item").forEach((item) => {
+        if (!item.classList.contains("empty")) {
+          existItems.push(item);
+        }
+      });
+      let new_existItems = [];
+      //전체뽑기가 아니면 각 성별 자리만 모아줌
+      if (isWoman !== "all") {
+        existItems.forEach((item) => {
+          if (isWoman) {
+            if (item.classList.contains("woman")) {
+              new_existItems.push(item);
+            }
+          } else if (!isWoman) {
+            if (!item.classList.contains("woman")) {
+              new_existItems.push(item);
+            }
+          }
+        });
+        existItems = new_existItems;
+      }
+      // 만약... isWoman이 treu, false 하나면.. 남은 자리를 변경하기!
+
+      let leftSeats = [];
+
       //아직 학생 없는 숫자만 있는 자리들
-      existItems.forEach((item, index) => {
-        // 혹시 비밀자료로.. 미리 선점된 자리가 있으면 그거 제외하고 고르기
-        if (props.secretSeat && isNaN(+props.secretSeat?.students?.[index]))
+      existItems.forEach((item) => {
+        // 혹시 비밀자료로.. 미리 선점된 자리가 있으면 그거 제외하고 고르기(id는 1부터 시작)
+        let itemIndex = +item.id.split("-")[1];
+        if (
+          props.secretSeat &&
+          isNaN(+props.secretSeat?.students?.[itemIndex - 1])
+        )
           return;
 
+        //자리가 아직 숫자면
         if (!isNaN(+item.innerText)) {
           leftSeats.push(item);
         }
@@ -619,7 +761,7 @@ const SeatTable = (props) => {
       randomSeatHandler(isWoman);
 
       setTempStudent((prev) => {
-        seatHandler(prev.name);
+        seatHandler(prev.name, isWoman);
         return { ...prev };
       });
     }
@@ -812,26 +954,17 @@ const SeatTable = (props) => {
   useEffect(() => {
     let timer;
     if (students.length > 0) {
-      //한번에 모든 학생(남+ 여 번갈아) 뽑는 로직이면..
+      //한번에 모든 학생 뽑는 로직이면.. gender면 한 성별 먼저 다 뽑기 mix면 1번부터 그냥 성별 상관없이 쭉
       if (pickSeatAll === "gender") {
-        //이전에 뽑힌 학생이 여자면 남자뽑고
-        if (tempStudent.woman === true) {
-          timer = setTimeout(() => {
-            pickAndSeat("gender", false);
-          }, 3000);
-
-          // 이전에 뽑힌 학생이 남자면 여자뽑고
-        } else {
-          timer = setTimeout(() => {
-            pickAndSeat("gender", true);
-          }, 3000);
-        }
-
-        // 성별 상관없이 아무나 뽑을 경우우
+        //이전에 뽑힌 학생성별 계속 뽑기
+        timer = setTimeout(() => {
+          pickAndSeat("gender", tempStudent.woman);
+        }, 3500);
+        // 성별 상관없이 1번부터 쭉 뽑을 경우
       } else if (pickSeatAll === "mix") {
         timer = setTimeout(() => {
           pickAndSeat("mix", "all");
-        }, 3000);
+        }, 3500);
       }
 
       // 학생이 다 뽑히고 나면 pickSeatAll 설정 초기화
@@ -843,21 +976,75 @@ const SeatTable = (props) => {
     return () => clearTimeout(timer);
   }, [students]);
 
-  //넣어준 성별의 학생 뽑아서(없으면 반대성별뽑아서) temp에 저장함
+  //넣어준 성별의 학생 뽑아서(없으면 반대성별뽑아서) temp에 저장함 consider = gender, mix  isWoman = true false
   const pickAndSeat = (consider, isWoman) => {
-    //숫자가 가장 작은 빈자리에 이름 넣기 함수
-    const seatHandler = (name) => {
-      let existItems = document.querySelectorAll(".item");
-      let leftSeats = [];
-      //아직 학생 없는 숫자만 있는 자리들
+    //빈자리 뺀 자리만 넣어주기
+    let existItems = [];
+    document.querySelectorAll(".item").forEach((item) => {
+      if (!item.classList.contains("empty")) {
+        existItems.push(item);
+      }
+    });
+    let leftSeats = [];
+
+    //각 옵션 자리 중에서 안에 숫자가 들어있는 첫번째 꺼 고르는 함수
+    const getLeftFirstSeat = (isWoman) => {
+      let new_existItems = [];
+
       existItems.forEach((item) => {
-        if (!isNaN(+item.innerText)) {
-          leftSeats.push(item);
-          return false;
+        if (isWoman === "all") {
+          if (!isNaN(+item.innerText)) {
+            new_existItems.push(item);
+            return false;
+          }
+        } else if (isWoman === true) {
+          if (item.classList.contains("woman") && !isNaN(+item.innerText)) {
+            new_existItems.push(item);
+            return false;
+          }
+        } else if (!isWoman) {
+          if (!item.classList.contains("woman") && !isNaN(+item.innerText)) {
+            new_existItems.push(item);
+            return false;
+          }
         }
       });
-      //가장 앞자리 골라서 이름 넣기
-      let firstSeat = leftSeats[0];
+
+      return new_existItems[0];
+    };
+
+    //숫자가 가장 작은 빈자리에 이름 넣기인데 consider = gender면... isWoman 속성에 따라 남은 자리 중에 해당 성별 자리 고르기, consider = mix 면 그냥 남은 자리 중 처음꺼.
+
+    //아직 학생 없는 숫자만 있는 자리들 중에 consider가 mix 면
+    let firstSeat;
+
+    // if (consider === "gender") {
+    //   existItems.forEach((item) => {
+    //     //여자먼저 뽑고 있으면
+    //     if (isWoman) {
+    //       if (item.classList.contains("woman") && !isNaN(+item.innerText)) {
+    //         leftSeats.push(item);
+    //         return false;
+    //       }
+    //       // 남자먼저 뽑고 있었으면
+    //     } else {
+    //       if (!item.classList.contains("woman") && !isNaN(+item.innerText)) {
+    //         leftSeats.push(item);
+    //         return false;
+    //       }
+    //     }
+    //   });
+    //   //그냥 앞자리 부터면
+    // } else if (consider === "mix") {
+    //   existItems.forEach((item) => {
+    //     if (!isNaN(+item.innerText)) {
+    //       leftSeats.push(item);
+    //       return false;
+    //     }
+    //   });
+    // }
+
+    const seatHandler = (name) => {
       firstSeat.innerText = name;
       firstSeat.style.backgroundColor = "#d4e8dcbd";
     };
@@ -866,22 +1053,20 @@ const SeatTable = (props) => {
     //만약 비밀, 예비자료로 자리에 이미 학생이 세팅되어 있으면.. 바로 넣고 함수 종료하기! ()
 
     if (props.secretSeat) {
-      let existItems = document.querySelectorAll(".item");
-      let leftSeats = [];
-      //아직 학생 없는 숫자만 있는 자리들
-      let isOver = false;
-      existItems.forEach((item) => {
-        if (isOver) return;
-        if (!isNaN(+item.innerText)) {
-          leftSeats.push(item);
-          isOver = true;
+      if (isWoman === "all") {
+        firstSeat = getLeftFirstSeat(isWoman);
+      } else if (isWoman === true || isWoman === false) {
+        if (randomIsPossible(isWoman)) {
+          firstSeat = getLeftFirstSeat(isWoman);
+        } else {
+          firstSeat = getLeftFirstSeat(!isWoman);
         }
-      });
-      let firstSeat = leftSeats[0];
+      }
+      //가장 앞자리 골라서 이름 넣기
       //비밀자료 index+1에서 해당 값이 가장 앞자리의 innerText에..
       props.secretSeat?.students?.forEach((stdNameOrNum, index) => {
         //비밀자료의 인덱스와 현재 자리의 인덱스가 같고 비밀자리표의 현재자리가 사람이름이면 자리에 이름 넣어주고,
-        if (index + 1 === +firstSeat.innerText && isNaN(+stdNameOrNum)) {
+        if (index + 1 === +firstSeat.id.split("-")[1] && isNaN(+stdNameOrNum)) {
           //비밀자료의 인덱스와 현재 자리가 일치하면, 이름 넣어줌
           firstSeat.innerText = stdNameOrNum;
           firstSeat.style.backgroundColor = "#d4e8dcbd";
@@ -904,23 +1089,34 @@ const SeatTable = (props) => {
           setTempStudent({ ...selectedStudent });
           // seatHandler(selectedStudent.name);
           return;
+        } else {
         }
       });
     }
 
     if (isSecretNameExist) return;
 
-    // 성별 번갈아 일 경우
+    // 한성별 쭉일경우
     let selecStu;
-    if (consider === "gender") {
+    if (isWoman === true || isWoman === false) {
       if (randomIsPossible(isWoman)) {
+        firstSeat = getLeftFirstSeat(isWoman);
         selecStu = randomSeatHandler(isWoman);
       } else {
+        firstSeat = getLeftFirstSeat(!isWoman);
         selecStu = randomSeatHandler(!isWoman);
       }
-      // 아무나 일 경우
-    } else if (consider === "mix") {
-      randomSeatHandler("all");
+      // 1번부터 쭉일경우
+    } else if (isWoman === "all") {
+      //남은 자리 중 처음자리의 성별을 알아낸 후, woman이 있으면 여자 뽑고, 없으면 남자 뽑기
+      firstSeat = getLeftFirstSeat("all");
+      if (firstSeat.classList.contains("woman")) {
+        firstSeat = getLeftFirstSeat(true);
+        randomSeatHandler(true);
+      } else {
+        firstSeat = getLeftFirstSeat(false);
+        randomSeatHandler(false);
+      }
     }
     //자리에 넣음
     setTempStudent((prev) => {
@@ -935,6 +1131,7 @@ const SeatTable = (props) => {
   const randomAllHandler = (consider, isWoman) => {
     //consider가 gender면 남/여 학생 번갈아 뽑아서 남은 자리의 번호 순서대로 쭉 남은 학생이 없을 때까지 반복함.
 
+    //남자먼저 혹은 여자먼저 다 뽑기
     if (consider === "gender") {
       //여기서 한번 뽑아두고, useEffect로 students 변화를 받아서, pickSeatAll state가 gender 혹은 mix면.. 학생을 뽑고 앉히는걸 시킴 => sudents 줄어듬 => useEffect실행됨 => 반복..
 
@@ -1035,6 +1232,7 @@ const SeatTable = (props) => {
 
     const savingSecretData = async () => {
       let items_students = [];
+      let items_gender = [];
 
       document
         .getElementById(
@@ -1042,6 +1240,13 @@ const SeatTable = (props) => {
         )
         .childNodes.forEach((item) => {
           items_students.push(item.innerText);
+          let genEmpty = "";
+          if (item.classList.contains("empty")) {
+            genEmpty = "empty";
+          } else if (item.classList.contains("woman")) {
+            genEmpty = "woman";
+          }
+          items_gender.push(genEmpty);
         });
 
       const data = {
@@ -1049,6 +1254,7 @@ const SeatTable = (props) => {
         title: "-*-예시자료-*-",
         rowColumn: tableRow + "-" + tableColumn,
         saveDate: dayjs().format("YYYY-MM-DD"),
+        genderEmptySeat: items_gender,
       };
 
       // 전담인경우 학급명을 추가해서 저장.
@@ -1083,9 +1289,12 @@ const SeatTable = (props) => {
 
   return (
     <div id={props.title || "newSeats"}>
-      <button className={classes["secret"]} onClick={secretSaveHandler}>
-        비밀버튼
-      </button>
+      {genderEmptySeat && (
+        <button className={classes["secret"]} onClick={secretSaveHandler}>
+          비밀버튼
+        </button>
+      )}
+      {/* 자리뽑기 끝이면 보여지는 부분 */}
       {students.length === 0 && (
         <div className={classes["title-div"]}>
           {/* 전담의 경우 반 정보 보여주기 */}
@@ -1126,6 +1335,7 @@ const SeatTable = (props) => {
         </div>
       )}
 
+      {/* 기존자리에서 보일 설명 */}
       {props.title?.length > 0 && (
         <div>
           <div>
@@ -1155,195 +1365,246 @@ const SeatTable = (props) => {
         </button>
       )}
 
-      <div className={classes["mt--25"]}>
-        {students.length > 0 ? (
-          <>
-            남은학생 ({students.length})
-            <div className={classes["remain-student-div"]}>
-              {students?.map((stu) => (
-                <span
-                  key={stu.name}
-                  className={classes["remain-student"]}
-                  onClick={() => {
-                    //선택한 학생의 자리 배치 확인
-                    if (!selectSeatCheck()) {
-                      errorSwal(
-                        `뽑힌 "${tempStudent.name}" 학생의 자리를 선택해주세요!`
-                      );
-                      return false;
-                    }
-                    let new_students = [...students];
-                    setStudents([
-                      ...new_students?.filter(
-                        (student) => +student.num !== +stu.num
-                      ),
-                    ]);
-                    setTempStudent(stu);
-                  }}
-                >
-                  {stu.num}
-                </span>
-              ))}
-            </div>
-          </>
-        ) : (
-          <div className={classes["remain-student-div"]}>
-            {props.title ? (
-              ""
-            ) : (
-              <>
-                <p>자리뽑기가 끝났어요!</p>
-                <p>
-                  <Button
-                    name={"여학생 자리만 색칠하기"}
-                    onclick={coloringGender}
-                    className={"settingSeat-btn"}
-                  />
-                </p>
-              </>
-            )}
-          </div>
-        )}
-      </div>
-
-      {students.length > 0 && (
+      {/* 자리에 성별 세팅할 때 보여주는 설명, 버튼 */}
+      {!genderEmptySeat && (
         <>
-          <div className={classes["remain-student-div"]}>
-            <div className={classes["randomPickBtn-div"]}>
-              누구랑&nbsp;
-              <Button
-                id="newPairBtn"
-                onclick={() => {
-                  setIsNewPair(true);
-                }}
-                className={
-                  isNewPair ? `switch-random-btn-selected` : `switch-random-btn`
-                }
-                name={"새로운짝"}
-              />
-              <Button
-                id="newPairBtn"
-                onclick={() => {
-                  setIsNewPair(false);
-                }}
-                className={
-                  !isNewPair
-                    ? `switch-random-btn-selected`
-                    : `switch-random-btn`
-                }
-                name={"인생랜덤"}
-              />
-            </div>
-
-            <div className={`${classes["randomPickBtn-div"]}`}>
-              어떻게&nbsp;
-              <Button
-                id="justStudent"
-                onclick={() => {
-                  setRandomJustStudent(true);
-                }}
-                className={
-                  randomJustStudent
-                    ? `switch-random-btn-selected`
-                    : `switch-random-btn`
-                }
-                name={"학생만"}
-              />
-              <Button
-                id="stuPlusSeat"
-                onclick={() => {
-                  setRandomJustStudent(false);
-                }}
-                className={
-                  !randomJustStudent
-                    ? `switch-random-btn-selected`
-                    : `switch-random-btn`
-                }
-                name={"학생+자리"}
-              />
-            </div>
-          </div>
-          <div className={classes["remain-student-div"]}>
+          <p>
+            {" "}
+            * 기본 세팅 '남' | 한 번 클릭 '여'(노란색바탕) | 두 번 클릭
+            '자리삭제' |
+          </p>
+          {/* 일치하면 자리성별 세팅완료 버튼 나옴 */}
+          {nowSeatGender?.[0] ===
+            students?.filter((std) => !std.woman)?.length &&
+          nowSeatGender?.[1] === students?.filter((std) => std.woman)?.length &&
+          +nowSeatGender?.[0] + +nowSeatGender?.[1] === students?.length ? (
+            <Button
+              name={"자리 성별세팅 완료"}
+              onclick={() => setGenderEmptySeat(true)}
+              className={"settingSeat-btn"}
+            />
+          ) : (
             <>
-              <div className={classes["randomPickBtn-div"]}>
-                {!randomJustStudent && "랜덤자리 한명씩"}
-                <Button
-                  id="randomWomanPickBtn"
-                  onclick={() =>
-                    randomJustStudent
-                      ? randomPickHandler(true)
-                      : pickAndSeatHandler(true)
-                  }
-                  className={"settingSeat-btn"}
-                  name="여학생"
-                />
-                <Button
-                  id="randomManPickBtn"
-                  onclick={() =>
-                    randomJustStudent
-                      ? randomPickHandler(false)
-                      : pickAndSeatHandler(false)
-                  }
-                  className={"settingSeat-btn"}
-                  name="남학생"
-                />
-                <Button
-                  id="randomPickBtn"
-                  onclick={() =>
-                    randomJustStudent
-                      ? randomPickHandler("all")
-                      : pickAndSeatHandler("all")
-                  }
-                  className={"settingSeat-btn"}
-                  name="성별랜덤"
-                />
-              </div>
-
-              {/* 자리까지 뽑기 버전에서만 가능한 전체 뽑기, 1번자리부터 순서대로 들어감! */}
-              {!randomJustStudent && (
-                <div className={classes["randomPickBtn-div"]}>
-                  1번부터 한번에
-                  <Button
-                    id="randomMan_WoPickBtn"
-                    onclick={() => {
-                      setPickSeatAll("gender");
-                      randomAllHandler("gender", false);
-                    }}
-                    className={"settingSeat-btn"}
-                    name="남+여"
-                  />
-                  <Button
-                    id="randomWo_manPickBtn"
-                    onclick={() => {
-                      setPickSeatAll("gender");
-                      randomAllHandler("gender", true);
-                    }}
-                    className={"settingSeat-btn"}
-                    name="여+남"
-                  />
-                  <Button
-                    id="randomAllPickBtn"
-                    onclick={() => {
-                      setPickSeatAll("mix");
-                      randomAllHandler("mix");
-                    }}
-                    className={"settingSeat-btn"}
-                    name="성별랜덤"
-                  />
-                </div>
-              )}
+              <p>
+                우리반 남학생 수 {students?.filter((std) => !std.woman)?.length}{" "}
+                여학생 수 {students?.filter((std) => std.woman)?.length}{" "}
+                전체학생수 {students?.length}
+              </p>
+              <p>
+                현재 남학생 자리 {nowSeatGender?.[0] || students?.length} 현재
+                여학생 자리 {nowSeatGender?.[1] || 0} 전체학생 자리{" "}
+                {+nowSeatGender?.[0] + +nowSeatGender?.[1]}
+              </p>
             </>
-          </div>
+          )}
         </>
       )}
 
-      {students.length > 0 && (
-        <div className={classes["temp-name"]}>
-          <div>
-            <span>✋ </span>
-            {tempStudent.name}
+      {genderEmptySeat && (
+        <>
+          {/* 자리뽑기가 진짜 시작되면 보여지는 자리 위 세팅 부분 */}
+          <div className={classes["mt--25"]}>
+            {students.length > 0 ? (
+              <>
+                남은학생 ({students.length})
+                <div className={classes["remain-student-div"]}>
+                  {students?.map((stu) => (
+                    <span
+                      key={stu.name}
+                      className={classes["remain-student"]}
+                      onClick={() => {
+                        //선택한 학생의 자리 배치 확인
+                        if (!selectSeatCheck()) {
+                          errorSwal(
+                            `뽑힌 "${tempStudent.name}" 학생의 자리를 선택해주세요!`
+                          );
+                          return false;
+                        }
+                        let new_students = [...students];
+                        setStudents([
+                          ...new_students?.filter(
+                            (student) => +student.num !== +stu.num
+                          ),
+                        ]);
+                        setTempStudent(stu);
+                      }}
+                    >
+                      {stu.num}
+                    </span>
+                  ))}
+                </div>
+              </>
+            ) : (
+              <div className={classes["remain-student-div"]}>
+                {props.title ? (
+                  ""
+                ) : (
+                  <>
+                    <p>자리뽑기가 끝났어요!</p>
+                    <p>
+                      <Button
+                        name={"여학생 자리만 색칠하기"}
+                        onclick={coloringGender}
+                        className={"settingSeat-btn"}
+                      />
+                    </p>
+                  </>
+                )}
+              </div>
+            )}
           </div>
-        </div>
+
+          {students.length > 0 && (
+            <>
+              <div className={classes["remain-student-div"]}>
+                <div className={classes["randomPickBtn-div"]}>
+                  누구랑&nbsp;
+                  <Button
+                    id="newPairBtn"
+                    onclick={() => {
+                      setIsNewPair(true);
+                    }}
+                    className={
+                      isNewPair
+                        ? `switch-random-btn-selected`
+                        : `switch-random-btn`
+                    }
+                    name={"새로운짝"}
+                  />
+                  <Button
+                    id="newPairBtn"
+                    onclick={() => {
+                      setIsNewPair(false);
+                    }}
+                    className={
+                      !isNewPair
+                        ? `switch-random-btn-selected`
+                        : `switch-random-btn`
+                    }
+                    name={"인생랜덤"}
+                  />
+                </div>
+
+                <div className={`${classes["randomPickBtn-div"]}`}>
+                  어떻게&nbsp;
+                  <Button
+                    id="justStudent"
+                    onclick={() => {
+                      setRandomJustStudent(true);
+                    }}
+                    className={
+                      randomJustStudent
+                        ? `switch-random-btn-selected`
+                        : `switch-random-btn`
+                    }
+                    name={"학생만"}
+                  />
+                  <Button
+                    id="stuPlusSeat"
+                    onclick={() => {
+                      setRandomJustStudent(false);
+                    }}
+                    className={
+                      !randomJustStudent
+                        ? `switch-random-btn-selected`
+                        : `switch-random-btn`
+                    }
+                    name={"학생+자리"}
+                  />
+                </div>
+              </div>
+              <div className={classes["remain-student-div"]}>
+                <>
+                  <div className={classes["randomPickBtn-div"]}>
+                    {!randomJustStudent && "랜덤자리 한명씩"}
+                    <Button
+                      id="randomWomanPickBtn"
+                      onclick={() =>
+                        randomJustStudent
+                          ? randomPickHandler(true)
+                          : pickAndSeatHandler(true)
+                      }
+                      className={"settingSeat-btn"}
+                      name="여학생"
+                    />
+                    <Button
+                      id="randomManPickBtn"
+                      onclick={() =>
+                        randomJustStudent
+                          ? randomPickHandler(false)
+                          : pickAndSeatHandler(false)
+                      }
+                      className={"settingSeat-btn"}
+                      name="남학생"
+                    />
+                    <Button
+                      id="randomPickBtn"
+                      onclick={() =>
+                        randomJustStudent
+                          ? randomPickHandler("all")
+                          : pickAndSeatHandler("all")
+                      }
+                      className={"settingSeat-btn"}
+                      name="성별랜덤"
+                    />
+                  </div>
+
+                  {/* 자리까지 뽑기 버전에서만 가능한 전체 뽑기, 1번자리부터 순서대로 들어감! */}
+                  {!randomJustStudent && (
+                    <div className={classes["randomPickBtn-div"]}>
+                      한번에
+                      <Button
+                        id="randomMan_WoPickBtn"
+                        onclick={() => {
+                          setPickSeatAll("mix");
+                          randomAllHandler("mix", "all");
+                        }}
+                        className={"settingSeat-btn"}
+                        name="1번부터"
+                      />
+                      <Button
+                        id="randomWo_manPickBtn"
+                        onclick={() => {
+                          setPickSeatAll("gender");
+                          randomAllHandler("gender", true);
+                        }}
+                        className={"settingSeat-btn"}
+                        name="여자먼저"
+                      />
+                      <Button
+                        id="randomAllPickBtn"
+                        onclick={() => {
+                          setPickSeatAll("gender");
+                          randomAllHandler("gender", false);
+                        }}
+                        className={"settingSeat-btn"}
+                        name="남자먼저"
+                      />
+                      {/* <Button
+                        id="randomAllPickBtn"
+                        onclick={() => {
+                          setPickSeatAll("mix");
+                          randomAllHandler("mix");
+                        }}
+                        className={"settingSeat-btn"}
+                        name="아무데나"
+                      /> */}
+                    </div>
+                  )}
+                </>
+              </div>
+            </>
+          )}
+
+          {students.length > 0 && (
+            <div className={classes["temp-name"]}>
+              <div>
+                <span>✋ </span>
+                {tempStudent.name}
+              </div>
+            </div>
+          )}
+        </>
       )}
 
       {/* 초기세팅.. 뒤에서 볼때면 칠판이 자리 뒤에 */}

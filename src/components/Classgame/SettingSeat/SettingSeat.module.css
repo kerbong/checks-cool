@@ -239,3 +239,14 @@
   color: #ffffff00;
   border-width: 0;
 }
+
+/* 깜빡이기 효과 */
+@keyframes blink-effect {
+  50% {
+    opacity: 0;
+  }
+}
+
+.blink {
+  animation: blink-effect 1s step-end 2;
+}

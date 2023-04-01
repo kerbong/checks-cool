@@ -252,3 +252,13 @@ select {
   padding: 10px;
   font-size: 1.1rem;
 }
+
+/* 자리뽑기 자리 성별 부분 css */
+
+.woman {
+  background-color: rgba(235, 238, 63, 0.74);
+}
+
+.empty {
+  background-color: rgba(7, 7, 7, 0.74);
+}

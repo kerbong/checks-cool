@@ -136,7 +136,11 @@ const SearchCheckListMemo = (props) => {
           />
           {/* 완료버튼 */}
           <button
-            onClick={() => setShowCompareCheckListMemo(true)}
+            onClick={() => {
+              if (compareCheckListMemo?.length !== 0) {
+                setShowCompareCheckListMemo(true);
+              }
+            }}
             className={classes["search-btns"]}
           >
             완료

@@ -15,8 +15,8 @@ const SeatLists = (props) => {
   const getSeatsFromDb = () => {
     let seatsRef = doc(dbService, "seats", props.userUid);
 
+    setSeatLists([]);
     onSnapshot(seatsRef, (doc) => {
-      setSeatLists([]);
       const new_seats = [];
       const years = [];
       doc?.data()?.seats_data?.forEach((data) => {
