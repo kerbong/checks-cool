@@ -240,13 +240,26 @@
   border-width: 0;
 }
 
-/* 깜빡이기 효과 */
-@keyframes blink-effect {
-  50% {
-    opacity: 0;
-  }
+.op1,
+.op2,
+.op3 {
+  width: 47px;
+  height: 18px;
+  display: inline-block;
+  border-width: 2px;
+  border-color: black;
+  border-radius: 5px;
 }
 
-.blink {
-  animation: blink-effect 1s step-end 2;
+/* 남 */
+.op1 {
+  background-color: white;
+}
+/* 여 */
+.op2 {
+  background-color: rgba(235, 238, 63, 0.74);
+}
+/* 빈자리 */
+.op3 {
+  background-color: rgba(7, 7, 7, 0.74);
 }

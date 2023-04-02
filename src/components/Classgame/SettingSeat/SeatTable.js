@@ -985,7 +985,6 @@ const SeatTable = (props) => {
         existItems.push(item);
       }
     });
-    let leftSeats = [];
 
     //각 옵션 자리 중에서 안에 숫자가 들어있는 첫번째 꺼 고르는 함수
     const getLeftFirstSeat = (isWoman) => {
@@ -1017,32 +1016,6 @@ const SeatTable = (props) => {
 
     //아직 학생 없는 숫자만 있는 자리들 중에 consider가 mix 면
     let firstSeat;
-
-    // if (consider === "gender") {
-    //   existItems.forEach((item) => {
-    //     //여자먼저 뽑고 있으면
-    //     if (isWoman) {
-    //       if (item.classList.contains("woman") && !isNaN(+item.innerText)) {
-    //         leftSeats.push(item);
-    //         return false;
-    //       }
-    //       // 남자먼저 뽑고 있었으면
-    //     } else {
-    //       if (!item.classList.contains("woman") && !isNaN(+item.innerText)) {
-    //         leftSeats.push(item);
-    //         return false;
-    //       }
-    //     }
-    //   });
-    //   //그냥 앞자리 부터면
-    // } else if (consider === "mix") {
-    //   existItems.forEach((item) => {
-    //     if (!isNaN(+item.innerText)) {
-    //       leftSeats.push(item);
-    //       return false;
-    //     }
-    //   });
-    // }
 
     const seatHandler = (name) => {
       firstSeat.innerText = name;
@@ -1370,8 +1343,12 @@ const SeatTable = (props) => {
         <>
           <p>
             {" "}
-            * 기본 세팅 '남' | 한 번 클릭 '여'(노란색바탕) | 두 번 클릭
-            '자리삭제' |
+            <button className={classes["op1"]}></button> &nbsp;남
+            &nbsp;&nbsp;&nbsp; <button className={classes["op2"]}></button>
+            &nbsp; 여 &nbsp;&nbsp;&nbsp;{" "}
+            <button className={classes["op3"]}></button>&nbsp; 빈자리
+            <br />
+            👉 자리클릭 시 변경
           </p>
           {/* 일치하면 자리성별 세팅완료 버튼 나옴 */}
           {nowSeatGender?.[0] ===
@@ -1386,14 +1363,16 @@ const SeatTable = (props) => {
           ) : (
             <>
               <p>
-                우리반 남학생 수 {students?.filter((std) => !std.woman)?.length}{" "}
-                여학생 수 {students?.filter((std) => std.woman)?.length}{" "}
-                전체학생수 {students?.length}
+                남학생 <b>{students?.filter((std) => !std.woman)?.length}</b>
+                &nbsp;&nbsp;&nbsp; 여학생{" "}
+                <b>{students?.filter((std) => std.woman)?.length}</b>
+                &nbsp;&nbsp;&nbsp; 전체학생 <b>{students?.length}</b>
               </p>
               <p>
-                현재 남학생 자리 {nowSeatGender?.[0] || students?.length} 현재
-                여학생 자리 {nowSeatGender?.[1] || 0} 전체학생 자리{" "}
-                {+nowSeatGender?.[0] + +nowSeatGender?.[1]}
+                남학생 자리 <b>{nowSeatGender?.[0] || students?.length}</b>
+                &nbsp;&nbsp;&nbsp; 여학생 자리 <b>{nowSeatGender?.[1] || 0}</b>
+                &nbsp;&nbsp;&nbsp; 전체 자리&nbsp;
+                <b>{+nowSeatGender?.[0] + +nowSeatGender?.[1]}</b>
               </p>
             </>
           )}
