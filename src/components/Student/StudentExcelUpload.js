@@ -13,7 +13,7 @@ const StudentExcelUpload = (props) => {
     ? `<span class=${classes.accent}>반별 시트</span>에 <span class=${classes.accent}>번호 성별 이름</span>을 입력한<br/> 엑셀파일을 업로드 해주세요`
     : `<span class=${classes.accent}> 번호, 성별, 이름</span>이 입력된 엑셀파일 추가`;
   const expl_2 = `<span class=${classes.accent}>저장</span> 을 누르시면 반영됩니다.`;
-  const expl_3 = `<span class=${classes["explain"]}>   * 수정이 필요하시면 저장하신 후에<br/> <b> [직접] </b>을 활용해주세요.  <br />* pc 업로드가 편리합니다! 👉 bit.ly/첵스쿨 </span>`;
+  const expl_3 = `<span class=${classes["explain"]}>   * 수정이 필요하시면 저장하신 후에<br/> <b> [직접] </b>을 활용해주세요.<br />* 공유문서에 직접 작성하지 않도록 주의해주세요.  <br />* pc 업로드가 편리합니다! 👉 bit.ly/첵스쿨 </span>`;
 
   const excelFileHandler = (e) => {
     let input = e.target;

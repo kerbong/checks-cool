@@ -758,7 +758,7 @@ const SeatTable = (props) => {
             left top
             no-repeat
           `,
-      timer: 1000,
+      timer: 3000,
     });
   };
 
@@ -1098,12 +1098,12 @@ const SeatTable = (props) => {
         //이전에 뽑힌 학생성별 계속 뽑기
         timer = setTimeout(() => {
           pickAndSeat("gender", tempStudent.woman);
-        }, 1500);
+        }, 3500);
         // 성별 상관없이 1번부터 쭉 뽑을 경우
       } else if (pickSeatAll === "mix") {
         timer = setTimeout(() => {
           pickAndSeat("mix", "all");
-        }, 1500);
+        }, 3500);
       }
 
       // 학생이 다 뽑히고 나면 pickSeatAll 설정 초기화
@@ -1484,11 +1484,16 @@ const SeatTable = (props) => {
           <p>
             {" "}
             <button className={classes["op1"]}></button> &nbsp;남
-            &nbsp;&nbsp;&nbsp; <button className={classes["op2"]}></button>
-            &nbsp; 여 &nbsp;&nbsp;&nbsp;{" "}
-            <button className={classes["op3"]}></button>&nbsp; 빈자리
+            &nbsp;👉&nbsp;&nbsp; <button className={classes["op2"]}></button>
+            &nbsp; 여 &nbsp;👉&nbsp;&nbsp;{" "}
+            <button className={classes["op3"]}></button>&nbsp; 빈자리 &nbsp;👉
             <br />
-            👉 자리클릭 시 변경
+            <br />* 자리를 클릭해보세요! [ 남 => 여 => 빈자리 ]로
+            반복변경됩니다.
+            <br />
+            * 성별, 빈칸이 명부와 일치하면 뽑기화면으로 이동이 가능한 버튼이
+            생성됩니다.
+            <br />
           </p>
           {/* 일치하면 자리성별 세팅완료 버튼 나옴 */}
           {nowSeatGender?.[0] ===
@@ -1547,6 +1552,7 @@ const SeatTable = (props) => {
                         ]);
                         setTempStudent(stu);
                       }}
+                      title={stu.name}
                     >
                       {stu.num}
                     </span>
