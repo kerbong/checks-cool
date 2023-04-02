@@ -78,7 +78,7 @@ const SettingSeat = (props) => {
   const getSecretSeat = async () => {
     let seatsRef = doc(dbService, "seats", props.userUid);
     const secretSeatDoc = await getDoc(seatsRef);
-    if (secretSeatDoc.exists()) {
+    if (secretSeatDoc?.exists()) {
       onSnapshot(seatsRef, (doc) => {
         setSecretSeat({});
         doc?.data()?.seats_data?.forEach((data) => {

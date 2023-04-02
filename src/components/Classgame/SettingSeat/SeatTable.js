@@ -114,7 +114,7 @@ const SeatTable = (props) => {
             let new_students = [...students];
             let lastStudent = {};
             //자리에 비밀,예시자료 학생들 넣기
-            console.log(props.secretSeat?.students);
+            // console.log(props.secretSeat?.students);
             allSeats?.forEach((item, index) => {
               let now_studentName = props.secretSeat?.students?.[index];
               item.innerText = now_studentName;
@@ -363,7 +363,7 @@ const SeatTable = (props) => {
   };
 
   //뽑기 함수, 뽑힌 학생을 뽑아서 temp에 저장함
-  const randomSeatHandler = (isWoman) => {
+  const randomSeatHandler = (isWoman, pickedSeat) => {
     let selectedStudent = {};
     let pair_students = [...pairStudents];
     let new_students = [...students];
@@ -435,13 +435,23 @@ const SeatTable = (props) => {
       //selectedStudent에 랜덤 학생 넣기
       getRnStudent();
 
-      //비밀모드면.. 무시하기
-      let isDuplicate = 0;
-      //만약 새로운짝 옵션상태고 짝을 했던 경우 다시 뽑기
-      while (isNewPair && selectedStudent?.pair?.includes(tempBeforeName)) {
-        isDuplicate += 1;
-        if (new_students.length === 1) break;
-        if (isDuplicate > 20) break;
+      let pickedSeatId, pair_seat;
+      if (pickedSeat) {
+        pickedSeatId = +pickedSeat?.id?.split("-")[1] || null;
+        pair_seat = document.getElementById(
+          `table-${
+            pickedSeatId % 2 === 0 ? pickedSeatId - 1 : pickedSeatId + 1
+          }`
+        );
+      }
+
+      //(한번에 뽑기 옵션)넣을 자리의 id가 전해졌고, 새로운짝 옵션이고, 짝을 한 적이 있으면
+      while (
+        pickedSeat &&
+        isNewPair &&
+        selectedStudent?.pair?.includes(pair_seat.innerText) &&
+        gender_students.length > 1
+      ) {
         getRnStudent();
       }
 
@@ -469,14 +479,14 @@ const SeatTable = (props) => {
     let existItems = clickedSeat.parentNode.childNodes;
     let selectedSeats = 0;
     let pair_students = [...pairStudents];
+    // console.log(pair_students);
 
     let clickedSeatId = +clickedSeat.id.split("-")[1];
-    console.log(clickedSeatId);
+
     let pairSeatId =
       clickedSeatId % 2 === 0 ? clickedSeatId - 1 : clickedSeatId + 1;
-    console.log(pairSeatId);
+
     let pairSeat = document.getElementById(`table-${pairSeatId}`);
-    console.log(pairSeat);
     let pairSeatIsEmpty = pairSeat.classList.contains("empty") ? true : false;
 
     // 자리에 성별 세팅하기 모드인 경우
@@ -547,12 +557,14 @@ const SeatTable = (props) => {
             ? true
             : false;
 
+          let switch_prevStu;
           // 선택된 학생이 없으면 선택하고
           setSwitchStudent((prev_stu) => {
+            switch_prevStu = prev_stu;
             if (Object.keys(prev_stu).length === 0) {
               //선택한 학생의 박스 테두리를 초록색으로 설정하기
-              //선택된 학생이 없으면자리가 숫자면.. 선택하지 않기
-              // if (!isNaN(+clickedName)) return { ...{} };
+              //선택된 학생이 없고 숫자먼저 클릭 불가
+              if (!isNaN(+clickedName)) return { ...{} };
               clickedSeat.style.borderWidth = "3px";
               clickedSeat.style.borderColor = "#46a046";
               return {
@@ -580,19 +592,23 @@ const SeatTable = (props) => {
                     woman: clickedItemWoman,
                   },
                 };
+              console.log("기존짝 확인중");
+              console.log(!pairSeatIsEmpty);
+              console.log(prev_stu.name);
+              console.log(pairSeat.innerText);
+              console.log(
+                pair_students?.filter((stu) => stu.name === pairSeat.innerText)
+              );
 
               //만약 1옵션이 새로운짝이고, 선택한 clickedSeat의 id를 기준으로 2짝인 자리가 빈자리가 아니고, 3기존에 짝을 했던 학생이 있으면, 물어보고 진행하기
-              console.log(pair_students);
-              console.log(
-                pair_students?.filter((stu) => stu.name === prev_stu.name)?.[0]
-              );
               if (
                 isNewPair &&
                 !pairSeatIsEmpty &&
                 pair_students
-                  ?.filter((stu) => stu.name === prev_stu.name)?.[0]
+                  ?.filter((stu) => stu.name === pairSeat.innerText)?.[0]
                   ?.pair?.includes(clickedName)
               ) {
+                console.log("기존짝했었음");
                 Swal.fire({
                   icon: "warning",
                   title: "기존 짝입니다!",
@@ -604,8 +620,8 @@ const SeatTable = (props) => {
                   denyButtonText: `취소`,
                 }).then((result) => {
                   if (result.isConfirmed) {
-                    clickedSeat.innerText = prev_stu.name;
-                    document.getElementById(prev_stu.id).innerText =
+                    clickedSeat.innerText = switch_prevStu.name;
+                    document.getElementById(switch_prevStu.id).innerText =
                       clickedName;
                     clickedSeat.style.borderWidth = "3px";
                     clickedSeat.style.borderColor = "#46a046";
@@ -621,8 +637,9 @@ const SeatTable = (props) => {
                   }
                 });
               } else {
-                clickedSeat.innerText = prev_stu.name;
-                document.getElementById(prev_stu.id).innerText = clickedName;
+                clickedSeat.innerText = switch_prevStu.name;
+                document.getElementById(switch_prevStu.id).innerText =
+                  clickedName;
                 clickedSeat.style.borderWidth = "3px";
                 clickedSeat.style.borderColor = "#46a046";
                 return { ...{} };
@@ -640,9 +657,39 @@ const SeatTable = (props) => {
           //비어 있는 자리에 학생이름 넣어주기
           let existItems = document.querySelectorAll(".item");
 
+          const askKeepGoing = async (student) => {
+            Swal.fire({
+              icon: "warning",
+              title: "기존 짝입니다!",
+              text: `기존에 짝을 했던 학생입니다. 자리를 결정할까요?(현재 새로운짝 옵션 선택중)`,
+              showDenyButton: true,
+              confirmButtonText: "결정",
+              confirmButtonColor: "#db100cf2",
+              denyButtonColor: "#85bd82",
+              denyButtonText: `취소`,
+            }).then((result) => {
+              if (result.isConfirmed) {
+                existItems.forEach((item) => {
+                  if (item.innerText === student.name) {
+                    item.style.backgroundColor = "#ffffff";
+                    item.innerText = item.getAttribute("id").slice(6);
+                  }
+                });
+
+                //임시 학생이 뽑혀있는 경우에만 해당 칸에 이름 넣기
+                if (Object.keys(student).length !== 0) {
+                  clickedSeat.innerText = student.name;
+                  clickedSeat.style.backgroundColor = "#d4e8dcbd";
+                }
+              }
+              //결정이든 아니든.. 일단 원래 학생 반환
+            });
+          };
+          let temp_student;
           setTempStudent((temp) => {
             //현재 뽑힌 학생
             let student = { ...temp };
+            temp_student = { ...temp };
 
             //혹시 현재 뽑힌 학생이 다른 곳에 이름이 미리 들어가 있으면 번호로 다시 바꿈
             if (student.woman && !clickedSeat.classList.contains("woman"))
@@ -651,39 +698,14 @@ const SeatTable = (props) => {
             if (!student.woman && clickedSeat.classList.contains("woman"))
               return { ...temp };
             //만약 1옵션이 새로운짝이고, 선택한 clickedSeat의 id를 기준으로 2짝인 자리가 빈자리가 아니고, 3기존에 짝을 했던 학생이 있으면, 물어보고 진행하기
-            console.log(student);
             if (
               isNewPair &&
               !pairSeatIsEmpty &&
-              student?.pair?.includes(pairSeat.innerText)
+              student?.pair?.includes(pairSeat.innerText) &&
+              new_students.length > 1
             ) {
-              Swal.fire({
-                icon: "warning",
-                title: "기존 짝입니다!",
-                text: `기존에 짝을 했던 학생입니다. 자리를 결정할까요?(현재 새로운짝 옵션 선택중)`,
-                showDenyButton: true,
-                confirmButtonText: "결정",
-                confirmButtonColor: "#db100cf2",
-                denyButtonColor: "#85bd82",
-                denyButtonText: `취소`,
-              }).then((result) => {
-                if (result.isConfirmed) {
-                  existItems.forEach((item) => {
-                    if (item.innerText === student.name) {
-                      item.style.backgroundColor = "#ffffff";
-                      item.innerText = item.getAttribute("id").slice(6);
-                    }
-                  });
-
-                  //임시 학생이 뽑혀있는 경우에만 해당 칸에 이름 넣기
-                  if (Object.keys(student).length !== 0) {
-                    clickedSeat.innerText = student.name;
-                    clickedSeat.style.backgroundColor = "#d4e8dcbd";
-                  }
-                }
-                //결정이든 아니든.. 일단 원래 학생 반환
-                return { ...temp };
-              });
+              askKeepGoing(temp_student);
+              return { ...temp };
             } else {
               existItems.forEach((item) => {
                 if (item.innerText === student.name) {
@@ -736,7 +758,7 @@ const SeatTable = (props) => {
             left top
             no-repeat
           `,
-      timer: 3000,
+      timer: 1000,
     });
   };
 
@@ -771,13 +793,13 @@ const SeatTable = (props) => {
     };
 
     //자리결정해서 이름 넣기 함수
-    const seatHandler = (name, isWoman) => {
+    const seatHandler = (selectedStudent, isWoman) => {
       //혹시 비밀자료로 이미 선점된 학생이면 해당 자리에 바로 넣기
       let isDone = false;
       props.secretSeat?.students?.forEach((std, index) => {
-        if (std === name) {
+        if (std === selectedStudent.name) {
           let seat = document.getElementById(`table-${index + 1}`);
-          seat.innerText = name;
+          seat.innerText = selectedStudent.name;
           seat.style.backgroundColor = "#d4e8dcbd";
           isDone = true;
         }
@@ -827,9 +849,38 @@ const SeatTable = (props) => {
           leftSeats.push(item);
         }
       });
-      //랜덤으로 하나 골라서 이름 넣기
-      let randomSeat = leftSeats[randomNum(leftSeats.length)];
-      randomSeat.innerText = name;
+      //비밀모드면.. 무시하기
+      let isDuplicate = 0;
+      let pair_seat;
+      let randomSeat;
+      //랜덤으로 하나 고르기
+      const getRandomSeat = () => {
+        randomSeat = leftSeats[randomNum(leftSeats.length)];
+        let randomSeatId = +randomSeat.id.split("-")[1];
+
+        if (randomSeatId % 2 === 0) {
+          pair_seat = document.getElementById(`table-${randomSeatId - 1}`);
+        } else {
+          pair_seat = document.getElementById(`table-${randomSeatId + 1}`);
+        }
+      };
+
+      getRandomSeat();
+      //만약 골랐는데... 현재 학생이 앉을 수 없는자리, 겹치는 자리면...
+
+      // 새로운짝이고, 짝이었으면...
+      console.log(pair_seat);
+      console.log(selectedStudent);
+      while (
+        isNewPair &&
+        selectedStudent?.pair?.includes(pair_seat.innerText)
+      ) {
+        isDuplicate += 1;
+        if (isDuplicate > 10) break;
+        getRandomSeat();
+      }
+
+      randomSeat.innerText = selectedStudent.name;
       randomSeat.style.backgroundColor = "#d4e8dcbd";
     };
 
@@ -846,12 +897,12 @@ const SeatTable = (props) => {
       }
 
       //학생 뽑아서 temp에 저장함
-      randomSeatHandler(isWoman);
+      let selectedStudent = randomSeatHandler(isWoman);
+      seatHandler(selectedStudent, isWoman);
+      // setTempStudent((prev) => {
 
-      setTempStudent((prev) => {
-        seatHandler(prev.name, isWoman);
-        return { ...prev };
-      });
+      //   return { ...prev };
+      // });
     }
   };
 
@@ -1047,12 +1098,12 @@ const SeatTable = (props) => {
         //이전에 뽑힌 학생성별 계속 뽑기
         timer = setTimeout(() => {
           pickAndSeat("gender", tempStudent.woman);
-        }, 3500);
+        }, 1500);
         // 성별 상관없이 1번부터 쭉 뽑을 경우
       } else if (pickSeatAll === "mix") {
         timer = setTimeout(() => {
           pickAndSeat("mix", "all");
-        }, 3500);
+        }, 1500);
       }
 
       // 학생이 다 뽑히고 나면 pickSeatAll 설정 초기화
@@ -1162,10 +1213,10 @@ const SeatTable = (props) => {
     if (isWoman === true || isWoman === false) {
       if (randomIsPossible(isWoman)) {
         firstSeat = getLeftFirstSeat(isWoman);
-        selecStu = randomSeatHandler(isWoman);
+        selecStu = randomSeatHandler(isWoman, firstSeat);
       } else {
         firstSeat = getLeftFirstSeat(!isWoman);
-        selecStu = randomSeatHandler(!isWoman);
+        selecStu = randomSeatHandler(!isWoman, firstSeat);
       }
       // 1번부터 쭉일경우
     } else if (isWoman === "all") {
@@ -1173,17 +1224,18 @@ const SeatTable = (props) => {
       firstSeat = getLeftFirstSeat("all");
       if (firstSeat.classList.contains("woman")) {
         firstSeat = getLeftFirstSeat(true);
-        randomSeatHandler(true);
+        selecStu = randomSeatHandler(true, firstSeat);
       } else {
         firstSeat = getLeftFirstSeat(false);
-        randomSeatHandler(false);
+        selecStu = randomSeatHandler(false, firstSeat);
       }
     }
     //자리에 넣음
-    setTempStudent((prev) => {
-      seatHandler(prev.name);
-      return { ...prev };
-    });
+    seatHandler(selecStu.name);
+    // setTempStudent((prev) => {
+    //   seatHandler(prev.name);
+    //   return { ...prev };
+    // });
 
     return selecStu;
   };
