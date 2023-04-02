@@ -78,9 +78,9 @@ const SettingSeat = (props) => {
   const getSecretSeat = async () => {
     let seatsRef = doc(dbService, "seats", props.userUid);
     const secretSeatDoc = await getDoc(seatsRef);
-    setSecretSeat({});
     if (secretSeatDoc.exists()) {
       onSnapshot(seatsRef, (doc) => {
+        setSecretSeat({});
         doc?.data()?.seats_data?.forEach((data) => {
           //예시자료만.. 저장해두기
           if (data.title === "-*-예시자료-*-") {
@@ -125,12 +125,13 @@ const SettingSeat = (props) => {
         </p>
         <p className={classes[`gameMenu`]}>
           * 4번 방법 (학생+자리를 한번에 순서대로 뽑기) 👉 어떻게 - [학생+자리]
-          클릭! 👉 1번부터 한번에 - [남+여/성별랜덤] 클릭! 👉 3초 마다 새로운
-          학생이 1번자리부터 모든 학생이 쭉- 자동으로 들어갑니다.
+          클릭! 👉 한번에 - [1번부터/여자먼저/남자먼저] 클릭! 👉 3초 마다 새로운
+          학생이 1번자리부터 자동으로 배치됩니다! 예)여자먼저는 여자자리에
+          여자를 먼저 다 뽑은 후에 남자가 뽑힙니다.
         </p>
         <p className={classes[`gameMenu`]}>
-          * [1번부터 한번에]를 사용하실 때 다른 화면으로의 이동을
-          피해주세요!(사이트 멈춤 가능성이 있어요!)
+          * [한번에]를 사용하실 때 다른 화면으로의 이동을 피해주세요!(사이트
+          멈춤 가능성이 있어요!)
         </p>
         <p className={classes[`gameMenu`]}>
           * 두 자리를 차례로 선택하면 자리를 바꿀 수 있습니다.(빈자리로 옮기기도
