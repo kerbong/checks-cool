@@ -1,4 +1,4 @@
-import React, { useRef, useCallback, useState } from "react";
+import React, { useRef, useCallback, useState, useEffect } from "react";
 
 import classes from "./EventInput.module.css";
 import Button from "../Layout/Button";
@@ -12,6 +12,8 @@ const EventInput = (props) => {
   const [student, setStudent] = useState("");
   const [showStudent, setShowStudent] = useState(false);
   const [reserveAlarm, setReserveAlarm] = useState(false);
+  const [paperSubmit, setPaperSubmit] = useState(false);
+  const [optionsSet, setOptionsSet] = useState([]);
 
   const noteRef = useRef(null);
 
@@ -150,44 +152,83 @@ const EventInput = (props) => {
         id: new_data_id,
       };
     }
+    //출결에는 서류 제출부분 추가해서 보냄.
+    if (props.about === "attendance") {
+      new_data["paper"] = paperSubmit;
+    }
     // if (props.about.slice(0, 4) === "todo") {
     //   showNotification(todo_eventName);
     // }
     props.saveNewData(new_data);
   };
 
+  //학생을 선택하면, 그 학생이 지금까지 썼던 출결관련 내용 간략하게 보여줌.
+  useEffect(() => {
+    if (props.about !== "attendance") return;
+    if (!props.events || props.events?.length === 0 || student?.length === 0)
+      return;
+
+    // 출결에서만 나오는..거..!! 현재학생 정보만 거르고
+    let now_studentEvents = props.events?.filter(
+      (evt) => evt.name === student.split(" ")[1]
+    );
+    let new_optionsSet = [];
+    now_studentEvents?.forEach((evt) => {
+      new_optionsSet.push(evt.option);
+    });
+    setOptionsSet(new_optionsSet);
+  }, [student]);
+
   return (
     <>
       <li
         className={classes["event-area"]}
         style={{
-          backgroundColor: "bisque",
+          backgroundColor: "#ffe9ed",
         }}
       >
         <div className={classes["attendInfo-area"]}>
           <div className={classes["attendInfo-student"]}>
             {props.about.slice(0, 4) !== "todo" ? (
-              <Button
-                className="choose-studentBtn"
-                name={student || "학생선택"}
-                onclick={function () {
-                  if (
-                    props.students === undefined ||
-                    props.students?.length === 0
-                  ) {
-                    Swal.fire({
-                      icon: "error",
-                      title: "선택 불가",
-                      text: "메뉴의 곰돌이를 눌러서 먼저 학생명단을 입력해주세요.",
-                      confirmButtonText: "확인",
-                      confirmButtonColor: "#85bd82",
-                      timer: 5000,
-                    });
-                  } else {
-                    setShowStudent(!showStudent);
+              <>
+                {/* 학생서류 제출했는지 체크하는 버튼 */}
+                <Button
+                  className={
+                    paperSubmit ? "paperSub-btn-clicked" : "paperSub-btn"
                   }
-                }}
-              />
+                  onclick={() => {
+                    setPaperSubmit((prev) => !prev);
+                  }}
+                  name={"서류"}
+                  icon={
+                    <span>
+                      <i className="fa-solid fa-circle-check"></i>
+                    </span>
+                  }
+                />
+                {/* 학생 선택버튼 부분 */}
+                <Button
+                  className="choose-studentBtn"
+                  name={student || "학생선택"}
+                  onclick={function () {
+                    if (
+                      props.students === undefined ||
+                      props.students?.length === 0
+                    ) {
+                      Swal.fire({
+                        icon: "error",
+                        title: "선택 불가",
+                        text: "메뉴의 곰돌이를 눌러서 먼저 학생명단을 입력해주세요.",
+                        confirmButtonText: "확인",
+                        confirmButtonColor: "#85bd82",
+                        timer: 5000,
+                      });
+                    } else {
+                      setShowStudent(!showStudent);
+                    }
+                  }}
+                />
+              </>
             ) : (
               <input
                 type="text"
@@ -202,7 +243,11 @@ const EventInput = (props) => {
             <div className={classes["button-area"]}>
               <Button
                 className="small-student"
-                name={<i className="fa-regular fa-floppy-disk"></i>}
+                name={
+                  <span>
+                    <i className="fa-regular fa-floppy-disk"></i>
+                  </span>
+                }
                 id={`save-btn${props.id}`}
                 onclick={() => {
                   //추가한 이벤트 저장하는 함수, 필요한 데이터를 모아서 상위 props에 이벤트 정보 전달함.
@@ -211,7 +256,11 @@ const EventInput = (props) => {
               />
               <Button
                 className="small-student"
-                name={<i className="fa-solid fa-xmark"></i>}
+                name={
+                  <span>
+                    <i className="fa-solid fa-xmark"></i>
+                  </span>
+                }
                 id={`cancle-btn${props.id}`}
                 onclick={function () {
                   props.closeHandler();
@@ -292,6 +341,19 @@ const EventInput = (props) => {
               }}
             />
           </form>
+          {optionsSet?.length > 0 && (
+            <>
+              {[...new Set(optionsSet)]?.map((option) => (
+                <span
+                  className={classes["optionsSet"]}
+                  key={`optionSet-${option}`}
+                >
+                  {option?.slice(1)}{" "}
+                  {optionsSet?.filter((op) => op === option).length}회 |
+                </span>
+              ))}
+            </>
+          )}
         </div>
       </li>
     </>

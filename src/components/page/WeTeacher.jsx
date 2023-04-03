@@ -87,12 +87,22 @@ const WeTeacher = (props) => {
               className={"settingSeat"}
               onclick={() => setSelectedMenu("doThis")}
             />
-
             <Button
               name={"비서"}
               className={"settingSeat"}
               onclick={() => setSelectedMenu("ai")}
             />
+            <Button
+              name={"분반해요"}
+              className={"settingSeat"}
+              onclick={() =>
+                window.open(
+                  "https://bit.ly/%EB%B6%84%EB%B0%98%ED%95%B4%EC%9A%94"
+                )
+              }
+            />
+
+            <p>분반해요 주소 👉 bit.ly/분반해요</p>
           </div>
         )}
 

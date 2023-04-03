@@ -11,6 +11,9 @@
   margin: 2px;
   white-space: pre-line;
 }
+.eventData {
+  letter-spacing: -0.7px;
+}
 
 .holidayData {
   background-color: #dd3300d9;
@@ -44,8 +47,10 @@ select {
 }
 
 @media screen and (min-width: 620px) {
-  .eventData {
+  .eventData,
+  .holidayData {
     font-size: 0.7em;
+    letter-spacing: 2px;
   }
 }
 

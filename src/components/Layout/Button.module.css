@@ -12,7 +12,7 @@
 .small-student {
   width: 45px;
   margin: 5px 6px;
-  font-size: 1.1em;
+  font-size: 0.9em;
   border-radius: 15px;
   border-width: 0;
   letter-spacing: 1px;
@@ -22,6 +22,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  color: #454545;
 }
 
 .header-logInOut {
@@ -45,14 +46,15 @@
 }
 
 .choose-studentBtn {
-  width: 55%;
+  width: 40%;
   margin: 5px 10px;
   font-size: 1.1em;
-  border-radius: 10px;
+  border-radius: 15px;
   border-width: 0;
   letter-spacing: 1px;
-  padding: 2vh;
+  padding: 10px;
   background-color: #ffbec7;
+  height: 50px;
 }
 
 .consultEditBtn {
@@ -507,4 +509,37 @@
   background-color: rgb(37 106 114);
   color: whitesmoke;
   font-weight: bold;
+}
+
+.paperSub-btn-clicked,
+.paperSub-btn,
+.paperSub-btn-s,
+.paperSub-btn-s-clicked {
+  color: rgba(0, 0, 0, 0.623);
+  background-color: whitesmoke;
+  border-width: 0;
+  font-size: 0.8rem;
+  margin: 0px 5px;
+  border-radius: 20px;
+  padding: 5px 5px;
+  font-weight: bold;
+  width: 60px;
+  height: 30px;
+  align-items: center;
+  display: flex;
+  justify-content: center;
+}
+
+.paperSub-btn-clicked {
+  color: whitesmoke;
+  background-color: rgb(255 90 113);
+}
+
+.paperSub-btn-s,
+.paperSub-btn-s-clicked {
+  background-color: inherit;
+  width: auto;
+}
+.paperSub-btn-s-clicked {
+  color: rgb(255 90 113);
 }

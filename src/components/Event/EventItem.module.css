@@ -29,10 +29,12 @@
 }
 
 .optionChange-area {
-  margin-left: 5%;
+  margin-left: 6%;
   display: flex;
   flex-wrap: nowrap;
   width: 100%;
+  justify-content: center;
+  margin-bottom: 5px;
 }
 
 .button-area {
@@ -53,7 +55,7 @@
 }
 
 .optionNote-area {
-  width: 100%;
+  width: 95%;
   justify-content: center;
   display: flex;
   margin: 10px;
@@ -89,4 +91,10 @@
   margin: 10px;
   width: 70%;
   border-radius: 5px;
+}
+
+.title-h2 {
+  display: flex;
+  margin: 10px 0px;
+  align-items: center;
 }

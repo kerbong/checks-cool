@@ -140,6 +140,7 @@ const EventLists = (props) => {
       id: item.id,
       option: optionValue,
       note: noteValue,
+      paper: item.paper,
     };
 
     // console.log(fixed_data);
@@ -200,6 +201,7 @@ const EventLists = (props) => {
         {addEvent && (
           //addEvent 상황이면 인풋창 보여주고
           <EventInput
+            events={props.about === "attendance" && props.events}
             closeHandler={closeHandler}
             selectOption={props.selectOption}
             placeholder="비고를 입력하세요."

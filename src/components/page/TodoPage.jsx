@@ -52,25 +52,24 @@ const TodoPage = (props) => {
   //firestore에서 해당 이벤트 자료 받아오기
   const getToDosFromDb = () => {
     //기존에 있던 화면에 그려진 이벤트들 지워주기
-    let remainEvents = document.querySelectorAll(".eventBtn");
+    // let remainEvents = document.querySelectorAll(".eventBtn");
 
-    if (remainEvents.length !== 0) {
-      remainEvents.forEach((btn) => {
-        btn.remove();
-      });
-    }
+    // if (remainEvents.length !== 0) {
+    //   remainEvents.forEach((btn) => {
+    //     btn.remove();
+    //   });
+    // }
 
-    //이벤트가 있던 날짜의 배경색도 초기화
-    let remainBgcolor = document.querySelectorAll(
-      ".react-datepicker__day[style]"
-    );
+    // //이벤트가 있던 날짜의 배경색도 초기화
+    // let remainBgcolor = document.querySelectorAll(
+    //   ".react-datepicker__day[style]"
+    // );
 
-    if (remainBgcolor.length !== 0) {
-      remainBgcolor.forEach((tag) => (tag.style.backgroundColor = ""));
-    }
+    // if (remainBgcolor.length !== 0) {
+    //   remainBgcolor.forEach((tag) => (tag.style.backgroundColor = ""));
+    // }
 
     //기존에 있던 events들도 다 지우기
-    setEvents([]);
 
     // let eventSnapshot = null;
     let todoRef;
@@ -86,6 +85,7 @@ const TodoPage = (props) => {
     }
 
     onSnapshot(todoRef, (doc) => {
+      setEvents([]);
       const new_events = [];
       doc?.data()?.todo_data?.forEach((data) => {
         // console.log(data);
@@ -167,9 +167,19 @@ const TodoPage = (props) => {
   const calEventDayToYMD = (eventTag) => {
     //이벤트 태그의 날짜 yyyy-mm-dd로 바꾸기
     let eventDayOrigin = eventTag.getAttribute("aria-label");
-    let _year = eventDayOrigin.split(" ")[1].slice(0, 4);
-    let _month = eventDayOrigin.split(" ")[2].slice(0, -1).padStart(2, "0");
-    let _day = eventDayOrigin.split(" ")[3].slice(0, -1).padStart(2, "0");
+    let startSplit = 1;
+    if (eventDayOrigin.includes("Not available")) {
+      startSplit = 2;
+    }
+    let _year = eventDayOrigin.split(" ")[startSplit].slice(0, 4);
+    let _month = eventDayOrigin
+      .split(" ")
+      [startSplit + 1].slice(0, -1)
+      .padStart(2, "0");
+    let _day = eventDayOrigin
+      .split(" ")
+      [startSplit + 2].slice(0, -1)
+      .padStart(2, "0");
 
     return _year + "-" + _month + "-" + _day;
   };
@@ -247,6 +257,42 @@ const TodoPage = (props) => {
 
     //이벤트 요약해서 캘린더에 보여주기
     const eventDrawOnCalendar = () => {
+      //먼저 그려져있던 버튼들 모두 삭제하기
+      const all_day = document.querySelectorAll(".react-datepicker__day");
+      // console.log(all_day);
+      all_day?.forEach((dayTag) => {
+        //바뀌기 전 노드 기준인가...;;;
+        console.log(dayTag.getAttribute("aria-selected"));
+        //현재 선택된 날짜들이 아니면 모두 색깔 원래대로..
+        dayTag.style.backgroundColor = "inherit";
+        if (dayTag.getAttribute("aria-selected") === "true") {
+          dayTag.style.backgroundColor = "rgb(211, 140, 133)";
+        }
+        // dayTag.style.backgroundColor = "inherit";
+        // while (dayTag.hasChildNodes()) {
+        while (dayTag?.children?.length > 0) {
+          dayTag?.firstElementChild?.remove();
+        }
+        // }
+
+        // 그냥 무조건 버튼 삭제하기!
+      });
+      //휴일 그려주기
+      holidays2023?.forEach((holiday) => {
+        if (holiday[0] === currentMonth) {
+          let holiday_queryName = holiday[1].split("*");
+          let holidayTag = document.querySelectorAll(holiday_queryName[0])[0];
+          if (!holidayTag) return;
+          // console.log(holidayTag.classList.contains("eventAdded"));
+
+          const btn = document.createElement("button");
+          btn.className = `${classes.holidayData} eventBtn`;
+          btn.innerText = holiday_queryName[1];
+          holidayTag?.appendChild(btn);
+          holidayTag.style.borderRadius = "5px";
+        }
+      });
+
       events?.forEach(function (data) {
         //새로 업데이트한 로직(년 월 일 데이터에 따로 저장)
         const day = "0" + data?.id?.slice(8, 10);
@@ -264,12 +310,13 @@ const TodoPage = (props) => {
           let ymd = calEventDayToYMD(eventTag);
 
           //기존에 이미 달력에 데이터로 그린 버튼(번호+이름) 있는지 확인
-          let existedBtn = document.querySelectorAll(
-            `button[id='${data.id}']`
-          )[0];
+          // let existedBtn = document.querySelectorAll(
+          //   `button[id='${data.id}']`
+          // )[0];
 
           //만약 이벤트 태그의 번호와 anyContext의 개별 data의 이벤트 날짜가 같고, 이미 그려진 버튼이 없으면
-          if (ymd === eventDate && !existedBtn) {
+          // if (ymd === eventDate && !existedBtn) {
+          if (ymd === eventDate) {
             //달력날짜에 (번호+이름)의 버튼 추가하기
             const btn = document.createElement("button");
             //옵션에 따라서 배경 색을 다르게 보여줌
@@ -294,7 +341,7 @@ const TodoPage = (props) => {
     //이벤트를 화면에 그리기
     showAllDayEvents(events);
     eventDrawOnCalendar();
-  }, [currentMonth, events]);
+  }, [currentMonth, events, showPublicEvent]);
 
   //달력에서 받은 date 형식을 바꾸기
   const getDateHandler = (date) => {
@@ -368,7 +415,7 @@ const TodoPage = (props) => {
           //splice(인덱스값을, 1이면 제거 0이면 추가)
           new_events.splice(event_index, 1);
 
-          setEvents([...new_events]);
+          // setEvents([...new_events]);
           // console.log("이벤트바이데이즈에서 일치하는 자료 찾아서 제거함!");
           const new_data = { todo_data: new_events };
           await setDoc(todoRef, new_data);
@@ -381,7 +428,7 @@ const TodoPage = (props) => {
           };
           // 띄워진 모달에 있는 데이터 삭제
           deleteBtnLi();
-          deleteBtnLi();
+          // deleteBtnLi();
         }
 
         //자료들이 있었는데 새로운 자료인 경우
@@ -395,7 +442,7 @@ const TodoPage = (props) => {
           // console.log(data);
           let event = { ...data, eventDate: eventDate };
           new_events.push(event);
-          setEvents([...new_events]);
+          // setEvents([...new_events]);
         });
       }
 
@@ -409,7 +456,7 @@ const TodoPage = (props) => {
       //events에도 추가!
       let event = { ...data, eventDate: eventDate };
       new_events.push(event);
-      setEvents([...new_events]);
+      // setEvents([...new_events]);
     }
   };
 
@@ -511,24 +558,24 @@ const TodoPage = (props) => {
     }
   };
 
-  //휴일 달력에 그려주기!
-  useEffect(() => {
-    if (!currentMonth) return;
+  // //휴일 달력에 그려주기!
+  // useEffect(() => {
+  //   if (!currentMonth) return;
 
-    holidays2023?.forEach((holiday) => {
-      if (holiday[0] === currentMonth) {
-        let holiday_queryName = holiday[1].split("*");
+  //   holidays2023?.forEach((holiday) => {
+  //     if (holiday[0] === currentMonth) {
+  //       let holiday_queryName = holiday[1].split("*");
 
-        let holidayTag = document.querySelectorAll(holiday_queryName[0])[0];
+  //       let holidayTag = document.querySelectorAll(holiday_queryName[0])[0];
 
-        const btn = document.createElement("button");
-        btn.className = `${classes.holidayData} eventBtn`;
-        btn.innerText = holiday_queryName[1];
-        holidayTag?.appendChild(btn);
-        holidayTag.style.borderRadius = "5px";
-      }
-    });
-  }, [currentMonth, showPublicEvent]);
+  //       const btn = document.createElement("button");
+  //       btn.className = `${classes.holidayData} eventBtn`;
+  //       btn.innerText = holiday_queryName[1];
+  //       holidayTag?.appendChild(btn);
+  //       holidayTag.style.borderRadius = "5px";
+  //     }
+  //   });
+  // }, [currentMonth, showPublicEvent]);
 
   return (
     <>

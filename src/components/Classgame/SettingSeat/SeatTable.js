@@ -389,7 +389,7 @@ const SeatTable = (props) => {
         gender_students = gender_students?.filter(
           (std) => !props.secretSeat?.students?.includes(std.name)
         );
-        console.log(gender_students);
+        // console.log(gender_students);
       }
 
       let randNum = Math.floor(Math.random() * gender_students.length);
@@ -487,7 +487,15 @@ const SeatTable = (props) => {
       clickedSeatId % 2 === 0 ? clickedSeatId - 1 : clickedSeatId + 1;
 
     let pairSeat = document.getElementById(`table-${pairSeatId}`);
-    let pairSeatIsEmpty = pairSeat.classList.contains("empty") ? true : false;
+    let pairSeatIsEmpty = pairSeat?.classList?.contains("empty") ? true : false;
+    //만약 홀수자리 세팅인경우, pairSeatIsEmpty는 항상 트루(새로운짝 작동하지 않음)
+    if (
+      (+props.rowColumn?.split("-")?.[0] * +props.rowColumn?.split("-")?.[1]) %
+        2 ===
+      1
+    ) {
+      pairSeatIsEmpty = true;
+    }
 
     // 자리에 성별 세팅하기 모드인 경우
     if (!genderEmptySeat) {
@@ -592,13 +600,6 @@ const SeatTable = (props) => {
                     woman: clickedItemWoman,
                   },
                 };
-              console.log("기존짝 확인중");
-              console.log(!pairSeatIsEmpty);
-              console.log(prev_stu.name);
-              console.log(pairSeat.innerText);
-              console.log(
-                pair_students?.filter((stu) => stu.name === pairSeat.innerText)
-              );
 
               //만약 1옵션이 새로운짝이고, 선택한 clickedSeat의 id를 기준으로 2짝인 자리가 빈자리가 아니고, 3기존에 짝을 했던 학생이 있으면, 물어보고 진행하기
               if (
@@ -608,7 +609,6 @@ const SeatTable = (props) => {
                   ?.filter((stu) => stu.name === pairSeat.innerText)?.[0]
                   ?.pair?.includes(clickedName)
               ) {
-                console.log("기존짝했었음");
                 Swal.fire({
                   icon: "warning",
                   title: "기존 짝입니다!",
@@ -869,11 +869,11 @@ const SeatTable = (props) => {
       //만약 골랐는데... 현재 학생이 앉을 수 없는자리, 겹치는 자리면...
 
       // 새로운짝이고, 짝이었으면...
-      console.log(pair_seat);
-      console.log(selectedStudent);
+      // console.log(pair_seat);
+      // console.log(selectedStudent);
       while (
         isNewPair &&
-        selectedStudent?.pair?.includes(pair_seat.innerText)
+        selectedStudent?.pair?.includes(pair_seat?.innerText)
       ) {
         isDuplicate += 1;
         if (isDuplicate > 10) break;

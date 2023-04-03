@@ -77,6 +77,18 @@ const ClassgamePage = (props) => {
                 className={"settingSeat"}
                 onclick={() => setShowAlarm(true)}
               />
+
+              <Button
+                name={"타임캡슐"}
+                className={"settingSeat"}
+                onclick={() =>
+                  window.open(
+                    "http://bit.ly/%EB%91%90%EA%B7%BC%EB%91%90%EA%B7%BC%ED%83%80%EC%9E%84%EC%BA%A1%EC%8A%90"
+                  )
+                }
+              />
+
+              <p>타임캡슐 주소 👉 bit.ly/두근두근타임캡슐</p>
             </div>
           )}
 

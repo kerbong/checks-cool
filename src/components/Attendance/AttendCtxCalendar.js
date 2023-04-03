@@ -52,6 +52,7 @@ const AttendCtxCalendar = (props) => {
     onSnapshot(attendRef, (doc) => {
       // setEvents([]);
       //기존에 있던 events들도 다 지우기
+
       setEvents([]);
       setWholeEvents([]);
 
@@ -89,7 +90,7 @@ const AttendCtxCalendar = (props) => {
     //wholeEvents에서 해당하는 학급 찾아서 events에 저장
     [...wholeEvents].forEach((cl) => {
       if (Object.keys(cl)[0] === nowClassName) {
-        removeScreenEvents();
+        // removeScreenEvents();
         setEvents(Object.values(cl)[0]);
       }
     });
@@ -99,7 +100,7 @@ const AttendCtxCalendar = (props) => {
       (cl) => Object.keys(cl)[0] === nowClassName
     );
     if (existSelectClData.length === 0) {
-      removeScreenEvents();
+      // removeScreenEvents();
 
       setEvents([]);
     }
@@ -117,9 +118,9 @@ const AttendCtxCalendar = (props) => {
   };
 
   //db에서 자료 받아오기 useEffect
-  useEffect(() => {
-    removeScreenEvents();
-  }, [currentMonth]);
+  // useEffect(() => {
+  //   // removeScreenEvents();
+  // }, [currentMonth]);
 
   //셀렉트 태그에서 값을 선택하면 해당 반의 자료만 화면에 보여주도록 events 상태 set하기
   useEffect(() => {
@@ -160,9 +161,19 @@ const AttendCtxCalendar = (props) => {
   const calEventDayToYMD = (eventTag) => {
     //이벤트 태그의 날짜 yyyy-mm-dd로 바꾸기
     let eventDayOrigin = eventTag.getAttribute("aria-label");
-    let _year = eventDayOrigin.split(" ")[1].slice(0, 4);
-    let _month = eventDayOrigin.split(" ")[2].slice(0, -1).padStart(2, "0");
-    let _day = eventDayOrigin.split(" ")[3].slice(0, -1).padStart(2, "0");
+    let startSplit = 1;
+    if (eventDayOrigin.includes("Not available")) {
+      startSplit = 2;
+    }
+    let _year = eventDayOrigin.split(" ")[startSplit].slice(0, 4);
+    let _month = eventDayOrigin
+      .split(" ")
+      [startSplit + 1].slice(0, -1)
+      .padStart(2, "0");
+    let _day = eventDayOrigin
+      .split(" ")
+      [startSplit + 2].slice(0, -1)
+      .padStart(2, "0");
 
     return _year + "-" + _month + "-" + _day;
   };
@@ -235,9 +246,41 @@ const AttendCtxCalendar = (props) => {
       });
     };
 
-    //캘린더에 이벤트 보여주기
+    //캘린더에 그려진 모든 필요없는 버튼들 지우고 ( 숫자만 남기고.. ) 새롭게 휴일과 이벤트 그려주기
     const eventDrawOnCalendar = () => {
-      events.forEach(function (data) {
+      //먼저 그려져있던 버튼들 모두 삭제하기
+      const all_day = document.querySelectorAll(".react-datepicker__day");
+      // console.log(all_day);
+      all_day?.forEach((dayTag) => {
+        //현재 선택된 날짜들이 아니면 모두 색깔 원래대로..
+        if (!dayTag.getAttribute("aria-selected")) {
+          dayTag.style.backgroundColor = "inherit";
+        }
+        // while (dayTag.hasChildNodes()) {
+        while (dayTag?.children?.length > 0) {
+          dayTag?.firstElementChild?.remove();
+        }
+        // }
+
+        // 그냥 무조건 버튼 삭제하기!
+      });
+      //휴일 그려주기
+      holidays2023?.forEach((holiday) => {
+        if (holiday[0] === currentMonth) {
+          let holiday_queryName = holiday[1].split("*");
+          let holidayTag = document.querySelectorAll(holiday_queryName[0])[0];
+          if (!holidayTag) return;
+          // console.log(holidayTag.classList.contains("eventAdded"));
+
+          const btn = document.createElement("button");
+          btn.className = `${classes.holidayData} eventBtn`;
+          btn.innerText = holiday_queryName[1];
+          holidayTag?.appendChild(btn);
+          holidayTag.style.borderRadius = "5px";
+        }
+      });
+
+      events?.forEach(function (data) {
         //새로 업데이트한 로직(년 월 일 데이터에 따로 저장)
         const day = "0" + data?.id?.slice(8, 10);
 
@@ -254,18 +297,23 @@ const AttendCtxCalendar = (props) => {
           //이벤트 태그의 날짜 yyyy-mm-dd로 바꾸기
           let yyyy_mm_dd = calEventDayToYMD(eventTag);
 
-          //기존에 이미 달력에 데이터로 그린 버튼(번호+이름) 있는지 확인
-          let existedBtn = document.querySelectorAll(
-            `button[id='${data.id}']`
-          )[0];
-
-          //만약 이벤트 태그의 번호와 anyContext의 개별 data의 이벤트 날짜가 같고, 이미 그려진 버튼이 없으면
-          if (yyyy_mm_dd === eventDate && !existedBtn) {
+          // console.log(yyyy_mm_dd);
+          // console.log(eventDate);
+          //만약 이벤트 태그의 번호와 anyContext의 개별 data의 이벤트 날짜가 같으면 그리기
+          // if (yyyy_mm_dd === eventDate && !existedBtn) {
+          if (yyyy_mm_dd === eventDate) {
             //달력날짜에 (번호+이름)의 버튼 추가하기
             const btn = document.createElement("button");
+            let checkedI;
             btn.className = `${classes.eventData} eventBtn`;
-            btn.innerText = data.num + data.name;
+            btn.innerText = data.name;
             btn.id = data.id;
+            if (data?.paper) {
+              checkedI = document.createElement("i");
+              checkedI.className = "fa-solid fa-circle-check";
+              btn.appendChild(checkedI);
+            }
+
             eventTag.appendChild(btn);
             eventTag.style.backgroundColor = "#d38c85";
             eventTag.style.borderRadius = "5px";
@@ -368,7 +416,7 @@ const AttendCtxCalendar = (props) => {
           const new_data = { attend_data: new_events };
 
           if (!props.isSubject) {
-            await updateDoc(attendTodoRef, new_data);
+            await setDoc(attendTodoRef, new_data);
           } else {
             let new_wholeEvents = [...wholeEvents]?.filter(
               (cl) => Object.keys(cl)[0] !== nowClassName
@@ -377,7 +425,7 @@ const AttendCtxCalendar = (props) => {
               new_wholeEvents.push({ [nowClassName]: new_events });
             }
             setWholeEvents(new_wholeEvents);
-            await updateDoc(attendTodoRef, { attend_data: new_wholeEvents });
+            await setDoc(attendTodoRef, { attend_data: new_wholeEvents });
           }
           // console.log("이벤트바이데이즈에서 일치하는 자료 찾아서 제거함!");
         }
@@ -405,7 +453,7 @@ const AttendCtxCalendar = (props) => {
           // console.log();
           setWholeEvents(new_wholeEvents);
         }
-        await updateDoc(attendTodoRef, fixed_data);
+        await setDoc(attendTodoRef, fixed_data);
       }
 
       // 이벤트 자료가 아예 없는 경우
@@ -457,27 +505,11 @@ const AttendCtxCalendar = (props) => {
     fixEvents(data, data.eventDate, "del");
   };
 
-  //휴일 달력에 그려주기!
-  useEffect(() => {
-    if (!currentMonth) return;
-    holidays2023?.forEach((holiday) => {
-      if (holiday[0] === currentMonth) {
-        let holiday_queryName = holiday[1].split("*");
-        let holidayTag = document.querySelectorAll(holiday_queryName[0])[0];
-        if (!holidayTag) return;
-        // console.log(holidayTag.classList.contains("eventAdded"));
-        if (holidayTag.classList.contains("eventAdded")) return;
+  // //휴일 달력에 그려주기!
+  // useEffect(() => {
+  //   if (!currentMonth) return;
 
-        const btn = document.createElement("button");
-        btn.className = `${classes.holidayData} eventBtn`;
-        btn.innerText = holiday_queryName[1];
-        holidayTag?.appendChild(btn);
-        holidayTag.style.borderRadius = "5px";
-
-        holidayTag.classList.add("eventAdded");
-      }
-    });
-  }, [currentMonth]);
+  // }, [currentMonth]);
 
   return (
     <>
@@ -487,6 +519,7 @@ const AttendCtxCalendar = (props) => {
           addStyle={fixIsShown !== "0" ? "showCopyCal" : null}
         >
           <EventLists
+            events={events}
             eventOnDay={eventOnDay}
             fixIsShown={fixIsShown}
             fixedEventHandler={fixedEventHandler}

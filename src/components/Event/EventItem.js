@@ -14,6 +14,7 @@ const EventItem = (props) => {
 
   const [eventId, setEventId] = useState(keyId);
   const [selectValue, setSelectValue] = useState(option);
+  const [paperSubmit, setPaperSubmit] = useState(item?.paper || false);
 
   const noteRef = useRef(null);
 
@@ -56,17 +57,21 @@ const EventItem = (props) => {
   };
 
   const saveHandler = () => {
-    //날짜가 수정된 경우
+    let new_item = { ...item };
+    if (props.about === "attendance") {
+      new_item["paper"] = paperSubmit;
+    }
 
+    //날짜가 수정된 경우
     if (eventId.slice(0, 10) !== keyId.slice(0, 10)) {
-      const new_item = { ...item, id: eventId };
+      new_item["id"] = eventId;
       // console.log(new_item);
       // console.log(item);
       //새로운거 저장하기
       props.saveFixedData(new_item);
       //날짜는 그대로 내용만 변경된 경우
     } else {
-      props.saveFixedData(item);
+      props.saveFixedData(new_item);
     }
   };
 
@@ -87,7 +92,7 @@ const EventItem = (props) => {
         id={keyId}
         className={`${classes["event-area"]}`}
         style={{
-          backgroundColor: props.fixIsShown === shownId && "bisque",
+          backgroundColor: props.fixIsShown === shownId && "#ffe9ed",
         }}
       >
         {/* row 이름 + 버튼모음*/}
@@ -97,9 +102,43 @@ const EventItem = (props) => {
         >
           {/* 타이틀(이름) + 날짜 달력나오는거 column*/}
           <div className={`${classes["titleDate-area"]}`}>
-            <h2 id={"eventName" + shownId}>{`😀 ${text} ${
-              props?.setNum ? `(${props.setNum})` : ""
-            }`}</h2>
+            <h2 id={"eventName" + shownId} className={classes["title-h2"]}>
+              {`😀 ${text} ${props?.setNum ? `(${props.setNum})` : ""}`}
+              {/* 학생서류 제출했는지 체크하는 버튼 */}
+              {props.about === "attendance" && (
+                <>
+                  {/* 현재 수정상태가 아닐때는 true인 자료들만 체크표시 보여주고 */}
+                  {props.fixIsShown !== shownId && paperSubmit && (
+                    <Button
+                      className={"paperSub-btn-s-clicked"}
+                      icon={
+                        <span>
+                          <i className="fa-solid fa-circle-check"></i>
+                        </span>
+                      }
+                    />
+                  )}
+                  {/*  수정상태에서는 다 보여줌 체크표시 보여주고 */}
+                  {props.fixIsShown === shownId && (
+                    <Button
+                      className={
+                        paperSubmit ? "paperSub-btn-clicked" : "paperSub-btn"
+                      }
+                      onclick={() => {
+                        if (props.fixIsShown !== shownId) return;
+                        setPaperSubmit((prev) => !prev);
+                      }}
+                      name={"서류"}
+                      icon={
+                        <span>
+                          <i className="fa-solid fa-circle-check"></i>
+                        </span>
+                      }
+                    />
+                  )}
+                </>
+              )}
+            </h2>
 
             <div
               className={classes["date-area"]}
@@ -139,9 +178,13 @@ const EventItem = (props) => {
               className="small-student"
               name={
                 props.fixIsShown !== shownId ? (
-                  <i className="fa-solid fa-pencil"></i>
+                  <span>
+                    <i className="fa-solid fa-pencil"></i>
+                  </span>
                 ) : (
-                  <i className="fa-regular fa-floppy-disk"></i>
+                  <span>
+                    <i className="fa-regular fa-floppy-disk"></i>
+                  </span>
                 )
               }
               id={
@@ -163,9 +206,13 @@ const EventItem = (props) => {
               className="small-student"
               name={
                 props.fixIsShown !== shownId ? (
-                  <i className="fa-regular fa-trash-can"></i>
+                  <span>
+                    <i className="fa-regular fa-trash-can"></i>
+                  </span>
                 ) : (
-                  <i className="fa-solid fa-xmark"></i>
+                  <span>
+                    <i className="fa-solid fa-xmark"></i>
+                  </span>
                 )
               }
               id={
