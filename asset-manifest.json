@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/checks-cool/static/css/main.1f9dc2b7.css",
-    "main.js": "/checks-cool/static/js/main.01924612.js",
+    "main.js": "/checks-cool/static/js/main.06e66062.js",
     "static/css/128.0fc79918.chunk.css": "/checks-cool/static/css/128.0fc79918.chunk.css",
     "static/js/128.ddac112d.chunk.js": "/checks-cool/static/js/128.ddac112d.chunk.js",
     "static/css/478.8349eed2.chunk.css": "/checks-cool/static/css/478.8349eed2.chunk.css",
@@ -43,7 +43,7 @@
     "static/js/787.5c335e8e.chunk.js": "/checks-cool/static/js/787.5c335e8e.chunk.js",
     "static/js/76.d9e879f1.chunk.js": "/checks-cool/static/js/76.d9e879f1.chunk.js",
     "static/js/362.ed8afe1a.chunk.js": "/checks-cool/static/js/362.ed8afe1a.chunk.js",
-    "static/js/437.4cc85983.chunk.js": "/checks-cool/static/js/437.4cc85983.chunk.js",
+    "static/js/437.ae19c3d0.chunk.js": "/checks-cool/static/js/437.ae19c3d0.chunk.js",
     "static/media/GowunDodum-Regular.ttf": "/checks-cool/static/media/GowunDodum-Regular.39c9a39c246c3c54c53e.ttf",
     "static/media/list.gif": "/checks-cool/static/media/list.8fffec1112ca3ad4d287.gif",
     "static/media/listMemo.gif": "/checks-cool/static/media/listMemo.9b1e9fbe144c9fd5c575.gif",
@@ -64,6 +64,6 @@
   },
   "entrypoints": [
     "static/css/main.1f9dc2b7.css",
-    "static/js/main.01924612.js"
+    "static/js/main.06e66062.js"
   ]
 }
