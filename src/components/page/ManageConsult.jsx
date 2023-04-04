@@ -15,6 +15,7 @@ const ManageConsult = (props) => {
   const [onStudent, setOnStudent] = useState("");
   const [consults, setConsults] = useState([]);
   const [onConsults, setOnConsults] = useState([]);
+  const [showOnConsults, setShowOnConsults] = useState([]);
   const [clName, setClName] = useState("");
   const [showConsultOption, setShowConsultOption] = useState("");
   const [showConsultMonth, setShowConsultMonth] = useState("");
@@ -118,7 +119,7 @@ const ManageConsult = (props) => {
       new_onConsults = sortBy(new_onConsults, "past");
     }
     setOnConsults(new_onConsults);
-    // setShowOnConsults(new_onAttends);
+    setShowOnConsults(new_onConsults);
     optionSaveHandler(new_onConsults);
   }, [onStudent, consults, clName]);
 
@@ -314,6 +315,41 @@ const ManageConsult = (props) => {
     }
     setDeleteChecked(new_data);
   };
+
+  useEffect(() => {
+    setShowConsultMonth("");
+    setShowConsultOption("");
+  }, [clName]);
+
+  //출결 옵션을 선택하면.. 보여주는 걸 바꿔주기
+  useEffect(() => {
+    //전체보여주는 거면.. 그냥 모두
+    if (showConsultOption === "") {
+      setShowOnConsults(onConsults);
+    } else {
+      //월별 자료와 독립적으로 세팅되어야 해서..
+      setShowConsultMonth("");
+      let new_showOnConsults = onConsults?.filter(
+        (consult) => consult.option.slice(1) === showConsultOption
+      );
+      setShowOnConsults(new_showOnConsults);
+    }
+  }, [showConsultOption]);
+
+  //달을 선택하면.. 보여주는 걸 바꿔주기
+  useEffect(() => {
+    //전체보여주는 거면.. 그냥 모두
+    if (showConsultMonth === "") {
+      setShowOnConsults(onConsults);
+    } else {
+      //요약 자료와 독립적으로 세팅되어야 해서..
+      setShowConsultOption("");
+      let new_showOnConsults = onConsults?.filter(
+        (consult) => +consult.id.slice(5, 7) === showConsultMonth
+      );
+      setShowOnConsults(new_showOnConsults);
+    }
+  }, [showConsultMonth]);
 
   return (
     <div>
@@ -557,7 +593,7 @@ const ManageConsult = (props) => {
 
         {/* 학생 상담부분 보여주기 */}
         <div className={`${classes["flex-wrap"]}`} style={{ width: "100%" }}>
-          {onConsults?.map((consult) => (
+          {showOnConsults?.map((consult) => (
             <li
               key={consult.id}
               id={consult.id}

@@ -1104,6 +1104,7 @@ const MainPage = (props) => {
                               {event.clName}
                             </span>
                           )}
+                          {/* 제출 제목 및 미제출자 수 */}
                           {event.title} ({event.unSubmitStudents.length})
                         </span>
                         <span className={classes["mainCheckLists-students"]}>
@@ -1112,7 +1113,10 @@ const MainPage = (props) => {
                             <span
                               key={stu.num + stu.name}
                               className={classes["mainCheckLists-student"]}
-                            >{`${stu.name}`}</span>
+                            >
+                              {/* 미제출자 이름 보여주기 */}
+                              {`${stu.name}`}
+                            </span>
                           )) || ""}
                         </span>
                       </li>
@@ -1160,6 +1164,27 @@ const MainPage = (props) => {
                             ).length
                           }
                           )
+                        </span>
+                        {/* 개별기록 미작성자 이름 */}
+                        <span className={classes["mainCheckLists-students"]}>
+                          {" "}
+                          {nowYearStd?.map((std) => {
+                            if (
+                              event?.data?.filter(
+                                (data) => data.name === std.name
+                              ).length > 0
+                            )
+                              return null;
+                            return (
+                              <span
+                                key={std.num + std.name}
+                                className={classes["mainCheckLists-student"]}
+                              >
+                                {/* 미제출자 이름 보여주기 */}
+                                {`${std.name}`}
+                              </span>
+                            );
+                          })}
                         </span>
                       </li>
                     )

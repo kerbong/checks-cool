@@ -70,6 +70,7 @@ const CompareListMemoTable = (props) => {
     }
   };
 
+  // 개별기록 그려주기 (꺾은선그래프)
   const options = {
     responsive: true,
     // 범례. 버튼으로 그래프 위에 나오는거.
@@ -111,6 +112,8 @@ const CompareListMemoTable = (props) => {
       },
     },
   };
+
+  // 제출 미제출 그려주기 (막대그래프)
 
   const bar_options = {
     responsive: true,
@@ -198,6 +201,8 @@ const CompareListMemoTable = (props) => {
           return false;
         }
       });
+      console.log(list);
+      console.log(isOnlyNum);
     });
 
     //숫자로만 된 데이터면 가능 띄우고, 데이터만들어서 넘어주기
@@ -463,7 +468,7 @@ const CompareListMemoTable = (props) => {
                   </>
                 )}
                 {/* 개별기록의 경우 총계, 평균 넣어주기 */}
-                {props.about === "listMemo" && (
+                {props.about === "listMemo" && canDrawLine && (
                   <>
                     <th className={`${classes["thd"]}`}>총계</th>
                     <th className={`${classes["thd"]}`}>개별평균</th>
@@ -499,12 +504,14 @@ const CompareListMemoTable = (props) => {
                   </>
                 )}
                 {/* 개별기록의 경우 총계, 평균 넣어주기 */}
-                {props.about === "listMemo" && dataClNames.length === 1 && (
-                  <>
-                    <th className={`${classes["thd"]}`}>총계</th>
-                    <th className={`${classes["thd"]}`}>개별평균</th>
-                  </>
-                )}
+                {props.about === "listMemo" &&
+                  dataClNames.length === 1 &&
+                  canDrawLine && (
+                    <>
+                      <th className={`${classes["thd"]}`}>총계</th>
+                      <th className={`${classes["thd"]}`}>개별평균</th>
+                    </>
+                  )}
               </>
             )}
           </tr>
@@ -563,7 +570,7 @@ const CompareListMemoTable = (props) => {
                     </td>
                   )}
                   {/* 개별기록의 경우 총계 평균 넣어주기 */}
-                  {props.about === "listMemo" && (
+                  {props.about === "listMemo" && canDrawLine && (
                     <>
                       {/* 총계 */}
                       <td key={"eachSumList"} className={`${classes["thd"]}`}>
@@ -689,26 +696,13 @@ const CompareListMemoTable = (props) => {
                     </td>
                   )}
                   {/* 개별기록의 경우 총계 평균 넣어주기 */}
-                  {props.about === "listMemo" && dataClNames.length === 1 && (
-                    <>
-                      {/* 총계 */}
-                      <td key={"eachSumList"} className={`${classes["thd"]}`}>
-                        {props.listMemo
-                          ?.map((list) => {
-                            return (
-                              list?.data?.filter(
-                                (std) =>
-                                  std.name ===
-                                  listMemoClStudents[0]?.[num_index]?.name
-                              )?.[0]?.memo || 0
-                            );
-                          })
-                          .reduce((ac, cur) => +ac + +cur)}
-                      </td>
-                      {/* 개별평균값 */}
-                      <td key={"eachAverList"} className={`${classes["thd"]}`}>
-                        {(
-                          props.listMemo
+                  {props.about === "listMemo" &&
+                    dataClNames.length === 1 &&
+                    canDrawLine && (
+                      <>
+                        {/* 총계 */}
+                        <td key={"eachSumList"} className={`${classes["thd"]}`}>
+                          {props.listMemo
                             ?.map((list) => {
                               return (
                                 list?.data?.filter(
@@ -718,12 +712,30 @@ const CompareListMemoTable = (props) => {
                                 )?.[0]?.memo || 0
                               );
                             })
-                            .reduce((ac, cur) => +ac + +cur) /
-                          props.listMemo?.length
-                        ).toFixed(1)}
-                      </td>
-                    </>
-                  )}
+                            .reduce((ac, cur) => +ac + +cur)}
+                        </td>
+                        {/* 개별평균값 */}
+                        <td
+                          key={"eachAverList"}
+                          className={`${classes["thd"]}`}
+                        >
+                          {(
+                            props.listMemo
+                              ?.map((list) => {
+                                return (
+                                  list?.data?.filter(
+                                    (std) =>
+                                      std.name ===
+                                      listMemoClStudents[0]?.[num_index]?.name
+                                  )?.[0]?.memo || 0
+                                );
+                              })
+                              .reduce((ac, cur) => +ac + +cur) /
+                            props.listMemo?.length
+                          ).toFixed(1)}
+                        </td>
+                      </>
+                    )}
                 </tr>
               ))}
             </>
