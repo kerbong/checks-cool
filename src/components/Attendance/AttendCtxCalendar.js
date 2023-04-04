@@ -304,12 +304,19 @@ const AttendCtxCalendar = (props) => {
           if (yyyy_mm_dd === eventDate) {
             //달력날짜에 (번호+이름)의 버튼 추가하기
             const btn = document.createElement("button");
-            let checkedI;
+
             btn.className = `${classes.eventData} eventBtn`;
             btn.innerText = data.name;
             btn.id = data.id;
+            //출결옵션용 span태그 만들어서 내용넣고 1200px 넘어가면 보이도록 css classes 설정
+            let optionSpan = document.createElement("span");
+            optionSpan.className = `${classes.showOptionCal}`;
+            optionSpan.innerText = ` | ${data.option.slice(1)}`;
+            btn.appendChild(optionSpan);
+
+            //서류 냈는지.. 옵션 있으면 체크버튼 추가가
             if (data?.paper) {
-              checkedI = document.createElement("i");
+              let checkedI = document.createElement("i");
               checkedI.className = "fa-solid fa-circle-check";
               btn.appendChild(checkedI);
             }

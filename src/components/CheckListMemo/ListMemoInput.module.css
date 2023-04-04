@@ -46,10 +46,17 @@
   width: 85%;
   font-size: 1.2rem;
   text-align: center;
+  height: 3vh;
 }
 
 .saveBtn {
   width: 30%;
+}
+
+.upDownDiv {
+  display: flex;
+  margin: 5px;
+  justify-content: center;
 }
 
 .x-classDiv {

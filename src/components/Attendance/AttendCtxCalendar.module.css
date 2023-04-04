@@ -5,12 +5,24 @@
   background-color: #56423cd9;
   color: azure;
   border-radius: 10px;
-  font-family: "GowunDodum";
   border-width: 0;
   padding: 3px;
   margin: 2px;
   white-space: pre-line;
 }
+
+.showOptionCal {
+  display: none;
+  font-size: 0.7rem;
+  margin: 0 3px;
+}
+
+@media screen and (min-width: 1200px) {
+  .showOptionCal {
+    display: inline-block;
+  }
+}
+
 .eventData {
   letter-spacing: -0.7px;
 }
@@ -50,7 +62,7 @@ select {
   .eventData,
   .holidayData {
     font-size: 0.7em;
-    letter-spacing: 2px;
+    letter-spacing: 1px;
   }
 }
 

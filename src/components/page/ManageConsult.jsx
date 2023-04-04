@@ -148,6 +148,7 @@ const ManageConsult = (props) => {
         consult.option.slice(1),
         `${consult.id.slice(0, 10)} ${consult.id.slice(10, 15)}`,
         consult.note,
+        consult.attachedFileUrl,
       ];
       if (nowIsSubject) {
         data.unshift(consult.clName);
@@ -155,7 +156,14 @@ const ManageConsult = (props) => {
       new_datas.push(data);
     });
 
-    let data_title = ["번호", "이름", "관련", "날짜(년월일 시각)", "기록내용"];
+    let data_title = [
+      "번호",
+      "이름",
+      "관련",
+      "날짜(년월일 시각)",
+      "기록내용",
+      "첨부파일 주소",
+    ];
     if (nowIsSubject) {
       data_title.unshift("반");
     }
@@ -170,7 +178,8 @@ const ManageConsult = (props) => {
       { wpx: 60 },
       { wpx: 60 },
       { wpx: 100 },
-      { wpx: 150 },
+      { wpx: 200 },
+      { wpx: 100 },
     ];
     if (nowIsSubject) {
       consult_datas["!cols"].unshift({ wpx: 30 });

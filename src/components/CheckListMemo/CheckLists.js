@@ -146,9 +146,9 @@ const CheckLists = (props) => {
 
   const saveItemHandler = async (new_item, auto) => {
     //자료 저장할 떄 실제로 실행되는 함수
+
     const dataSaved = async (newOrSame) => {
       //동일한 이름의 자료가 이미 있는, 새로운 저장이면 팝업 띄우기
-
       if (newOrSame === "sameTitle" && !auto) {
         Swal.fire({
           icon: "warning",
@@ -170,22 +170,33 @@ const CheckLists = (props) => {
 
       const saveLogic = async () => {
         //checkList 일경우
+        let upload_item;
         if (new_item.unSubmitStudents) {
           //기존자료가 있으면?!
           if (datas?.length > 0) {
             // if (checkLists?.length > 0) {
-            new_item = { ...new_item, yearGroup: checkListsYear.current.value };
+            upload_item = {
+              ...new_item,
+              yearGroup: checkListsYear.current.value,
+            };
             let new_datas = [...datas];
             let data_index = undefined;
             new_datas.forEach((data, index) => {
-              if (data.id === new_item.id) {
+              if (data.id === upload_item.id) {
                 data_index = index;
               }
             });
+            //기존에 없던자료
             if (data_index === undefined) {
-              new_datas.push(new_item);
+              new_datas.push(upload_item);
+              //기존에 있던자료
             } else {
-              new_datas[data_index] = new_item;
+              //로직이 모두 진행되고 나면 혹시 기존데이터에서 날짜가 바뀐 경우
+              if (new_item?.new_id) {
+                upload_item = { ...upload_item, id: new_item.new_id };
+                delete upload_item.new_id;
+              }
+              new_datas[data_index] = upload_item;
             }
 
             //3.17에러.. id가 null이거나 'null'인 자료 제외함
@@ -197,21 +208,28 @@ const CheckLists = (props) => {
               checkLists_data: [...new_datas],
             });
             // setCheckLists([...new_datas]);
+            setNowOnCheckLists([...new_datas]);
 
-            let now_datas = [...nowOnCheckLists];
-            let now_data_index = undefined;
-            now_datas.forEach((data, index) => {
-              if (data.id === new_item.id) {
-                now_data_index = index;
-              }
-            });
-            if (now_data_index === undefined) {
-              now_datas.push(new_item);
-            } else {
-              now_datas[now_data_index] = new_item;
-            }
+            // let now_datas = [...nowOnCheckLists];
+            // let now_data_index = undefined;
+            // now_datas.forEach((data, index) => {
+            //   if (data.id === new_item.id) {
+            //     now_data_index = index;
+            //   }
+            // });
+            // if (now_data_index === undefined) {
+            //   now_datas.push(upload_item);
+            // } else {
+            //           //로직이 모두 진행되고 나면 혹시 기존데이터에서 날짜가 바뀐 경우
+            //   if (new_item?.new_id) {
+            //     upload_item = {...upload_item, id: new_item.new_id}
+            //     delete upload_item.new_id
+            //   }
+            //   new_datas[data_index] = upload_item;
+            //   now_datas[now_data_index] = new_item;
+            // }
 
-            setNowOnCheckLists([...now_datas]);
+            // setNowOnCheckLists([...now_datas]);
 
             //처음 자료를 저장하는 경우
           } else {
@@ -233,18 +251,28 @@ const CheckLists = (props) => {
         } else {
           //기존자료가 있으면?!
           if (datas?.length > 0) {
-            new_item = { ...new_item, yearGroup: listMemoYear.current.value };
+            upload_item = {
+              ...new_item,
+              yearGroup: listMemoYear.current.value,
+            };
             let new_datas = [...datas];
             let data_index = undefined;
             new_datas.forEach((data, index) => {
-              if (data.id === new_item.id) {
+              if (data.id === upload_item.id) {
                 data_index = index;
               }
             });
+            //기존에 없던자료
             if (data_index === undefined) {
-              new_datas.push(new_item);
+              new_datas.push(upload_item);
+              //기존에 있던자료
             } else {
-              new_datas[data_index] = new_item;
+              //로직이 모두 진행되고 나면 혹시 기존데이터에서 날짜가 바뀐 경우
+              if (new_item?.new_id) {
+                upload_item = { ...upload_item, id: new_item.new_id };
+                delete upload_item.new_id;
+              }
+              new_datas[data_index] = upload_item;
             }
 
             //3.17에러.. id가 null이거나 'null'인 자료 제외함
@@ -256,20 +284,22 @@ const CheckLists = (props) => {
               listMemo_data: [...new_datas],
             });
 
-            let now_datas = [...nowOnListMemo];
-            let now_data_index = undefined;
-            now_datas.forEach((data, index) => {
-              if (data.id === new_item.id) {
-                now_data_index = index;
-              }
-            });
-            if (now_data_index === undefined) {
-              now_datas.push(new_item);
-            } else {
-              now_datas[now_data_index] = new_item;
-            }
+            setNowOnListMemo([...new_datas]);
 
-            setNowOnListMemo([...now_datas]);
+            // let now_datas = [...nowOnListMemo];
+            // let now_data_index = undefined;
+            // now_datas.forEach((data, index) => {
+            //   if (data.id === new_item.id) {
+            //     now_data_index = index;
+            //   }
+            // });
+            // if (now_data_index === undefined) {
+            //   now_datas.push(new_item);
+            // } else {
+            //   now_datas[now_data_index] = new_item;
+            // }
+
+            // setNowOnListMemo([...now_datas]);
 
             //처음 자료를 저장하는 경우
           } else {
@@ -288,7 +318,7 @@ const CheckLists = (props) => {
       };
 
       //새로운 자료면 저장하기
-      if (newOrSame === "new") {
+      if (newOrSame === "new" || auto) {
         saveLogic();
       }
     }; // 자료 저장 실행 함수 끝
@@ -656,7 +686,7 @@ const CheckLists = (props) => {
             {nowOnCheckLists &&
               sortList(nowOnCheckLists)?.map((item) => (
                 <li
-                  key={item.id}
+                  key={item.id + item.title}
                   id={item.id}
                   className={classes.checkLi}
                   onClick={() => {
@@ -821,7 +851,7 @@ const CheckLists = (props) => {
             {nowOnListMemo &&
               sortList(nowOnListMemo)?.map((item) => (
                 <li
-                  key={item.id}
+                  key={item.id + item.title}
                   id={item.id}
                   className={classes.checkLi}
                   onClick={() => {

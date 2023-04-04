@@ -26,18 +26,29 @@ const ListMemoInput = (props) => {
     props.item.title || getDateHandler(new Date())
   );
 
+  //기존자료의 경우.. 시작날짜를 기존 날짜로!
+  useEffect(() => {
+    if (!props?.item?.id) return;
+    setTodayYyyymmdd(props.item.id);
+  }, [props.item]);
+
   const saveMemo = (auto) => {
     let tempId = localStorage.getItem("listId");
     let item_id;
+    let nowOn_id;
+    setTodayYyyymmdd((prev) => {
+      nowOn_id = dayjs(prev).format("YYYY-MM-DD") + dayjs().format(" HH:mm:ss");
+      return prev;
+    });
+
     //기존의 아이템이거나.. 임시로 저장된 tempIdTitle이 있으면 넣어주기
     if (props?.item?.id || (tempId !== "null" && tempId)) {
       item_id = props.item.id || tempId;
+      //완전 새거면.. 최신..현재 상태의 값으로 만든 시간 넣어주기
     } else {
-      item_id =
-        dayjs(todayYyyymmdd).format("YYYY-MM-DD") +
-        " " +
-        dayjs().format("HH:mm:ss");
+      item_id = nowOn_id;
     }
+
     //혹시나.. id가 null같은게 들어가 있으면 현재 시간으로 찍어줌..!
     if (item_id === null || item_id === "null") {
       item_id = dayjs().format("YYYY-MM-DD HH:mm:ss");
@@ -74,6 +85,14 @@ const ListMemoInput = (props) => {
       }
     });
 
+    //만약 기존 아이템인데, 날짜를 수정할 경우 new_id를 추가해서 보냄
+    if (
+      props?.item?.id &&
+      nowOn_id?.slice(0, 10) !== props?.item?.id?.slice(0, 10)
+    ) {
+      new_memo["new_id"] = nowOn_id;
+    }
+
     // setStudentMemo((prev) => [...prev, new_memo]);
 
     // 수동저장이면...
@@ -83,8 +102,8 @@ const ListMemoInput = (props) => {
       props.saveItemHandler(new_memo);
       localStorage.removeItem("listId");
     } else {
-      localStorage.setItem("listId", item_id);
       props.saveItemHandler(new_memo, auto);
+      localStorage.setItem("listId", item_id);
     }
   };
 
@@ -107,7 +126,7 @@ const ListMemoInput = (props) => {
     });
   };
 
-  //5초마다 저장시키기
+  //10초마다 저장시키기
   useEffect(() => {
     let modalDiv = document.querySelector(".modal");
     let timer;
@@ -181,32 +200,29 @@ const ListMemoInput = (props) => {
         {/* 날짜와 제목창 */}
         <div className={classes["date-title"]}>
           {/* 날짜 화면 보여주기 */}
-          {!props?.item?.id && (
-            <div
-              className={classes["date"]}
-              onClick={() => setShowCal((prev) => !prev)}
-            >
-              {/* 오늘 날짜 보여주는 부분 날짜 클릭하면 달력도 나옴 */}
+          <div
+            className={classes["date"]}
+            onClick={() => setShowCal((prev) => !prev)}
+          >
+            {/* 오늘 날짜 보여주는 부분 날짜 클릭하면 달력도 나옴 */}
 
-              {/* {titleDate} */}
-              {/* 오늘 날짜 보여주는 부분 날짜 클릭하면 달력도 나옴 */}
-              <span style={{ fontSize: "1.2rem" }}>
-                <AttendCalendar
-                  getDateValue={calDateHandler}
-                  about="main"
-                  setStart={new Date(todayYyyymmdd)}
-                  getMonthValue={getMonthHandler}
-                />
-              </span>
-            </div>
-          )}
+            {/* {titleDate} */}
+            {/* 오늘 날짜 보여주는 부분 날짜 클릭하면 달력도 나옴 */}
+            <span style={{ fontSize: "1.2rem" }}>
+              <AttendCalendar
+                getDateValue={calDateHandler}
+                about="main"
+                setStart={new Date(todayYyyymmdd)}
+                getMonthValue={getMonthHandler}
+              />
+            </span>
+          </div>
           <input
             type="text"
             placeholder="명렬표 기록 제목"
             onChange={(e) => setMemoTitle(e.target.value)}
             value={memoTitle}
             className={`${classes["title-input"]} title-input`}
-            style={{ height: props.item.id ? "7vh" : "3vh" }}
             autoFocus
           />{" "}
         </div>
@@ -240,7 +256,7 @@ const ListMemoInput = (props) => {
           }}
         />
       </h2>
-      <p>* 10초간 입력이 없으면 자동저장</p>
+      <p className={classes["upDownDiv"]}>* 10초간 입력이 없으면 자동저장</p>
       <ul className={classes["ul-section"]}>
         {students?.length > 0 &&
           students?.map((student) => (

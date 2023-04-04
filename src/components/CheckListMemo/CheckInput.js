@@ -16,6 +16,7 @@ const CheckInput = (props) => {
   const [showCal, setShowCal] = useState(false);
   const [currentMonth, setCurrentMonth] = useState(dayjs().format("YYYY-MM"));
   const [todayYyyymmdd, setTodayYyyymmdd] = useState(new Date());
+
   const [unSubmitStudents, setUnSubmitStudents] = useState(
     props.unSubmitStudents
   );
@@ -25,6 +26,12 @@ const CheckInput = (props) => {
       (stu1) => !unSubmitStudents?.some((stu2) => +stu1.num === +stu2.num)
     )
   );
+
+  //기존자료의 경우.. 시작날짜를 기존 날짜로!
+  useEffect(() => {
+    if (!props?.item?.id) return;
+    setTodayYyyymmdd(props.item.id.slice(0, 10));
+  }, [props.item]);
 
   const calDateHandler = (date) => {
     setTodayYyyymmdd(dayjs(date).format("YYYY-MM-DD"));
@@ -84,14 +91,19 @@ const CheckInput = (props) => {
     }
 
     let item_id;
+    //현재 화면의 아이디
+    let nowOn_id;
+    setTodayYyyymmdd((prev) => {
+      nowOn_id = dayjs(prev).format("YYYY-MM-DD") + dayjs().format(" HH:mm:ss");
+      return prev;
+    });
+
     //기존의 아이템인 경우 기존 아이디 쓰고
     if (props?.item?.id || (tempId !== "null" && tempId)) {
       item_id = props.item.id || tempId;
+      //완전 새거면.. 최신..현재 상태의 값으로 만든 시간 넣어주기
     } else {
-      item_id =
-        dayjs(todayYyyymmdd).format("YYYY-MM-DD") +
-        " " +
-        dayjs().format("HH:mm:ss");
+      item_id = nowOn_id;
     }
 
     //혹시나.. id가 null같은게 들어가 있으면 현재 시간으로 찍어줌..!
@@ -110,6 +122,15 @@ const CheckInput = (props) => {
     if (props.isSubject) {
       new_checkItem["clName"] =
         document.getElementById("item-clName").innerText;
+    }
+
+    //만약 기존 아이템인데, 날짜를 수정할 경우 new_id를 추가해서 보냄
+    //만약 기존 아이템인데, 날짜를 수정할 경우 new_id를 추가해서 보냄
+    if (
+      props?.item?.id &&
+      nowOn_id?.slice(0, 10) !== props?.item?.id?.slice(0, 10)
+    ) {
+      new_checkItem["new_id"] = nowOn_id;
     }
 
     // 수동저장이면...
@@ -218,8 +239,23 @@ const CheckInput = (props) => {
                   {props.item.clName}
                 </span>
               )}
+              {/* 날짜 화면 보여주기 */}
+
+              <div
+                className={classes["date-title"]}
+                onClick={() => setShowCal((prev) => !prev)}
+              >
+                <span style={{ fontSize: "1.2rem" }}>
+                  <AttendCalendar
+                    getDateValue={calDateHandler}
+                    about="main"
+                    setStart={new Date(todayYyyymmdd)}
+                    getMonthValue={getMonthHandler}
+                  />
+                </span>
+              </div>
+
               <h2 id={"title-input"}>{checkTitle}</h2>
-              <p>* 10초간 입력이 없으면 자동저장</p>
             </div>
           ) : (
             <>
@@ -230,25 +266,25 @@ const CheckInput = (props) => {
                 </span>
               )}
               {/* 날짜 화면 보여주기 */}
-              {!props?.item?.id && (
-                <div
-                  className={classes["date-title"]}
-                  onClick={() => setShowCal((prev) => !prev)}
-                >
-                  {/* 오늘 날짜 보여주는 부분 날짜 클릭하면 달력도 나옴 */}
 
-                  {/* {titleDate} */}
-                  {/* 오늘 날짜 보여주는 부분 날짜 클릭하면 달력도 나옴 */}
-                  <span style={{ fontSize: "1.2rem" }}>
-                    <AttendCalendar
-                      getDateValue={calDateHandler}
-                      about="main"
-                      setStart={new Date(todayYyyymmdd)}
-                      getMonthValue={getMonthHandler}
-                    />
-                  </span>
-                </div>
-              )}
+              <div
+                className={classes["date-title"]}
+                onClick={() => setShowCal((prev) => !prev)}
+              >
+                {/* 오늘 날짜 보여주는 부분 날짜 클릭하면 달력도 나옴 */}
+
+                {/* {titleDate} */}
+                {/* 오늘 날짜 보여주는 부분 날짜 클릭하면 달력도 나옴 */}
+                <span style={{ fontSize: "1.2rem" }}>
+                  <AttendCalendar
+                    getDateValue={calDateHandler}
+                    about="main"
+                    setStart={new Date(todayYyyymmdd)}
+                    getMonthValue={getMonthHandler}
+                  />
+                </span>
+              </div>
+
               <input
                 type="text"
                 placeholder="제목"
@@ -323,7 +359,7 @@ const CheckInput = (props) => {
             /* 여기에 reducer함수 실행해서.. students 배열에서 상태 바꾸기 온클릭 함수에 해당함  */
           ))}
         </div>
-
+        <p className={classes["upDownDiv"]}>* 10초간 입력이 없으면 자동저장</p>
         <Button
           name={"저장"}
           id={"add-checkItemBtn"}
