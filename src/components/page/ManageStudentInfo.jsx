@@ -161,7 +161,6 @@ const ManageStudentInfo = (props) => {
         info_datas: new_wholeClass,
       };
     }
-    console.log(fixed_data);
     setStudentsInfo(fixed_data.info_datas);
     uploadStudents(fixed_data);
 
@@ -262,11 +261,9 @@ const ManageStudentInfo = (props) => {
                 });
                 return;
               }
-              console.log(new_rows);
               wholeClass.push(...new_rows);
             });
             studentsInfoHandler(wholeClass);
-            console.log(wholeClass);
 
             //담임일 경우 시트가 하나!
           } else {
@@ -308,11 +305,9 @@ const ManageStudentInfo = (props) => {
                 return;
               }
               studentsInfoHandler(new_rows);
-              console.log(new_rows);
             });
           }
         } catch (error) {
-          console.log(error.message);
           Swal.fire({
             icon: "error",
             title: "업로드 실패!",

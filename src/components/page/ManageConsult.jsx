@@ -95,14 +95,17 @@ const ManageConsult = (props) => {
       //담임이면
       if (!nowIsSubject) {
         new_onConsults = consults?.filter(
-          (consult) => consult.name === onStudent.split(" ")[1]
+          (consult) =>
+            consult.name === onStudent.split(" ")[1] ||
+            consult?.related?.includes(onStudent)
         );
 
         //전담이면.. 반과 이름 모두 같아야 함
       } else {
         new_onConsults = consults?.filter(
           (data) =>
-            data.clName === clName && data.name === onStudent.split(" ")[1]
+            (data.clName === clName && data.name === onStudent.split(" ")[1]) ||
+            data?.related?.includes(onStudent)
         );
       }
 
@@ -629,6 +632,20 @@ const ManageConsult = (props) => {
                 onStudent === "" ? `${consult.name}` : ""
               } 🙂 ${consult.option.slice(1)}`}</div>
               <hr className={classes["margin-15"]} />
+              {/* 혹시 관련학생 정보가 있으면 보여줌 */}
+              {consult.related?.length > 0 && (
+                <>
+                  <div className={classes["flex-wrap"]}>
+                    {consult.related?.map((std) => (
+                      <span key={std} style={{ margin: "3px 5px" }}>
+                        {std}
+                      </span>
+                    ))}
+                  </div>
+                  <hr className={classes["margin-15"]} />
+                </>
+              )}
+
               {/* 메모한 내용 */}
               <div className={classes["fs-13"]}>{consult.note}</div>
               {/* 첨부한 사진이나 음성파일 있으면 보여주기 */}

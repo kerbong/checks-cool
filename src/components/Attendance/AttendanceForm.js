@@ -5,6 +5,7 @@ import Swal from "sweetalert2";
 import AttendanceOption from "./AttendanceOption";
 import FileArea from "components/Layout/FileArea";
 import Button from "components/Layout/Button";
+import ConsultRelated from "components/Consult/ConsultRelated";
 
 import { dbService } from "../../fbase";
 import { onSnapshot, setDoc, doc } from "firebase/firestore";
@@ -17,6 +18,9 @@ const AttendanceForm = (props) => {
   const [paperSubmit, setPaperSubmit] = useState(false);
   const [isImgFile, setIsImgFile] = useState(true);
   const [attendEvents, setAttendEvents] = useState([]);
+  const [showStudent, setShowStudent] = useState(false);
+  const [relatedStudent, setRelatedStudent] = useState([]);
+
   const noteRef = useRef(null);
 
   const getAttendEventsFromDb = () => {
@@ -97,6 +101,7 @@ const AttendanceForm = (props) => {
         option: option,
         note: inputValue,
         attachedFileUrl: attachedFile,
+        related: relatedStudent,
       };
 
       props.addData(new_data);
@@ -209,8 +214,46 @@ const AttendanceForm = (props) => {
     setAttachedFile(url);
   };
 
+  //관련학생 모달 취소하면
+  const closeModalHandler = () => {
+    setShowStudent(false);
+    setRelatedStudent([]);
+  };
+
+  //관련학생 모달에서 학생 클릭하면.. relatedStd에 저장시키는 함수
+  const relatedStdHandler = (e) => {
+    let clicked_std = e.target.innerText;
+    let new_relatedStudent = [...relatedStudent];
+    //현재 선택된 입력하고 있는 학생은 추가할 수 없음
+    if (clicked_std === props.who) return;
+
+    //기존에 있으면 빼고
+    if (new_relatedStudent?.includes(clicked_std)) {
+      new_relatedStudent = new_relatedStudent?.filter(
+        (std) => std !== clicked_std
+      );
+      //없으면 추가하기
+    } else {
+      new_relatedStudent.push(clicked_std);
+    }
+    setRelatedStudent(new_relatedStudent);
+  };
+
   return (
     <>
+      {/* 상담에서만 true false로 만들 수 있는, 관련학생 선택하는 모달창 */}
+      {showStudent && (
+        <ConsultRelated
+          who={props.who}
+          confirmBtnHandler={() => setShowStudent(false)}
+          studentClickHandler={(e) => relatedStdHandler(e)}
+          students={props.students}
+          isSubject={props.isSubject}
+          relatedStudent={relatedStudent}
+          closeModalHandler={closeModalHandler}
+        />
+      )}
+
       <AttendanceOption
         selectOption={props.selectOption}
         showNote={(option) => {
@@ -218,6 +261,30 @@ const AttendanceForm = (props) => {
           setOption(option);
         }}
       />
+      {/* 상담일 경우, 관련학생 기록하기 */}
+      {props.about === "consulting" && (
+        <div className={classes.btnArea}>
+          <div className={classes.relStdArea}>
+            <b>선택된 관련학생</b>
+            <div className={classes["relStdShowDiv"]}>
+              {relatedStudent?.length > 0 &&
+                relatedStudent?.map((std) => (
+                  <span key={std} className={classes["margin-5"]}>
+                    {std}
+                  </span>
+                ))}
+            </div>
+          </div>
+          {/* 학생 선택버튼 부분 */}
+          <Button
+            className="consult-relatedStdBtn"
+            name={"관련학생"}
+            onclick={function () {
+              setShowStudent(!showStudent);
+            }}
+          />
+        </div>
+      )}
       {inputIsShown && (
         <>
           <form
@@ -243,6 +310,7 @@ const AttendanceForm = (props) => {
                 }
               />
             )}
+
             <Input
               ref={noteRef}
               id={"textArea"}
@@ -257,6 +325,7 @@ const AttendanceForm = (props) => {
               onInput={(e) => handleOnInput(e)}
             />
           </form>
+
           <div className={classes.btnArea}>
             {props.about === "consulting" ? (
               <>

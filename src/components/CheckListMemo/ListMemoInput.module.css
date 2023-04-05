@@ -83,10 +83,17 @@
   font-size: 1rem;
 }
 
+.title-dateInputBtnDiv {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+}
+
 .title-section {
   display: flex;
+  flex-direction: column;
   position: sticky;
-  padding-top: 6px;
   top: -5px;
   opacity: 0.7;
   backdrop-filter: blur(30px);

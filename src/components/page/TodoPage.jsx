@@ -262,7 +262,6 @@ const TodoPage = (props) => {
       // console.log(all_day);
       all_day?.forEach((dayTag) => {
         //바뀌기 전 노드 기준인가...;;;
-        console.log(dayTag.getAttribute("aria-selected"));
         //현재 선택된 날짜들이 아니면 모두 색깔 원래대로..
         dayTag.style.backgroundColor = "inherit";
         if (dayTag.getAttribute("aria-selected") === "true") {

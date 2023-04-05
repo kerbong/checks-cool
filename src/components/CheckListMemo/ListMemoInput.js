@@ -25,6 +25,7 @@ const ListMemoInput = (props) => {
   const [memoTitle, setMemoTitle] = useState(
     props.item.title || getDateHandler(new Date())
   );
+  const [hasNoInputStd, setHasNoInputStd] = useState(props.hasNoInputStd || []);
 
   //기존자료의 경우.. 시작날짜를 기존 날짜로!
   useEffect(() => {
@@ -174,88 +175,153 @@ const ListMemoInput = (props) => {
     });
   }, [currentMonth, showCal]);
 
+  const hasNoInputStdHandler = (e) => {
+    let inputTag = e.target;
+    // console.log(inputTag.value)
+    let new_hasNoInputStd = [...hasNoInputStd];
+    let tagStudent = inputTag?.id?.split("-")?.[0];
+    //입력값이 빈칸이 아니면
+    if (inputTag.value.trim() !== "") {
+      // 입력값없는 학생 배열에 있는지 확인하고
+      if (new_hasNoInputStd?.filter((std) => std === tagStudent)?.length > 0) {
+        new_hasNoInputStd = new_hasNoInputStd.filter(
+          (std) => std !== tagStudent
+        );
+        setHasNoInputStd(new_hasNoInputStd);
+      }
+      //입력값이 빈칸이 되면
+    } else {
+      // 입력값 없는 학생 배열에 있는지 확인해서 없으면 넣어줌
+      if (
+        new_hasNoInputStd?.filter((std) => std === tagStudent)?.length === 0
+      ) {
+        new_hasNoInputStd = new_hasNoInputStd.push(tagStudent);
+        setHasNoInputStd(new_hasNoInputStd);
+      }
+    }
+  };
+
+  // useEffect(() => {
+  //   // 모든 텍스트area를 선택함.
+  //   let memoInputAll = document.querySelectorAll(`textarea`);
+  //   // //메모가 있는 항목들을 new_memo의 data에 추가함
+  //   memoInputAll.forEach((inputTag) => {
+  //     inputTag.addEventListener("keydown", hasNoInputStdHandler);
+  //     //   if (inputTag.value.trim() !== "") {
+  //     //     new_memo["data"].push({
+  //     //       name: inputTag.id.split("-")[0],
+  //     //       num: inputTag.id.split("-")[1],
+  //     //       memo: inputTag.value,
+  //     //     });
+  //     //   }
+  //   });
+  // }, []);
+
   return (
     <>
       <h2 className={classes["title-section"]}>
-        <div className={classes["x-classDiv"]}>
-          <p
-            className={classes["listMemo-closeBtn"]}
-            onClick={() => {
-              localStorage.removeItem("listId");
-              props.onClose();
-              props.setItemNull();
-            }}
-          >
-            <i className="fa-regular fa-circle-xmark"></i>
-          </p>
-          {props.isSubject && (
-            <div className={classes["fs-1"]}>
-              {" "}
-              {props.item?.clName || props.clName}
-            </div>
-          )}
-        </div>
-
-        {/* 전담이면 학급명도 보여줌 */}
-        {/* 날짜와 제목창 */}
-        <div className={classes["date-title"]}>
-          {/* 날짜 화면 보여주기 */}
-          <div
-            className={classes["date"]}
-            onClick={() => setShowCal((prev) => !prev)}
-          >
-            {/* 오늘 날짜 보여주는 부분 날짜 클릭하면 달력도 나옴 */}
-
-            {/* {titleDate} */}
-            {/* 오늘 날짜 보여주는 부분 날짜 클릭하면 달력도 나옴 */}
-            <span style={{ fontSize: "1.2rem" }}>
-              <AttendCalendar
-                getDateValue={calDateHandler}
-                about="main"
-                setStart={new Date(todayYyyymmdd)}
-                getMonthValue={getMonthHandler}
-              />
-            </span>
+        <div className={classes["title-dateInputBtnDiv"]}>
+          <div className={classes["x-classDiv"]}>
+            <p
+              className={classes["listMemo-closeBtn"]}
+              onClick={() => {
+                localStorage.removeItem("listId");
+                props.onClose();
+                props.setItemNull();
+              }}
+            >
+              <i className="fa-regular fa-circle-xmark"></i>
+            </p>
+            {props.isSubject && (
+              <div className={classes["fs-1"]}>
+                {" "}
+                {props.item?.clName || props.clName}
+              </div>
+            )}
           </div>
-          <input
-            type="text"
-            placeholder="명렬표 기록 제목"
-            onChange={(e) => setMemoTitle(e.target.value)}
-            value={memoTitle}
-            className={`${classes["title-input"]} title-input`}
-            autoFocus
-          />{" "}
+
+          {/* 전담이면 학급명도 보여줌 */}
+          {/* 날짜와 제목창 */}
+          <div className={classes["date-title"]}>
+            {/* 날짜 화면 보여주기 */}
+            <div
+              className={classes["date"]}
+              onClick={() => setShowCal((prev) => !prev)}
+            >
+              {/* 오늘 날짜 보여주는 부분 날짜 클릭하면 달력도 나옴 */}
+
+              {/* {titleDate} */}
+              {/* 오늘 날짜 보여주는 부분 날짜 클릭하면 달력도 나옴 */}
+              <span style={{ fontSize: "1.2rem" }}>
+                <AttendCalendar
+                  getDateValue={calDateHandler}
+                  about="main"
+                  setStart={new Date(todayYyyymmdd)}
+                  getMonthValue={getMonthHandler}
+                />
+              </span>
+            </div>
+            <input
+              type="text"
+              placeholder="명렬표 기록 제목"
+              onChange={(e) => setMemoTitle(e.target.value)}
+              value={memoTitle}
+              className={`${classes["title-input"]} title-input`}
+              autoFocus
+            />{" "}
+          </div>
+
+          <Button
+            name={"삭제"}
+            id={"del-checkItemBtn"}
+            style={{ display: props.item.length === 0 && "none" }}
+            className={"save-listMemo-button"}
+            onclick={() => {
+              delCheckItem(props.item);
+            }}
+          />
+          <Button
+            name={"저장"}
+            id={"add-checkItemBtn"}
+            className={"save-listMemo-button"}
+            onclick={() => {
+              if (
+                props.students?.length === 0 ||
+                props.students === undefined
+              ) {
+                Swal.fire({
+                  icon: "error",
+                  title: "저장에 실패했어요!",
+                  text: "메뉴의 곰돌이를 눌러서 학생명부를 먼저 입력해주세요. 학생명부가 저장 되어있는데 저장이 실패하셨다면, 새로운 학년도의 3월부터 입력이 가능합니다.",
+                  confirmButtonText: "확인",
+                  confirmButtonColor: "#85bd82",
+                });
+              } else {
+                saveMemo(false);
+                props.setItemNull();
+              }
+            }}
+          />
         </div>
 
-        <Button
-          name={"삭제"}
-          id={"del-checkItemBtn"}
-          style={{ display: props.item.length === 0 && "none" }}
-          className={"save-listMemo-button"}
-          onclick={() => {
-            delCheckItem(props.item);
-          }}
-        />
-        <Button
-          name={"저장"}
-          id={"add-checkItemBtn"}
-          className={"save-listMemo-button"}
-          onclick={() => {
-            if (props.students?.length === 0 || props.students === undefined) {
-              Swal.fire({
-                icon: "error",
-                title: "저장에 실패했어요!",
-                text: "메뉴의 곰돌이를 눌러서 학생명부를 먼저 입력해주세요. 학생명부가 저장 되어있는데 저장이 실패하셨다면, 새로운 학년도의 3월부터 입력이 가능합니다.",
-                confirmButtonText: "확인",
-                confirmButtonColor: "#85bd82",
-              });
-            } else {
-              saveMemo(false);
-              props.setItemNull();
-            }
-          }}
-        />
+        {/* 미입력/입력학생 보여주기*/}
+        <div>
+          <div>
+            미입력 ({hasNoInputStd?.length}){" "}
+            {hasNoInputStd?.map((data) => (
+              <Button
+                key={"hasinput" + data}
+                id={"hasinput" + data}
+                name={data}
+                className={"checkList-button"}
+              />
+            ))}
+          </div>
+          {/* 입력학생 */}
+          <div></div>
+        </div>
       </h2>
+
       <p className={classes["upDownDiv"]}>* 10초간 입력이 없으면 자동저장</p>
       <ul className={classes["ul-section"]}>
         {students?.length > 0 &&

@@ -12,12 +12,24 @@
   overflow-y: hidden;
   resize: none;
 }
+.relStdShowDiv {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.relStdArea {
+  width: calc(100% - 105px);
+}
+
+.margin-5 {
+  margin: 3px 5px;
+}
 
 .btn {
   padding: 16px;
   background-color: #85bd82;
   font-size: 1.2em;
-  margin: 10px;
+  margin: 0;
   border-radius: 15px;
   border-width: 0;
 }
@@ -25,6 +37,5 @@
 .btnArea {
   display: flex;
   justify-content: space-between;
-  margin: 15px 0;
-  width: 100%;
+  margin: 15px 3%;
 }

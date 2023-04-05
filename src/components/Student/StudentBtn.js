@@ -6,6 +6,7 @@ const StudentBtn = (props) => {
     <>
       <button
         className={`${classes[props.className]} ${props.classAdd && "clicked"}`}
+        key={`stdBtn-${props.num} ${props.name}`}
         id={`std-${props.num} ${props.name}`}
         onClick={(e) => {
           props.onShowOption(e);

@@ -34,6 +34,7 @@ const ConsultLists = (props) => {
     let consultRef = doc(dbService, "consult", props.userUid);
 
     onSnapshot(consultRef, (doc) => {
+      setConsults([]);
       const new_consults = [];
       const years = [];
       doc.data()?.consult_data?.forEach((data) => {
@@ -200,13 +201,13 @@ const ConsultLists = (props) => {
     } else {
       setIsSubject(true);
       setNowClassName("");
-      //받아온 props.students에서 학년도에 맞는 것만 students변수에 넣기
-      let now_students = props.students?.filter(
-        (yearStd) => Object.keys(yearStd)[0] === year_group
-      )?.[0]?.[year_group];
-
-      setStudents(now_students);
     }
+    //받아온 props.students에서 학년도에 맞는 것만 students변수에 넣기
+    let now_students = props.students?.filter(
+      (yearStd) => Object.keys(yearStd)[0] === year_group
+    )?.[0]?.[year_group];
+
+    setStudents(now_students);
     //선택된 학생(셀렉트 태그)초기화
     studentSelectRef.current.value = "";
     //선택된 학급 초기화
@@ -366,6 +367,8 @@ const ConsultLists = (props) => {
     event.currentTarget.style.display = "none";
   };
 
+  console.log(props.students);
+
   return (
     <>
       {/* 정렬하는 부분 */}
@@ -454,6 +457,8 @@ const ConsultLists = (props) => {
             <li key={consult.id} className={classes.listArea} id={consult.id}>
               {showEditor === consult.id ? (
                 <ConsultEdit
+                  isSubject={props.isSubject}
+                  students={students}
                   selectOption={props.selectOption}
                   consult={consult}
                   cancelEditor={() => setShowEditor("")}
@@ -473,6 +478,16 @@ const ConsultLists = (props) => {
                       {`${consult.name} | ${consult.option.slice(1)}`}
                     </span>
                   </div>
+                  {/* 관련학생 있으면 보여주기 */}
+                  {consult?.related?.length > 0 && (
+                    <div className={classes.noteArea}>
+                      {consult?.related?.map((std) => (
+                        <span key={std} className={classes["nameSpan"]}>
+                          {std}
+                        </span>
+                      ))}
+                    </div>
+                  )}
 
                   {/* 이미지 / 녹음파일이 있으면 이미지 보여주기 */}
                   {consult.attachedFileUrl && (

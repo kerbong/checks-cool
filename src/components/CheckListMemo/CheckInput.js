@@ -309,7 +309,7 @@ const CheckInput = (props) => {
         </span>
       </div>
       <div>
-        <h3 className={classes.h3}> 미 제 출 </h3>
+        <h3 className={classes.h3}> 미 제 출 ({unSubmitStudents?.length})</h3>
         <div className={classes.div}>
           {unSubmitStudents &&
             unSubmitStudents?.map((stu) => (
@@ -342,7 +342,7 @@ const CheckInput = (props) => {
             <hr className={classes.hr} />
           </span>
         </div>
-        <h3 className={classes.h3}> 제 출 </h3>
+        <h3 className={classes.h3}> 제 출 ({submitStudents?.length})</h3>
 
         <div className={classes.div}>
           {submitStudents?.map((stu) => (

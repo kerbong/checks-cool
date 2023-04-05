@@ -336,6 +336,7 @@ const ConsultingPage = (props) => {
         //모달로 나오는 상담 입력화면
         <Attendance
           onClose={hideOptionHandler}
+          students={!isSubject ? nowStudents : nowClStudents}
           who={student}
           date={new Date()}
           selectOption={consultingOption}

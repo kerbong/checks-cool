@@ -1,6 +1,6 @@
 .option,
 .option-select {
-  background-color: #b5dcc0b8;
+  background-color: #b5dcc069;
   padding: 10px;
   font-size: 1rem;
   margin: 5px;
@@ -31,20 +31,12 @@
 @media screen and (min-width: 800px) {
   .option,
   .option-select {
-    background-color: #b5dcc0b8;
     padding: 12px;
     font-size: 1.2rem;
     margin: 7px;
     width: 90px;
-    height: 35px;
-    border-radius: 15px;
-    align-items: center;
-    text-align: center;
-    display: flex;
-    justify-content: center;
   }
   .option-select {
-    background-color: #8fcca0;
     font-size: 1.4rem;
     letter-spacing: -1px;
   }

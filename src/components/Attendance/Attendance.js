@@ -91,6 +91,8 @@ const Attendance = (props) => {
         <AttendanceForm
           id={props.id}
           selectOption={props.selectOption}
+          // 전담은 특정학급, 담임은 원래 학급으로 이미 학생명부 전달받음
+          students={props.students}
           attendDate={attendDate}
           about={props.about}
           addData={(data) => props.addData(data)}

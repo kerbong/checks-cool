@@ -571,6 +571,25 @@ const CheckLists = (props) => {
     }
   };
 
+  //입력 혹은 미입력 학생 보여주는 필터함수
+  const listMemoShowStdOnList = (item, isOrNot) => {
+    const filterQuery = (std) => {
+      let filterQuery;
+      if (isOrNot === "is") {
+        filterQuery = item?.data?.map((data) => +data.num)?.includes(+std.num);
+      } else {
+        filterQuery = !item?.data?.map((data) => +data.num)?.includes(+std.num);
+      }
+      return filterQuery;
+    };
+
+    return !isSubject
+      ? students?.filter((stu) => filterQuery(stu))
+      : studentsYear
+          ?.filter((cl) => Object.keys(cl)[0] === item.clName)?.[0]
+          ?.[item.clName]?.filter((stu) => filterQuery(stu));
+  };
+
   return (
     <>
       {props.about === "checkLists" && (
@@ -711,6 +730,7 @@ const CheckLists = (props) => {
                     <div>{item?.clName || ""}</div>
                     <div>{item.title}</div>
                   </h2>
+                  <hr style={{ margin: "10px" }} />
                   <p className={classes.checkP}>
                     {item.unSubmitStudents.length !== 0
                       ? `미제출(${item.unSubmitStudents.length})`
@@ -743,6 +763,9 @@ const CheckLists = (props) => {
               }}
             >
               <ListMemoInput
+                hasNoInputStd={listMemoShowStdOnList(item, "not")?.map(
+                  (std) => std.name
+                )}
                 students={!isSubject ? students : inputStudents}
                 onClose={() => setAddListMemo(false)}
                 saveItemHandler={(item, auto) => {
@@ -875,59 +898,54 @@ const CheckLists = (props) => {
                     <div>{item?.clName || ""}</div>
                     <div>{item.title}</div>
                   </h2>
-                  <p className={classes.checkP}>
-                    {`미입력 (
+                  <hr style={{ margin: "10px" }} />
+                  {listMemoShowStdOnList(item, "not")?.length !== 0 ? (
+                    <>
+                      {/* 미입력 보여주기 */}
+                      <p className={classes.checkP}>
+                        {`미입력 (
 
-                      ${
-                        (!isSubject
-                          ? students?.filter(
-                              (stu) =>
-                                !item?.data
-                                  ?.map((data) => +data.num)
-                                  ?.includes(+stu.num)
-                            )
-                          : studentsYear
-                              ?.filter(
-                                (cl) => Object.keys(cl)[0] === item.clName
-                              )?.[0]
-                              ?.[item.clName]?.filter(
-                                (stu) =>
-                                  !item?.data
-                                    ?.map((data) => +data.num)
-                                    ?.includes(+stu.num)
-                              )
-                        )?.length
-                      } )
+                      ${listMemoShowStdOnList(item, "not")?.length} )
                     `}
-                  </p>
-                  <p className={classes.checkP}>
-                    {/* 미입력 학생들 보여주기 */}
-                    {(!isSubject
-                      ? students?.filter(
-                          (stu) =>
-                            !item?.data
-                              ?.map((data) => +data.num)
-                              ?.includes(+stu.num)
-                        )
-                      : studentsYear
-                          ?.filter(
-                            (cl) => Object.keys(cl)[0] === item.clName
-                          )?.[0]
-                          ?.[item.clName]?.filter(
-                            (stu) =>
-                              !item?.data
-                                ?.map((data) => +data.num)
-                                ?.includes(+stu.num)
-                          )
-                    )?.map((data) => (
-                      <Button
-                        key={item.id + data.num}
-                        id={item.id + data.num}
-                        name={data.name}
-                        className={"checkList-button"}
-                      />
-                    ))}
-                  </p>
+                      </p>
+                      <p className={classes.checkP}>
+                        {/* 미입력 학생들 보여주기 */}
+                        {listMemoShowStdOnList(item, "not")?.map((data) => (
+                          <Button
+                            key={item.id + data.num}
+                            id={item.id + data.num}
+                            name={data.name}
+                            className={"checkList-button"}
+                          />
+                        ))}
+                      </p>
+                    </>
+                  ) : (
+                    <p className={classes.checkP}>모두 입력되었어요! 🙂</p>
+                  )}
+                  {/* 미입력이 0, 즉 다 입력하면 입력도 보여줄 필요가 없음..! */}
+                  {listMemoShowStdOnList(item, "not")?.length !== 0 && (
+                    <>
+                      {/* 입력학생 수 */}
+                      <p className={classes.checkP}>
+                        {`입력 (
+
+                      ${listMemoShowStdOnList(item, "is")?.length} )
+                    `}
+                      </p>
+                      <p className={classes.checkP}>
+                        {/* 입력 학생들 보여주기 */}
+                        {listMemoShowStdOnList(item, "is")?.map((data) => (
+                          <Button
+                            key={item.id + data.num}
+                            id={item.id + data.num}
+                            name={data.name}
+                            className={"checkList-button"}
+                          />
+                        ))}
+                      </p>
+                    </>
+                  )}
                 </li>
               ))}
           </div>

@@ -6,11 +6,14 @@ import Input from "../Layout/Input";
 import Swal from "sweetalert2";
 import AttendCalendar from "components/Attendance/AttendCalendar";
 import dayjs from "dayjs";
+import ConsultRelated from "./ConsultRelated";
 
 const ConsultEdit = (props) => {
   const consult = props.consult;
   const [attachedFileUrl, setAttachedFileUrl] = useState("");
   const [consultId, setConsultId] = useState(props.consult.id);
+  const [showStudent, setShowStudent] = useState(false);
+  const [relatedStudent, setRelatedStudent] = useState(props.consult?.related);
 
   const cancelEdit = () => {
     props.cancelEditor();
@@ -36,6 +39,7 @@ const ConsultEdit = (props) => {
       option: optionValue,
       attachedFileUrl: consult_fileUrl,
       note: inputValue,
+      related: relatedStudent,
     };
 
     //변경사항이 없을 경우(내용도 같고, 날짜도 같은 경우) 경고창으로 알려주고 저장하지 않기
@@ -92,8 +96,49 @@ const ConsultEdit = (props) => {
     setConsultId(new_id);
   };
 
+  //관련학생 모달에서 학생 클릭하면.. relatedStd에 저장시키는 함수
+  const relatedStdHandler = (e) => {
+    let clicked_std = e.target.innerText;
+    let new_relatedStudent = [...relatedStudent];
+    //현재 선택된 입력하고 있는 학생은 추가할 수 없음
+    if (clicked_std === props.who) return;
+
+    //기존에 있으면 빼고
+    if (new_relatedStudent?.includes(clicked_std)) {
+      new_relatedStudent = new_relatedStudent?.filter(
+        (std) => std !== clicked_std
+      );
+      //없으면 추가하기
+    } else {
+      new_relatedStudent.push(clicked_std);
+    }
+    setRelatedStudent(new_relatedStudent);
+  };
+
+  //관련학생 모달 취소하면 기존 관련학생으로.
+  const closeModalHandler = () => {
+    setShowStudent(false);
+    setRelatedStudent(consult.related);
+  };
+
   return (
     <>
+      {/* 관련학생부분 코드 모달 */}
+      {showStudent && (
+        <ConsultRelated
+          who={consult.num + " " + consult.name}
+          cancleBtnHandler={() => {
+            setShowStudent(false);
+            setRelatedStudent(consult.related);
+          }}
+          confirmBtnHandler={() => setShowStudent(false)}
+          studentClickHandler={(e) => relatedStdHandler(e)}
+          students={props.students}
+          isSubject={props.isSubject}
+          relatedStudent={relatedStudent}
+          closeModalHandler={closeModalHandler}
+        />
+      )}
       <div className={classes.nameArea}>
         <span className={classes.nameIcon}>
           <i className="fa-regular fa-id-badge"></i>
@@ -125,6 +170,29 @@ const ConsultEdit = (props) => {
           )}
         </span>
       </div>
+
+      {/* 관련학생 버튼 및 선택된 학생 보여주기 */}
+      <div className={classes.noteArea}>
+        {/* 학생 선택버튼 부분 */}
+        <Button
+          className="consult-relatedStdBtn"
+          name={"관련학생"}
+          onclick={function () {
+            setShowStudent(!showStudent);
+          }}
+        />
+        {/* 관련학생 있으면 보여주기 */}
+        {consult?.related?.length > 0 && (
+          <div className={classes.noteArea} style={{ flexWrap: "wrap" }}>
+            {relatedStudent?.map((std) => (
+              <span key={std} className={classes["nameSpan"]}>
+                {std}
+              </span>
+            ))}
+          </div>
+        )}
+      </div>
+      {/* 이미지나 오디오 있으면..! */}
       {consult.attachedFileUrl && (
         <div className={classes.fileArea}>
           <>
