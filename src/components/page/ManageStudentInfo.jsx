@@ -161,7 +161,7 @@ const ManageStudentInfo = (props) => {
         info_datas: new_wholeClass,
       };
     }
-
+    console.log(fixed_data);
     setStudentsInfo(fixed_data.info_datas);
     uploadStudents(fixed_data);
 
@@ -184,7 +184,39 @@ const ManageStudentInfo = (props) => {
         try {
           let data = reader.result;
           let workBook = read(data, { type: "binary" });
-
+          //전화번호로 만드는 함수 chatGpt활용..ㄷㄷ
+          const makeTel = (origin) => {
+            let fixed_tel = origin;
+            //존재하지 않으면 그냥 ""반환
+            if (origin === "") return "";
+            //시작이 0이 아닌경우 0 추가
+            if (origin && +origin?.slice(0, 1) !== 0) {
+              fixed_tel = "0".concat(String(origin));
+            }
+            //-가 없는경우
+            if (!fixed_tel?.includes("-")) {
+              // -가 없고, 010으로 시작하면
+              if (String(fixed_tel?.slice(0, 3)) === "010") {
+                fixed_tel = fixed_tel.replace(
+                  /(\d{3})(\d{4})(\d{4})/,
+                  "$1-$2-$3"
+                );
+                // -가 없고, 02로 시작하면
+              } else if (String(fixed_tel?.slice(0, 2)) === "02") {
+                fixed_tel = fixed_tel.replace(
+                  /^(\d{2})(\d{3,4})(\d{4})$/,
+                  "$1-$2-$3"
+                );
+                // 02 국번인경우 031 062처럼
+              } else if (String(fixed_tel?.slice(0, 2)) !== "02") {
+                fixed_tel = fixed_tel.replace(
+                  /^(\d{3})(\d{3,4})(\d{4})$/,
+                  "$1-$2-$3"
+                );
+              }
+            }
+            return String(fixed_tel);
+          };
           //전담인지 판단해서 로직 다르게 설정, 전담이면
           if (nowSubject) {
             let wholeClass = [];
@@ -192,20 +224,22 @@ const ManageStudentInfo = (props) => {
               let classInfo = {};
               let rows = utils.sheet_to_json(workBook.Sheets[sheetName]);
               // console.log(rows);
-              let new_rows = rows?.map((row) => ({
-                num: String(row["번호"] || ""),
-                name: String(row["이름"] || row["성명"]),
-                month: String(row["월"] || ""),
-                day: String(row["일"] || ""),
-                studTel: String(row["학생연락처"] || ""),
-                mom: String(row["모성명"] || ""),
-                momTel: String(row["모연락처"] || ""),
-                dad: String(row["부성명"] || ""),
-                dadTel: String(row["부연락처"] || ""),
-                bns: String(row["형제자매"] || ""),
-                etc: String(row["기타"] || ""),
-                clName: String(sheetName),
-              }));
+              let new_rows = rows?.map((row) => {
+                return {
+                  num: String(row["번호"] || ""),
+                  name: String(row["이름"] || row["성명"]),
+                  month: String(row["월"] || ""),
+                  day: String(row["일"] || ""),
+                  studTel: makeTel(String(row["학생연락처"] || "")),
+                  mom: String(row["모성명"] || ""),
+                  momTel: makeTel(String(row["모연락처"] || "")),
+                  dad: String(row["부성명"] || ""),
+                  dadTel: makeTel(String(row["부연락처"] || "")),
+                  bns: String(row["형제자매"] || ""),
+                  etc: String(row["기타"] || ""),
+                  clName: String(sheetName),
+                };
+              });
 
               let hasUndefined = false;
               new_rows.forEach((stu) => {
@@ -228,7 +262,7 @@ const ManageStudentInfo = (props) => {
                 });
                 return;
               }
-
+              console.log(new_rows);
               wholeClass.push(...new_rows);
             });
             studentsInfoHandler(wholeClass);
@@ -244,11 +278,11 @@ const ManageStudentInfo = (props) => {
                 name: String(row["이름"] || row["성명"]),
                 month: String(row["월"] || ""),
                 day: String(row["일"] || ""),
-                studTel: String(row["학생연락처"] || ""),
+                studTel: makeTel(String(row["학생연락처"] || "")),
                 mom: String(row["모성명"] || ""),
-                momTel: String(row["모연락처"] || ""),
+                momTel: makeTel(String(row["모연락처"] || "")),
                 dad: String(row["부성명"] || ""),
-                dadTel: String(row["부연락처"] || ""),
+                dadTel: makeTel(String(row["부연락처"] || "")),
                 bns: String(row["형제자매"] || ""),
                 etc: String(row["기타"] || ""),
               }));
@@ -263,18 +297,18 @@ const ManageStudentInfo = (props) => {
                 }
               });
 
-              console.log(hasUndefined);
               if (hasUndefined) {
                 Swal.fire({
                   icon: "error",
                   title: "업로드 실패!",
-                  html: "번호, 이름, 성별 문자의 철자가 정확한지, 문자 앞/뒤에 띄어쓰기는 없는지, 비어있는 칸이나 줄은 없는지 확인해주세요! 문제가 지속되면 kerbong@gmail.com 으로 알려주세요!",
+                  html: "번호, 이름, 월, 일, 학생연락처 등 문자의 철자가 정확한지, 문자 앞/뒤에 띄어쓰기는 없는지, 비어있는 칸이나 줄은 없는지 확인해주세요! 문제가 지속되면 kerbong@gmail.com 으로 알려주세요!",
                   confirmButtonText: "확인",
                   confirmButtonColor: "#85bd82",
                 });
                 return;
               }
               studentsInfoHandler(new_rows);
+              console.log(new_rows);
             });
           }
         } catch (error) {

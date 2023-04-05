@@ -4,6 +4,7 @@ import Input from "../Layout/Input";
 import Swal from "sweetalert2";
 import AttendanceOption from "./AttendanceOption";
 import FileArea from "components/Layout/FileArea";
+import Button from "components/Layout/Button";
 
 import { dbService } from "../../fbase";
 import { onSnapshot, setDoc, doc } from "firebase/firestore";
@@ -13,6 +14,7 @@ const AttendanceForm = (props) => {
   const [attachedFile, setAttachedFile] = useState("");
   const [option, setOption] = useState("");
   const [inputIsShown, setInputIsShown] = useState(false);
+  const [paperSubmit, setPaperSubmit] = useState(false);
   const [isImgFile, setIsImgFile] = useState(true);
   const [attendEvents, setAttendEvents] = useState([]);
   const noteRef = useRef(null);
@@ -121,6 +123,7 @@ const AttendanceForm = (props) => {
         name: studentInfo[1],
         option: option,
         note: inputValue,
+        paper: paperSubmit,
       };
 
       //주말 제외한 날짜만 모아두기
@@ -222,6 +225,24 @@ const AttendanceForm = (props) => {
             className={classes.form}
             onSubmit={submitHandler}
           >
+            {/* 학생서류 제출했는지 체크하는 버튼 */}
+            {props.about === "attendance" && (
+              <Button
+                className={
+                  paperSubmit ? "paperSub-btn-clicked" : "paperSub-btn"
+                }
+                onclick={(e) => {
+                  e.preventDefault();
+                  setPaperSubmit((prev) => !prev);
+                }}
+                name={"서류"}
+                icon={
+                  <span>
+                    <i className="fa-solid fa-circle-check"></i>
+                  </span>
+                }
+              />
+            )}
             <Input
               ref={noteRef}
               id={"textArea"}

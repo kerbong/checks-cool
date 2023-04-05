@@ -1,7 +1,8 @@
-.option {
+.option,
+.option-select {
   background-color: #b5dcc0b8;
   padding: 10px;
-  font-size: 1em;
+  font-size: 1rem;
   margin: 5px;
   width: 70px;
   height: 35px;
@@ -14,17 +15,8 @@
 
 .option-select {
   background-color: #8fcca0;
-  padding: 10px;
-  font-size: 1.3em;
-  margin: 5px;
-  width: 70px;
-  height: 35px;
-  border-radius: 15px;
-  align-items: center;
-  text-align: center;
-  display: flex;
-  justify-content: center;
-  letter-spacing: -0.1em;
+  font-size: 1.2rem;
+  letter-spacing: -2px;
 }
 
 .ul {
@@ -37,10 +29,11 @@
 }
 
 @media screen and (min-width: 800px) {
-  .option {
+  .option,
+  .option-select {
     background-color: #b5dcc0b8;
-    padding: 24px;
-    font-size: 1.5em;
+    padding: 12px;
+    font-size: 1.2rem;
     margin: 7px;
     width: 90px;
     height: 35px;
@@ -49,19 +42,10 @@
     text-align: center;
     display: flex;
     justify-content: center;
-    letter-spacing: -5px;
   }
   .option-select {
     background-color: #8fcca0;
-    padding: 24px;
-    font-size: 1.7em;
-    margin: 7px;
-    width: 110px;
-    height: 35px;
-    border-radius: 15px;
-    align-items: center;
-    text-align: center;
-    display: flex;
-    justify-content: center;
+    font-size: 1.4rem;
+    letter-spacing: -1px;
   }
 }

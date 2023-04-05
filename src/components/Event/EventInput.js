@@ -343,15 +343,17 @@ const EventInput = (props) => {
           </form>
           {optionsSet?.length > 0 && (
             <>
-              {[...new Set(optionsSet)]?.map((option) => (
-                <span
-                  className={classes["optionsSet"]}
-                  key={`optionSet-${option}`}
-                >
-                  {option?.slice(1)}{" "}
-                  {optionsSet?.filter((op) => op === option).length}회 |
-                </span>
-              ))}
+              <span className={classes["optionsSet"]}>
+                {[...new Set(optionsSet)]?.map((option) => (
+                  <span
+                    key={`optionSet-${option}`}
+                    className={classes["optionsSet"]}
+                  >
+                    {option?.slice(1)}{" "}
+                    {optionsSet?.filter((op) => op === option).length}회
+                  </span>
+                ))}
+              </span>
             </>
           )}
         </div>
