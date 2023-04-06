@@ -46,6 +46,13 @@
   }
 }
 
+@media (min-width: 1100px) {
+  .addOverflow {
+    width: 54rem;
+    left: calc(50% - 27rem);
+  }
+}
+
 @keyframes slide-down {
   from {
     opacity: 0;

@@ -144,12 +144,15 @@
 
 .budgetList-ul {
   padding: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-start;
 }
 
 .budgetList-li {
   list-style: none;
   margin: 20px 10px;
-
   padding: 15px 0;
   border-radius: 10px;
   background-color: #7b9cd266;
@@ -189,11 +192,39 @@
   font-size: 1rem;
   border-radius: 15px;
 }
+
+@media screen and (min-width: 500px) {
+  .year-select {
+    right: 0;
+    width: 100px;
+    margin-right: 20px;
+    margin-left: -85px;
+  }
+  .budget-select {
+    right: 0;
+    width: 200px;
+  }
+}
+
+.flex-center {
+  display: flex;
+  justify-content: center;
+}
+
 .budgetList-desc {
   display: flex;
   align-items: center;
-  width: 90vw;
-  justify-content: space-around;
+  width: 90%;
+  justify-content: space-between;
+  margin: 10px 0;
+  max-width: 800px;
+}
+
+.flex-space-center-95 {
+  display: flex;
+  align-items: center;
+  width: 95%;
+  justify-content: space-evenly;
   margin: 10px 0;
 }
 
@@ -230,9 +261,9 @@
   height: 40px;
   border-width: 0;
   border-radius: 50%;
-  background-color: #7b9cd23d;
+  /* background-color: #7b9cd23d; */
   position: absolute;
-  right: 58px;
+  right: 10px;
   top: 160px;
 }
 
@@ -250,13 +281,11 @@
 
 .budgetEdit-save,
 .budgetEdit-cancle {
-  position: relative;
-  top: -40px;
-  right: -27vw;
+  position: inherit;
 }
 
 .budgetEdit-btns {
-  height: 8px;
+  height: 40px;
   margin-top: 8px;
 }
 
@@ -265,13 +294,13 @@
 }
 
 .budget-save {
-  right: 10px;
+  right: 60px;
   top: -49px;
 }
 
 .budgetList-save {
-  right: 10px;
-  top: -69px;
+  right: 58px;
+  top: -49px;
 }
 
 .budgetMenu-div {
@@ -291,6 +320,16 @@
 .newBudget-amount {
   width: 20%;
   border-radius: 10px;
+}
+
+@media screen and (min-width: 800px) {
+  .budget-add {
+    right: calc(27% - 50px);
+  }
+  .budgetList-save,
+  .budget-save {
+    right: 27%;
+  }
 }
 
 .newBudget-count {
@@ -340,6 +379,7 @@
 .budgetList-upDiv {
   width: 90%;
   display: flex;
+  max-width: 800px;
 }
 
 .remain-p {
@@ -370,9 +410,7 @@
 }
 
 .budgetListEdit-div {
-  z-index: 10;
-  position: absolute;
-  width: 90vw;
+  height: 0px;
 }
 
 .newBudget-date {

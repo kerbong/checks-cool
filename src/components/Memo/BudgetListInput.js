@@ -149,65 +149,72 @@ const BudgetListInput = (props) => {
       </button>
       <br />
 
-      <div>
-        <h1>{props.edit ? `${props.title} 수정` : "새로운 예산 등록"}</h1>
-        <li className={classes["budgetList-li"]}>
-          <div className={classes["budgetList-newdiv"]}>
-            <span className={classes["budgetList-desc"]}>
-              {/* 에산명 적는 부분 */}
-              <input
-                type="text"
-                ref={nameRef}
-                placeholder="예산명"
-                className={classes["newBudget-title"]}
-                onChange={(e) => valueHandler(e, "name")}
-                defaultValue={props.title || nameValue}
-              />
-
-              {/* 사용기한 날짜 선택 달력부분 */}
-              <div
-                className={classes["newBudget-date"]}
-                onClick={() => setShowCal((prev) => !prev)}
-              >
-                사용기한{" "}
-                <AttendCalendar
-                  filterNone={true}
-                  getDateValue={getDateHandler}
-                  about={props.about}
-                  setStart={
-                    new Date(props.date || dayjs().format("YYYY") + "-12-01")
-                  }
-                  getMonthValue={getMonthHandler}
+      <div style={{ width: "100%" }}>
+        <h1 style={{ fontSize: "1.8rem" }}>
+          {props.edit ? `${props.title} 수정` : "새로운 예산 등록"}
+        </h1>
+        <div className={classes["flex-center"]}>
+          <li
+            className={classes["budgetList-li"]}
+            style={{ maxWidth: "800px", width: "95%" }}
+          >
+            <div className={classes["budgetList-newdiv"]}>
+              <span className={classes["budgetList-desc"]}>
+                {/* 에산명 적는 부분 */}
+                <input
+                  type="text"
+                  ref={nameRef}
+                  placeholder="예산명"
+                  className={classes["newBudget-title"]}
+                  onChange={(e) => valueHandler(e, "name")}
+                  defaultValue={props.title || nameValue}
                 />
+
+                {/* 사용기한 날짜 선택 달력부분 */}
+                <div
+                  className={classes["newBudget-date"]}
+                  onClick={() => setShowCal((prev) => !prev)}
+                >
+                  사용기한{" "}
+                  <AttendCalendar
+                    filterNone={true}
+                    getDateValue={getDateHandler}
+                    about={props.about}
+                    setStart={
+                      new Date(props.date || dayjs().format("YYYY") + "-12-01")
+                    }
+                    getMonthValue={getMonthHandler}
+                  />
+                </div>
+              </span>
+
+              <hr style={{ margin: "15px", width: "95%" }} />
+
+              <div className={classes["budgetList-desc"]}>
+                {/* 비고 */}
+                <input
+                  ref={noteRef}
+                  type="text"
+                  placeholder="예산목록, 기억할 점 등"
+                  className={classes["newBudget-note"]}
+                  onChange={(e) => valueHandler(e, "note")}
+                  defaultValue={props.note || noteValue}
+                />
+                {/* 총액 */}{" "}
+                <input
+                  ref={amountRef}
+                  type="number"
+                  style={{ width: "30%" }}
+                  placeholder="총 예산"
+                  className={classes["newBudget-amount"]}
+                  onChange={(e) => valueHandler(e, "amount")}
+                  defaultValue={props.amount || amountValue}
+                />
+                원
               </div>
-            </span>
-
-            <hr style={{ margin: "15px", width: "90vw" }} />
-
-            <div className={classes["budgetList-desc"]}>
-              {/* 비고 */}
-              <input
-                ref={noteRef}
-                type="text"
-                placeholder="예산목록, 기억할 점 등"
-                className={classes["newBudget-note"]}
-                onChange={(e) => valueHandler(e, "note")}
-                defaultValue={props.note || noteValue}
-              />
-              {/* 총액 */}{" "}
-              <input
-                ref={amountRef}
-                type="number"
-                style={{ width: "30%" }}
-                placeholder="총 예산"
-                className={classes["newBudget-amount"]}
-                onChange={(e) => valueHandler(e, "amount")}
-                defaultValue={props.amount || amountValue}
-              />
-              원
             </div>
-          </div>
-        </li>
+          </li>
+        </div>
       </div>
     </>
   );

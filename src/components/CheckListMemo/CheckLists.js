@@ -926,7 +926,6 @@ const CheckLists = (props) => {
                   {/* 미입력이 0, 즉 다 입력하면 입력도 보여줄 필요가 없음..! */}
                   {listMemoShowStdOnList(item, "not")?.length !== 0 && (
                     <>
-                      {/* 입력학생 수 */}
                       <p className={classes.checkP}>
                         {`입력 (
 
@@ -934,7 +933,6 @@ const CheckLists = (props) => {
                     `}
                       </p>
                       <p className={classes.checkP}>
-                        {/* 입력 학생들 보여주기 */}
                         {listMemoShowStdOnList(item, "is")?.map((data) => (
                           <Button
                             key={item.id + data.num}

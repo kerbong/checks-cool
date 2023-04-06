@@ -55,13 +55,12 @@ const BudgetInput = (props) => {
       titleValue.trim() === "" ||
       eachValue.trim() === "" ||
       countValue.trim() === "" ||
-      amountValue.trim() === "" ||
-      siteValue.trim() === ""
+      amountValue.trim() === ""
     ) {
       Swal.fire({
         icon: "error",
         title: "저장실패",
-        text: "[ 품목명 / 사이트 / 개당가격 / 개수 / 총금액 ] 중 입력되지 않은 값을 확인해주세요.",
+        text: "[ 품목명 / 개당가격 / 개수 / 총금액 ] 중 입력되지 않은 값을 확인해주세요.",
         confirmButtonText: "확인",
         confirmButtonColor: "#85bd82",
       });
@@ -153,7 +152,7 @@ const BudgetInput = (props) => {
   }, [showCal]);
 
   return (
-    <>
+    <div className={classes["flex-center"]}>
       {/* 자료 추가인 경우에만 저장버튼 보여주기 */}
       {props.about !== "edit" && (
         <button
@@ -163,27 +162,11 @@ const BudgetInput = (props) => {
           <i className="fa-regular fa-floppy-disk"></i>
         </button>
       )}
-      <li className={classes["budgetList-li"]}>
-        {/* 자료 수정인 경우 저장/취소버튼 보여주기 */}
-        {props.about === "edit" && (
-          <div className={classes["budgetEdit-btns"]}>
-            {/* 저장버튼 */}
-            <button
-              className={classes["budgetEdit-save"]}
-              onClick={saveBudgetHandler}
-            >
-              <i className="fa-regular fa-floppy-disk"></i>
-            </button>
-            {/* 취소버튼 */}
-            <button
-              className={classes["budgetEdit-cancle"]}
-              onClick={() => props.cancleHandler()}
-            >
-              <i className="fa-solid fa-xmark"></i>
-            </button>
-          </div>
-        )}
-        <span className={classes["budgetList-desc"]}>
+      <li
+        className={classes["budgetList-li"]}
+        style={{ maxWidth: "800px", width: "95%" }}
+      >
+        <span className={classes["flex-space-center-95"]}>
           {/* 날짜 선택 달력부분 */}
           <div
             className={classes["newBudget-date"]}
@@ -208,7 +191,7 @@ const BudgetInput = (props) => {
 
         <hr style={{ margin: "15px" }} />
         <span className={classes["budgetList-title"]}>
-          <div className={classes["budgetList-desc"]}>
+          <div className={classes["flex-space-center-95"]}>
             {/* 사이트 */}
             <input
               ref={siteRef}
@@ -224,7 +207,7 @@ const BudgetInput = (props) => {
               className={classes["newBudget-note"]}
             />
           </div>
-          <div className={classes["budgetList-desc"]}>
+          <div className={classes["flex-space-center-95"]}>
             {/* 개당가격 */}
             <input
               ref={eachRef}
@@ -255,17 +238,29 @@ const BudgetInput = (props) => {
             원
           </div>
 
+          {/* 자료 수정인 경우 저장/취소버튼 보여주기 */}
           {props.about === "edit" && (
-            <>
-              <br />
-              <div className={classes["newBudget-date"]}>
-                * 저장버튼을 누르시면 자료가 복사됩니다.
-              </div>
-            </>
+            <div className={classes["budgetEdit-btns"]}>
+              * 저장버튼을 누르시면 자료가 복사됩니다. &nbsp;&nbsp;&nbsp;
+              {/* 저장버튼 */}
+              <button
+                className={classes["budgetEdit-save"]}
+                onClick={saveBudgetHandler}
+              >
+                <i className="fa-regular fa-floppy-disk"></i>
+              </button>
+              {/* 취소버튼 */}
+              <button
+                className={classes["budgetEdit-cancle"]}
+                onClick={() => props.cancleHandler()}
+              >
+                <i className="fa-solid fa-xmark"></i>
+              </button>
+            </div>
           )}
         </span>
       </li>
-    </>
+    </div>
   );
 };
 

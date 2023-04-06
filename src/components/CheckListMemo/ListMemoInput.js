@@ -330,7 +330,7 @@ const ListMemoInput = (props) => {
             <li className={classes["li-section"]} key={student.num}>
               <div className={classes["num-section"]}>{student.num}</div>
               <div className={classes["name-section"]}>{student.name}</div>
-
+              {/* 1100px넘어가면 매잘,잘,보통,노력요함,매우노력요함 버튼 보임. */}
               <Input
                 id={student.name + "-" + student.num}
                 myKey={"textArea" + student.num}

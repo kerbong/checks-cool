@@ -164,6 +164,7 @@ const BudgetList = (props) => {
                   <li
                     key={list.date + list.title}
                     className={classes["budgetList-li"]}
+                    style={{ maxWidth: "440px", width: "95%" }}
                     onClick={() => {
                       if (showEditBtns === "") {
                         setShowEditBtns(list.title);
@@ -206,9 +207,11 @@ const BudgetList = (props) => {
                     <hr style={{ margin: "15px" }} />
                     <span className={classes["budgetList-title"]}>
                       {/* 사이트 */}
-                      <span className={classes["budget-span"]}>
-                        {list.site}
-                      </span>
+                      {list.site && (
+                        <span className={classes["budget-span"]}>
+                          {list.site}
+                        </span>
+                      )}
                       {list.note && (
                         <div className={classes["budgetList-note"]}>
                           * {list.note}
