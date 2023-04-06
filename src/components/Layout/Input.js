@@ -10,6 +10,13 @@ const Input = React.forwardRef((props, ref) => {
     setValue("");
   }, []);
 
+  // useEffect(
+  //   (e) => {
+
+  //   },
+  //   [value]
+  // );
+
   useEffect(() => {
     setValue(props.defaultValue);
   }, [props.defaultValue]);
@@ -34,8 +41,11 @@ const Input = React.forwardRef((props, ref) => {
     return limitRow;
   };
 
-  const changeHandler = () => {
+  const changeHandler = (e) => {
     setValue(noteRef.current.value);
+    if (props.getValue) {
+      props.getValueHandler(noteRef.current.value, e.target);
+    }
   };
 
   useEffect(() => {

@@ -321,8 +321,14 @@ const AttendCtxCalendar = (props) => {
               btn.appendChild(checkedI);
             }
 
+            if (yyyy_mm_dd.slice(0, 7) === currentMonth) {
+              eventTag.style.backgroundColor = "#d38c85";
+            } else {
+              eventTag.style.backgroundColor = "#d38c852e";
+              btn.style.backgroundColor = "#56423c91";
+            }
             eventTag.appendChild(btn);
-            eventTag.style.backgroundColor = "#d38c85";
+
             eventTag.style.borderRadius = "5px";
           }
         }); //날짜가 anyContext와 같은 태그에 할 일 forEach 함수 끝

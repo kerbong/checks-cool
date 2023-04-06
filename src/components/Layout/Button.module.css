@@ -169,6 +169,25 @@
   background-color: #da9a9a4a;
 }
 
+.listMemoNoInputStd-btn {
+  width: auto;
+  margin: 2px;
+  font-size: 0.5em;
+  border-radius: 10px;
+  border-width: 0;
+  letter-spacing: -1px;
+  padding: 3px;
+  background-color: #da9a9a4a;
+}
+
+@media screen and (min-width: 800px) {
+  .listMemoNoInputStd-btn {
+    margin: 5px;
+    font-size: 0.9em;
+    padding: 1vh;
+  }
+}
+
 .events-save {
   font-size: 1.1rem;
   padding: 2vh;

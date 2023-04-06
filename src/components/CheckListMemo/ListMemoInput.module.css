@@ -112,3 +112,7 @@
     font-size: 1.4em;
   }
 }
+
+.lineH-1 {
+  line-height: 1px;
+}

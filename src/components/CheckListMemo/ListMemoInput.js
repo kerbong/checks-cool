@@ -25,7 +25,9 @@ const ListMemoInput = (props) => {
   const [memoTitle, setMemoTitle] = useState(
     props.item.title || getDateHandler(new Date())
   );
-  const [hasNoInputStd, setHasNoInputStd] = useState(props.hasNoInputStd || []);
+  const [hasNoInputStd, setHasNoInputStd] = useState(
+    props?.hasNoInputStd || []
+  );
 
   //기존자료의 경우.. 시작날짜를 기존 날짜로!
   useEffect(() => {
@@ -175,47 +177,46 @@ const ListMemoInput = (props) => {
     });
   }, [currentMonth, showCal]);
 
-  const hasNoInputStdHandler = (e) => {
-    let inputTag = e.target;
-    // console.log(inputTag.value)
-    let new_hasNoInputStd = [...hasNoInputStd];
-    let tagStudent = inputTag?.id?.split("-")?.[0];
+  const getValueHandler = (value, target) => {
+    let new_hasNoInputStd;
+    setHasNoInputStd((prev) => {
+      new_hasNoInputStd = prev;
+      return prev;
+    });
+    //번호순 정렬
+    const sortByNum = (arr) => {
+      return arr?.sort((a, b) => +a.num - +b.num);
+    };
+
+    let tagStudent = target?.id?.split("-")?.[0];
+
     //입력값이 빈칸이 아니면
-    if (inputTag.value.trim() !== "") {
+    if (value?.trim() !== "") {
       // 입력값없는 학생 배열에 있는지 확인하고
-      if (new_hasNoInputStd?.filter((std) => std === tagStudent)?.length > 0) {
+      if (
+        new_hasNoInputStd?.filter((std) => std.name === tagStudent)?.length > 0
+      ) {
         new_hasNoInputStd = new_hasNoInputStd.filter(
-          (std) => std !== tagStudent
+          (std) => std.name !== tagStudent
         );
-        setHasNoInputStd(new_hasNoInputStd);
+        setHasNoInputStd(sortByNum(new_hasNoInputStd));
       }
       //입력값이 빈칸이 되면
     } else {
       // 입력값 없는 학생 배열에 있는지 확인해서 없으면 넣어줌
       if (
-        new_hasNoInputStd?.filter((std) => std === tagStudent)?.length === 0
+        new_hasNoInputStd?.filter((std) => std.name === tagStudent)?.length ===
+        0
       ) {
-        new_hasNoInputStd = new_hasNoInputStd.push(tagStudent);
-        setHasNoInputStd(new_hasNoInputStd);
+        let addStd = {
+          name: target?.id?.split("-")?.[0],
+          num: target?.id?.split("-")?.[1],
+        };
+        new_hasNoInputStd.push(addStd);
+        setHasNoInputStd([...sortByNum(new_hasNoInputStd)]);
       }
     }
   };
-
-  // useEffect(() => {
-  //   // 모든 텍스트area를 선택함.
-  //   let memoInputAll = document.querySelectorAll(`textarea`);
-  //   // //메모가 있는 항목들을 new_memo의 data에 추가함
-  //   memoInputAll.forEach((inputTag) => {
-  //     inputTag.addEventListener("keydown", hasNoInputStdHandler);
-  //     //   if (inputTag.value.trim() !== "") {
-  //     //     new_memo["data"].push({
-  //     //       name: inputTag.id.split("-")[0],
-  //     //       num: inputTag.id.split("-")[1],
-  //     //       memo: inputTag.value,
-  //     //     });
-  //     //   }
-  //   });
-  // }, []);
 
   return (
     <>
@@ -306,14 +307,14 @@ const ListMemoInput = (props) => {
 
         {/* 미입력/입력학생 보여주기*/}
         <div>
-          <div>
+          <div className={classes["lineH-1"]}>
             미입력 ({hasNoInputStd?.length}){" "}
             {hasNoInputStd?.map((data) => (
               <Button
-                key={"hasinput" + data}
-                id={"hasinput" + data}
-                name={data}
-                className={"checkList-button"}
+                key={"hasinput" + data.name}
+                id={"hasinput" + data.name}
+                name={data.name}
+                className={"listMemoNoInputStd-btn"}
               />
             ))}
           </div>
@@ -338,6 +339,8 @@ const ListMemoInput = (props) => {
                 input={{
                   type: "textarea",
                 }}
+                getValue={true}
+                getValueHandler={getValueHandler}
                 defaultValue={
                   //자료가 있으면 length가 undefined가 나오고 없으면 0이 나옴. 자료 있을 때만 저장되어 있던거 보여주기
                   studentMemo?.data?.filter(
