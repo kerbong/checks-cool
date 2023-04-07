@@ -2,6 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import MemoTodayTodoItem from "./MemoTodayTodoItem";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import Swal from "sweetalert2";
 
 const MemoTodayTodoItemList = ({
   title,
@@ -12,6 +13,26 @@ const MemoTodayTodoItemList = ({
 }) => {
   const onDragEnd = (res) => {
     dragEndHandler(res);
+  };
+
+  //완료한 항목 전체삭제 버튼 실행 함수
+  const checkedDelAllHandler = () => {
+    // 전달 받은 전체목록에서, checked false만 찾아서 props.setTodoList 로 보냄
+    Swal.fire({
+      icon: "warning",
+      title: "전체 삭제",
+      text: "완료한 항목을 모두 삭제할까요? (삭제된 자료는 복구되지 않습니다!)",
+      showDenyButton: true,
+      confirmButtonText: "삭제",
+      confirmButtonColor: "#db100cf2",
+      denyButtonColor: "#85bd82",
+      denyButtonText: `취소`,
+    }).then((result) => {
+      /* Read more about isConfirmed, isDenied below */
+      if (result.isConfirmed) {
+        setTodoList(todoList?.filter((data) => !data.checked));
+      }
+    });
   };
 
   return (
@@ -25,6 +46,15 @@ const MemoTodayTodoItemList = ({
         }
       >
         {title}
+        {/* 완료한 항목일 경우 전체삭제버튼 추가 */}
+        {title === "완료한 항목" && (
+          <button
+            className="todoapp__inputbox-del-btn"
+            onClick={checkedDelAllHandler}
+          >
+            전체삭제
+          </button>
+        )}
       </p>
 
       {!checkedList && (
@@ -81,13 +111,15 @@ const MemoTodayTodoItemList = ({
               if (checkedList !== todoItem.checked) return null;
 
               return (
-                // {/* // map을 이용하여 ToDoItem을 출력 */}
-                <MemoTodayTodoItem
-                  key={todoItem.id}
-                  todoItem={todoItem}
-                  todoList={todoList}
-                  setTodoList={setTodoList}
-                />
+                <>
+                  {/* // map을 이용하여 ToDoItem을 출력 */}
+                  <MemoTodayTodoItem
+                    key={"checked" + todoItem.id}
+                    todoItem={todoItem}
+                    todoList={todoList}
+                    setTodoList={setTodoList}
+                  />
+                </>
               );
             })}
         </ul>

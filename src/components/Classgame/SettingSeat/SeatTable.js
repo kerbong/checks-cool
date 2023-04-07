@@ -385,7 +385,18 @@ const SeatTable = (props) => {
     //남 혹은 여학생에서 학생 랜덤 뽑기
     const selectRnStudent = () => {
       //만약 비밀자료가 있는데, 비밀자료에서 비어있는 자리의 학생을 뽑을 때, 비밀자료에 포함된 학생을 제외한 학생들 중에서 뽑아야 함
-      if (props.secretSeat) {
+
+      let secretSeatDataStd = props.secretSeat?.students?.filter((std) =>
+        isNaN(+std)
+      );
+
+      // console.log(props.secretSeat?.students);
+
+      //비밀자리표 상태고, 받아온 학생 자리 정보를 보니, 학급의 모든 학생이 결정된 상태가 아닐떄는 비밀자리표에 없는 학생중에 랜덤으로 뽑아야 함!
+      if (
+        props.secretSeat &&
+        secretSeatDataStd?.length !== props.students?.length
+      ) {
         gender_students = gender_students?.filter(
           (std) => !props.secretSeat?.students?.includes(std.name)
         );
@@ -427,9 +438,11 @@ const SeatTable = (props) => {
       const getRnStudent = () => {
         let randomStudent = selectRnStudent();
         //짝 정보를 포함한 그 학생의 정보
+        // console.log(randomStudent);
         selectedStudent = pair_students?.filter(
           (stu) => stu.name === randomStudent.name
         )[0];
+        // console.log(selectedStudent);
       };
 
       //selectedStudent에 랜덤 학생 넣기

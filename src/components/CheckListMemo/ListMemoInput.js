@@ -21,13 +21,17 @@ const ListMemoInput = (props) => {
   const [currentMonth, setCurrentMonth] = useState(dayjs().format("YYYY-MM"));
   const [todayYyyymmdd, setTodayYyyymmdd] = useState(new Date());
   const [students, setStudents] = useState(props.students);
-  const [studentMemo, setStudentMemo] = useState(props.item || []);
+  const [studentMemo, setStudentMemo] = useState(props.item?.data || []);
   const [memoTitle, setMemoTitle] = useState(
     props.item.title || getDateHandler(new Date())
   );
   const [hasNoInputStd, setHasNoInputStd] = useState(
     props?.hasNoInputStd || []
   );
+  const [showNoInput, setShowNoInput] = useState(true);
+  const [nowFocusNameNum, setNowFocusNameNum] = useState("");
+  const [activeStdInput, setActiveStdInput] = useState(null);
+  const [deleteDone, setDeleteDone] = useState(false);
 
   //기존자료의 경우.. 시작날짜를 기존 날짜로!
   useEffect(() => {
@@ -177,21 +181,20 @@ const ListMemoInput = (props) => {
     });
   }, [currentMonth, showCal]);
 
-  const getValueHandler = (value, target) => {
-    let new_hasNoInputStd;
-    setHasNoInputStd((prev) => {
-      new_hasNoInputStd = prev;
-      return prev;
-    });
-    //번호순 정렬
-    const sortByNum = (arr) => {
-      return arr?.sort((a, b) => +a.num - +b.num);
-    };
+  //번호순 정렬
+  const sortByNum = (arr) => {
+    return arr?.sort((a, b) => +a.num - +b.num);
+  };
 
-    let tagStudent = target?.id?.split("-")?.[0];
+  useEffect(() => {
+    // 이전 학생이 있고 만약 이전까지 포커스되어 있던 학생과 현재 포커스 학생이 다를 경우
+    let new_hasNoInputStd = [...hasNoInputStd];
 
-    //입력값이 빈칸이 아니면
-    if (value?.trim() !== "") {
+    let before_target = document.getElementById(nowFocusNameNum);
+    let tagStudent = before_target?.id?.split("-")?.[0];
+    if (!before_target) return;
+    //이전 포커스 학생의 입력값이 빈칸이 아니면
+    if (before_target.value?.trim() !== "") {
       // 입력값없는 학생 배열에 있는지 확인하고
       if (
         new_hasNoInputStd?.filter((std) => std.name === tagStudent)?.length > 0
@@ -199,23 +202,167 @@ const ListMemoInput = (props) => {
         new_hasNoInputStd = new_hasNoInputStd.filter(
           (std) => std.name !== tagStudent
         );
-        setHasNoInputStd(sortByNum(new_hasNoInputStd));
+        setStudentMemo([...newStdData()]);
+        setHasNoInputStd([...sortByNum(new_hasNoInputStd)]);
       }
-      //입력값이 빈칸이 되면
-    } else {
+      //이전 포커스 학생이 없거나 입력값이 빈칸이면
+    } else if (!before_target || before_target.value?.trim() === "") {
       // 입력값 없는 학생 배열에 있는지 확인해서 없으면 넣어줌
+      // console.log("입력끝 빈칸");
       if (
         new_hasNoInputStd?.filter((std) => std.name === tagStudent)?.length ===
         0
       ) {
         let addStd = {
-          name: target?.id?.split("-")?.[0],
-          num: target?.id?.split("-")?.[1],
+          name: before_target?.id?.split("-")?.[0],
+          num: before_target?.id?.split("-")?.[1],
         };
         new_hasNoInputStd.push(addStd);
+        setStudentMemo([...newStdData()]);
         setHasNoInputStd([...sortByNum(new_hasNoInputStd)]);
       }
     }
+  }, [activeStdInput]);
+
+  //현재 학생들 데이터 만들기
+  const newStdData = () => {
+    //모든 텍스트area를 선택함.
+    let new_data = [];
+    let memoInputAll = document.querySelectorAll(`textarea`);
+
+    //메모가 있는 항목들을 new_memo의 data에 추가함
+    memoInputAll.forEach((inputTag) => {
+      if (inputTag.value.trim() !== "") {
+        new_data.push({
+          name: inputTag.id.split("-")[0],
+          num: inputTag.id.split("-")[1],
+          memo: inputTag.value,
+        });
+      }
+    });
+    return new_data;
+  };
+
+  //삭제가 완료된 경우 다시 포커스 넣어주기 함수
+  useEffect(() => {
+    if (!nowFocusNameNum) return;
+    //   //포커스가 사라져서.. 다시 해당 학생 포커스 해주기
+    let nowTag = document.getElementById(nowFocusNameNum);
+    // console.log(nowTag);
+    nowTag.focus();
+    setDeleteDone(false);
+  }, [deleteDone]);
+
+  //인풋창 입력시 실행되는 함수
+  const getValueHandler = (e) => {
+    //자료가 빈칸이 되면, 즉 삭제할 경우 무조건 미입력으로 넣어주기
+    if (e.target.value === "") {
+      setStudentMemo([...newStdData()]);
+      setHasNoInputStd((prev) => {
+        let new_data = prev;
+        if (
+          prev.filter((std) => std.name === e.target.id?.split("-")?.[0])
+            ?.length === 0
+        ) {
+          new_data.push({
+            name: e.target?.id?.split("-")?.[0],
+            num: e.target?.id?.split("-")?.[1],
+          });
+        }
+        return sortByNum(new_data);
+      });
+      setDeleteDone(true);
+    }
+    //
+    setNowFocusNameNum(e.target?.id);
+  };
+
+  //미입력/입력의 학생 이름 클릭시... 해당 학생 input창에 focus 해줌
+  const stdNameBtnClickHandler = (e) => {
+    let stdName_num = e.target.id.slice(8);
+    document.getElementById(stdName_num).focus();
+  };
+
+  //이름과 인풋창 보여주는 함수
+  const makeNameInputArea = (noInputFirst) => {
+    const showInputArea = (students) => {
+      return students?.map((student) => (
+        <li className={classes["li-section"]} key={student.num}>
+          <div className={classes["num-section"]}>{student.num}</div>
+          <div className={classes["name-section"]}>{student.name}</div>
+          {/* 1100px넘어가면 매잘,잘,보통,노력요함,매우노력요함 버튼 보임. */}
+          <Input
+            id={student.name + "-" + student.num}
+            myKey={"textArea" + student.num}
+            className={"memo-section"}
+            label="inputData"
+            input={{
+              type: "textarea",
+              onFocus: () => {
+                setActiveStdInput(student.name + "-" + student.num);
+              },
+            }}
+            getValue={true}
+            getValueHandler={getValueHandler}
+            defaultValue={
+              //자료가 있으면 length가 undefined가 나오고 없으면 0이 나옴. 자료 있을 때만 저장되어 있던거 보여주기
+              studentMemo?.filter((data) => +student.num === +data.num).length >
+              0
+                ? studentMemo?.filter((data) => +student.num === +data.num)[0]
+                    .memo
+                : ""
+            }
+          />
+        </li>
+      ));
+    };
+
+    //noinput stds
+    let noInputArea = showInputArea(hasNoInputStd);
+    //input stds
+    let hasNoInputStdNames = hasNoInputStd?.map((std) => std.name);
+    let hasInputStd = students.filter(
+      (std) => !hasNoInputStdNames?.includes(std.name)
+    );
+    let inputArea = showInputArea(hasInputStd);
+
+    return noInputFirst ? (
+      <>
+        {noInputArea}
+        {inputArea}
+      </>
+    ) : (
+      <>
+        {inputArea}
+        {noInputArea}
+      </>
+    );
+  };
+
+  //미입력 혹은 입력 학생들 이름버튼 보여주는 함수
+  const makeStdNameBtns = (showNoInput) => {
+    //input stds
+    let hasNoInputStdNames = hasNoInputStd?.map((std) => std.name);
+    let hasInputStd = students.filter(
+      (std) => !hasNoInputStdNames?.includes(std.name)
+    );
+
+    const showStdNameBtns = (stds) => {
+      return stds?.map((data) => (
+        <Button
+          title="클릭하면 해당학생 입력창으로 이동"
+          onclick={stdNameBtnClickHandler}
+          key={"hasinput" + data.name}
+          id={"hasinput" + data.name + "-" + data.num}
+          name={data.name}
+          className={"listMemoNoInputStd-btn"}
+        />
+      ));
+    };
+
+    return showNoInput
+      ? showStdNameBtns(hasNoInputStd)
+      : showStdNameBtns(hasInputStd);
   };
 
   return (
@@ -308,15 +455,19 @@ const ListMemoInput = (props) => {
         {/* 미입력/입력학생 보여주기*/}
         <div>
           <div className={classes["lineH-1"]}>
-            미입력 ({hasNoInputStd?.length}){" "}
-            {hasNoInputStd?.map((data) => (
-              <Button
-                key={"hasinput" + data.name}
-                id={"hasinput" + data.name}
-                name={data.name}
-                className={"listMemoNoInputStd-btn"}
-              />
-            ))}
+            <Button
+              onclick={() => setShowNoInput((prev) => !prev)}
+              className={"checkList-button"}
+              style={{ backgroundColor: "#e5b8b8" }}
+              icon={<i className="fa-solid fa-rotate"></i>}
+              name={
+                showNoInput
+                  ? ` 미입력 (${hasNoInputStd?.length})`
+                  : ` 입력(${students.length - hasNoInputStd?.length})`
+              }
+            />{" "}
+            &nbsp;
+            {makeStdNameBtns(showNoInput)}
           </div>
           {/* 입력학생 */}
           <div></div>
@@ -325,35 +476,14 @@ const ListMemoInput = (props) => {
 
       <p className={classes["upDownDiv"]}>* 10초간 입력이 없으면 자동저장</p>
       <ul className={classes["ul-section"]}>
-        {students?.length > 0 &&
-          students?.map((student) => (
-            <li className={classes["li-section"]} key={student.num}>
-              <div className={classes["num-section"]}>{student.num}</div>
-              <div className={classes["name-section"]}>{student.name}</div>
-              {/* 1100px넘어가면 매잘,잘,보통,노력요함,매우노력요함 버튼 보임. */}
-              <Input
-                id={student.name + "-" + student.num}
-                myKey={"textArea" + student.num}
-                className={"memo-section"}
-                label="inputData"
-                input={{
-                  type: "textarea",
-                }}
-                getValue={true}
-                getValueHandler={getValueHandler}
-                defaultValue={
-                  //자료가 있으면 length가 undefined가 나오고 없으면 0이 나옴. 자료 있을 때만 저장되어 있던거 보여주기
-                  studentMemo?.data?.filter(
-                    (data) => +student.num === +data.num
-                  ).length > 0
-                    ? studentMemo.data?.filter(
-                        (data) => +student.num === +data.num
-                      )[0].memo
-                    : ""
-                }
-              />
-            </li>
-          ))}
+        {students?.length > 0 && (
+          <>
+            {/* 미입력 학생만 먼저 보여주고 */}
+
+            {makeNameInputArea(showNoInput)}
+            {/* 나머지 입력 학생들은 아래에 보여주기 */}
+          </>
+        )}
       </ul>
     </>
   );

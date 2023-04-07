@@ -72,6 +72,7 @@ select {
   width: 98%;
   display: flex;
   align-items: center;
+  justify-content: center;
 }
 .todoapp__inputbox-inp {
   flex: 1;
@@ -87,13 +88,30 @@ select {
 .todoapp__inputbox-inp:focus {
   outline: none;
 }
-.todoapp__inputbox-add-btn {
+.todoapp__inputbox-add-btn,
+.todoapp__inputbox-del-btn {
   border: none;
   border-radius: 15px;
   background-color: #d695db91;
   height: 50px;
   width: 50px;
   font-weight: bold;
+}
+
+.todoapp__inputbox-del-btn {
+  font-weight: normal;
+  width: 65px;
+  position: absolute;
+  left: calc(75vw - 2%);
+  height: 35px;
+}
+
+@media screen and (min-width: 500px) {
+  .todoapp__inputbox-del-btn {
+    left: 75vw;
+    width: 100px;
+    font-size: 1rem;
+  }
 }
 
 .todoapp__inputbox-emergency-btn,
