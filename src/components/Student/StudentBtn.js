@@ -5,7 +5,9 @@ const StudentBtn = (props) => {
   return (
     <>
       <button
-        className={`${classes[props.className]} ${props.classAdd && "clicked"}`}
+        className={`${classes[props.className]} ${
+          props.classAdd && "clicked"
+        } ${!props.woman && classes["woman"]}`}
         key={`stdBtn-${props.num} ${props.name}`}
         id={`std-${props.num} ${props.name}`}
         onClick={(e) => {

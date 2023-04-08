@@ -37,6 +37,7 @@ const TodoPage = (props) => {
   const [showExample, setShowExample] = useState(false);
   const [showExplain, setShowExplain] = useState(false);
   const [showBaseTodo, setShowBaseTodo] = useState(false);
+  const [showCal, setShowCal] = useState(false);
 
   let navigate = useNavigate();
 
@@ -557,6 +558,15 @@ const TodoPage = (props) => {
     }
   };
 
+  useEffect(() => {
+    let weekDayNames = document.querySelector(".react-datepicker__day-names");
+    let weekDayName = document.querySelectorAll(".react-datepicker__day-name");
+    if (!weekDayNames || !weekDayName) return;
+    weekDayNames.style.width = "95%";
+    weekDayName[0].style.width = "14%";
+    weekDayName[6].style.width = "14%";
+  }, [showCal]);
+
   // //휴일 달력에 그려주기!
   // useEffect(() => {
   //   if (!currentMonth) return;
@@ -760,11 +770,14 @@ const TodoPage = (props) => {
         />
       )}
       {/* 달력부분 */}
-      <AttendCalendar
-        inline={"true"}
-        getDateValue={getDateHandler}
-        getMonthValue={getMonthHandler}
-      />
+      <div onClick={() => setShowCal((prev) => !prev)}>
+        <AttendCalendar
+          filterNone={true}
+          inline={"true"}
+          getDateValue={getDateHandler}
+          getMonthValue={getMonthHandler}
+        />
+      </div>
       <br />
 
       {/* 회의록부분 */}

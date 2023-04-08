@@ -20,6 +20,7 @@ const Student = (props) => {
             name={stu.name}
             key={stu.num}
             num={stu.num}
+            woman={stu.woman}
             onShowOption={(e) => {
               props.showOption(e);
               e.target += "add";

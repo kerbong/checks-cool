@@ -158,6 +158,7 @@
 }
 
 .checkList-button,
+.checkList-button-man,
 .events-save {
   width: auto;
   margin: 5px;
@@ -167,6 +168,10 @@
   letter-spacing: -1px;
   padding: 1vh;
   background-color: #da9a9a4a;
+}
+
+.checkList-button-man {
+  background-color: #256a7233;
 }
 
 .listMemoNoInputStd-btn {

@@ -77,37 +77,60 @@ const BudgetInput = (props) => {
       note: noteValue,
     };
 
+    //바로저장!
+    props.saveBudgetHandler(budgetItem);
+
     Swal.fire({
-      icon: "question",
-      title: props.about !== "edit" ? "새품목 확인" : "수정내용 확인",
-      text: `[  ${budgetItem.title} / ${budgetItem.site} / ${numberComma(
-        budgetItem.each
-      )}원 / ${numberComma(budgetItem.count)}개 / 총 ${numberComma(
-        budgetItem.amount
-      )}원 ] 의 품목을 저장할까요?`,
-      showDenyButton: true,
-      confirmButtonText: "저장",
-      confirmButtonColor: "#db100cf2",
-      denyButtonColor: "#85bd82",
-      denyButtonText: `취소`,
-    }).then((result) => {
-      /* Read more about isConfirmed, isDenied below */
-      //저장버튼 누르면
-      if (result.isConfirmed) {
-        // Swal.fire({
-        //   icon: "success",
-        //   title: "자료가 저장되었어요.",
-        //   text: "5초 후에 창이 사라집니다.",
-        //   confirmButtonText: "확인",
-        //   confirmButtonColor: "#85bd82",
-        //   timer: 5000,
-        // });
-        props.saveBudgetHandler(budgetItem);
-        //취소누르면 그냥 반환
-      } else {
-        return;
-      }
+      icon: "success",
+      title: "저장 완료!",
+      text: "3초 후에 창이 사라집니다.",
+      confirmButtonText: "확인",
+      confirmButtonColor: "#85bd82",
+      timer: 3000,
+    }).then(() => {
+      //입력창 모두 빈칸으로 만들어주기
+      titleRef.current.value = "";
+      noteRef.current.value = "";
+      eachRef.current.value = "";
+      countRef.current.value = "1";
+      amountRef.current.value = "";
+      siteRef.current.value = "";
+      //다시 품목명에 포커스 !
+      titleRef.current.focus();
     });
+
+    //묻고 저장!
+    // Swal.fire({
+    //   icon: "question",
+    //   title: props.about !== "edit" ? "새품목 확인" : "수정내용 확인",
+    //   text: `[  ${budgetItem.title} / ${budgetItem.site} / ${numberComma(
+    //     budgetItem.each
+    //   )}원 / ${numberComma(budgetItem.count)}개 / 총 ${numberComma(
+    //     budgetItem.amount
+    //   )}원 ] 의 품목을 저장할까요?`,
+    //   showDenyButton: true,
+    //   confirmButtonText: "저장",
+    //   confirmButtonColor: "#db100cf2",
+    //   denyButtonColor: "#85bd82",
+    //   denyButtonText: `취소`,
+    // }).then((result) => {
+    //   /* Read more about isConfirmed, isDenied below */
+    //   //저장버튼 누르면
+    //   if (result.isConfirmed) {
+    //     // Swal.fire({
+    //     //   icon: "success",
+    //     //   title: "자료가 저장되었어요.",
+    //     //   text: "5초 후에 창이 사라집니다.",
+    //     //   confirmButtonText: "확인",
+    //     //   confirmButtonColor: "#85bd82",
+    //     //   timer: 5000,
+    //     // });
+    //     props.saveBudgetHandler(budgetItem);
+    //     //취소누르면 그냥 반환
+    //   } else {
+    //     return;
+    //   }
+    // });
   };
 
   const totalAmountHandler = () => {
@@ -186,27 +209,13 @@ const BudgetInput = (props) => {
             ref={titleRef}
             placeholder="품목명"
             className={classes["newBudget-title"]}
+            autoFocus
           />
         </span>
 
         <hr style={{ margin: "15px" }} />
         <span className={classes["budgetList-title"]}>
-          <div className={classes["flex-space-center-95"]}>
-            {/* 사이트 */}
-            <input
-              ref={siteRef}
-              type="text"
-              placeholder="사이트"
-              className={classes["newBudget-site"]}
-            />
-            {/* 비고 */}
-            <input
-              ref={noteRef}
-              type="text"
-              placeholder="예산출처, 기억할 점 등"
-              className={classes["newBudget-note"]}
-            />
-          </div>
+          {/* 개당, 개수, 총금액 부분 */}
           <div className={classes["flex-space-center-95"]}>
             {/* 개당가격 */}
             <input
@@ -236,6 +245,23 @@ const BudgetInput = (props) => {
               className={classes["newBudget-amount"]}
             />
             원
+          </div>
+          {/* 사이트 + 예산출처 노트 부분 */}
+          <div className={classes["flex-space-center-95"]}>
+            {/* 사이트 */}
+            <input
+              ref={siteRef}
+              type="text"
+              placeholder="사이트"
+              className={classes["newBudget-site"]}
+            />
+            {/* 비고 */}
+            <input
+              ref={noteRef}
+              type="text"
+              placeholder="예산출처, 기억할 점 등"
+              className={classes["newBudget-note"]}
+            />
           </div>
 
           {/* 자료 수정인 경우 저장/취소버튼 보여주기 */}

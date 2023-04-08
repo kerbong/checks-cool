@@ -344,7 +344,7 @@ const BudgetManage = (props) => {
           <BudgetInput
             saveBudgetHandler={(item) => {
               saveBudgetHandler(item);
-              setShowInput(false);
+              // setShowInput(false);
             }}
           />
         </FadeInOut>

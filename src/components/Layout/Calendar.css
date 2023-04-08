@@ -154,7 +154,7 @@
 }
 
 .react-datepicker__day--selected {
-  background-color: #d38c85;
+  background-color: #d38c85 !important;
 }
 
 .react-datepicker__day-name:nth-child(1),

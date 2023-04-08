@@ -61,6 +61,14 @@ const CheckInput = (props) => {
         (stu) => +stu.num !== +studentInfo.num
       );
     }
+    //이름만 모아두고
+    let new_unSubmitStudentsNames = new_unSubmitStudents?.map(
+      (std) => std.name
+    );
+    //성별정보 없을 수 있어서.. 성별 있는걸로 다시 만들어주고
+    new_unSubmitStudents = students?.filter((std) =>
+      new_unSubmitStudentsNames?.includes(std.name)
+    );
     //번호순으로 정렬하기
     new_unSubmitStudents.sort((a, b) => a.num - b.num);
     new_submitStudents.sort((a, b) => a.num - b.num);
@@ -317,6 +325,7 @@ const CheckInput = (props) => {
                 className={"checklist-student"}
                 name={stu.name}
                 key={stu.num}
+                woman={stu.woman}
                 num={stu.num}
                 onShowOption={() => {
                   let studentInfo = { num: +stu.num, name: stu.name };
@@ -351,6 +360,7 @@ const CheckInput = (props) => {
               name={stu.name}
               key={stu.num}
               num={stu.num}
+              woman={stu.woman}
               onShowOption={() => {
                 let studentInfo = { num: +stu.num, name: stu.name };
                 changeUnSubmitStudents(studentInfo);

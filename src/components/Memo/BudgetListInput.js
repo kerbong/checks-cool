@@ -61,6 +61,8 @@ const BudgetListInput = (props) => {
       useLists: [],
     };
 
+    //바로 저장
+    //묻고 저장
     Swal.fire({
       icon: "question",
       title: `${props.edit ? "예산 수정" : "새예산 등록"}`,
@@ -78,14 +80,6 @@ const BudgetListInput = (props) => {
       /* Read more about isConfirmed, isDenied below */
       //저장버튼 누르면
       if (result.isConfirmed) {
-        // Swal.fire({
-        //   icon: "success",
-        //   title: "자료가 저장되었어요.",
-        //   text: "5초 후에 창이 사라집니다.",
-        //   confirmButtonText: "확인",
-        //   confirmButtonColor: "#85bd82",
-        //   timer: 5000,
-        // });
         props.saveBudgetHandler(new_budget);
         //취소누르면 그냥 반환
       } else {

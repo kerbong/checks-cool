@@ -742,7 +742,11 @@ const CheckLists = (props) => {
                         key={item.id + stu.num}
                         name={stu.name}
                         id={item.title + stu.num}
-                        className={"checkList-button"}
+                        className={
+                          stu?.woman
+                            ? "checkList-button"
+                            : "checkList-button-man"
+                        }
                       />
                     ))}
                   </div>
@@ -915,7 +919,11 @@ const CheckLists = (props) => {
                             key={item.id + data.num}
                             id={item.id + data.num}
                             name={data.name}
-                            className={"checkList-button"}
+                            className={
+                              data.woman
+                                ? "checkList-button"
+                                : "checkList-button-man"
+                            }
                           />
                         ))}
                       </p>
@@ -938,7 +946,11 @@ const CheckLists = (props) => {
                             key={item.id + data.num}
                             id={item.id + data.num}
                             name={data.name}
-                            className={"checkList-button"}
+                            className={
+                              data.woman
+                                ? "checkList-button"
+                                : "checkList-button-man"
+                            }
                           />
                         ))}
                       </p>
