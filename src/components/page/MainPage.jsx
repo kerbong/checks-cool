@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback } from "react";
 import Button from "../Layout/Button";
 import { dbService } from "../../fbase";
-
+import { utils, writeFile } from "xlsx";
 import { getDoc, doc, setDoc, updateDoc } from "firebase/firestore";
 import classes from "./MainPage.module.css";
 import ClassItem from "../Main/ClassItem";
@@ -82,6 +82,20 @@ const MainPage = (props) => {
   const [gridFr3or4, setGridFr3or4] = useState("");
   const [scaleValue, setScaleValue] = useState(document.body.style.zoom || 1);
   const [classFromSchedule, setClassFromSchedule] = useState([]);
+  const [getAllDataDone, setGetAllDataDone] = useState(false);
+  // 올해자료들 모아두기 위한 상태들
+  const [nowYearAttends, setNowYearAttends] = useState([]);
+  const [nowYearCheckLists, setNowYearCheckLists] = useState([]);
+  const [nowYearClassTable, setNowYearClassTable] = useState([]);
+  const [nowYearListMemo, setNowYearListMemo] = useState([]);
+  const [nowYearTodoLists, setNowYearTodoLists] = useState([]);
+  const [nowYearSchedule, setNowYearSchedule] = useState([]);
+  const [nowYearAlarm, setNowYearAlarm] = useState([]);
+  const [nowYearBudgets, setNowYearBudgets] = useState([]);
+  const [nowYearConsult, setNowYearConsult] = useState([]);
+  const [nowYearFreeMemo, setNowYearFreeMemo] = useState([]);
+  const [nowYearSeats, setNowYearSeats] = useState([]);
+  const [nowYearStudentsInfo, setNowYearStudentsInfo] = useState([]);
 
   //업데이트 내용 보여주기 로컬스토리지에서 showNotice를 스트링으로 저장해서 확인 후에 이전에 봤으면 안보여주기
   const [showNotice, setShowNotice] = useState(
@@ -121,6 +135,18 @@ const MainPage = (props) => {
       setIsLgWidth(false);
     }
   }, []);
+
+  //올해 자료인지 판단하는 함수
+  const isWithinSchoolYear = (date) => {
+    const schoolYearStart = dayjs(nowYear() + "-03-01");
+    const schoolYearEnd = schoolYearStart.add(1, "year").subtract(1, "day");
+
+    const inputDate = dayjs(date);
+
+    return (
+      inputDate.isAfter(schoolYearStart) && inputDate.isBefore(schoolYearEnd)
+    );
+  };
 
   // 윈도우 창의 크기에 따라 시간표 보여주기 기능 true로 바꾸기
   useEffect(() => {
@@ -199,8 +225,9 @@ const MainPage = (props) => {
   //firestore에서 오늘 attend관련 자료들 받아오기
   const getAttendsFromDb = async (isSubject) => {
     setAttendEvents([]);
+    //올해 학년도 범위 설정
+    let new_nowYearAttends = [];
 
-    // let attendRef = query(doc(dbService, "attend", props.userUid));
     let attendRef = doc(dbService, "attend", props.userUid);
     // onSnapshot(attendRef, (doc) => {
     let attendSnap = await getDoc(attendRef);
@@ -215,6 +242,10 @@ const MainPage = (props) => {
         });
         let new_data = [];
         attends?.forEach((atd) => {
+          //모든 데이터 저장용 자료로 만들기, 보고있는 날짜 기준으로 올해 자료만 뽑아주기
+          if (isWithinSchoolYear(atd?.id?.slice(0, 10))) {
+            new_nowYearAttends.push({ ...atd, cl: Object.keys(cl)[0] });
+          }
           // console.log(atd);
           if (atd?.id?.slice(0, 10) === todayYyyymmdd) {
             new_data.push({ ...atd, cl: Object.keys(cl)[0] });
@@ -222,15 +253,22 @@ const MainPage = (props) => {
         });
         new_attends.push(...new_data);
       });
+      // 담임이면
     } else {
       // doc?.data()?.attend_data?.forEach((data) => {
       attendSnap?.data()?.attend_data?.forEach((data) => {
+        //모든 데이터 저장용 자료로 만들기, 보고있는 날짜 기준으로 올해 자료만 뽑아주기
+        if (isWithinSchoolYear(data?.id?.slice(0, 10))) {
+          new_nowYearAttends.push(data);
+        }
+
         if (data?.id?.slice(0, 10) === todayYyyymmdd) {
           new_attends.push(data);
         }
       });
     }
-    // console.log(new_attends);
+    //데이터용 올해자료 저장
+    setNowYearAttends(new_nowYearAttends);
     setAttendEvents([...new_attends]);
     // });
   };
@@ -238,6 +276,8 @@ const MainPage = (props) => {
   //firestore에서 공용/개인 스케쥴 자료 받아오기
   const getScheduleFromDb = async () => {
     setSchedule([]);
+
+    let new_nowYearSchedule = [];
 
     let publicRef = doc(dbService, "todo", roomInfo);
     let publicSnap = await getDoc(publicRef);
@@ -294,6 +334,15 @@ const MainPage = (props) => {
 
     fixed_events = [...set_events, ...noneSet_events];
 
+    fixed_events?.forEach((data) => {
+      //모든 데이터 저장용 자료로 만들기, 보고있는 날짜 기준으로 올해 자료만 뽑아주기
+      if (isWithinSchoolYear(data?.id?.slice(0, 10))) {
+        new_nowYearSchedule.push(data);
+      }
+    });
+
+    setNowYearSchedule(new_nowYearSchedule);
+
     setFixed_events = fixed_events?.filter((data) =>
       future7days?.includes(data.id.slice(0, 10))
     );
@@ -339,9 +388,14 @@ const MainPage = (props) => {
     let memoRef = doc(dbService, "memo", props.userUid);
     let memoSnap = await getDoc(memoRef);
 
+    let new_nowYearTodoLists = [];
+
     if (memoSnap.exists()) {
       // onSnapshot(memoRef, (doc) => {
       memoSnap?.data()?.memoTodo?.forEach((data) => {
+        //오늘 할일, 메모는 id가 날짜가 아님..
+        new_nowYearTodoLists.push(data);
+
         if (data.checked === false) {
           setToDoLists((prev) => {
             prev.forEach((prev_data, index) => {
@@ -354,6 +408,7 @@ const MainPage = (props) => {
         }
       });
       // });
+      setNowYearTodoLists(new_nowYearTodoLists);
     }
   };
 
@@ -363,16 +418,23 @@ const MainPage = (props) => {
     setCheckLists([]);
     let checkListsSnap = await getDoc(checkListsRef);
 
+    let new_nowYearCheckLists = [];
     // onSnapshot(checkListsRef, (doc) => {
     const new_checkLists = [];
 
     let before7days = last7days(todayYyyymmdd, "past");
 
     checkListsSnap?.data()?.checkLists_data?.forEach((data) => {
+      //모든 데이터 저장용 자료로 만들기, 보고있는 날짜 기준으로 올해 자료만 뽑아주기
+      if (isWithinSchoolYear(data?.id?.slice(0, 10))) {
+        new_nowYearCheckLists.push(data);
+      }
+
       if (before7days?.includes(data.id.slice(0, 10))) {
         new_checkLists.push(data);
       }
     });
+    setNowYearCheckLists(new_nowYearCheckLists);
     setCheckLists([...new_checkLists]);
     // });
   };
@@ -382,15 +444,21 @@ const MainPage = (props) => {
     let listMemoRef = doc(dbService, "listMemo", props.userUid);
     let listMemoSnap = await getDoc(listMemoRef);
 
+    let new_nowYearListMemo = [];
     setListMemo([]);
     // onSnapshot(listMemoRef, (doc) => {
     const new_listMemo = [];
     let before7days = last7days(todayYyyymmdd, "past");
     listMemoSnap?.data()?.listMemo_data?.forEach((data) => {
+      //모든 데이터 저장용 자료로 만들기, 보고있는 날짜 기준으로 올해 자료만 뽑아주기
+      if (isWithinSchoolYear(data?.id?.slice(0, 10))) {
+        new_nowYearListMemo.push(data);
+      }
       if (before7days?.includes(data.id.slice(0, 10))) {
         new_listMemo.push(data);
       }
     });
+    setNowYearListMemo(new_nowYearListMemo);
     setListMemo([...new_listMemo]);
     // });
   };
@@ -399,6 +467,8 @@ const MainPage = (props) => {
   const getClassTableFromDb = async () => {
     let classTableRef = doc(dbService, "classTable", props.userUid);
     setTodayClassTable({});
+
+    let new_nowYearClassTable = [];
 
     //입력한 개별날짜 시간표들
     // setClassTable([]);
@@ -447,6 +517,14 @@ const MainPage = (props) => {
       if (now_doc?.data()?.datas) {
         let all_classTable = now_doc?.data()?.datas;
         setClassTable([...all_classTable]);
+
+        all_classTable?.forEach((data) => {
+          if (isWithinSchoolYear(data?.id?.slice(0, 10))) {
+            new_nowYearClassTable.push(data);
+          }
+        });
+
+        setNowYearClassTable(new_nowYearClassTable);
 
         let todayClass = all_classTable?.filter(
           (data) => data.id === todayYyyymmdd
@@ -696,13 +774,180 @@ const MainPage = (props) => {
     return () => clearTimeout(timer);
   }, [hideClassTable]);
 
-  //오늘 일정 중에...외부강사, 자체행사에 특정 교시가 적혀 있으면.. 그 교시를 classTable에 넣어줌
-  // (고민해봐야겠다... 그럼 일정을 엄청 잘 바꿔줘야 하는데...좋긴 한데.. 흠...)
-  useEffect(() => {
-    // 오늘데이터만 뽑아냄.
-    // let today_schedule = schedule?.filter((sc)=> sc.id.slice(0, 10) === todayYyyymmdd)
-    // today_schedule?.forEach((data)=> data.note)
-  }, [schedule]);
+  const getAlarmFromDb = async () => {
+    let alarmRef = doc(dbService, "alarm", props.userUid);
+    let alarmSnap = await getDoc(alarmRef);
+
+    let new_nowYearAlarm = [];
+
+    if (alarmSnap.exists()) {
+      alarmSnap?.data()?.alarm_data?.forEach((data) => {
+        if (isWithinSchoolYear(data?.id?.slice(0, 10))) {
+          new_nowYearAlarm.push(data);
+        }
+      });
+    }
+
+    setNowYearAlarm(new_nowYearAlarm);
+  };
+
+  const getBudgetsFromDb = async () => {
+    let budgetsRef = doc(dbService, "budgets", props.userUid);
+    let budgetsSnap = await getDoc(budgetsRef);
+
+    let new_nowYearBudgets = [];
+
+    if (budgetsSnap.exists()) {
+      budgetsSnap?.data()?.budgets_data?.forEach((data) => {
+        if (data?.until?.slice(0, 4) === todayYyyymmdd.slice(0, 4)) {
+          new_nowYearBudgets.push(data);
+        }
+      });
+    }
+
+    setNowYearBudgets(new_nowYearBudgets);
+  };
+
+  const getConsultFromDb = async () => {
+    let consultRef = doc(dbService, "consult", props.userUid);
+    let consultSnap = await getDoc(consultRef);
+
+    let new_nowYearConsult = [];
+
+    if (consultSnap.exists()) {
+      consultSnap?.data()?.consult_data?.forEach((data) => {
+        if (isWithinSchoolYear(data?.id?.slice(0, 10))) {
+          new_nowYearConsult.push(data);
+        }
+      });
+    }
+
+    setNowYearConsult(new_nowYearConsult);
+  };
+
+  const getFreeMemoFromDb = async () => {
+    let freeMemoRef = doc(dbService, "freeMemo", props.userUid);
+    let freeMemoSnap = await getDoc(freeMemoRef);
+
+    let new_nowYearFreeMemo = [];
+
+    if (freeMemoSnap.exists()) {
+      freeMemoSnap?.data()?.freeMemo?.forEach((data) => {
+        //23년 4월 10일 이전 저장자료는 id가 없음 ㅠㅠ
+        if (!data.id || isWithinSchoolYear(data?.id)) {
+          new_nowYearFreeMemo.push(data);
+        }
+      });
+    }
+    setNowYearFreeMemo(new_nowYearFreeMemo);
+  };
+
+  const getSeatsFromDb = async () => {
+    let seatsRef = doc(dbService, "seats", props.userUid);
+    let seatsSnap = await getDoc(seatsRef);
+
+    let new_nowYearSeats = [];
+
+    if (seatsSnap.exists()) {
+      seatsSnap?.data()?.seats_data?.forEach((data) => {
+        if (isWithinSchoolYear(data?.saveDate?.slice(0, 10))) {
+          new_nowYearSeats.push(data);
+        }
+      });
+    }
+    setNowYearSeats(new_nowYearSeats);
+  };
+
+  const getStudentsInfoFromDb = async () => {
+    let studentsInfoRef = doc(dbService, "studentsInfo", props.userUid);
+    let studentsInfoSnap = await getDoc(studentsInfoRef);
+
+    if (studentsInfoSnap.exists()) {
+      setNowYearStudentsInfo(studentsInfoSnap?.data()?.info_datas);
+    }
+    //이게 데이터 받기 마지막이라 다 받고, 받아왔다는 상태 세팅하기!
+    setGetAllDataDone(true);
+  };
+
+  //모든 데이터 받아오는 함수, 없던 데이터들 받아오기
+  const getAllDataHandler = () => {
+    // getAlarmFromDb();
+    // getBudgetsFromDb();
+    // getConsultFromDb();
+    // getFreeMemoFromDb();
+    // getSeatsFromDb();
+    // getStudentsInfoFromDb();
+  };
+
+  //모든 데이터 저장함수..!!
+  const allDataExcelSaveHandler = () => {
+    // 출결저장
+    const new_attends_datas = [];
+    nowYearAttends?.forEach((attend) => {
+      // 번호 이름 년 월 일 옵션 노트 순으로
+      let data = [
+        +attend.num,
+        attend.name,
+        +attend.id.slice(0, 4),
+        +attend.id.slice(5, 7),
+        +attend.id.slice(8, 10),
+        attend.option.slice(1),
+        attend?.note,
+      ];
+      if (isSubject) {
+        data.unshift(attend.clName);
+      }
+      new_attends_datas.push(data);
+    });
+
+    if (isSubject) {
+      new_attends_datas.unshift([
+        "반",
+        "번호",
+        "이름",
+        "년",
+        "월",
+        "일",
+        "출결옵션",
+        "메모내용",
+      ]);
+    } else {
+      new_attends_datas.unshift([
+        "번호",
+        "이름",
+        "년",
+        "월",
+        "일",
+        "출결옵션",
+        "메모내용",
+      ]);
+    }
+    //새로운 가상 엑셀파일 생성
+    const book = utils.book_new();
+    const attends_datas = utils.aoa_to_sheet(new_attends_datas);
+    //셀의 넓이 지정
+    attends_datas["!cols"] = [
+      { wpx: 40 },
+      { wpx: 50 },
+      { wpx: 60 },
+      { wpx: 20 },
+      { wpx: 20 },
+      { wpx: 60 },
+      { wpx: 100 },
+    ];
+    if (isSubject) {
+      attends_datas["!cols"].unshift({ wpx: 40 });
+    }
+    //시트에 작성한 데이터 넣기
+    utils.book_append_sheet(book, attends_datas, "출결");
+
+    writeFile(
+      book,
+      `${nowYear()}학년도 학급 기록(by첵스쿨)(${dayjs().format(
+        "YYYY-MM-DD"
+      )}).xlsx`
+    );
+  };
 
   return (
     <div className={classes["whole-div"]}>
@@ -1190,6 +1435,26 @@ const MainPage = (props) => {
                     )
                 )}
               </>
+            )}
+          </div>
+
+          {/* 모든 데이티 다운받기 부분 */}
+          <div className={classes["event-div"]}>
+            <div className={classes["event-title"]}>💾 데이터 저장</div>
+            <hr className={classes["main-hr"]} />
+            * 개발중입니다...
+            <Button
+              name={"모든자료 받기"}
+              className={"show-basicClass-button"}
+              onclick={getAllDataHandler}
+            />
+            {/* 모든자료 불러오고 나면 보이는 저장버튼 */}
+            {getAllDataDone && (
+              <Button
+                name={"엑셀저장"}
+                className={"show-basicClass-button"}
+                onclick={allDataExcelSaveHandler}
+              />
             )}
           </div>
         </div>

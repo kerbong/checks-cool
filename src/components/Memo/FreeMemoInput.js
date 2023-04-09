@@ -1,7 +1,8 @@
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Swal from "sweetalert2";
 import classes from "./FreeMemo.module.css";
 import Button from "components/Layout/Button";
+import dayjs from "dayjs";
 
 //자료 최대글자수 제한 함수
 const handleOnInput = (e, maxlength) => {
@@ -89,6 +90,7 @@ const FreeMemoInput = (props) => {
       title,
       text,
       category,
+      id: dayjs().format("YYYY-MM-DD"),
     };
 
     //만약 기존 자료였던 경우 기존 이름 추가해서 보냄
