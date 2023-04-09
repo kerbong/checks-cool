@@ -160,14 +160,14 @@ const BudgetList = (props) => {
             <ul className={classes["budgetList-ul"]}>
               {budget?.useLists?.map((list) =>
                 //현재 수정중인 예산이 아니면 기본 태그로 보여주고
-                showEdit !== list.title ? (
+                showEdit !== list.date + list.title ? (
                   <li
                     key={list.date + list.title}
                     className={classes["budgetList-li"]}
                     style={{ maxWidth: "440px", width: "95%" }}
                     onClick={() => {
                       if (showEditBtns === "") {
-                        setShowEditBtns(list.title);
+                        setShowEditBtns(list.date + list.title);
                       } else {
                         setShowEditBtns("");
                       }
@@ -182,11 +182,13 @@ const BudgetList = (props) => {
                         {/* 예산품목명 */}
                         <b>{list.title}</b>
                         {/* 수정버튼 */}
-                        {showEditBtns === list.title && (
+                        {showEditBtns === list.date + list.title && (
                           <div className={classes["budgetListEdit-div"]}>
                             <button
                               className={classes["budgetList-edit"]}
-                              onClick={() => setShowEdit(list.title)}
+                              onClick={() =>
+                                setShowEdit(list.date + list.title)
+                              }
                             >
                               <i className="fa-regular fa-copy"></i>
                             </button>
