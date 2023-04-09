@@ -216,6 +216,7 @@ const ListMemoInput = (props) => {
         let addStd = {
           name: before_target?.id?.split("-")?.[0],
           num: before_target?.id?.split("-")?.[1],
+          woman: before_target?.id?.split("-")?.[2],
         };
         new_hasNoInputStd.push(addStd);
         setStudentMemo([...newStdData()]);
@@ -267,6 +268,7 @@ const ListMemoInput = (props) => {
           new_data.push({
             name: e.target?.id?.split("-")?.[0],
             num: e.target?.id?.split("-")?.[1],
+            woman: e.target?.id?.split("-")?.[2],
           });
         }
         return sortByNum(new_data);
@@ -291,8 +293,9 @@ const ListMemoInput = (props) => {
           <div className={classes["num-section"]}>{student.num}</div>
           <div className={classes["name-section"]}>{student.name}</div>
           {/* 1100px넘어가면 매잘,잘,보통,노력요함,매우노력요함 버튼 보임. */}
+          {/*그 전에는 셀렉트 태그로 보여주기 */}
           <Input
-            id={student.name + "-" + student.num}
+            id={student.name + "-" + student.num + "-" + student.woman}
             myKey={"textArea" + student.num}
             className={"memo-section"}
             label="inputData"
@@ -348,14 +351,17 @@ const ListMemoInput = (props) => {
     );
 
     const showStdNameBtns = (stds) => {
+      console.log(stds);
       return stds?.map((data) => (
         <Button
           title="클릭하면 해당학생 입력창으로 이동"
           onclick={stdNameBtnClickHandler}
           key={"hasinput" + data.name}
-          id={"hasinput" + data.name + "-" + data.num}
+          id={"hasinput" + data.name + "-" + data.num + "-" + data.woman}
           name={data.name}
-          className={"listMemoNoInputStd-btn"}
+          className={
+            data.woman ? "listMemoNoInputStd-btn" : "listMemoNoInputStd-btn-man"
+          }
         />
       ));
     };

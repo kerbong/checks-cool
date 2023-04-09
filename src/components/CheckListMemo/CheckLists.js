@@ -768,7 +768,11 @@ const CheckLists = (props) => {
             >
               <ListMemoInput
                 hasNoInputStd={listMemoShowStdOnList(item, "not")?.map(
-                  (data) => ({ name: data.name, num: data.num })
+                  (data) => ({
+                    name: data.name,
+                    num: data.num,
+                    woman: data.woman,
+                  })
                 )}
                 students={!isSubject ? students : inputStudents}
                 onClose={() => setAddListMemo(false)}

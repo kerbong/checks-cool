@@ -174,7 +174,8 @@
   background-color: #256a7233;
 }
 
-.listMemoNoInputStd-btn {
+.listMemoNoInputStd-btn,
+.listMemoNoInputStd-btn-man {
   width: auto;
   margin: 2px;
   font-size: 0.5em;
@@ -185,8 +186,13 @@
   background-color: #da9a9a4a;
 }
 
+.listMemoNoInputStd-btn-man {
+  background-color: #256a7233;
+}
+
 @media screen and (min-width: 800px) {
-  .listMemoNoInputStd-btn {
+  .listMemoNoInputStd-btn,
+  .listMemoNoInputStd-btn-man {
     margin: 5px;
     font-size: 0.9em;
     padding: 1vh;
