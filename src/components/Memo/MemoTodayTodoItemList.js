@@ -83,6 +83,7 @@ const MemoTodayTodoItemList = ({
                             {...provided.draggableProps}
                             {...provided.dragHandleProps}
                             ref={provided.innerRef}
+                            key={provided.innerRef}
                           >
                             {/* // map을 이용하여 ToDoItem을 출력 */}
                             <MemoTodayTodoItem

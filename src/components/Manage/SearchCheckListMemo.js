@@ -17,6 +17,20 @@ const SearchCheckListMemo = (props) => {
 
   const nowIsSubject = props.nowIsSubject;
 
+  //검색하는 단어가 입력되면.. 전체 자료에서 해당하는 게 있는 것들만 보여주기
+  useEffect(() => {
+    //검색이 빈칸이면 전체 보여주고
+    if (searchWord === "") {
+      setOnAllCheckListMemo([...allCheckListMemo]);
+    } else {
+      //해당 단어를 포함하고 있으면.. 그걸 다 보여줌
+      let new_onAllListMemo = allCheckListMemo?.filter((memo) =>
+        memo.title.includes(searchWord)
+      );
+      setOnAllCheckListMemo([...new_onAllListMemo]);
+    }
+  }, [searchWord]);
+
   useEffect(() => {
     if (props.allCheckListMemo?.length === 0) return;
     setAllCheckListMemo(props.allCheckListMemo);
@@ -50,20 +64,6 @@ const SearchCheckListMemo = (props) => {
       }
     });
   };
-
-  //검색하는 단어가 입력되면.. 전체 자료에서 해당하는 게 있는 것들만 보여주기
-  useEffect(() => {
-    //검색이 빈칸이면 전체 보여주고
-    if (searchWord === "") {
-      setOnAllCheckListMemo([...allCheckListMemo]);
-    } else {
-      //해당 단어를 포함하고 있으면.. 그걸 다 보여줌
-      let new_onAllListMemo = allCheckListMemo?.filter((memo) =>
-        memo.title.includes(searchWord)
-      );
-      setOnAllCheckListMemo([...new_onAllListMemo]);
-    }
-  }, [searchWord]);
 
   //검색이 끝나고 완료를 클릭하면 실행되는 함수
   useEffect(() => {

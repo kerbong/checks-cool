@@ -116,6 +116,7 @@ const ManageCheckListMemo = (props) => {
   }, []);
 
   useEffect(() => {
+    console.log(onStudent);
     if (onStudent !== "") {
       //담임이면
       if (!nowIsSubject) {
@@ -144,6 +145,8 @@ const ManageCheckListMemo = (props) => {
         setOnCheckLists(new_onCheckLists);
       }
     }
+
+    //학생 선택을 안한 경우, 처음에 db에서 받아와서 저장해둔 데이터를 사용하므로, 따로 설정해줄 필요 없음..!
 
     if (!showListMemo) {
       doughnut_datas();

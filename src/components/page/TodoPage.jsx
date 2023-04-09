@@ -129,6 +129,10 @@ const TodoPage = (props) => {
       });
 
       setFixed_events = [...set_events, ...noneSet_events];
+      // 이벤트의.. 메모에서 교시 순으로 정렬하기! (교시순으로 먼저 버튼 만들어 두면.. 어차피 날짜는 상관없음)
+      setFixed_events = setFixed_events.sort((a, b) =>
+        a.note?.split("교시")?.[0] > b.note?.split("교시")?.[0] ? 1 : -1
+      );
 
       setEvents([...setFixed_events]);
     });
@@ -331,8 +335,16 @@ const TodoPage = (props) => {
             let setNum = data.setNum ? `(${data.setNum})` : "";
             btn.innerText = data.eventName + setNum;
             btn.id = data.id;
+
+            if (ymd.slice(0, 7) === currentMonth) {
+              eventTag.style.backgroundColor = "#d38c85";
+            } else {
+              eventTag.style.backgroundColor = "#d38c852e";
+              btn.style.backgroundColor = "#56423c91";
+            }
+
             eventTag.appendChild(btn);
-            eventTag.style.backgroundColor = "#d38c85";
+
             eventTag.style.borderRadius = "5px";
           }
         }); //날짜가 events와 같은 태그에 할 일 forEach 함수 끝
@@ -566,25 +578,6 @@ const TodoPage = (props) => {
     weekDayName[0].style.width = "14%";
     weekDayName[6].style.width = "14%";
   }, [showCal]);
-
-  // //휴일 달력에 그려주기!
-  // useEffect(() => {
-  //   if (!currentMonth) return;
-
-  //   holidays2023?.forEach((holiday) => {
-  //     if (holiday[0] === currentMonth) {
-  //       let holiday_queryName = holiday[1].split("*");
-
-  //       let holidayTag = document.querySelectorAll(holiday_queryName[0])[0];
-
-  //       const btn = document.createElement("button");
-  //       btn.className = `${classes.holidayData} eventBtn`;
-  //       btn.innerText = holiday_queryName[1];
-  //       holidayTag?.appendChild(btn);
-  //       holidayTag.style.borderRadius = "5px";
-  //     }
-  //   });
-  // }, [currentMonth, showPublicEvent]);
 
   return (
     <>
