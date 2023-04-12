@@ -367,8 +367,6 @@ const ConsultLists = (props) => {
     event.currentTarget.style.display = "none";
   };
 
-  console.log(props.students);
-
   return (
     <>
       {/* 정렬하는 부분 */}

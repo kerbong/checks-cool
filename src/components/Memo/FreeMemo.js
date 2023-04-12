@@ -7,6 +7,7 @@ import FreeMemoInput from "./FreeMemoInput";
 import { dbService } from "../../fbase";
 import { setDoc, onSnapshot, doc, getDoc } from "firebase/firestore";
 import Swal from "sweetalert2";
+import FreeMemoTableInput from "./FreeMemoTableInput";
 
 const EXPLAINS = [
   "* 카테고리 추가방법!",
@@ -31,6 +32,7 @@ const EXPLAINS = [
 const FreeMemo = (props) => {
   const [addCategory, setAddCategory] = useState(false);
   const [addItem, setAddItem] = useState(false);
+  const [showTableItem, setShowTableItem] = useState(false);
   const [editCategory, setEditCategory] = useState(false);
   const [showCategoryEditBtn, setShowCategoryEditBtn] = useState(false);
   const [explainOn, setExplainOn] = useState(false);
@@ -68,6 +70,7 @@ const FreeMemo = (props) => {
     setFreeMemo(freeMemo); //배열
     //firestore에 업로드
     const new_data = { category: category, freeMemo: freeMemo };
+    console.log(new_data);
     const freeMemoRef = doc(dbService, "freeMemo", props.userUid);
     await setDoc(freeMemoRef, new_data);
   };
@@ -233,12 +236,29 @@ const FreeMemo = (props) => {
       {/* 메뉴바의 요소를 클릭하면.. 해당 카테고리 메모들만 보임. 추가도 거기에서 가능. */}
       <div>
         <div>
-          {/* 메모 추가 버튼 */}
+          {/* 일반메모 추가 버튼 */}
+          {!addItem && (
+            <Button
+              icon={
+                <>
+                  일반메모 <i className="fa-solid fa-plus"></i>
+                </>
+              }
+              id={"add-freeMemoBtn"}
+              className={"freeMemo-add-basic"}
+              onclick={() => {
+                setAddItem(true);
+                setShowTableItem(false);
+              }}
+            />
+          )}
+
+          {/* 표 메모 추가 버튼 */}
           <Button
             icon={
               !addItem ? (
                 <>
-                  새로운 메모 <i className="fa-solid fa-plus"></i>
+                  표 메모 <i className="fa-solid fa-plus"></i>
                 </>
               ) : (
                 <i className="fa-solid fa-xmark"></i>
@@ -247,19 +267,40 @@ const FreeMemo = (props) => {
             id={"add-freeMemoBtn"}
             className={!addItem ? "freeMemo-add-basic" : "freeMemo-add"}
             onclick={() => {
-              setAddItem((prev) => !prev);
+              if (!addItem) {
+                setAddItem(true);
+                setShowTableItem(true);
+              } else {
+                setAddItem(false);
+                setShowTableItem(false);
+              }
             }}
           />
         </div>
 
         {/* 메모 추가할 때 보여질 아이템 */}
-        {addItem && (
+        {addItem && !showTableItem && (
           <div>
             <FreeMemoInput
               saveFreeMemoHandler={saveFreeMemoHandler}
               category={category}
               freeMemo={freeMemo}
               closeHandler={() => setAddItem(false)}
+            />
+          </div>
+        )}
+
+        {/* 메모 추가할 때 보여질 아이템 */}
+        {addItem && showTableItem && (
+          <div>
+            <FreeMemoTableInput
+              saveFreeMemoHandler={saveFreeMemoHandler}
+              category={category}
+              freeMemo={freeMemo}
+              closeHandler={() => {
+                setAddItem(false);
+                setShowTableItem(false);
+              }}
             />
           </div>
         )}
@@ -317,18 +358,40 @@ const FreeMemo = (props) => {
         <ul className={classes["freeMemo-ul"]}>
           {freeMemo
             ?.filter((memo) => memo.category.includes(nowCategory.name))
-            ?.map((item) => (
-              <div key={"memo" + item.title}>
-                <hr className={classes["hr"]} />
-                <FreeMemoInput
-                  item={item}
-                  category={category}
-                  deleteHandler={deleteHandler}
-                  freeMemo={freeMemo}
-                  saveFreeMemoHandler={saveFreeMemoHandler}
-                />
-              </div>
-            ))}
+            ?.map((item) => {
+              let renderedInput;
+              console.log(item);
+              // 표형태로 저장된 경우
+              if (item.text.data) {
+                renderedInput = (
+                  <FreeMemoTableInput
+                    item={item}
+                    category={category}
+                    deleteHandler={deleteHandler}
+                    freeMemo={freeMemo}
+                    saveFreeMemoHandler={saveFreeMemoHandler}
+                  />
+                );
+
+                //일반 텍스트로 저장된 경우
+              } else {
+                renderedInput = (
+                  <FreeMemoInput
+                    item={item}
+                    category={category}
+                    deleteHandler={deleteHandler}
+                    freeMemo={freeMemo}
+                    saveFreeMemoHandler={saveFreeMemoHandler}
+                  />
+                );
+              }
+              return (
+                <div key={"memo" + item.title}>
+                  <hr className={classes["hr"]} />
+                  {renderedInput}
+                </div>
+              );
+            })}
 
           {freeMemo?.filter((memo) => memo.category.includes(nowCategory.name))
             ?.length === 0 && "*해당 카테고리가 포함된 메모가 없습니다!"}

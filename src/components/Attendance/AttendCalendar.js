@@ -1,16 +1,18 @@
 import React, { useState, useEffect } from "react";
 import DatePicker from "react-datepicker";
-import dayjs from "dayjs";
 import "react-datepicker/dist/react-datepicker.css";
 import "../Layout/Calendar.css";
 import { ko } from "date-fns/esm/locale";
 
 const AttendCalendar = (props) => {
-  const [startDate, setStartDate] = useState(props.setStart || new Date());
+  const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(startDate);
 
   useEffect(() => {
     if (props.about === "main") {
+      setStartDate(props.setStart);
+    } else if (props.about === "tableInput") {
+      if (!props.setStart || typeof props.setStart !== "object") return;
       setStartDate(props.setStart);
     }
   }, [props.setStart]);
@@ -36,18 +38,14 @@ const AttendCalendar = (props) => {
       setStartDate(dates);
     }
     props.getDateValue(dates);
+    if (props.about === "tableInput") {
+      props.tableDateChangeHandler(dates);
+    }
   };
 
   const onMonthChange = (month) => {
     props.getMonthValue(month);
   };
-
-  // const now_year = () => {
-  //   //2월부터는 새로운 학년도로 인식
-  //   return +dayjs().format("MM") <= 1
-  //     ? String(+dayjs().format("YYYY") - 1)
-  //     : dayjs().format("YYYY");
-  // };
 
   return (
     <>
@@ -59,8 +57,6 @@ const AttendCalendar = (props) => {
         showMonthDropdown
         onMonthChange={onMonthChange}
         dateFormatCalendar="yyyy년 "
-        // minDate={props.isSubject ? new Date(now_year(), 2, 1) : false}
-        // maxDate={props.isSubject ? new Date(+now_year() + 1, 1, 14) : false}
         endDate={props.about === "attendance" && endDate}
         selectsRange={props.about === "attendance" && true}
         disabledKeyboardNavigation
@@ -69,7 +65,18 @@ const AttendCalendar = (props) => {
         fixedHeight={props.fixedHeight}
         inline={props.inline}
         locale={ko}
-        dateFormat="yy년 MMMM d일(eee)"
+        dateFormat={
+          props.showJustTime
+            ? `aa h:mm`
+            : !props.showTime
+            ? `yy년 MMMM d일(eee)`
+            : `yy년 MMMM d일(eee) aa h:mm`
+        }
+        showTimeSelectOnly={props.showJustTime}
+        timeFormat="aa h:mm"
+        timeInputLabel="입력/선택"
+        showTimeInput={props.showTime}
+        timeIntervals={10}
       />
     </>
   );
