@@ -54,12 +54,18 @@ input {
 
 .memo-section {
   height: 25px;
-  width: 65%;
+  width: 50%;
   margin-left: 10px;
   margin-bottom: 5px;
   padding: 10px;
   overflow-y: hidden;
   resize: none;
+}
+
+@media screen and (min-width: 620px) {
+  .memo-section {
+    width: 74%;
+  }
 }
 
 .simsimMain-input {

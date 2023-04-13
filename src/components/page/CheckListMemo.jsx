@@ -37,19 +37,6 @@ const CheckListMemo = (props) => {
           <span
             id="switch-btn"
             onClick={() => {
-              navigate(`/attendance`, {
-                state: { doWhat: "showAttend" },
-              });
-            }}
-          >
-            <i className="fa-solid fa-user"></i> 출결
-            <br />
-            조회
-          </span>
-
-          <span
-            id="switch-btn"
-            onClick={() => {
               navigate(`/consulting`, {
                 state: { doWhat: "addConsult" },
               });

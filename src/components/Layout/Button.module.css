@@ -125,11 +125,11 @@
   letter-spacing: 1px;
   padding: 1.6vh;
   background-color: #ffbec7;
-  box-shadow: 3px 5px 0 #d2877b;
+  box-shadow: 3px 3px 0 #d2877b;
 }
 
 .check-memo-button {
-  width: 50px;
+  width: 42px;
   margin: 10px 6px;
   display: flex;
   justify-content: center;

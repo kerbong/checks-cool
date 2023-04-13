@@ -32,6 +32,7 @@ const ListMemoInput = (props) => {
   const [nowFocusNameNum, setNowFocusNameNum] = useState("");
   const [activeStdInput, setActiveStdInput] = useState(null);
   const [deleteDone, setDeleteDone] = useState(false);
+  const [textareaDefValue, setTextareaDefValue] = useState([]);
 
   //기존자료의 경우.. 시작날짜를 기존 날짜로!
   useEffect(() => {
@@ -285,39 +286,106 @@ const ListMemoInput = (props) => {
     document.getElementById(stdName_num).focus();
   };
 
+  const gradeSelectHandler = (e, num) => {
+    let new_textareaDefV = textareaDefValue?.map((student) => {
+      let new_value = student;
+      if (student.num === num) {
+        new_value = { ...student, memo: e.target.value };
+      }
+      return new_value;
+    });
+    setTextareaDefValue(new_textareaDefV);
+    // let nowStdTextarea = e.target.parentNode.children[4];
+    // nowStdTextarea.value = e.target.value;
+  };
+
+  const wholeGradeHandler = (grade) => {
+    Swal.fire({
+      icon: "warning",
+      title: "일괄입력 확인",
+      text: `${grade}로 모든 학생을 일괄입력 하시겠어요? (기존에 입력된 정보는 모두 삭제됩니다!)`,
+      showDenyButton: true,
+      confirmButtonColor: "#db100cf2",
+      denyButtonColor: "#85bd82",
+      denyButtonText: "취소",
+      confirmButtonText: "확인",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        //textarea default state 바꿔주기
+        let textareaDefV = students?.map((student) => {
+          return { ...student, memo: grade };
+        });
+        setTextareaDefValue(textareaDefV);
+      }
+    });
+  };
+
+  //디폴트값 설정함수
+  const setTextareaValue = (stds) => {
+    let textareaDefV = stds?.map((student, std_index) => {
+      let nowDefaultValue =
+        studentMemo?.filter((data) => +student.num === +data.num)[0]?.memo ||
+        "";
+      return { ...student, memo: nowDefaultValue };
+    });
+    setTextareaDefValue(textareaDefV);
+  };
+
+  //textarea의 default값 설정해두기
+  useEffect(() => {
+    setTextareaValue(students);
+  }, [students]);
+
   //이름과 인풋창 보여주는 함수
   const makeNameInputArea = (noInputFirst) => {
     const showInputArea = (students) => {
-      return students?.map((student) => (
-        <li className={classes["li-section"]} key={student.num}>
-          <div className={classes["num-section"]}>{student.num}</div>
-          <div className={classes["name-section"]}>{student.name}</div>
-          {/* 1100px넘어가면 매잘,잘,보통,노력요함,매우노력요함 버튼 보임. */}
-          {/*그 전에는 셀렉트 태그로 보여주기 */}
-          <Input
-            id={student.name + "-" + student.num + "-" + student.woman}
-            myKey={"textArea" + student.num}
-            className={"memo-section"}
-            label="inputData"
-            input={{
-              type: "textarea",
-              onFocus: () => {
-                setActiveStdInput(student.name + "-" + student.num);
-              },
-            }}
-            getValue={true}
-            getValueHandler={getValueHandler}
-            defaultValue={
-              //자료가 있으면 length가 undefined가 나오고 없으면 0이 나옴. 자료 있을 때만 저장되어 있던거 보여주기
-              studentMemo?.filter((data) => +student.num === +data.num).length >
-              0
-                ? studentMemo?.filter((data) => +student.num === +data.num)[0]
-                    .memo
-                : ""
-            }
-          />
-        </li>
-      ));
+      return students?.map((student) => {
+        return (
+          <li className={classes["li-section"]} key={student.num}>
+            <div className={classes["num-section"]}>{student.num}</div>
+            <div className={classes["name-section"]}>{student.name}</div>
+            {/*그 전에는 셀렉트 태그로 보여주기 */}
+            <select
+              defaultChecked={""}
+              onChange={(e) => gradeSelectHandler(e, student.num)}
+              className={classes["gradeSelect-section"]}
+            >
+              <option value="">-단계-</option>
+              {props.scoreGrade?.map((grade, i) => (
+                <option key={i} value={grade}>
+                  {grade}
+                </option>
+              ))}
+            </select>
+
+            {/* 1100px넘어가면 매잘,잘,보통,노력요함,매우노력요함 버튼 보임. */}
+
+            <Input
+              id={student.name + "-" + student.num + "-" + student.woman}
+              myKey={"textArea" + student.num}
+              className={"memo-section"}
+              label="inputData"
+              input={{
+                type: "textarea",
+                onFocus: () => {
+                  setActiveStdInput(student.name + "-" + student.num);
+                },
+              }}
+              getValue={true}
+              getValueHandler={getValueHandler}
+              defaultValue={
+                // //자료가 있으면 length가 undefined가 나오고 없으면 0이 나옴. 자료 있을 때만 저장되어 있던거 보여주기
+                textareaDefValue?.filter((data) => +student.num === +data.num)
+                  .length > 0
+                  ? textareaDefValue?.filter(
+                      (data) => +student.num === +data.num
+                    )[0].memo
+                  : ""
+              }
+            />
+          </li>
+        );
+      });
     };
 
     //noinput stds
@@ -351,7 +419,6 @@ const ListMemoInput = (props) => {
     );
 
     const showStdNameBtns = (stds) => {
-      console.log(stds);
       return stds?.map((data) => (
         <Button
           title="클릭하면 해당학생 입력창으로 이동"
@@ -480,7 +547,19 @@ const ListMemoInput = (props) => {
         </div>
       </h2>
 
-      <p className={classes["upDownDiv"]}>* 10초간 입력이 없으면 자동저장</p>
+      <p className={classes["upDownDiv"]}>
+        * 10초간 입력이 없으면 자동저장
+        &nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;일괄입력&nbsp;
+        {props.scoreGrade?.map((grade) => (
+          <Button
+            key={"whole" + grade}
+            onclick={() => wholeGradeHandler(grade)}
+            name={grade}
+            className={"checkList-button"}
+            style={{ backgroundColor: "#e5b8b8" }}
+          />
+        ))}
+      </p>
       <ul className={classes["ul-section"]}>
         {students?.length > 0 && (
           <>

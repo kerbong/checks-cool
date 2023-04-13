@@ -6,10 +6,11 @@ import dayjs from "dayjs";
 import Button from "../Layout/Button";
 import classes from "./CheckLists.module.css";
 import Swal from "sweetalert2";
+import ScoreGradeInput from "./ScoreGradeInput";
 
 import { dbService } from "../../fbase";
 import { onSnapshot, setDoc, doc, getDoc } from "firebase/firestore";
-import { utils, writeFile } from "xlsx";
+// import { utils, writeFile } from "xlsx";
 
 const CheckLists = (props) => {
   const [addCheckItem, setAddCheckItem] = useState(false);
@@ -31,10 +32,27 @@ const CheckLists = (props) => {
 
   //인풋에 전달할 학생정보
   const [inputStudents, setInputStudents] = useState([]);
+  //성적 단계 설정, 모달 보여주기
+  const [showScoreGrade, setShowScoreGrade] = useState(false);
+  const [scoreGrade, setScoreGrade] = useState([]);
 
   const checkListsYear = useRef();
   const listMemoYear = useRef();
   const selectRef = useRef();
+
+  //브라우저에 저장된 평가기록단계가 있으면 불러오고 없으면 기본 4단계로 세팅함.
+  useEffect(() => {
+    const storedInputValues = localStorage.getItem("scoreGrade");
+    if (!storedInputValues) {
+      localStorage.setItem(
+        "scoreGrade",
+        JSON.stringify(["매우잘함", "잘함", "보통", "노력요함"])
+      );
+      setScoreGrade(["매우잘함", "잘함", "보통", "노력요함"]);
+    } else {
+      setScoreGrade(JSON.parse(storedInputValues));
+    }
+  }, []);
 
   const sortList = (list) => {
     const sorted_lists = list.sort(function (a, b) {
@@ -207,29 +225,8 @@ const CheckLists = (props) => {
             await setDoc(firestoreRef, {
               checkLists_data: [...new_datas],
             });
-            // setCheckLists([...new_datas]);
+
             setNowOnCheckLists([...new_datas]);
-
-            // let now_datas = [...nowOnCheckLists];
-            // let now_data_index = undefined;
-            // now_datas.forEach((data, index) => {
-            //   if (data.id === new_item.id) {
-            //     now_data_index = index;
-            //   }
-            // });
-            // if (now_data_index === undefined) {
-            //   now_datas.push(upload_item);
-            // } else {
-            //           //로직이 모두 진행되고 나면 혹시 기존데이터에서 날짜가 바뀐 경우
-            //   if (new_item?.new_id) {
-            //     upload_item = {...upload_item, id: new_item.new_id}
-            //     delete upload_item.new_id
-            //   }
-            //   new_datas[data_index] = upload_item;
-            //   now_datas[now_data_index] = new_item;
-            // }
-
-            // setNowOnCheckLists([...now_datas]);
 
             //처음 자료를 저장하는 경우
           } else {
@@ -285,21 +282,6 @@ const CheckLists = (props) => {
             });
 
             setNowOnListMemo([...new_datas]);
-
-            // let now_datas = [...nowOnListMemo];
-            // let now_data_index = undefined;
-            // now_datas.forEach((data, index) => {
-            //   if (data.id === new_item.id) {
-            //     now_data_index = index;
-            //   }
-            // });
-            // if (now_data_index === undefined) {
-            //   now_datas.push(new_item);
-            // } else {
-            //   now_datas[now_data_index] = new_item;
-            // }
-
-            // setNowOnListMemo([...now_datas]);
 
             //처음 자료를 저장하는 경우
           } else {
@@ -444,51 +426,51 @@ const CheckLists = (props) => {
   };
 
   //엑셀로 저장하기 함수
-  const saveExcelHandler = () => {
-    // listmemo가 없으면 저장하지 않기
-    if (listMemo.length === 0) {
-      return;
-    }
+  // const saveExcelHandler = () => {
+  //   // listmemo가 없으면 저장하지 않기
+  //   if (listMemo.length === 0) {
+  //     return;
+  //   }
 
-    // console.log(listMemo);
-    const new_datas = [];
-    listMemo.forEach((memo) => {
-      memo.data.forEach((stud) => {
-        let data = [+stud.num, stud.name, memo.title, stud.memo];
-        if (props.isSubject) {
-          data.unshift(memo.clName);
-        }
-        new_datas.push(data);
-      });
-    });
-    if (props.isSubject) {
-      new_datas.unshift(["반", "번호", "이름", "개별기록 제목", "기록내용"]);
-    } else {
-      new_datas.unshift(["번호", "이름", "개별기록 제목", "기록내용"]);
-    }
-    //새로운 가상 엑셀파일 생성
-    const book = utils.book_new();
-    const listMemo_datas = utils.aoa_to_sheet(new_datas);
-    //셀의 넓이 지정
-    listMemo_datas["!cols"] = [
-      { wpx: 40 },
-      { wpx: 50 },
-      { wpx: 100 },
-      { wpx: 300 },
-    ];
-    if (props.isSubject) {
-      listMemo_datas["!cols"].unshift({ wpx: 40 });
-    }
-    //시트에 작성한 데이터 넣기
-    utils.book_append_sheet(book, listMemo_datas, "개별기록");
+  //   // console.log(listMemo);
+  //   const new_datas = [];
+  //   listMemo.forEach((memo) => {
+  //     memo.data.forEach((stud) => {
+  //       let data = [+stud.num, stud.name, memo.title, stud.memo];
+  //       if (props.isSubject) {
+  //         data.unshift(memo.clName);
+  //       }
+  //       new_datas.push(data);
+  //     });
+  //   });
+  //   if (props.isSubject) {
+  //     new_datas.unshift(["반", "번호", "이름", "개별기록 제목", "기록내용"]);
+  //   } else {
+  //     new_datas.unshift(["번호", "이름", "개별기록 제목", "기록내용"]);
+  //   }
+  //   //새로운 가상 엑셀파일 생성
+  //   const book = utils.book_new();
+  //   const listMemo_datas = utils.aoa_to_sheet(new_datas);
+  //   //셀의 넓이 지정
+  //   listMemo_datas["!cols"] = [
+  //     { wpx: 40 },
+  //     { wpx: 50 },
+  //     { wpx: 100 },
+  //     { wpx: 300 },
+  //   ];
+  //   if (props.isSubject) {
+  //     listMemo_datas["!cols"].unshift({ wpx: 40 });
+  //   }
+  //   //시트에 작성한 데이터 넣기
+  //   utils.book_append_sheet(book, listMemo_datas, "개별기록");
 
-    writeFile(
-      book,
-      `${listMemoYear.current.value}학년도 개별기록(${dayjs().format(
-        "YYYY-MM-DD"
-      )}).xlsx`
-    );
-  };
+  //   writeFile(
+  //     book,
+  //     `${listMemoYear.current.value}학년도 개별기록(${dayjs().format(
+  //       "YYYY-MM-DD"
+  //     )}).xlsx`
+  //   );
+  // };
 
   //전담만 나오는, 학급 셀렉트 선택시 실행되는 함수
   const selectClassHandler = () => {
@@ -758,6 +740,7 @@ const CheckLists = (props) => {
 
       {props.about === "listMemo" && (
         <>
+          {/* 리스트 메모 추가 모달 화면 */}
           {addListMemo && (
             <Modal
               addStyle={"addOverflow"}
@@ -774,6 +757,7 @@ const CheckLists = (props) => {
                     woman: data.woman,
                   })
                 )}
+                scoreGrade={scoreGrade}
                 students={!isSubject ? students : inputStudents}
                 onClose={() => setAddListMemo(false)}
                 saveItemHandler={(item, auto) => {
@@ -792,6 +776,20 @@ const CheckLists = (props) => {
             </Modal>
           )}
 
+          {/* 성적 단계 세팅 화면 */}
+          {showScoreGrade && (
+            <Modal
+              addStyle={"addOverflow"}
+              onClose={() => {
+                setShowScoreGrade(false);
+              }}
+            >
+              <ScoreGradeInput
+                scoreGradeValue={(v) => setScoreGrade(v)}
+                closeHandler={() => setShowScoreGrade(false)}
+              />
+            </Modal>
+          )}
           {/* 학년도 / 학급셀렉트 버튼 */}
 
           <div className={classes["listMemoBtn-div"]}>
@@ -870,12 +868,21 @@ const CheckLists = (props) => {
               </div>
             )}
 
+            {/* 성적 단계 설정하는 버튼 */}
             <Button
+              icon={<i className="fa-solid fa-list-ol"></i>}
+              id={"save-listMemoBtn"}
+              className={"check-memo-button"}
+              onclick={() => setShowScoreGrade(true)}
+            />
+
+            {/* 엑셀저장버튼 */}
+            {/* <Button
               icon={<i className="fa-regular fa-floppy-disk"></i>}
               id={"save-listMemoBtn"}
               className={"check-memo-button"}
               onclick={saveExcelHandler}
-            />
+            /> */}
           </div>
           <div className={classes["flex-wrap"]}>
             {/* 명렬표에서 입력한 자료들도 보여주기 */}

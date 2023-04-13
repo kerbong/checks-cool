@@ -1,10 +1,15 @@
 .ul-section,
-.date-title {
+.date-title,
+.grade-section {
   display: flex;
   flex-direction: column;
   margin: 5px;
   padding: 5px;
   width: 100%;
+}
+
+.grade-section {
+  justify-content: center;
 }
 
 .date-title {
@@ -19,20 +24,17 @@
 .name-section {
   padding: 5px;
   width: 18%;
+  max-width: 70px;
 }
 
 .num-section {
-  width: 7%;
+  width: 5%;
+  max-width: 25px;
 }
 
-.memo-section {
-  height: 25px;
-  width: 65%;
-  margin-left: 10px;
-  margin-bottom: 5px;
-  padding: 10px;
-  overflow-y: hidden;
-  resize: none;
+.gradeSelect-section {
+  max-width: 90px;
+  width: 25%;
 }
 
 .closeBtn {
@@ -57,6 +59,7 @@
   display: flex;
   margin: 5px;
   justify-content: center;
+  align-items: center;
 }
 
 .x-classDiv {
@@ -122,4 +125,39 @@
 
 .lineH-1 {
   line-height: 1px;
+}
+
+.scoreBtn {
+  width: auto;
+  margin: 15px;
+  font-size: 1rem;
+  border-radius: 10px;
+  border-width: 0;
+  letter-spacing: 3px;
+  padding: 12px 25px;
+  background-color: #ed8e64;
+}
+
+.btns-div {
+  display: flex;
+  justify-content: space-evenly;
+}
+
+.grade-input {
+  width: 12%;
+  min-width: 80px;
+  margin: 5px;
+}
+
+.inputs-div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+@media screen and (min-width: 800px) {
+  .inputs-div {
+    flex-direction: row;
+    justify-content: center;
+  }
 }

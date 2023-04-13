@@ -284,18 +284,6 @@ const ConsultingPage = (props) => {
             기록
           </span>
 
-          <span
-            id="switch-btn"
-            onClick={() => {
-              navigate(`/attendance`, {
-                state: { doWhat: "showAttend" },
-              });
-            }}
-          >
-            <i className="fa-solid fa-user"></i> 출결
-            <br />
-            조회
-          </span>
           <span id="switch-btn" onClick={showCalHandler}>
             <>
               <i className="fa-regular fa-comments"></i> 상담

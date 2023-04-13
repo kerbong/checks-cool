@@ -35,7 +35,6 @@ const Input = React.forwardRef((props, ref) => {
   };
 
   const changeHandler = (e) => {
-    // console.log(noteRef.current.value);
     setValue(noteRef.current.value);
     if (props.getValue) {
       props.getValueHandler(e);

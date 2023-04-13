@@ -4,7 +4,6 @@ import AttendCtxCalendar from "../Attendance/AttendCtxCalendar";
 import dayjs from "dayjs";
 import Attendance from "../Attendance/Attendance";
 import Student from "../Student/Student";
-import AttendEachLists from "../Attendance/AttendEachLists";
 import ExampleModal from "../page/ExampleModal";
 import calendar from "../../assets/attend/calendar.gif";
 import list from "../../assets/attend/list.gif";
@@ -84,14 +83,6 @@ const StudentCalendarLayout = (props) => {
     setAllFalse();
     setShowCalendar(true);
   };
-  const showEachStudentHandler = () => {
-    setAllFalse();
-    setShowEachStudent(true);
-  };
-  const showStudentsListHandler = () => {
-    setAllFalse();
-    setShowStudentsList(true);
-  };
 
   const titleDivBtns = (
     <div id="title-div">
@@ -114,12 +105,6 @@ const StudentCalendarLayout = (props) => {
           <i className="fa-regular fa-calendar-days"></i> 출결
           <br />
           기록
-        </span>
-
-        <span id="switch-btn" onClick={showEachStudentHandler}>
-          <i className="fa-solid fa-user"></i> 출결
-          <br />
-          조회
         </span>
 
         <span
@@ -238,44 +223,6 @@ const StudentCalendarLayout = (props) => {
               </p>
             </>
           )}
-        </>
-      )}
-
-      {/* 개별학생 출석부 에서 보여줄 버튼,내용 */}
-      {showEachStudent && (
-        <>
-          {/* 전체 학년도 학생목록 */}
-          <AttendEachLists
-            userUid={props.userUid}
-            isSubject={props.isSubject}
-            students={props.students}
-          />
-        </>
-      )}
-
-      {/* 전체 학생명부 에서 보여줄 버튼,내용 */}
-      {/* 전담교사는 반별 학생 명렬표로 기간동안 안나오는 걸 입력할 필요성이 낮으므로 제외 */}
-      {showStudentsList && !isSubject && (
-        <>
-          <div id="title-div">
-            <button id="title-btn" onClick={() => setShowExample(true)}>
-              <i className="fa-regular fa-address-book"></i> 안온사람?
-            </button>
-            <button id="switch-btn" onClick={showCalHandler}>
-              <i className="fa-regular fa-calendar-days"></i> 출결기록
-            </button>
-            <button id="switch-btn" onClick={showEachStudentHandler}>
-              <i className="fa-solid fa-user"></i> 조회
-            </button>
-          </div>
-          {props.students.length === 0 && (
-            <>
-              <div>학생 명단이 존재하지 않네요!</div>
-              <div>메뉴의 곰돌이를 눌러서</div>
-              <div>학생 명단을 먼저 입력해주세요!</div>
-            </>
-          )}
-          <Student students={nowStudents} showOption={showOptionHandler} />
         </>
       )}
 
