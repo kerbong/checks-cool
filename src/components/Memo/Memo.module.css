@@ -218,6 +218,7 @@
   justify-content: space-between;
   margin: 10px 0;
   max-width: 800px;
+  padding: 0 5%;
 }
 
 .flex-space-center-95 {
@@ -237,7 +238,7 @@
 .budgetList-sum {
   display: flex;
   flex-direction: column;
-  margin: 20px 0 -25px 0;
+  margin: -25px 0 -25px 0;
   line-height: 32px;
   font-size: 1.2rem;
   align-items: center;
@@ -446,4 +447,19 @@
 .budget-span {
   word-break: break-all;
   padding: 10px;
+}
+
+.excelBudget-border {
+  padding: 30px;
+  background-color: #efefef;
+  border-radius: 20px;
+  margin: 20px;
+}
+
+.budgetExcelCardChange-btn {
+  padding: 15px;
+  border-radius: 15px;
+  background: #f4e2f5;
+  border-width: 0;
+  margin: 15px;
 }

@@ -80,12 +80,12 @@ const BudgetList = (props) => {
     <div>
       {Object.keys(budget).length > 0 && (
         <>
-          <div>
+          <div className={classes["h2"]}>
             {/* 예산 기본정보 */}
 
             {/* 수정중이 아니면 */}
             {!isBudgetEditing && (
-              <div>
+              <div className={classes["excelBudget-border"]}>
                 <div className={classes["budgetList-sum"]}>
                   <div className={classes["budgetList-upDiv"]}>
                     <div className={classes["budgetList-dateNote"]}>
@@ -155,6 +155,13 @@ const BudgetList = (props) => {
                 />
               </FadeInOut>
             )}
+
+            <button
+              onClick={() => props.setShowBudgetExcelWay((prev) => !prev)}
+              className={classes["budgetExcelCardChange-btn"]}
+            >
+              <i className="fa-solid fa-rotate"></i>표 스타일로 보기
+            </button>
 
             {/* 예산 사용목록 */}
             <ul className={classes["budgetList-ul"]}>

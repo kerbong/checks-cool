@@ -1,13 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { dbService } from "../../fbase";
-import {
-  setDoc,
-  onSnapshot,
-  doc,
-  getDoc,
-  updateDoc,
-  deleteDoc,
-} from "firebase/firestore";
+import { setDoc, onSnapshot, doc, getDoc, updateDoc } from "firebase/firestore";
 import Swal from "sweetalert2";
 import classes from "./Memo.module.css";
 import BudgetInput from "./BudgetInput";
@@ -15,6 +8,7 @@ import BudgetListInput from "./BudgetListInput";
 import BudgetList from "./BudgetList";
 import dayjs from "dayjs";
 import FadeInOut from "components/Layout/FadeInOut";
+import BudgetExcelLists from "./BudgetExcelLists";
 
 const BudgetManage = (props) => {
   const [budgets, setBudgets] = useState([]);
@@ -25,6 +19,7 @@ const BudgetManage = (props) => {
   const [showInput, setShowInput] = useState(false);
   const [showExplain, setShowExplain] = useState(false);
   const [budgetListEdit, setBudgetListEdit] = useState(false);
+  const [showBudgetExcelWay, setShowBudgetExcelWay] = useState(false);
 
   const budgetSelectRef = useRef();
   const budgetYearRef = useRef();
@@ -266,6 +261,11 @@ const BudgetManage = (props) => {
     await updateDoc(budgetRef, { budgets_data: new_budgets });
   };
 
+  const numberComma = (num) => {
+    if (!num) return;
+    return num?.toString()?.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  };
+
   return (
     <div className={classes["budgetAll-div"]}>
       <div className={classes["budgetMenu-div"]}>
@@ -349,18 +349,80 @@ const BudgetManage = (props) => {
           />
         </FadeInOut>
       )}
+
       {/* 지금까지 사용한 예산목록 */}
-      <BudgetList
-        showEditDelete={showInput}
-        budget={nowOnBudget}
-        deleteHandler={(budget) => deleteHandler(budget)}
-        saveBudgetHandler={saveBudgetHandler}
-        deleteBugetHandler={deleteBugetHandler}
-        showBudgetEditHandler={() => setBudgetListEdit(true)}
-        showInput={showInput}
-        budgetListEdit={budgetListEdit}
-        editBudgetHandler={editBudgetHandler}
-      />
+      {!showBudgetExcelWay && (
+        <BudgetList
+          showEditDelete={showInput}
+          budget={nowOnBudget}
+          deleteHandler={(budget) => deleteHandler(budget)}
+          saveBudgetHandler={saveBudgetHandler}
+          deleteBugetHandler={deleteBugetHandler}
+          showBudgetEditHandler={() => setBudgetListEdit(true)}
+          showInput={showInput}
+          budgetListEdit={budgetListEdit}
+          editBudgetHandler={editBudgetHandler}
+          setShowBudgetExcelWay={setShowBudgetExcelWay}
+        />
+      )}
+
+      {/* 엑셀형식으로 보여주기, 수정, 삭제안됨 */}
+      {showBudgetExcelWay && (
+        <div className={classes["h2"]}>
+          {/* 예산 요약 부분 */}
+          <div className={classes["excelBudget-border"]}>
+            <div className={classes["budgetList-sum"]}>
+              <div className={classes["budgetList-upDiv"]}>
+                <div className={classes["budgetList-dateNote"]}>
+                  <span>사용기한 : {nowOnBudget?.until}</span>
+                </div>
+              </div>
+              <div className={classes["budgetList-upDiv"]}>
+                <span>
+                  비&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;고 :{" "}
+                  {nowOnBudget?.note || "없음"}
+                </span>
+              </div>
+              <div className={classes["budgetList-desc"]}>
+                <span>
+                  <p>총</p> {numberComma(nowOnBudget?.totalAmount)}원
+                </span>
+                <span>
+                  <p>사용</p>{" "}
+                  {numberComma(
+                    nowOnBudget?.useLists
+                      ?.map((list) => +list.amount)
+                      ?.reduce((a, b) => a + b, 0)
+                  )}
+                  원
+                </span>
+
+                <span className={classes["remain-p"]}>
+                  <p>남음</p>{" "}
+                  {numberComma(
+                    +nowOnBudget?.totalAmount -
+                      nowOnBudget?.useLists
+                        ?.map((list) => +list.amount)
+                        ?.reduce((a, b) => a + b, 0)
+                  )}
+                  원
+                </span>
+              </div>
+            </div>
+          </div>
+          <button
+            onClick={() => setShowBudgetExcelWay((prev) => !prev)}
+            className={classes["budgetExcelCardChange-btn"]}
+          >
+            <i className="fa-solid fa-rotate"></i>
+            {showBudgetExcelWay
+              ? " 카드 스타일로 보기(수정,삭제 가능)"
+              : " 표 스타일로 보기"}
+          </button>
+          {/* 예산 표로 보여주기 */}
+          <BudgetExcelLists budget={nowOnBudget} />{" "}
+        </div>
+      )}
 
       <div
         onClick={() => setShowExplain((prev) => !prev)}
@@ -368,7 +430,7 @@ const BudgetManage = (props) => {
         style={{ color: "darkgray" }}
       >
         <h2>
-          사용 설명서{" "}
+          🪄 사용 설명서{" "}
           {showExplain ? (
             <i className="fa-solid fa-chevron-up"></i>
           ) : (

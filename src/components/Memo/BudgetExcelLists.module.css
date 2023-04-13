@@ -1,0 +1,64 @@
+.td-date,
+.td-title,
+.td-site,
+.td-note,
+.td-each,
+.td-count,
+.td-amount {
+  padding: 10px;
+  word-break: break-all;
+  overflow: hidden;
+  text-overflow: inherit;
+  white-space: nowrap;
+}
+
+.td-date {
+  width: 10%;
+  max-width: 100px;
+}
+
+.td-title {
+  width: 15%;
+  max-width: 200px;
+}
+
+.td-site {
+  width: 15%;
+  max-width: 250px;
+}
+
+.td-note {
+  width: 15%;
+  max-width: 250px;
+}
+
+.td-amount,
+.td-each {
+  width: 10%;
+  text-align: right;
+}
+.td-count {
+  text-align: right;
+  width: 5%;
+}
+
+.table {
+  width: 100%;
+  table-layout: fixed;
+}
+
+.clicked {
+  white-space: normal;
+}
+.tr {
+  background-color: rgb(213 213 213);
+}
+
+.th {
+  background-color: rgb(171 171 171);
+  color: whitesmoke;
+}
+
+.tr:nth-child(even) {
+  background-color: rgb(231, 231, 231);
+}

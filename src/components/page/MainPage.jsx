@@ -9,22 +9,20 @@ import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import ExampleModal from "./ExampleModal";
 import byExcel from "../../assets/student/teacher-excel.gif";
-import mainImg from "../../assets/notice/0331main.jpg";
+import mainImg from "../../assets/notice/0414main.jpg";
 import dayjs from "dayjs";
 import "dayjs/locale/ko";
 import AttendCalendar from "components/Attendance/AttendCalendar";
-// import consultingOption from "consultingOption";
-dayjs.locale("ko");
+import donationImg from "../../assets/notice/donation.png";
 
-const update_title = `[조회]-[제출/개별] Update!`;
+dayjs.locale("ko");
+const update_title = `상담일정표 필요하시죠?!`;
 
 const update_text = `* 메뉴바의 로그인 버튼 -
-"공지사항"에 들어오시면 내용을 다시 보실 수 있어요.<br/><br/> 메뉴바의 [조회] - [제출/개별] 탭에  기능이 추가, 개선되었습니다! 
-<br/><b>제출/개별</b> 탭에서 기존에 입력했던 자료들을 효과적으로 모아볼 수 있습니다!.<br/> <br/>제출 예시) 1. 매일 <b>제목을 '알림장'</b>으로 제출자료 만들기(추후 검색 쉬움) <br/>2. [조회] - [제출/개별] 이동 <br/>3. 왼쪽 상단 [제출] 클릭 <br/>4. 제목검색에 '알림장' 입력 <br/>5. 비교할 자료 선택 후 완료버튼 클릭! <br/><br/>
-개별기록 예시) 1. <b>제목을 '수학 1단원평가'</b>처럼 개별기록 자료 만들기<u>(숫자로만 입력하기!!)</u> <br/>2. [조회] - [제출/개별] 이동 <br/>3. 제목검색에 '단원평가' 입력 <br/>4. 비교할 자료 선택 후 완료버튼 클릭! <br/><br/>
-이 외에도 [조회] 탭에서 다양한 기능이 가능합니다! 학생별 조회 기능을 통해 쉽게 자료를 확인해보세요!
-<br/> 
-<br/><b>항상 응원해주시고 함께해주시는, 모든 선생님들께 진심으로 감사드립니다!!!</b>🤩 `;
+"공지사항"에 들어오시면 내용을 다시 보실 수 있어요.<br/><br/> 메뉴바의 <b>[메모] - [메모] (폴더모양) 탭에 '표만들기 기능'이 추가</b>되었습니다!🪄<br/>
+<br/>원하는 방식으로 표를 아래와 옆으로 늘릴 수 있으며, 문자, 날짜, 시간, 날짜+시간으로 입력 방식을 간단하게  변경할 수 있습니다! <br/>상담일정표를 비롯해서 다양한 자료를 표 형태로 저장하실 수 있습니다.<br/><br/>
+++ <b>메인페이지에 후원 기능이 추가</b>되었어요! 첵스쿨은 무료 운영을 원칙으로 하고 있습니다! 후원으로 지속적인 서비스 운영이 가능하도록 응원해주세요! 
+<br/><br/><b>항상 응원해주시고 함께해주시는, 모든 선생님들께 진심으로 감사드립니다!!!</b>🤩 `;
 
 //오늘 날짜 yyyy-mm-dd로 만들기
 const getDateHandler = (date, titleOrQuery) => {
@@ -99,7 +97,7 @@ const MainPage = (props) => {
 
   //업데이트 내용 보여주기 로컬스토리지에서 showNotice를 스트링으로 저장해서 확인 후에 이전에 봤으면 안보여주기
   const [showNotice, setShowNotice] = useState(
-    localStorage.getItem("showNotice") === "20230331" ? false : true
+    localStorage.getItem("showNotice") === "20230414" ? false : true
   );
 
   //화면 사이즈가 변경되면.. 시간표의 기본 세팅을 열림으로 바꿔주기.
@@ -1529,7 +1527,7 @@ const MainPage = (props) => {
       {showNotice && (
         <ExampleModal
           onClose={() => {
-            localStorage.setItem("showNotice", "20230331");
+            localStorage.setItem("showNotice", "20230414");
             setShowNotice(false);
           }}
           imgSrc={mainImg}
@@ -1990,23 +1988,46 @@ const MainPage = (props) => {
 
           {/* 모든 데이티 다운받기 부분 */}
           <div className={classes["event-div"]}>
-            <div className={classes["event-title"]}>💾 데이터 저장</div>
+            <div className={classes["event-title"]}>
+              💾 데이터 저장 & 후원하기
+            </div>
             <hr className={classes["main-hr"]} />
-            <p>* 담임용 사용가능! (전담용 개발중...)</p>
-            <p>* 모든 자료 받기를 누르시면, 엑셀저장 버튼이 생성됩니다.</p>
-            <Button
-              name={"모든자료 받기"}
-              className={"show-basicClass-button"}
-              onclick={getAllDataHandler}
-            />
-            {/* 모든자료 불러오고 나면 보이는 저장버튼 */}
-            {getAllDataDone && (
-              <Button
-                name={"엑셀저장"}
-                className={"show-basicClass-button"}
-                onclick={allDataExcelSaveHandler}
-              />
-            )}
+            <p>
+              * 담임용 사용가능! (전담용 개발중...)
+              <br />* 다운 버튼을 누르시면, 저장 버튼이 생성됩니다.
+            </p>
+            <div
+              className={classes["event-title"]}
+              style={{ justifyContent: "space-evenly" }}
+            >
+              <div>
+                <Button
+                  name=" 다운"
+                  style={{ minWidth: "85px" }}
+                  icon={<i className="fa-solid fa-download"></i>}
+                  className={"show-basicClass-button"}
+                  onclick={getAllDataHandler}
+                />
+                {/* 모든자료 불러오고 나면 보이는 저장버튼 */}
+                {getAllDataDone && (
+                  <Button
+                    name=" 저장"
+                    style={{ minWidth: "85px" }}
+                    icon={<i className="fa-regular fa-floppy-disk"></i>}
+                    className={"show-basicClass-button"}
+                    onclick={allDataExcelSaveHandler}
+                  />
+                )}
+              </div>
+
+              <div>
+                <img
+                  src={donationImg}
+                  className={classes.img}
+                  alt="donationImg"
+                />
+              </div>
+            </div>
           </div>
         </div>
       </div>

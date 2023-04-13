@@ -183,7 +183,8 @@
   width: 70%;
   margin: 5px;
   border-radius: 10px;
-  min-height: 40px;
+  min-height: 30px;
+  font-size: 1rem;
 }
 
 .date {
@@ -194,13 +195,6 @@
   min-height: 40px;
   display: flex;
   align-items: center;
-}
-
-@media screen and (min-width: 800px) {
-  .date,
-  .table-input {
-    min-height: 70px;
-  }
 }
 
 .btns-div {
