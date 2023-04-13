@@ -74,19 +74,19 @@ function FreeMemoTableInput(props) {
             data?.seconds * 1000 + data?.nanoseconds / 1000000
           );
         }
-        console.log(new_data);
         return new_data;
       });
       let optionArr = props.item.text?.option;
       let dataRow = +props.item.text?.rows;
-      for (let i = 0; i < dataArr.length; i += dataRow) {
-        new_tableData.push(dataArr.slice(i, i + dataRow));
-        new_tableOption.push(optionArr.slice(i, i + dataRow));
+      let dataCol = dataArr.length / dataRow;
+      for (let i = 0; i < dataArr.length; i += dataCol) {
+        new_tableData.push(dataArr.slice(i, i + dataCol));
+        new_tableOption.push(optionArr.slice(i, i + dataCol));
       }
       setTableData(new_tableData);
       setTableOption(new_tableOption);
       setNumRows(dataRow);
-      setNumCols(dataArr.length / dataRow);
+      setNumCols(dataCol);
     }
   }, [props.item]);
 
@@ -155,6 +155,10 @@ function FreeMemoTableInput(props) {
       setTableData(t_data);
     }
   };
+
+  useEffect(() => {
+    console.log(numRows);
+  }, [numRows]);
 
   const handleSave = () => {
     // 자료검증, 타이틀, 텍스트 있는지
