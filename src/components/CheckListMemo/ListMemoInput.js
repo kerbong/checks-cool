@@ -277,6 +277,7 @@ const ListMemoInput = (props) => {
       setDeleteDone(true);
     }
     //
+    gradeSelectHandler(e, e.target.id.split("-")[1]);
     setNowFocusNameNum(e.target?.id);
   };
 
