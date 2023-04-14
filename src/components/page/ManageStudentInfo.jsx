@@ -415,18 +415,14 @@ const ManageStudentInfo = (props) => {
     let telAll = new_studentsInfo?.map((stud) => (
       <span
         key={stud.studTel}
-        className={`${classes["margin-5"]} ${classes["flex-wrap"]} ${classes["padd-5"]}`}
-        style={{ width: "", alignItems: "center" }}
+        className={`${classes["margin-5"]} ${classes["flex-wrap"]} ${classes["padd-5"]} ${classes["span-left"]}`}
       >
         <span>
           {stud.num} {stud.name}
         </span>{" "}
-        <span
-          className={`${classes["margin-5"]}`}
-          style={{ marginLeft: "15px" }}
-        >
-          {stud.studTel}
-          &nbsp;&nbsp;
+        {stud.studTel}
+        &nbsp;&nbsp;
+        <span>
           <a
             className={classes["a-link"]}
             href={`sms:${stud?.studTel}${checkMobile()}body=`}
@@ -468,40 +464,40 @@ const ManageStudentInfo = (props) => {
       <div
         key={stud.momTel}
         className={`${classes["bottom-content-li"]} ${classes["flex-wrap"]} ${classes["fs-11"]}`}
-        style={{ width: "300px" }}
+        style={{ width: "350px" }}
       >
         <h3 style={{ width: "300px", marginBottom: "-5px" }}>
           {stud.num} {stud.name}
           <hr className={classes["margin-15"]} />
         </h3>{" "}
         <span
-          className={`${classes["margin-5"]} ${classes["flex-wrap"]} ${classes["padd-5"]}`}
-          style={{ width: "", alignItems: "center" }}
+          className={`${classes["margin-5"]} ${classes["flex-wrap"]} ${classes["padd-5"]} ${classes["span-left"]}`}
         >
-          <span className={`${classes["margin-5"]}`}>(부) {stud.dad}</span>{" "}
+          <span className={`${classes["margin-5"]}`}>(부) {stud.dad}</span>
           &nbsp;&nbsp;
-          <span className={`${classes["margin-5"]}`}>{stud.dadTel}</span>
+          {stud.dadTel}
           &nbsp;&nbsp;
-          <a
-            className={classes["a-link"]}
-            href={`sms:${stud?.dadTel}${checkMobile()}body=안녕하세요 아버님`}
-          >
-            <i className="fa-regular fa-comment-dots"></i>
-          </a>
-          &nbsp;&nbsp;
-          <a className={classes["a-link"]} href={`tel:${stud?.dadTel}`}>
-            <i className="fa-solid fa-phone"></i>
-          </a>
+          <span>
+            <a
+              className={classes["a-link"]}
+              href={`sms:${stud?.dadTel}${checkMobile()}body=안녕하세요 아버님`}
+            >
+              <i className="fa-regular fa-comment-dots"></i>
+            </a>
+            &nbsp;&nbsp;
+            <a className={classes["a-link"]} href={`tel:${stud?.dadTel}`}>
+              <i className="fa-solid fa-phone"></i>
+            </a>
+          </span>
         </span>
         <span
-          className={`${classes["margin-5"]} ${classes["flex-wrap"]} ${classes["padd-5"]}`}
-          style={{ width: "", alignItems: "center" }}
+          className={`${classes["margin-5"]} ${classes["flex-wrap"]} ${classes["padd-5"]} ${classes["span-left"]}`}
         >
           <span className={`${classes["margin-5"]}`}>(모) {stud.mom}</span>
           &nbsp;&nbsp;
-          <span className={`${classes["margin-5"]}`}>
-            {stud.momTel}
-            &nbsp;&nbsp;
+          {stud.momTel}
+          &nbsp;&nbsp;
+          <span>
             <a
               className={classes["a-link"]}
               href={`sms:${stud?.momTel}${checkMobile()}body=안녕하세요 어머님`}
@@ -542,18 +538,15 @@ const ManageStudentInfo = (props) => {
         <span
           key={stud.num + "bns"}
           className={`${classes["margin-5"]} ${classes["flex-wrap"]} ${classes["padd-5"]}`}
-          style={{ width: "", alignItems: "center" }}
+          style={{ width: "auto", alignItems: "center" }}
         >
           <span>
-            {stud.num} {stud.name}
+            <b>
+              {stud.num} {stud.name}
+            </b>
           </span>
-          &nbsp;&nbsp;
-          <span
-            className={`${classes["margin-5"]}`}
-            style={{ marginLeft: "15px" }}
-          >
-            {stud.bns}
-          </span>
+
+          <span className={`${classes["margin-5"]}`}> 👉 {stud.bns}</span>
         </span>
       );
     });
@@ -638,67 +631,84 @@ const ManageStudentInfo = (props) => {
         </p>
       </>
     );
+
     const telHtml = (
       <>
         <h3>연락처 모음</h3>
         <hr className={classes["margin-15"]} />
-        <p>
-          <b>(부) {onStudentInfo?.dad || "-"}</b> &nbsp;&nbsp;{" "}
+        <span
+          className={`${classes["margin-5"]} ${classes["flex-wrap"]} ${classes["padd-5"]} ${classes["span-left"]}`}
+        >
+          <span>
+            <b>(부) {onStudentInfo?.dad || "-"}</b>
+          </span>{" "}
           {onStudentInfo?.dadTel || "-"}
           &nbsp;&nbsp;
-          <a
-            className={classes["a-link"]}
-            href={`sms:${
-              onStudentInfo?.dadTel
-            }${checkMobile()}body=안녕하세요 아버님`}
-          >
-            <i className="fa-regular fa-comment-dots"></i>
-          </a>
+          <span>
+            <a
+              className={classes["a-link"]}
+              href={`sms:${
+                onStudentInfo?.dadTel
+              }${checkMobile()}body=안녕하세요 아버님`}
+            >
+              <i className="fa-regular fa-comment-dots"></i>
+            </a>
+            &nbsp;&nbsp;
+            <a
+              className={classes["a-link"]}
+              href={`tel:${onStudentInfo?.dadTel}`}
+            >
+              <i className="fa-solid fa-phone"></i>
+            </a>
+          </span>
+        </span>
+        <span
+          className={`${classes["margin-5"]} ${classes["flex-wrap"]} ${classes["padd-5"]} ${classes["span-left"]}`}
+        >
+          <span>
+            <b>(모) {onStudentInfo?.mom || "-"}</b>
+          </span>{" "}
+          &nbsp;&nbsp; {onStudentInfo?.momTel || "-"}
           &nbsp;&nbsp;
-          <a
-            className={classes["a-link"]}
-            href={`tel:${onStudentInfo?.dadTel}`}
-          >
-            <i className="fa-solid fa-phone"></i>
-          </a>
-        </p>
-        <p>
-          <b>(모) {onStudentInfo?.mom || "-"}</b> &nbsp;&nbsp;{" "}
-          {onStudentInfo?.momTel || "-"}
-          &nbsp;&nbsp;
-          <a
-            className={classes["a-link"]}
-            href={`sms:${
-              onStudentInfo?.momTel
-            }${checkMobile()}body=안녕하세요 어머님`}
-          >
-            <i className="fa-regular fa-comment-dots"></i>
-          </a>
-          &nbsp;&nbsp;
-          <a
-            className={classes["a-link"]}
-            href={`tel:${onStudentInfo?.momTel}`}
-          >
-            <i className="fa-solid fa-phone"></i>
-          </a>
-        </p>
-        <p>
+          <span>
+            <a
+              className={classes["a-link"]}
+              href={`sms:${
+                onStudentInfo?.momTel
+              }${checkMobile()}body=안녕하세요 어머님`}
+            >
+              <i className="fa-regular fa-comment-dots"></i>
+            </a>
+            &nbsp;&nbsp;
+            <a
+              className={classes["a-link"]}
+              href={`tel:${onStudentInfo?.momTel}`}
+            >
+              <i className="fa-solid fa-phone"></i>
+            </a>
+          </span>
+        </span>
+        <span
+          className={`${classes["margin-5"]} ${classes["flex-wrap"]} ${classes["padd-5"]} ${classes["span-left"]}`}
+        >
           <b>학생</b> &nbsp;&nbsp; {onStudentInfo?.studTel || "-"}
           &nbsp;&nbsp;
-          <a
-            className={classes["a-link"]}
-            href={`sms:${onStudentInfo?.studTel}${checkMobile()}body=`}
-          >
-            <i className="fa-regular fa-comment-dots"></i>
-          </a>
-          &nbsp;&nbsp;
-          <a
-            className={classes["a-link"]}
-            href={`tel:${onStudentInfo?.studTel}`}
-          >
-            <i className="fa-solid fa-phone"></i>
-          </a>
-        </p>
+          <span>
+            <a
+              className={classes["a-link"]}
+              href={`sms:${onStudentInfo?.studTel}${checkMobile()}body=`}
+            >
+              <i className="fa-regular fa-comment-dots"></i>
+            </a>
+            &nbsp;&nbsp;
+            <a
+              className={classes["a-link"]}
+              href={`tel:${onStudentInfo?.studTel}`}
+            >
+              <i className="fa-solid fa-phone"></i>
+            </a>
+          </span>
+        </span>
       </>
     );
     const bnsEtcHtml = (
@@ -717,22 +727,31 @@ const ManageStudentInfo = (props) => {
     );
     const htmlDatas = [telHtml, bnsEtcHtml, birthHtml];
     return (
-      <div className={`${classes["flex-wrap"]}`}>
-        {htmlNums?.map((num) => (
+      <>
+        <div className={classes["flex-center"]}>
           <div
-            key={"htmlInfoData" + num}
-            className={`${classes["bottom-content-li"]}`}
-            style={{ width: "300px" }}
+            className={`${classes["bottom-content-li"]} ${classes["onStudent-name"]}`}
           >
-            {htmlDatas[num]}
+            <h2>{onStudentInfo?.name} 정보 모음</h2>
           </div>
-        ))}
-        <p>
-          * 정보가 - 로 표시될 경우 업로드한 엑셀파일에 자료가 정확히
-          입력되었는지 확인해주세요. 지속적으로 문제가 생기시면, [잼잼] -
-          [이거해요] 혹은 kerbong@gmail.com으로 알려주세요!
-        </p>
-      </div>
+        </div>
+        <div className={`${classes["flex-wrap"]}`}>
+          {htmlNums?.map((num) => (
+            <div
+              key={"htmlInfoData" + num}
+              className={`${classes["bottom-content-li"]}`}
+              style={{ width: "330px" }}
+            >
+              {htmlDatas[num]}
+            </div>
+          ))}
+          <p>
+            * 정보가 - 로 표시될 경우 업로드한 엑셀파일에 자료가 정확히
+            입력되었는지 확인해주세요. 지속적으로 문제가 생기시면, [교사랑] -
+            [이거해요] 혹은 kerbong@gmail.com으로 알려주세요!
+          </p>
+        </div>
+      </>
     );
   };
 

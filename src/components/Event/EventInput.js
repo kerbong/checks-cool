@@ -5,8 +5,8 @@ import Button from "../Layout/Button";
 import Student from "../Student/Student";
 import Modal from "../Layout/Modal";
 import Swal from "sweetalert2";
-import { scheduleJob } from "node-schedule";
-import dayjs from "dayjs";
+// import { scheduleJob } from "node-schedule";
+// import dayjs from "dayjs";
 
 const EventInput = (props) => {
   const [student, setStudent] = useState("");
@@ -341,20 +341,30 @@ const EventInput = (props) => {
               }}
             />
           </form>
-          {optionsSet?.length > 0 && (
+          {props.about === "attendance" && optionsSet?.length > 0 && (
             <>
               <span className={classes["optionsSet"]}>
+                <span className={classes["optionsSet"]}>
+                  * 저장된 출결정보:
+                </span>
                 {[...new Set(optionsSet)]?.map((option) => (
                   <span
                     key={`optionSet-${option}`}
                     className={classes["optionsSet"]}
                   >
+                    🙂
                     {option?.slice(1)}{" "}
-                    {optionsSet?.filter((op) => op === option).length}회
+                    {optionsSet?.filter((op) => op === option).length}일
                   </span>
                 ))}
               </span>
             </>
+          )}
+
+          {props.about === "attendance" && optionsSet?.length === 0 && (
+            <span className={classes["optionsSet"]}>
+              * 저장된 출결 자료가 없어요!
+            </span>
           )}
         </div>
       </li>

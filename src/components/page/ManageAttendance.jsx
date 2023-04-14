@@ -432,7 +432,7 @@ const ManageAttendance = (props) => {
                 className={classes["bottom-content-li"]}
                 style={{ minWidth: "200px" }}
               >
-                {onStudent} | 출결 요약
+                <b> {onStudent} | 출결 요약</b>
                 <hr className={classes["margin-15"]} />
                 {onAttends?.length === 0 ? (
                   <div
@@ -519,7 +519,11 @@ const ManageAttendance = (props) => {
                 </li>
               )}
             </div>
-
+            {showDelete && (
+              <p style={{ color: "white" }}>
+                * 삭제할 출결자료를 선택하시고 확인을 눌러주세요.
+              </p>
+            )}
             <div className={classes["btns-div"]} style={{ flexWrap: "wrap" }}>
               {/* 개별 출결기록 */}
               {showOnAttends?.map((attend) => (
@@ -660,24 +664,26 @@ const ManageAttendance = (props) => {
                         ),
                       ]
                     : [...new Set(attends?.map((atd) => +atd.id.slice(5, 7)))]
-                  )?.map((month) => (
-                    <>
-                      {/* 월별 버튼 */}
-                      <Button
-                        key={`${month}월`}
-                        id={`${month}월`}
-                        className={
-                          showAttendMonth === month
-                            ? "sortBtn-clicked"
-                            : "sortBtn"
-                        }
-                        name={`${month}월`}
-                        onclick={() => {
-                          setShowAttendMonth(month);
-                        }}
-                      />
-                    </>
-                  ))}
+                  )
+                    ?.sort((a, b) => (a > b ? 1 : -1))
+                    ?.map((month) => (
+                      <>
+                        {/* 월별 버튼 */}
+                        <Button
+                          key={`${month}월`}
+                          id={`${month}월`}
+                          className={
+                            showAttendMonth === month
+                              ? "sortBtn-clicked"
+                              : "sortBtn"
+                          }
+                          name={`${month}월`}
+                          onclick={() => {
+                            setShowAttendMonth(month);
+                          }}
+                        />
+                      </>
+                    ))}
                 </li>
               )}
             </div>

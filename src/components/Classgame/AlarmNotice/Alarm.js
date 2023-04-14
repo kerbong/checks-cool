@@ -170,6 +170,10 @@ const Alarm = (props) => {
       let yesterYMD = dayjs(todayYyyymmdd)
         .subtract(1, "d")
         .format("YYYY-MM-DD");
+      // 만약 오늘이 월요일이면, 금요일 자료 가져오기
+      if (dayjs(todayYyyymmdd).day() === 1) {
+        yesterYMD = dayjs(todayYyyymmdd).subtract(3, "d").format("YYYY-MM-DD");
+      }
       let yesterData = alarmLists.filter((al) => al.id === yesterYMD);
       //어제 자료 있으면
       if (yesterData.length > 0) {

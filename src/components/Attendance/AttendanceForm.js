@@ -8,7 +8,7 @@ import Button from "components/Layout/Button";
 import ConsultRelated from "components/Consult/ConsultRelated";
 
 import { dbService } from "../../fbase";
-import { onSnapshot, setDoc, doc } from "firebase/firestore";
+import { onSnapshot, setDoc, doc, getDoc } from "firebase/firestore";
 import AudioRecord from "components/Consult/AudioRecord";
 
 const AttendanceForm = (props) => {
@@ -20,6 +20,7 @@ const AttendanceForm = (props) => {
   const [attendEvents, setAttendEvents] = useState([]);
   const [showStudent, setShowStudent] = useState(false);
   const [relatedStudent, setRelatedStudent] = useState([]);
+  const [optionsSet, setOptionsSet] = useState([]);
 
   const noteRef = useRef(null);
 
@@ -239,6 +240,34 @@ const AttendanceForm = (props) => {
     setRelatedStudent(new_relatedStudent);
   };
 
+  const getAttendsFromDb = async () => {
+    let attendRef = doc(dbService, "attend", props.userUid);
+    let events = [];
+    // console.log(queryWhere);
+    const attendDoc = await getDoc(attendRef);
+    if (attendDoc.exists()) {
+      events = attendDoc.data()?.attend_data;
+    }
+    if (!events || events?.length === 0 || props.students?.length === 0) return;
+
+    // 출결에서만 나오는..거..!! 현재학생 정보만 거르고
+    let now_studentEvents = events?.filter(
+      (evt) => evt.name === props.who.split(" ")[1]
+    );
+    let new_optionsSet = [];
+    now_studentEvents?.forEach((evt) => {
+      new_optionsSet.push(evt.option);
+    });
+    setOptionsSet(new_optionsSet);
+  };
+
+  //학생을 선택하면, 그 학생이 지금까지 썼던 출결관련 내용 간략하게 보여줌.
+  useEffect(() => {
+    if (props.about !== "attendance") return;
+    getAttendsFromDb();
+    //전체 이벤트 받아오기
+  }, [props.students]);
+
   return (
     <>
       {/* 상담에서만 true false로 만들 수 있는, 관련학생 선택하는 모달창 */}
@@ -261,6 +290,32 @@ const AttendanceForm = (props) => {
           setOption(option);
         }}
       />
+
+      {/* 출결일 경우, 이미 사용했던 출결관련 기록 보여주기 */}
+      {props.about === "attendance" && optionsSet?.length > 0 && (
+        <>
+          <span className={classes["optionsSet"]}>
+            <span className={classes["optionsSet"]}>* 저장된 출결정보:</span>
+            {[...new Set(optionsSet)]?.map((option) => (
+              <span
+                key={`optionSet-${option}`}
+                className={classes["optionsSet"]}
+              >
+                🙂
+                {option?.slice(1)}{" "}
+                {optionsSet?.filter((op) => op === option).length}일
+              </span>
+            ))}
+          </span>
+        </>
+      )}
+
+      {props.about === "attendance" && optionsSet?.length === 0 && (
+        <span className={classes["optionsSet"]}>
+          * 저장된 출결 자료가 없어요!
+        </span>
+      )}
+
       {/* 상담일 경우, 관련학생 기록하기 */}
       {props.about === "consulting" && (
         <div className={classes.btnArea}>

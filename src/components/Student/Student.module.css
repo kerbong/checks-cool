@@ -1,6 +1,6 @@
 .div {
   display: flex;
-  justify-content: space-evenly;
+  justify-content: center;
   align-content: flex-start;
   flex-wrap: wrap;
   height: auto;
