@@ -869,7 +869,7 @@ const MainPage = (props) => {
 
   //모든 데이터 받아오는 함수, 없던 데이터들 받아오기
   const getAllDataHandler = () => {
-    if (isSubject) return;
+    // if (isSubject) return;
     getAlarmFromDb();
     getBudgetsFromDb();
     getConsultFromDb();
@@ -882,108 +882,141 @@ const MainPage = (props) => {
   //모든 데이터 저장함수..!! 담임은 파일 하나, 전담은 반별파일만들어야 할듯
   const allDataExcelSaveHandler = () => {
     //새로운 가상 엑셀파일 생성 담임은 하나, 전담은 반별로
-    let book;
-    if (!isSubject) {
-      book = utils.book_new();
+    //========= 담임용 데이터 만들기 =========
+    // if (!isSubject) {
+    let book = utils.book_new();
+    // ==========출결저장=========
+    const new_attends_datas = [];
+    nowYearAttends?.forEach((attend) => {
+      // 번호 이름 년 월 일 옵션 노트 순으로
+      let data = [
+        +attend.num,
+        attend.name,
+        +attend.id.slice(0, 4),
+        +attend.id.slice(5, 7),
+        +attend.id.slice(8, 10),
+        attend.option.slice(1),
+        attend?.note,
+      ];
+      if (isSubject) {
+        data.unshift(attend.cl);
+      }
+
+      new_attends_datas.push(data);
+    });
+
+    let attend_title = [
+      "번호",
+      "이름",
+      "년",
+      "월",
+      "일",
+      "출결옵션",
+      "메모내용",
+    ];
+    if (isSubject) {
+      attend_title.unshift("반");
+    }
+    new_attends_datas.unshift(attend_title);
+
+    const attends_datas = utils.aoa_to_sheet(new_attends_datas);
+    //셀의 넓이 지정
+    attends_datas["!cols"] = [
+      { wpx: 30 },
+      { wpx: 50 },
+      { wpx: 40 },
+      { wpx: 25 },
+      { wpx: 25 },
+      { wpx: 60 },
+      { wpx: 150 },
+    ];
+    if (isSubject) {
+      attends_datas["!cols"].unshift({ wpx: 50 });
     }
 
-    //========= 담임용 데이터 만들기 =========
+    //시트에 작성한 데이터 넣기
+    utils.book_append_sheet(book, attends_datas, "출결");
+
+    // ==========상담 저장=========
+    const new_consult_datas = [];
+    console.log(nowYearStd);
+    console.log(nowYearAttends);
+    console.log(nowYearConsult);
+    console.log(nowYearCheckLists);
+    console.log(nowYearListMemo);
+    console.log(nowYearSchedule);
+    console.log(nowYearClassTable);
+    console.log(nowYearBudgets);
+    console.log(nowYearFreeMemo);
+    console.log(nowYearTodoLists);
+    console.log(nowYearAlarm);
+    console.log(nowYearStudentsInfo);
+    nowYearConsult?.forEach((consult) => {
+      // 번호 이름 년 월 일 옵션 노트 첨부파일 순으로
+      let data = [
+        +consult.num,
+        consult.name,
+        +consult.id.slice(0, 4),
+        +consult.id.slice(5, 7),
+        +consult.id.slice(8, 10),
+        consult.option.slice(1),
+        consult?.note,
+        consult?.attachedFileUrl,
+      ];
+      if (isSubject) {
+        data.unshift(consult.clName);
+      }
+
+      new_consult_datas.push(data);
+    });
+
+    let consult_title = [
+      "번호",
+      "이름",
+      "년",
+      "월",
+      "일",
+      "상담옵션",
+      "메모내용",
+      "첨부파일",
+    ];
+    if (isSubject) {
+      consult_title.unshift("반");
+    }
+
+    new_consult_datas.unshift(consult_title);
+
+    const consult_datas = utils.aoa_to_sheet(new_consult_datas);
+    //셀의 넓이 지정
+    consult_datas["!cols"] = [
+      { wpx: 30 },
+      { wpx: 50 },
+      { wpx: 40 },
+      { wpx: 25 },
+      { wpx: 25 },
+      { wpx: 60 },
+      { wpx: 500 },
+      { wpx: 120 },
+    ];
+    if (isSubject) {
+      consult_datas["!cols"].unshift({ wpx: 50 });
+    }
+
+    //시트에 작성한 데이터 넣기
+    utils.book_append_sheet(book, consult_datas, "상담");
+
+    // ==========제출 미제출 저장=========
+
+    const new_checkLists_datas = [];
+    const new_listMemo_datas = [];
+    // 학생 이름을 세로에 쭉 써주고, 오른쪽으로 체크리스트 값들을 넣어주기
+    let checkLists_datas;
+    let listMemo_datas;
+
     if (!isSubject) {
-      // ==========출결저장=========
-      const new_attends_datas = [];
-      nowYearAttends?.forEach((attend) => {
-        // 번호 이름 년 월 일 옵션 노트 순으로
-        let data = [
-          +attend.num,
-          attend.name,
-          +attend.id.slice(0, 4),
-          +attend.id.slice(5, 7),
-          +attend.id.slice(8, 10),
-          attend.option.slice(1),
-          attend?.note,
-        ];
-
-        new_attends_datas.push(data);
-      });
-
-      new_attends_datas.unshift([
-        "번호",
-        "이름",
-        "년",
-        "월",
-        "일",
-        "출결옵션",
-        "메모내용",
-      ]);
-
-      const attends_datas = utils.aoa_to_sheet(new_attends_datas);
-      //셀의 넓이 지정
-      attends_datas["!cols"] = [
-        { wpx: 30 },
-        { wpx: 50 },
-        { wpx: 40 },
-        { wpx: 25 },
-        { wpx: 25 },
-        { wpx: 60 },
-        { wpx: 150 },
-      ];
-
-      //시트에 작성한 데이터 넣기
-      utils.book_append_sheet(book, attends_datas, "출결");
-
-      // ==========상담 저장=========
-      const new_consult_datas = [];
-      nowYearConsult?.forEach((consult) => {
-        // 번호 이름 년 월 일 옵션 노트 첨부파일 순으로
-        let data = [
-          +consult.num,
-          consult.name,
-          +consult.id.slice(0, 4),
-          +consult.id.slice(5, 7),
-          +consult.id.slice(8, 10),
-          consult.option.slice(1),
-          consult?.note,
-          consult?.attachedFileUrl,
-        ];
-
-        new_consult_datas.push(data);
-      });
-
-      new_consult_datas.unshift([
-        "번호",
-        "이름",
-        "년",
-        "월",
-        "일",
-        "상담옵션",
-        "메모내용",
-        "첨부파일",
-      ]);
-
-      const consult_datas = utils.aoa_to_sheet(new_consult_datas);
-      //셀의 넓이 지정
-      consult_datas["!cols"] = [
-        { wpx: 30 },
-        { wpx: 50 },
-        { wpx: 40 },
-        { wpx: 25 },
-        { wpx: 25 },
-        { wpx: 60 },
-        { wpx: 500 },
-        { wpx: 120 },
-      ];
-
-      //시트에 작성한 데이터 넣기
-      utils.book_append_sheet(book, consult_datas, "상담");
-
-      // ==========제출 미제출 저장=========
-
-      const new_checkLists_datas = [];
-      // 학생 이름을 세로에 쭉 써주고, 오른쪽으로 체크리스트 값들을 넣어주기
       let check_data_title = ["번호", "이름"];
       let check_data_id = ["", "날짜"];
       let check_data_cols = [];
-
       //제출 미제출 제목, id, 간격 써주기
       nowYearCheckLists?.forEach((check) => {
         check_data_id.push(check.id.slice(0, 10));
@@ -1035,7 +1068,7 @@ const MainPage = (props) => {
       new_checkLists_datas.unshift(check_data_title);
       new_checkLists_datas.unshift(check_data_id);
 
-      const checkLists_datas = utils.aoa_to_sheet(new_checkLists_datas);
+      checkLists_datas = utils.aoa_to_sheet(new_checkLists_datas);
       //셀의 넓이 지정
       checkLists_datas["!cols"] = [
         { wpx: 30 }, //번호
@@ -1043,458 +1076,432 @@ const MainPage = (props) => {
         ...check_data_cols,
       ];
 
-      //시트에 작성한 데이터 넣기
-      utils.book_append_sheet(book, checkLists_datas, "제출");
-
       new_listMemo_datas.unshift(listMemo_data_title);
       new_listMemo_datas.unshift(listMemo_data_id);
 
-      const listMemo_datas = utils.aoa_to_sheet(new_listMemo_datas);
+      listMemo_datas = utils.aoa_to_sheet(new_listMemo_datas);
       //셀의 넓이 지정
       listMemo_datas["!cols"] = [
         { wpx: 30 }, //번호
         { wpx: 50 }, // 이름
         ...listMemo_data_cols,
       ];
+    } else {
+      //아우 헷갈려, 먼저 말로 쓴 후에 코드 쓰자.
+      //먼저 반별로 title 한줄, id한줄, 간격 한줄 넣어주고,
+      //학급의 학생들배열로 forEach돌려서 이름한줄 추가하면서 체크리스트 자료중에 현재 학급 이름과 같고 미제출학생에 현재 학생이름과 같은 자료가 있으면 o,없으면 x 넣어주기
+      //학급의 데이터 돌리기 다끝나면 전체 new_checkLists_datas에 다 넣어주기
 
-      //시트에 작성한 데이터 넣기
-      utils.book_append_sheet(book, listMemo_datas, "개별기록");
+      //반별로 작업하기
+      nowYearStd?.forEach((clObj) => {
+        let check_data_title = ["반", "번호", "이름"];
+        let check_data_id = ["", "", "날짜"];
+        let check_data_cols = [{ wpx: 50 }, { wpx: 30 }, { wpx: 50 }];
+        let check_data_all = [];
 
-      // ==========일정 (스케쥴) 저장=========
-      const new_schedule_datas = [];
-      nowYearSchedule
-        ?.sort((a, b) => (a.id.slice(0, 10) > b.id.slice(0, 10) ? 1 : -1))
-        ?.forEach((schd, index) => {
-          let data = [
-            +index + 1,
-            +schd.id.slice(0, 4),
-            +schd.id.slice(5, 7),
-            +schd.id.slice(8, 10),
-            schd.option.slice(1),
-            schd.eventName,
-            schd.set ? schd.set + "(" + schd?.setNum + ")" : "",
-            schd.note,
-          ];
+        let listMemo_data_title = ["반", "번호", "이름"];
+        let listMemo_data_id = ["", "", "날짜"];
+        let listMemo_data_cols = [{ wpx: 50 }, { wpx: 30 }, { wpx: 50 }];
+        let listMemo_data_all = [];
 
-          new_schedule_datas.push(data);
-        });
-
-      new_schedule_datas.unshift([
-        "순",
-        "년",
-        "월",
-        "일",
-        "분류",
-        "행사명",
-        "반복일정(회차)",
-        "메모 내용",
-      ]);
-
-      const schedule_datas = utils.aoa_to_sheet(new_schedule_datas);
-      //셀의 넓이 지정
-      schedule_datas["!cols"] = [
-        { wpx: 30 },
-        { wpx: 50 },
-        { wpx: 40 },
-        { wpx: 40 },
-        { wpx: 80 },
-        { wpx: 130 },
-        { wpx: 120 },
-        { wpx: 250 },
-      ];
-
-      //시트에 작성한 데이터 넣기
-      utils.book_append_sheet(book, schedule_datas, "일정");
-
-      // ============시간표는..
-      //   id : ,  classMemo : [{classNum  memo  subject }]
-      //세로축에는 1~8교시? 기초시간표의 classTime을 활용하는데 이미 classLists에 저장되어 있음.
-
-      // 가로축의 명칭에는 날짜 써주고
-
-      // ========== 시간표 저장=========
-      const new_classTable_datas = [];
-
-      //년 월 + 일로 두칸으로 바꿔서 넣어주기. 검색하기 쉽도록..
-      nowYearClassTable?.forEach((clTable) => {
-        new_classTable_datas.push([
-          "",
-          clTable.id.slice(2, 4) +
-            "년" +
-            clTable.id.slice(5, 7) +
-            "월" +
-            clTable.id.slice(8, 10) +
-            "일",
-        ]);
-        new_classTable_datas.push(["교시", "과목", "수업메모"]);
-        classLists?.forEach((clTime, time_index) => {
-          clTable.classMemo.forEach((memo, memo_index) => {
-            if (time_index !== memo_index) return;
-            new_classTable_datas.push([clTime, memo.subject, memo.memo]);
-          });
-        });
-        //날짜 별 구분을 위한 두줄 띄기
-        new_classTable_datas.push([]);
-        new_classTable_datas.push([]);
-      });
-
-      const class_table_datas = utils.aoa_to_sheet(new_classTable_datas);
-      //셀의 넓이 지정
-      class_table_datas["!cols"] = [{ wpx: 60 }, { wpx: 100 }, { wpx: 700 }];
-
-      //시트에 작성한 데이터 넣기
-      utils.book_append_sheet(book, class_table_datas, "시간표");
-
-      // ========== 예산 내용 저장=========
-      const new_budgets_datas = [];
-      nowYearBudgets?.forEach((budget, index) => {
-        let data = [
-          +index + 1,
-          budget.budget_name,
-          budget.until,
-          "",
-          "",
-          +budget.totalAmount,
-          "",
-          budget.note,
-        ];
-
-        new_budgets_datas.push([
-          "예산순",
-          "예산명",
-          "사용기한",
-          "",
-          "",
-          "예산총액",
-          "",
-          "메모",
-        ]);
-        new_budgets_datas.push(data);
-
-        //예산과 품목 구분을 위한 한 줄 넣어주기
-        new_budgets_datas.push([]);
-        new_budgets_datas.push([
-          "품목순",
-          "품목명",
-          "사용날짜",
-          "개별금액",
-          "개수",
-          "총금액",
-          "사이트",
-          "메모",
-        ]);
-        budget?.useLists?.forEach((list, list_index) => {
-          new_budgets_datas.push([
-            +list_index + 1,
-            list.title,
-            list.date.slice(0, 10),
-            +list.each,
-            +list.count,
-            +list.amount,
-            list.site,
-            list.note,
-          ]);
-        });
-
-        //예산 구분을 위한 세 줄 넣어주기
-        new_budgets_datas.push([]);
-        new_budgets_datas.push([]);
-      });
-
-      const budgets_datas = utils.aoa_to_sheet(new_budgets_datas);
-      //셀의 넓이 지정
-      budgets_datas["!cols"] = [
-        { wpx: 50 }, //순
-        { wpx: 140 }, //품목명
-        { wpx: 80 }, //사용날짜
-        { wpx: 80 }, //개별금액
-        { wpx: 50 }, //개수
-        { wpx: 90 }, //총금액
-        { wpx: 130 }, //사이트
-        { wpx: 300 }, //메모
-      ];
-
-      //시트에 작성한 데이터 넣기
-      utils.book_append_sheet(book, budgets_datas, "예산");
-
-      // ==========메모(오늘 할일) 저장=========
-      const new_memo_datas = [];
-      nowYearTodoLists?.forEach((todoList, index) => {
-        let data = [
-          +index + 1,
-          todoList.emg === true ? "중요" : "",
-          todoList.checked === true ? "완료" : "진행중",
-          todoList.text,
-        ];
-
-        new_memo_datas.push(data);
-      });
-
-      new_memo_datas.unshift(["순", "중요표시", "완료", "할 일 내용"]);
-
-      const todoList_datas = utils.aoa_to_sheet(new_memo_datas);
-      //셀의 넓이 지정
-      todoList_datas["!cols"] = [
-        { wpx: 30 },
-        { wpx: 50 },
-        { wpx: 50 },
-        { wpx: 750 },
-      ];
-
-      //시트에 작성한 데이터 넣기
-      utils.book_append_sheet(book, todoList_datas, "오늘 할일");
-
-      // ==========알림장 내용 저장=========
-      const new_alarm_datas = [];
-      nowYearAlarm?.forEach((alarm, index) => {
-        let data = [+index + 1, alarm.id, alarm.text];
-
-        new_alarm_datas.push(data);
-      });
-
-      new_alarm_datas.unshift(["순", "날짜", "알림장 내용"]);
-
-      const alarm_datas = utils.aoa_to_sheet(new_alarm_datas);
-      //셀의 넓이 지정
-      alarm_datas["!cols"] = [{ wpx: 30 }, { wpx: 80 }, { wpx: 850 }];
-
-      //시트에 작성한 데이터 넣기
-      utils.book_append_sheet(book, alarm_datas, "알림장");
-
-      // ========== 자유 메모 (메모폴더) 내용 저장=========
-      const new_freeMemo_datas = [];
-      nowYearFreeMemo?.forEach((freeMemo, index) => {
-        let data = [
-          +index + 1,
-          freeMemo.category.join(", "),
-          freeMemo.title,
-          freeMemo.text,
-        ];
-
-        new_freeMemo_datas.push(data);
-      });
-
-      new_freeMemo_datas.unshift(["순", "분류(카테고리)", "제목", "메모 내용"]);
-
-      const freeMemo_datas = utils.aoa_to_sheet(new_freeMemo_datas);
-      //셀의 넓이 지정
-      freeMemo_datas["!cols"] = [
-        { wpx: 30 },
-        { wpx: 150 },
-        { wpx: 120 },
-        { wpx: 400 },
-      ];
-
-      //시트에 작성한 데이터 넣기
-      utils.book_append_sheet(book, freeMemo_datas, "메모폴더");
-
-      // ==========학생정보 저장=========
-
-      const new_studentsInfo_datas = [];
-      // 학생 이름을 세로에 쭉 써주고,
-      let studentsInfo_data_title = [
-        "번호",
-        "이름",
-        "월",
-        "일",
-        "학생연락처",
-        "모성명",
-        "모연락처",
-        "부성명",
-        "부연락처",
-        "형제자매",
-        "기타",
-      ];
-      new_studentsInfo_datas.push(studentsInfo_data_title);
-
-      nowYearStudentsInfo?.forEach((stdData) => {
-        let info_data = [
-          stdData.num,
-          stdData.name,
-          stdData.month,
-          stdData.day,
-          stdData.studTel,
-          stdData.mom,
-          stdData.momTel,
-          stdData.dad,
-          stdData.dadTel,
-          stdData.bns,
-          stdData.etc,
-        ];
-        new_studentsInfo_datas.push(info_data);
-      });
-
-      const studentsInfo_datas = utils.aoa_to_sheet(new_studentsInfo_datas);
-      //셀의 넓이 지정
-      studentsInfo_datas["!cols"] = [
-        { wpx: 30 },
-        { wpx: 50 },
-        { wpx: 30 },
-        { wpx: 30 },
-        { wpx: 120 },
-        { wpx: 50 },
-        { wpx: 120 },
-        { wpx: 50 },
-        { wpx: 120 },
-        { wpx: 120 },
-        { wpx: 120 },
-      ];
-
-      //시트에 작성한 데이터 넣기
-      utils.book_append_sheet(book, studentsInfo_datas, "학생정보");
-
-      nowYearStd?.forEach((std) => {
-        //제출 미제출 데이터 만들기
-        let check_data = [+std.num, std.name];
+        //타이틀 id 간격자료 추가해주기
         nowYearCheckLists?.forEach((check) => {
-          if (
-            check.unSubmitStudents?.filter(
-              (unSubStd) => unSubStd.name === std.name
-            )?.length > 0
-          ) {
-            check_data.push("X");
-          } else {
-            check_data.push("O");
-          }
+          if (check?.clName !== Object.keys(clObj)[0]) return;
+          //자료가 현재 학급 이름과 같은 자료면 학생 개별로 그려줌
+          check_data_id.push(check.id.slice(0, 10));
+          check_data_title.push(check.title);
+          check_data_cols.push({ wpx: 70 });
         });
-        new_checkLists_datas.push(check_data);
 
-        //개별기록 데이터 만들기
-        let listMemo_data = [+std.num, std.name];
+        //타이틀 id 간격자료 추가해주기
         nowYearListMemo?.forEach((list) => {
-          listMemo_data.push(
-            list.data?.filter((data_std) => data_std.name === std.name)[0]?.memo
-          );
+          if (list?.clName !== Object.keys(clObj)[0]) return;
+          //자료가 현재 학급 이름과 같은 자료면 학생 개별로 그려줌
+          listMemo_data_id.push(list.id.slice(0, 10));
+          listMemo_data_title.push(list.title);
+          listMemo_data_cols.push({ wpx: 70 });
         });
-        new_listMemo_datas.push(listMemo_data);
+
+        clObj[Object.keys(clObj)[0]]?.forEach((std) => {
+          let check_data = [];
+          check_data.push(Object.keys(clObj)[0]);
+          check_data.push(+std.num, std.name);
+          let listMemo_data = [];
+          listMemo_data.push(Object.keys(clObj)[0]);
+          listMemo_data.push(+std.num, std.name);
+          nowYearCheckLists?.forEach((check) => {
+            if (check?.clName !== Object.keys(clObj)[0]) return;
+            //제출 자료의ㅡ 학급이름과 미제출학생이름이 같으면
+            if (
+              check.unSubmitStudents?.filter(
+                (unSubStd) => unSubStd.name === std.name
+              )?.length > 0
+            ) {
+              check_data.push("X");
+            } else {
+              check_data.push("O");
+            }
+          });
+          check_data_all.push(check_data);
+
+          nowYearListMemo?.forEach((list) => {
+            if (list?.clName !== Object.keys(clObj)[0]) return;
+            listMemo_data.push(
+              list.data?.filter((data_std) => data_std.name === std.name)[0]
+                ?.memo
+            );
+          });
+          listMemo_data_all.push(listMemo_data);
+        });
+
+        new_checkLists_datas.push(
+          check_data_id,
+          check_data_title,
+          ...check_data_all
+        );
+
+        new_checkLists_datas.push([]);
+        new_checkLists_datas.push([]);
+        new_checkLists_datas.push([]);
+
+        checkLists_datas = utils.aoa_to_sheet(new_checkLists_datas);
+        //셀의 넓이 지정
+        checkLists_datas["!cols"] = [...check_data_cols];
+
+        new_listMemo_datas.push(
+          listMemo_data_id,
+          listMemo_data_title,
+          ...listMemo_data_all
+        );
+
+        new_listMemo_datas.push([]);
+        new_listMemo_datas.push([]);
+        new_listMemo_datas.push([]);
+
+        listMemo_datas = utils.aoa_to_sheet(new_listMemo_datas);
+        //셀의 넓이 지정
+        listMemo_datas["!cols"] = [...listMemo_data_cols];
       });
     }
 
-    // ===================== 전담 수정필요 ===================
-    // 전담은.. 학급별로 시트를 만들어줘야 할듯!
-    //     } else {
-    //       //전담은 학생들이.. [{5-1반 : [{num: , name: }]}, {5-1반 : [{num: , name: }]} ] 이런식으로 들어있음
-    //       //모든 반들을 기준으로 자료를 만들어야 겠당... 일단
-    //       nowYearStd?.forEach((cl) => {
-    //         let new_cl_checkLists_datas = [];
+    //시트에 작성한 데이터 넣기
+    utils.book_append_sheet(book, checkLists_datas, "제출");
 
-    //         let now_clName = Object.keys(cl)[0];
-    //         //학급의 학생들을 기준으로
-    //         // 학생 이름을 세로에 쭉 써주고, 오른쪽으로 체크리스트 값들을 넣어주기
-    //         let check_data_title = ["반", "번호", "이름"];
-    //         let check_data_id = ["", "", "날짜"];
-    //         let check_data_cols = [];
+    //시트에 작성한 데이터 넣기
+    utils.book_append_sheet(book, listMemo_datas, "개별기록");
 
-    //         let nowCl_checkLists = nowYearCheckLists?.filter(
-    //           (checkData) => checkData.clName === now_clName
-    //         );
-    //         //제출 미제출 제목, id, 간격 써주기
-    //         nowCl_checkLists?.forEach((check) => {
-    //           check_data_id.push(check.id.slice(0, 10));
-    //           check_data_title.push(check.title);
-    //           check_data_cols.push({ wpx: 70 });
-    //         });
+    /////////전담용 여기까지 완료////////////
 
-    //         //그반 학생들 기준으로
-    //         cl[now_clName]?.forEach((std) => {
-    //           let data = [now_clName, +std.num, std.name];
-    //           nowCl_checkLists?.forEach((check) => {
-    //             if (
-    //               check.unSubmitStudents?.filter(
-    //                 (unSubStd) => unSubStd.name === std.name
-    //               )?.length > 0
-    //             ) {
-    //               data.push("X");
-    //             } else {
-    //               data.push("O");
-    //             }
-    //           });
-    //           new_cl_checkLists_datas.push(data);
-    //         });
+    // ==========일정 (스케쥴) 저장=========
+    const new_schedule_datas = [];
+    nowYearSchedule
+      ?.sort((a, b) => (a.id.slice(0, 10) > b.id.slice(0, 10) ? 1 : -1))
+      ?.forEach((schd, index) => {
+        let data = [
+          +index + 1,
+          +schd.id.slice(0, 4),
+          +schd.id.slice(5, 7),
+          +schd.id.slice(8, 10),
+          schd.option.slice(1),
+          schd.eventName,
+          schd.set ? schd.set + "(" + schd?.setNum + ")" : "",
+          schd.note,
+        ];
 
-    //         new_cl_checkLists_datas.unshift(check_data_title);
-    //         new_cl_checkLists_datas.unshift(check_data_id);
+        new_schedule_datas.push(data);
+      });
 
-    //         const checkLists_datas = utils.aoa_to_sheet(new_cl_checkLists_datas);
-    //         //셀의 넓이 지정
-    //         checkLists_datas["!cols"] = [
-    //           { wpx: 40 }, //반
-    //           { wpx: 30 }, //번호
-    //           { wpx: 50 }, // 이름
-    //           ...check_data_cols,
-    //         ];
+    new_schedule_datas.unshift([
+      "순",
+      "년",
+      "월",
+      "일",
+      "분류",
+      "행사명",
+      "반복일정(회차)",
+      "메모 내용",
+    ]);
 
-    //         //시트에 작성한 데이터 넣기
-    //         utils.book_append_sheet(book, checkLists_datas, `제출 ${now_clName}`);
-    //       });
+    const schedule_datas = utils.aoa_to_sheet(new_schedule_datas);
+    //셀의 넓이 지정
+    schedule_datas["!cols"] = [
+      { wpx: 30 },
+      { wpx: 50 },
+      { wpx: 40 },
+      { wpx: 40 },
+      { wpx: 80 },
+      { wpx: 130 },
+      { wpx: 120 },
+      { wpx: 250 },
+    ];
 
-    // //모든 반들을 기준으로 자료를 만들어야 겠당... 일단
-    // nowYearStd?.forEach((cl) => {
-    //   let new_cl_listMemo_datas = [];
+    //시트에 작성한 데이터 넣기
+    utils.book_append_sheet(book, schedule_datas, "일정");
 
-    //   let now_clName = Object.keys(cl)[0];
-    //   //학급의 학생들을 기준으로
-    //   // 학생 이름을 세로에 쭉 써주고, 오른쪽으로 체크리스트 값들을 넣어주기
-    //   let list_data_title = ["반", "번호", "이름"];
-    //   let list_data_id = ["", "", "날짜"];
-    //   let list_data_cols = [];
+    // ============시간표는..
+    //   id : ,  classMemo : [{classNum  memo  subject }]
+    //세로축에는 1~8교시? 기초시간표의 classTime을 활용하는데 이미 classLists에 저장되어 있음.
 
-    //   let nowCl_checkLists = nowYearCheckLists?.filter(
-    //     (checkData) => checkData.clName === now_clName
-    //   );
-    //   //개별기록 제목, id, 간격 써주기
-    //   nowCl_checkLists?.forEach((check) => {
-    //     list_data_id.push(check.id.slice(0, 10));
-    //     list_data_title.push(check.title);
-    //     list_data_cols.push({ wpx: 70 });
-    //   });
+    // 가로축의 명칭에는 날짜 써주고
 
-    //   //그반 학생들 기준으로
-    //   cl[now_clName]?.forEach((std) => {
-    //     let data = [now_clName, +std.num, std.name];
-    //     nowCl_checkLists?.forEach((check) => {
-    //       if (
-    //         check.unSubmitStudents?.filter(
-    //           (unSubStd) => unSubStd.name === std.name
-    //         )?.length > 0
-    //       ) {
-    //         data.push("X");
-    //       } else {
-    //         data.push("O");
-    //       }
-    //     });
-    //     new_cl_listMemo_datas.push(data);
-    //   });
+    // ========== 시간표 저장=========
+    const new_classTable_datas = [];
 
-    //   new_cl_listMemo_datas.unshift(list_data_title);
-    //   new_cl_listMemo_datas.unshift(list_data_id);
+    //년 월 + 일로 두칸으로 바꿔서 넣어주기. 검색하기 쉽도록..
+    nowYearClassTable?.forEach((clTable) => {
+      new_classTable_datas.push([
+        "",
+        clTable.id.slice(2, 4) +
+          "년" +
+          clTable.id.slice(5, 7) +
+          "월" +
+          clTable.id.slice(8, 10) +
+          "일",
+      ]);
+      new_classTable_datas.push(["교시", "과목", "수업메모"]);
+      classLists?.forEach((clTime, time_index) => {
+        clTable.classMemo.forEach((memo, memo_index) => {
+          if (time_index !== memo_index) return;
+          new_classTable_datas.push([clTime, memo.subject, memo.memo]);
+        });
+      });
+      //날짜 별 구분을 위한 두줄 띄기
+      new_classTable_datas.push([]);
+      new_classTable_datas.push([]);
+    });
 
-    //   const checkLists_datas = utils.aoa_to_sheet(new_cl_listMemo_datas);
-    //   //셀의 넓이 지정
-    //   checkLists_datas["!cols"] = [
-    //     { wpx: 40 }, //반
-    //     { wpx: 30 }, //번호
-    //     { wpx: 50 }, // 이름
-    //     ...list_data_cols,
-    //   ];
+    const class_table_datas = utils.aoa_to_sheet(new_classTable_datas);
+    //셀의 넓이 지정
+    class_table_datas["!cols"] = [{ wpx: 60 }, { wpx: 100 }, { wpx: 700 }];
 
-    //   //시트에 작성한 데이터 넣기
-    //   utils.book_append_sheet(
-    //     book,
-    //     checkLists_datas,
-    //     `개별기록 ${now_clName}`
-    //   );
-    // });
+    //시트에 작성한 데이터 넣기
+    utils.book_append_sheet(book, class_table_datas, "시간표");
 
-    //     }
+    // ========== 예산 내용 저장=========
+    const new_budgets_datas = [];
+    nowYearBudgets?.forEach((budget, index) => {
+      let data = [
+        +index + 1,
+        budget.budget_name,
+        budget.until,
+        "",
+        "",
+        +budget.totalAmount,
+        "",
+        budget.note,
+      ];
 
-    //최종 파일 만들기
-    writeFile(
-      book,
-      `${nowYear()}학년도 학급 기록(by첵스쿨)(${dayjs().format(
+      new_budgets_datas.push([
+        "예산순",
+        "예산명",
+        "사용기한",
+        "",
+        "",
+        "예산총액",
+        "",
+        "메모",
+      ]);
+      new_budgets_datas.push(data);
+
+      //예산과 품목 구분을 위한 한 줄 넣어주기
+      new_budgets_datas.push([]);
+      new_budgets_datas.push([
+        "품목순",
+        "품목명",
+        "사용날짜",
+        "개별금액",
+        "개수",
+        "총금액",
+        "사이트",
+        "메모",
+      ]);
+      budget?.useLists?.forEach((list, list_index) => {
+        new_budgets_datas.push([
+          +list_index + 1,
+          list.title,
+          list.date.slice(0, 10),
+          +list.each,
+          +list.count,
+          +list.amount,
+          list.site,
+          list.note,
+        ]);
+      });
+
+      //예산 구분을 위한 세 줄 넣어주기
+      new_budgets_datas.push([]);
+      new_budgets_datas.push([]);
+      new_budgets_datas.push([
+        "######################################################  구 분 선  ######################################################################",
+      ]);
+      new_budgets_datas.push([]);
+      new_budgets_datas.push([]);
+    });
+
+    const budgets_datas = utils.aoa_to_sheet(new_budgets_datas);
+    //셀의 넓이 지정
+    budgets_datas["!cols"] = [
+      { wpx: 50 }, //순
+      { wpx: 140 }, //품목명
+      { wpx: 80 }, //사용날짜
+      { wpx: 80 }, //개별금액
+      { wpx: 50 }, //개수
+      { wpx: 90 }, //총금액
+      { wpx: 130 }, //사이트
+      { wpx: 300 }, //메모
+    ];
+
+    //시트에 작성한 데이터 넣기
+    utils.book_append_sheet(book, budgets_datas, "예산");
+
+    // ==========메모(오늘 할일) 저장=========
+    const new_memo_datas = [];
+    nowYearTodoLists?.forEach((todoList, index) => {
+      let data = [
+        +index + 1,
+        todoList.emg === true ? "중요" : "",
+        todoList.checked === true ? "완료" : "진행중",
+        todoList.text,
+      ];
+
+      new_memo_datas.push(data);
+    });
+
+    new_memo_datas.unshift(["순", "중요표시", "완료", "할 일 내용"]);
+
+    const todoList_datas = utils.aoa_to_sheet(new_memo_datas);
+    //셀의 넓이 지정
+    todoList_datas["!cols"] = [
+      { wpx: 30 },
+      { wpx: 50 },
+      { wpx: 50 },
+      { wpx: 750 },
+    ];
+
+    //시트에 작성한 데이터 넣기
+    utils.book_append_sheet(book, todoList_datas, "오늘 할일");
+
+    // ==========알림장 내용 저장=========
+    const new_alarm_datas = [];
+    nowYearAlarm?.forEach((alarm, index) => {
+      let data = [+index + 1, alarm.id, alarm.text];
+
+      new_alarm_datas.push(data);
+    });
+
+    new_alarm_datas.unshift(["순", "날짜", "알림장 내용"]);
+
+    const alarm_datas = utils.aoa_to_sheet(new_alarm_datas);
+    //셀의 넓이 지정
+    alarm_datas["!cols"] = [{ wpx: 30 }, { wpx: 80 }, { wpx: 850 }];
+
+    //시트에 작성한 데이터 넣기
+    utils.book_append_sheet(book, alarm_datas, "알림장");
+
+    // ========== 자유 메모 (메모폴더) 내용 저장=========
+    const new_freeMemo_datas = [];
+    nowYearFreeMemo?.forEach((freeMemo, index) => {
+      let data = [
+        +index + 1,
+        freeMemo.category.join(", "),
+        freeMemo.title,
+        freeMemo.text,
+      ];
+
+      new_freeMemo_datas.push(data);
+    });
+
+    new_freeMemo_datas.unshift(["순", "분류(카테고리)", "제목", "메모 내용"]);
+
+    const freeMemo_datas = utils.aoa_to_sheet(new_freeMemo_datas);
+    //셀의 넓이 지정
+    freeMemo_datas["!cols"] = [
+      { wpx: 30 },
+      { wpx: 150 },
+      { wpx: 120 },
+      { wpx: 400 },
+    ];
+
+    //시트에 작성한 데이터 넣기
+    utils.book_append_sheet(book, freeMemo_datas, "메모폴더");
+
+    // ==========학생정보 저장=========
+
+    const new_studentsInfo_datas = [];
+    // 학생 이름을 세로에 쭉 써주고,
+    let studentsInfo_data_title = [
+      "번호",
+      "이름",
+      "월",
+      "일",
+      "학생연락처",
+      "모성명",
+      "모연락처",
+      "부성명",
+      "부연락처",
+      "형제자매",
+      "기타",
+    ];
+    if (isSubject) {
+      studentsInfo_data_title.unshift("반");
+    }
+
+    new_studentsInfo_datas.push(studentsInfo_data_title);
+
+    nowYearStudentsInfo?.forEach((stdData) => {
+      let info_data = [
+        stdData.num,
+        stdData.name,
+        stdData.month,
+        stdData.day,
+        stdData.studTel,
+        stdData.mom,
+        stdData.momTel,
+        stdData.dad,
+        stdData.dadTel,
+        stdData.bns,
+        stdData.etc,
+      ];
+      if (isSubject) {
+        info_data.unshift(stdData.clName);
+      }
+      new_studentsInfo_datas.push(info_data);
+    });
+
+    const studentsInfo_datas = utils.aoa_to_sheet(new_studentsInfo_datas);
+    //셀의 넓이 지정
+    studentsInfo_datas["!cols"] = [
+      { wpx: 30 },
+      { wpx: 50 },
+      { wpx: 30 },
+      { wpx: 30 },
+      { wpx: 120 },
+      { wpx: 50 },
+      { wpx: 120 },
+      { wpx: 50 },
+      { wpx: 120 },
+      { wpx: 120 },
+      { wpx: 120 },
+    ];
+    if (isSubject) {
+      studentsInfo_datas["!cols"].unshift({ wpx: 60 });
+    }
+
+    //시트에 작성한 데이터 넣기
+    utils.book_append_sheet(book, studentsInfo_datas, "학생정보");
+
+    let fileName;
+    if (!isSubject) {
+      fileName = `${nowYear()}학년도 학급 기록(by첵스쿨)(${dayjs().format(
         "YYYY-MM-DD"
-      )}저장).xlsx`
-    );
+      )}저장).xlsx`;
+    } else {
+      fileName = `${nowYear()}학년도 전담(전체학급) 기록(by첵스쿨)(${dayjs().format(
+        "YYYY-MM-DD"
+      )}저장).xlsx`;
+    }
+    // 최종 파일 만들기
+    writeFile(book, fileName);
   };
 
   return (
@@ -1993,8 +2000,8 @@ const MainPage = (props) => {
             </div>
             <hr className={classes["main-hr"]} />
             <p>
-              * 담임용 사용가능! (전담용 개발중...)
-              <br />* 다운 버튼을 누르시면, 저장 버튼이 생성됩니다.
+              * 다운 버튼을 누르시면, 저장 버튼이 생성됩니다.(담임, 전담 모두
+              가능)
             </p>
             <div
               className={classes["event-title"]}
