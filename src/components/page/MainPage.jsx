@@ -96,9 +96,13 @@ const MainPage = (props) => {
   const [nowYearStudentsInfo, setNowYearStudentsInfo] = useState([]);
 
   //업데이트 내용 보여주기 로컬스토리지에서 showNotice를 스트링으로 저장해서 확인 후에 이전에 봤으면 안보여주기
-  const [showNotice, setShowNotice] = useState(
-    localStorage.getItem("showNotice") === "20230414" ? false : true
-  );
+  const [showNotice, setShowNotice] = useState(false);
+
+  useEffect(() => {
+    if (localStorage.getItem("showNotice") !== "20230414") {
+      setShowNotice(true);
+    }
+  }, []);
 
   //화면 사이즈가 변경되면.. 시간표의 기본 세팅을 열림으로 바꿔주기.
   const resizeHandler = useCallback(() => {
@@ -939,18 +943,7 @@ const MainPage = (props) => {
 
     // ==========상담 저장=========
     const new_consult_datas = [];
-    console.log(nowYearStd);
-    console.log(nowYearAttends);
-    console.log(nowYearConsult);
-    console.log(nowYearCheckLists);
-    console.log(nowYearListMemo);
-    console.log(nowYearSchedule);
-    console.log(nowYearClassTable);
-    console.log(nowYearBudgets);
-    console.log(nowYearFreeMemo);
-    console.log(nowYearTodoLists);
-    console.log(nowYearAlarm);
-    console.log(nowYearStudentsInfo);
+
     nowYearConsult?.forEach((consult) => {
       // 번호 이름 년 월 일 옵션 노트 첨부파일 순으로
       let data = [

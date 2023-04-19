@@ -1,0 +1,139 @@
+.div {
+  display: flex;
+  justify-content: center;
+  align-content: space-around;
+  flex-wrap: wrap;
+  max-width: 85vw;
+  margin: 20px 0px;
+  align-items: center;
+}
+
+.results {
+  margin: 40px;
+  display: flex;
+  justify-content: center;
+}
+
+.animate {
+  animation: shake 0.2s linear 6;
+}
+
+.flex-col-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.prize-btn,
+.optionDone-btn,
+.playBtn-disabled,
+.playBtn,
+.addBtn {
+  margin: 5px 5px;
+  background-color: #105761;
+  width: auto;
+  height: auto;
+  padding: 15px;
+  font-size: 1.3rem;
+  border-radius: 25px;
+  color: whitesmoke;
+  border-width: 0;
+}
+
+.addBtn {
+  width: 60px;
+  font-size: 1.7rem;
+  padding: 0;
+  height: 60px;
+  border-radius: 20px;
+}
+
+.optionDone-btn {
+  margin: 40px;
+  font-size: 1.7rem;
+  padding: 20px;
+}
+
+.flex {
+  display: flex;
+  width: 95%;
+  align-items: center;
+  justify-content: space-around;
+}
+
+.input,
+.num-input {
+  border-radius: 10px;
+  text-align: center;
+}
+
+.input {
+  padding: 15px;
+  font-size: 1.5rem;
+}
+
+.num-input {
+  padding: 15px;
+  font-size: 2.5rem;
+}
+
+.fs15,
+.fs15-w40,
+.fs15-w60 {
+  font-size: 1.5rem;
+}
+
+.fs15-w40 {
+  width: 40%;
+  max-width: 350px;
+}
+
+.fs15-w60 {
+  width: 60%;
+}
+
+.playBtn-disabled {
+  background-color: rgb(192, 192, 192);
+}
+
+.resultStd,
+.resultPrize {
+  padding: 20px;
+  border-radius: 20px;
+  border-width: 0;
+  background-color: gainsboro;
+  margin: 15px;
+}
+
+.resultStd {
+  width: 35%;
+}
+
+.resultPrize {
+  width: 50%;
+}
+
+@media screen and (max-width: 700px) {
+  .resultStd,
+  .resultPrize {
+    width: 70vw;
+  }
+}
+
+@keyframes shake {
+  0% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-10px);
+  }
+  50% {
+    transform: translateX(10px);
+  }
+  75% {
+    transform: translateX(-10px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}

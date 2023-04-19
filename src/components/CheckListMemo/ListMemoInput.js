@@ -118,7 +118,7 @@ const ListMemoInput = (props) => {
   const delCheckItem = (item) => {
     Swal.fire({
       title: "자료를 지울까요?",
-      text: `${item.title} 체크리스트를 삭제할까요?`,
+      text: `'${item.title}' 개별기록을 삭제할까요?`,
       showDenyButton: true,
       confirmButtonText: "삭제",
       confirmButtonColor: "#db100cf2",
@@ -290,14 +290,12 @@ const ListMemoInput = (props) => {
   const gradeSelectHandler = (e, num) => {
     let new_textareaDefV = textareaDefValue?.map((student) => {
       let new_value = student;
-      if (student.num === num) {
+      if (+student.num === +num) {
         new_value = { ...student, memo: e.target.value };
       }
       return new_value;
     });
     setTextareaDefValue(new_textareaDefV);
-    // let nowStdTextarea = e.target.parentNode.children[4];
-    // nowStdTextarea.value = e.target.value;
   };
 
   const wholeGradeHandler = (grade) => {

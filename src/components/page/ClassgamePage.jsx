@@ -1,33 +1,27 @@
 import React, { useState, useEffect } from "react";
 import Button from "../Layout/Button";
 import classes from "../Classgame/SettingSeat/SettingSeat.module.css";
-import SettingSeat from "../Classgame/SettingSeat/SettingSeat";
 import { useLocation } from "react-router-dom";
 import TitleBtn from "components/Memo/TitleBtn";
+
+import SettingSeat from "../Classgame/SettingSeat/SettingSeat";
+import RandomPick from "../Classgame/RandomPick/RandomPick";
 import Alarm from "components/Classgame/AlarmNotice/Alarm";
 
 const ClassgamePage = (props) => {
-  const { state } = useLocation();
   const [selectedMenu, setSelectedMenu] = useState("");
   //알림장 세팅
   const [showAlarm, setShowAlarm] = useState(false);
 
-  const SHOW_WHAT = ["settingSeat", "alarm"];
+  const SHOW_WHAT = ["settingSeat", "randomPick", "alarm"];
 
-  const MENU_NAME = ["자리<br/>뽑기", "알림장"];
+  const MENU_NAME = ["자리<br/>뽑기", "뽑기", "알림장"];
 
   const ICONS = [
     <i className="fa-sharp fa-solid fa-chair"></i>,
+    <i className="fa-solid fa-shuffle"></i>,
     <i className="fa-solid fa-chalkboard"></i>,
   ];
-
-  useEffect(() => {
-    if (state === "main") {
-      setSelectedMenu("simsim");
-    } else if (state === "morning") {
-      setSelectedMenu("mission");
-    }
-  }, [state]);
 
   return (
     <>
@@ -39,7 +33,8 @@ const ClassgamePage = (props) => {
             <button id="title-btn" className="">
               {/* onClick={exampleHandler}>/ */}
               {selectedMenu === "settingSeat" && <>{ICONS[0]} 자리뽑기</>}
-              {selectedMenu === "alarm" && <>{ICONS[1]} 알림장</>}
+              {selectedMenu === "randomPick" && <>{ICONS[1]} 랜덤뽑기</>}
+              {selectedMenu === "alarm" && <>{ICONS[2]} 알림장</>}
               {selectedMenu === "" && (
                 <>
                   <i className="fa-solid fa-gamepad"></i> 제자랑
@@ -73,6 +68,12 @@ const ClassgamePage = (props) => {
               />
 
               <Button
+                name={"랜덤뽑기"}
+                className={"settingSeat"}
+                onclick={() => setSelectedMenu("randomPick")}
+              />
+
+              <Button
                 name={"알림장"}
                 className={"settingSeat"}
                 onclick={() => setShowAlarm(true)}
@@ -83,7 +84,7 @@ const ClassgamePage = (props) => {
                 className={"settingSeat"}
                 onclick={() =>
                   window.open(
-                    "http://bit.ly/%EB%91%90%EA%B7%BC%EB%91%90%EA%B7%BC%ED%83%80%EC%9E%84%EC%BA%A1%EC%8A%90"
+                    "https://bit.ly/%EB%91%90%EA%B7%BC%EB%91%90%EA%B7%BC%ED%83%80%EC%9E%84%EC%BA%A1%EC%8A%90"
                   )
                 }
               />
@@ -95,6 +96,9 @@ const ClassgamePage = (props) => {
           <div className={classes["container-div"]}>
             {selectedMenu === "settingSeat" && (
               <SettingSeat students={props.students} userUid={props.userUid} />
+            )}
+            {selectedMenu === "randomPick" && (
+              <RandomPick students={props.students} userUid={props.userUid} />
             )}
             {selectedMenu === "alarm" && (
               <Alarm
