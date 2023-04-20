@@ -28,8 +28,14 @@ const RandomPickPlay = (props) => {
       const numWinners = Math.min(shuffledUsers.length, props.pickStdNum); // 최대 3명까지 당첨
       const selectedWinners = shuffledUsers.slice(0, numWinners);
       setWinners(selectedWinners);
+      let title = selectedWinners
+        .map(
+          (win) =>
+            `<span style="margin: 5px 15px; font-size: 1.8rem;">${win}</span>`
+        )
+        .join("");
       Swal.fire({
-        title: `${selectedWinners.map((winner) => winner)}`,
+        title: `${title}`,
         width: 800,
         padding: "3em",
         color: "#312b76",
@@ -53,8 +59,16 @@ const RandomPickPlay = (props) => {
         prize: shuffledPrizes[index] || "꽝💣",
       }));
       setMatchedWinners(matched);
+      let title = matched
+        .map(
+          (win) =>
+            `<div style="margin: 5px 20px; font-size: 1.8rem;">${
+              win.winner + " 👉 " + win.prize
+            }</div>`
+        )
+        .join("");
       Swal.fire({
-        title: `${matched.map((win) => win.winner + " 👉 " + win.prize)}`,
+        title: `${title}`,
         width: 800,
         padding: "3em",
         color: "#312b76",
@@ -81,7 +95,7 @@ const RandomPickPlay = (props) => {
   return (
     <div>
       <button
-        onClick={!isDrawing && handleDraw}
+        onClick={!isDrawing ? handleDraw : undefined}
         disabled={isDrawing || isMatching}
         className={isDrawing ? classes["playBtn-disabled"] : classes["playBtn"]}
       >
@@ -118,7 +132,7 @@ const RandomPickPlay = (props) => {
             </div>
 
             <button
-              onClick={!isMatching && handleMatch}
+              onClick={!isMatching ? handleMatch : undefined}
               disabled={winners?.length === 0}
               className={
                 isMatching ? classes["playBtn-disabled"] : classes["playBtn"]

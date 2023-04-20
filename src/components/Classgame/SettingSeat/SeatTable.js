@@ -41,6 +41,7 @@ const imageUrls = [
 
 const SeatTable = (props) => {
   const [genderEmptySeat, setGenderEmptySeat] = useState(false);
+  const [onlyEmptySeat, setOnlyEmptySeat] = useState(false);
   const [nowSeatGender, setNowSeatGender] = useState([
     +props.rowColumn?.split("-")?.[0] * +props.rowColumn?.split("-")?.[1],
     0,
@@ -58,7 +59,7 @@ const SeatTable = (props) => {
   const [tempBeforeName, setTempBeforeName] = useState("");
   const [switchStudent, setSwitchStudent] = useState({});
   const [students, setStudents] = useState(props.students || []);
-  const [isNewPair, setIsNewPair] = useState(true);
+  const [isNewPair, setIsNewPair] = useState(false);
   const [allSeats, setAllSeats] = useState([]);
   const [seatLists, setSeatLists] = useState(null);
   const [pairStudents, setPairStudents] = useState([]);
@@ -76,6 +77,23 @@ const SeatTable = (props) => {
     if (props.secretSeat?.genderEmptySeat?.length > 0) {
       setGenderEmptySeat(true);
     }
+    //비밀자리 선정일때도, 혹시 성별이 저장된 자료랑 다르면 emptyseat 세팅해야함.
+    if (props.secretSeat) {
+      let secretSeatManSettingSeat = props.secretSeat?.genderEmptySeat?.filter(
+        (seatGender) => seatGender === ""
+      )?.length;
+      let studentsManLength = props.students?.filter(
+        (std) => !std.woman
+      )?.length;
+      console.log(studentsManLength);
+      console.log(secretSeatManSettingSeat);
+      if (secretSeatManSettingSeat !== studentsManLength) {
+        setOnlyEmptySeat(true);
+      }
+      //학생+자리로 기본 설정 바꿔줌
+      setRandomJustStudent(false);
+    }
+    //비밀자리 선정인 경우
   }, [props.isExist, props.secretSeat]);
 
   useEffect(() => {
@@ -372,8 +390,9 @@ const SeatTable = (props) => {
     gender_students = new_students?.filter((stu) => stu.woman === isWoman);
     if (isWoman === "all") {
       gender_students = new_students;
+      console.log(gender_students);
     }
-
+    console.log(gender_students);
     // //비밀자료에 있는 학생들은 제외해줌!
     // if (props.secretSeat) {
     //   gender_students = gender_students?.filter(
@@ -386,36 +405,51 @@ const SeatTable = (props) => {
     const selectRnStudent = () => {
       //만약 비밀자료가 있는데, 비밀자료에서 비어있는 자리의 학생을 뽑을 때, 비밀자료에 포함된 학생을 제외한 학생들 중에서 뽑아야 함
 
-      let secretSeatDataStd = props.secretSeat?.students?.filter((std) =>
-        isNaN(+std)
-      );
+      // let secretSeatDataStd = props.secretSeat?.students?.filter((std) =>
+      //   isNaN(+std)
+      // );
 
-      // console.log(props.secretSeat?.students);
+      // // console.log(props.secretSeat?.students);
 
-      //비밀자리표 상태고, 받아온 학생 자리 정보를 보니, 학급의 모든 학생이 결정된 상태가 아닐떄는 비밀자리표에 없는 학생중에 랜덤으로 뽑아야 함!
-      if (
-        props.secretSeat &&
-        secretSeatDataStd?.length !== props.students?.length
-      ) {
-        gender_students = gender_students?.filter(
-          (std) => !props.secretSeat?.students?.includes(std.name)
-        );
-        // console.log(gender_students);
-      }
+      // //비밀자리표 상태고, 받아온 학생 자리 정보를 보니, 학급의 모든 학생이 결정된 상태가 아닐떄는 비밀자리표에 없는 학생중에 랜덤으로 뽑아야 함!
+      // if (
+      //   props.secretSeat &&
+      //   secretSeatDataStd?.length !== props.students?.length
+      // ) {
+      //   gender_students = gender_students?.filter(
+      //     (std) => !props.secretSeat?.students?.includes(std.name)
+      //   );
+      //   // 만약. 비밀자리표에 저장되지 않은 학생들이 모두 뽑히면, 그때부터는 비밀자리표의 학생들 뽑아주기
+      //   console.log(gender_students);
+      // }
 
       let randNum = Math.floor(Math.random() * gender_students.length);
 
+      console.log(gender_students[randNum]);
       return gender_students[randNum];
     };
 
     //만약 비밀자료에 있는 학생들을 제외하고 모든 학생이 뽑혀버리면.. 비밀자료의 남은 학생들 자리에 넣기!
     let secretPickDone = false;
     let selectedSecretStd = {};
-    if (gender_students.length === 0 && props.secretSeat) {
-      gender_students = new_students?.filter((stu) => stu.woman === isWoman);
-      if (isWoman === "all") {
-        gender_students = new_students;
+
+    let secretSeatDataStd = props.secretSeat?.students?.filter((std) =>
+      isNaN(+std)
+    );
+
+    if (props.secretSeat) {
+      if (secretSeatDataStd?.length !== props.students?.length) {
+        gender_students = gender_students?.filter(
+          (std) => !props.secretSeat?.students?.includes(std.name)
+        );
       }
+      if (gender_students.length === 0) {
+        gender_students = new_students?.filter((stu) => stu.woman === isWoman);
+        if (isWoman === "all") {
+          gender_students = new_students;
+        }
+      }
+
       selectedSecretStd = selectRnStudent();
 
       setTempBeforeName(selectedSecretStd.name);
@@ -703,13 +737,20 @@ const SeatTable = (props) => {
             //현재 뽑힌 학생
             let student = { ...temp };
             temp_student = { ...temp };
-
             //혹시 현재 뽑힌 학생이 다른 곳에 이름이 미리 들어가 있으면 번호로 다시 바꿈
-            if (student.woman && !clickedSeat.classList.contains("woman"))
-              return { ...temp };
-            // 만약, 현재 학생의 성별과 다른 성별의 자리를 선택하려고 하면 안눌림
-            if (!student.woman && clickedSeat.classList.contains("woman"))
-              return { ...temp };
+
+            //성별 무시 설정이 아닌경우에만 자리의 성별 따져서 눌리지 않도록 함.
+            console.log(onlyEmptySeat);
+            if (!onlyEmptySeat) {
+              //여학생인데 현재 자리가 여학생 자리가 아니면 클릭 안됨.
+              if (student.woman && !clickedSeat.classList.contains("woman"))
+                return { ...temp };
+              // 만약, 현재 학생의 성별과 다른 성별의 자리를 선택하려고 하면 안눌림
+              //남학생인데 현재 자리가 여학생 자리면 클릭 안됨.
+              if (!student.woman && clickedSeat.classList.contains("woman"))
+                return { ...temp };
+            }
+
             //만약 1옵션이 새로운짝이고, 선택한 clickedSeat의 id를 기준으로 2짝인 자리가 빈자리가 아니고, 3기존에 짝을 했던 학생이 있으면, 물어보고 진행하기
             if (
               isNewPair &&
@@ -828,8 +869,9 @@ const SeatTable = (props) => {
         }
       });
       let new_existItems = [];
-      //전체뽑기가 아니면 각 성별 자리만 모아줌
-      if (isWoman !== "all") {
+      //전체뽑기가 아니고 빈자리만 설정한게 아니면,
+      // 각 성별 자리만 모아줌
+      if (isWoman !== "all" && !onlyEmptySeat) {
         existItems.forEach((item) => {
           if (isWoman) {
             if (item.classList.contains("woman")) {
@@ -1143,7 +1185,7 @@ const SeatTable = (props) => {
       let new_existItems = [];
 
       existItems.forEach((item) => {
-        if (isWoman === "all") {
+        if (isWoman === "all" || onlyEmptySeat) {
           if (!isNaN(+item.innerText)) {
             new_existItems.push(item);
             return false;
@@ -1178,7 +1220,7 @@ const SeatTable = (props) => {
     //만약 비밀, 예비자료로 자리에 이미 학생이 세팅되어 있으면.. 바로 넣고 함수 종료하기! ()
 
     if (props.secretSeat) {
-      if (isWoman === "all") {
+      if (isWoman === "all" || onlyEmptySeat) {
         firstSeat = getLeftFirstSeat(isWoman);
       } else if (isWoman === true || isWoman === false) {
         if (randomIsPossible(isWoman)) {
@@ -1235,12 +1277,20 @@ const SeatTable = (props) => {
     } else if (isWoman === "all") {
       //남은 자리 중 처음자리의 성별을 알아낸 후, woman이 있으면 여자 뽑고, 없으면 남자 뽑기
       firstSeat = getLeftFirstSeat("all");
-      if (firstSeat.classList.contains("woman")) {
-        firstSeat = getLeftFirstSeat(true);
-        selecStu = randomSeatHandler(true, firstSeat);
+
+      //빈자리만 설정인 경우
+      if (onlyEmptySeat) {
+        selecStu = randomSeatHandler("all", firstSeat);
       } else {
-        firstSeat = getLeftFirstSeat(false);
-        selecStu = randomSeatHandler(false, firstSeat);
+        if (firstSeat.classList.contains("woman")) {
+          firstSeat = getLeftFirstSeat(true);
+          console.log(firstSeat);
+          selecStu = randomSeatHandler(true, firstSeat);
+        } else {
+          firstSeat = getLeftFirstSeat(false);
+          console.log(firstSeat);
+          selecStu = randomSeatHandler(false, firstSeat);
+        }
       }
     }
     //자리에 넣음
@@ -1413,6 +1463,40 @@ const SeatTable = (props) => {
     };
   };
 
+  //빈자리만 설정해서 뽑기 함수
+  const emptySeatOnlyHandler = () => {
+    let wholeStdNum = students?.length;
+    let wholeSeatNum = +nowSeatGender?.[0] + +nowSeatGender?.[1];
+    if (wholeStdNum !== wholeSeatNum) {
+      Swal.fire(
+        "빈자리 설정 필요",
+        "'전체학생수'와 '전체 자리수'를 일치시켜주세요.(비워둘 자리를 두 번 클릭해서 회색 빈자리로 만들어 주세요.)",
+        "warning"
+      );
+      return;
+    }
+    setGenderEmptySeat(true);
+    setOnlyEmptySeat(true);
+  };
+
+  //성별 설정함수
+  const genderEmptySeatHandler = () => {
+    if (
+      nowSeatGender?.[0] === students?.filter((std) => !std.woman)?.length &&
+      nowSeatGender?.[1] === students?.filter((std) => std.woman)?.length &&
+      +nowSeatGender?.[0] + +nowSeatGender?.[1] === students?.length
+    ) {
+      setGenderEmptySeat(true);
+    } else {
+      Swal.fire(
+        "성별 설정 필요",
+        "남여학생수와 남여자리수가 일치하도록 설정해주세요. 비워둘 자리도 설정해주세요.",
+        "warning"
+      );
+      return;
+    }
+  };
+
   return (
     <div id={props.title || "newSeats"}>
       {genderEmptySeat && (
@@ -1493,48 +1577,71 @@ const SeatTable = (props) => {
 
       {/* 자리에 성별 세팅할 때 보여주는 설명, 버튼 */}
       {!genderEmptySeat && (
-        <>
+        <div style={{ marginTop: "-30px" }}>
           <p>
             {" "}
-            <button className={classes["op1"]}></button> &nbsp;남
-            &nbsp;👉&nbsp;&nbsp; <button className={classes["op2"]}></button>
-            &nbsp; 여 &nbsp;👉&nbsp;&nbsp;{" "}
-            <button className={classes["op3"]}></button>&nbsp; 빈자리 &nbsp;👉
+            <br />* 먼저 자리를 클릭해서 자리의 성별과 비워둘 자리를 정해주세요.
             <br />
-            <br />* 자리를 클릭해보세요! [ 남 => 여 => 빈자리 ]로
-            반복변경됩니다.
             <br />
-            * 성별, 빈칸이 명부와 일치하면 뽑기화면으로 이동이 가능한 버튼이
-            생성됩니다.
+            * 한 번 클릭할 때마다 [ 남 => 여 => 빈자리 ]로 변경됩니다.
+            <br />
+            <br />
+            * 자리에 성별을 정하지 않고 뽑으시려면 '빈자리만 설정하기'를
+            클릭해주세요.
             <br />
           </p>
           {/* 일치하면 자리성별 세팅완료 버튼 나옴 */}
-          {nowSeatGender?.[0] ===
+          {/* {nowSeatGender?.[0] ===
             students?.filter((std) => !std.woman)?.length &&
           nowSeatGender?.[1] === students?.filter((std) => std.woman)?.length &&
           +nowSeatGender?.[0] + +nowSeatGender?.[1] === students?.length ? (
             <Button
               name={"자리 성별세팅 완료"}
-              onclick={() => setGenderEmptySeat(true)}
+              onclick={genderEmptySeatHandler}
               className={"settingSeat-btn"}
             />
-          ) : (
-            <>
-              <p>
-                남학생 <b>{students?.filter((std) => !std.woman)?.length}</b>
-                &nbsp;&nbsp;&nbsp; 여학생{" "}
-                <b>{students?.filter((std) => std.woman)?.length}</b>
-                &nbsp;&nbsp;&nbsp; 전체학생 <b>{students?.length}</b>
-              </p>
-              <p>
-                남학생 자리 <b>{nowSeatGender?.[0] || students?.length}</b>
-                &nbsp;&nbsp;&nbsp; 여학생 자리 <b>{nowSeatGender?.[1] || 0}</b>
-                &nbsp;&nbsp;&nbsp; 전체 자리&nbsp;
-                <b>{+nowSeatGender?.[0] + +nowSeatGender?.[1]}</b>
-              </p>
-            </>
-          )}
-        </>
+          ) : ( */}
+          <>
+            <div className={classes["blackboard-area"]}>
+              <div className={classes["div-bg-gray"]}>
+                <p>
+                  <button className={classes["op1"]}></button> &nbsp;남
+                  &nbsp;👉&nbsp;&nbsp;{" "}
+                  <button className={classes["op2"]}></button>
+                  &nbsp; 여 &nbsp;👉&nbsp;&nbsp;{" "}
+                  <button className={classes["op3"]}></button>&nbsp; 빈자리
+                  &nbsp;👉
+                  <br />
+                  <br />
+                  남학생 <b>{students?.filter((std) => !std.woman)?.length}</b>
+                  &nbsp;&nbsp;&nbsp; 여학생{" "}
+                  <b>{students?.filter((std) => std.woman)?.length}</b>
+                  &nbsp;&nbsp;&nbsp; 전체학생수 <b>{students?.length}</b>
+                </p>
+                <p>
+                  남학생 자리 <b>{nowSeatGender?.[0] || students?.length}</b>
+                  &nbsp;&nbsp;&nbsp; 여학생 자리{" "}
+                  <b>{nowSeatGender?.[1] || 0}</b>
+                  &nbsp;&nbsp;&nbsp; 전체 자리수&nbsp;
+                  <b>{+nowSeatGender?.[0] + +nowSeatGender?.[1]}</b>
+                </p>
+              </div>
+            </div>
+            <p>
+              <Button
+                name={"자리뽑기로 넘어가기"}
+                onclick={genderEmptySeatHandler}
+                className={"settingSeat-btn"}
+              />
+              <Button
+                name={"빈자리만 설정하기"}
+                onclick={emptySeatOnlyHandler}
+                className={"settingSeat-btn"}
+              />
+            </p>
+          </>
+          {/* )} */}
+        </div>
       )}
 
       {genderEmptySeat && (
@@ -1700,24 +1807,29 @@ const SeatTable = (props) => {
                         className={"settingSeat-btn"}
                         name="1번부터"
                       />
-                      <Button
-                        id="randomWo_manPickBtn"
-                        onclick={() => {
-                          setPickSeatAll("gender");
-                          randomAllHandler("gender", true);
-                        }}
-                        className={"settingSeat-btn"}
-                        name="여자먼저"
-                      />
-                      <Button
-                        id="randomAllPickBtn"
-                        onclick={() => {
-                          setPickSeatAll("gender");
-                          randomAllHandler("gender", false);
-                        }}
-                        className={"settingSeat-btn"}
-                        name="남자먼저"
-                      />
+                      {/* 빈자리만 세팅되어 있으면.. 1번부터하면 그냥 여자쭈루루룩 남자 쭈루루루룩 넣어버리니까.. 안보이게 */}
+                      {!onlyEmptySeat && (
+                        <>
+                          <Button
+                            id="randomWo_manPickBtn"
+                            onclick={() => {
+                              setPickSeatAll("gender");
+                              randomAllHandler("gender", true);
+                            }}
+                            className={"settingSeat-btn"}
+                            name="여자먼저"
+                          />
+                          <Button
+                            id="randomAllPickBtn"
+                            onclick={() => {
+                              setPickSeatAll("gender");
+                              randomAllHandler("gender", false);
+                            }}
+                            className={"settingSeat-btn"}
+                            name="남자먼저"
+                          />
+                        </>
+                      )}
                       {/* <Button
                         id="randomAllPickBtn"
                         onclick={() => {

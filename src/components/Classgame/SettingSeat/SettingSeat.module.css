@@ -263,3 +263,12 @@
 .op3 {
   background-color: rgba(7, 7, 7, 0.74);
 }
+
+.div-bg-gray {
+  padding: 15px;
+  background-color: rgb(205, 205, 205);
+  border-radius: 15px;
+  border-width: 0;
+  width: 85vw;
+  max-width: 500px;
+}

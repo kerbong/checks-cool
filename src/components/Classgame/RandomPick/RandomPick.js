@@ -97,9 +97,9 @@ const RandomPick = (props) => {
   //당첨목록에 추가하기
   const addItemHandler = (e) => {
     e.preventDefault();
+    if (inputValue === "") return;
     let new_prizes = [...prizes];
     new_prizes.push(inputValue);
-    console.log(new_prizes);
     setPrizes(new_prizes);
     setInputValue("");
   };
