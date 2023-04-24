@@ -73,18 +73,18 @@ const AssistanceAi = () => {
   };
   return (
     <div style={{ marginTop: "-50px" }}>
-      <h2>비서에게 물어봐요😎</h2>
+      <h1 style={{ fontSize: "1.7rem" }}>비서에게 물어봐요😎</h1>
 
       <h3>
         갑자기 궁금한 게 생기시면 물어보세요!
         <br />* 최대 15초가 소요됩니다.
       </h3>
-      <span>
+      {/* <span>
         (테스트중입니다. 기간 대비 과도한 금액이 청구되면..
         <br /> 사라집니다.. 혹시 작동하지 않으면 허용치 초과입니다!)
       </span>
       <br />
-      <br />
+      <br /> */}
       <div
         style={{ display: "flex", justifyContent: "center", margin: "20px" }}
       >

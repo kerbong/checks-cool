@@ -90,6 +90,11 @@ const ClassgamePage = (props) => {
               />
 
               <p>타임캡슐 주소 👉 bit.ly/두근두근타임캡슐</p>
+              <p>
+                타임캡슐 비밀번호{" "}
+                <span style={{ color: "white" }}>from-indi</span> (왼쪽을
+                마우스로 드래그 해주세요!){" "}
+              </p>
             </div>
           )}
 

@@ -85,8 +85,6 @@ const SeatTable = (props) => {
       let studentsManLength = props.students?.filter(
         (std) => !std.woman
       )?.length;
-      console.log(studentsManLength);
-      console.log(secretSeatManSettingSeat);
       if (secretSeatManSettingSeat !== studentsManLength) {
         setOnlyEmptySeat(true);
       }
@@ -390,9 +388,7 @@ const SeatTable = (props) => {
     gender_students = new_students?.filter((stu) => stu.woman === isWoman);
     if (isWoman === "all") {
       gender_students = new_students;
-      console.log(gender_students);
     }
-    console.log(gender_students);
     // //비밀자료에 있는 학생들은 제외해줌!
     // if (props.secretSeat) {
     //   gender_students = gender_students?.filter(
@@ -425,7 +421,6 @@ const SeatTable = (props) => {
 
       let randNum = Math.floor(Math.random() * gender_students.length);
 
-      console.log(gender_students[randNum]);
       return gender_students[randNum];
     };
 
@@ -740,7 +735,6 @@ const SeatTable = (props) => {
             //혹시 현재 뽑힌 학생이 다른 곳에 이름이 미리 들어가 있으면 번호로 다시 바꿈
 
             //성별 무시 설정이 아닌경우에만 자리의 성별 따져서 눌리지 않도록 함.
-            console.log(onlyEmptySeat);
             if (!onlyEmptySeat) {
               //여학생인데 현재 자리가 여학생 자리가 아니면 클릭 안됨.
               if (student.woman && !clickedSeat.classList.contains("woman"))
@@ -1284,11 +1278,11 @@ const SeatTable = (props) => {
       } else {
         if (firstSeat.classList.contains("woman")) {
           firstSeat = getLeftFirstSeat(true);
-          console.log(firstSeat);
+          // console.log(firstSeat);
           selecStu = randomSeatHandler(true, firstSeat);
         } else {
           firstSeat = getLeftFirstSeat(false);
-          console.log(firstSeat);
+          // console.log(firstSeat);
           selecStu = randomSeatHandler(false, firstSeat);
         }
       }

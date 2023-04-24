@@ -225,7 +225,9 @@ const RandomPick = (props) => {
           {showPickedStd(true)}
 
           {/* 설정완료 버튼 */}
-          <button onClick={stdPickDoneHandler}>학생선택 완료</button>
+          <button className={classes["prize-btn"]} onClick={stdPickDoneHandler}>
+            학생선택 완료
+          </button>
         </div>
       )}
 
