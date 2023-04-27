@@ -105,4 +105,4 @@ export const onMessageListener = () =>
     });
   });
 
-export const GOOGLE_APPLICATION_CREDENTIALS = "./firebase-adminsdk.json";
+// export const GOOGLE_APPLICATION_CREDENTIALS = "./firebase-adminsdk.json";

@@ -12,6 +12,7 @@
 /build
 /public/firebase-messaging-sw.js
 /src/firebase-adminsdk.json
+/src/checks-cho-ok-googleCloud.json
 
 # misc
 .DS_Store

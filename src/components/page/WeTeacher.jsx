@@ -7,6 +7,7 @@ import Doit from "../Classgame/Doit/Doit";
 import { useLocation } from "react-router-dom";
 import TitleBtn from "components/Memo/TitleBtn";
 import AssistanceAi from "components/Classgame/AssistanceAi/AssistanceAi";
+// import SpeechToText from "components/Main/SpeechToText";
 
 const WeTeacher = (props) => {
   const { state } = useLocation();
@@ -101,6 +102,7 @@ const WeTeacher = (props) => {
                 )
               }
             />
+            {/* <SpeechToText /> */}
 
             <p>분반해요 주소 👉 bit.ly/분반해요</p>
           </div>

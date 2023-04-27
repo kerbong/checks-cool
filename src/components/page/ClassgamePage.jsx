@@ -74,6 +74,16 @@ const ClassgamePage = (props) => {
               />
 
               <Button
+                name={"타이머"}
+                className={"settingSeat"}
+                onclick={() =>
+                  window.open(
+                    "https://bit.ly/%EC%8B%AC%ED%94%8C%ED%83%80%EC%9D%B4%EB%A8%B8"
+                  )
+                }
+              />
+
+              <Button
                 name={"알림장"}
                 className={"settingSeat"}
                 onclick={() => setShowAlarm(true)}
@@ -90,6 +100,7 @@ const ClassgamePage = (props) => {
               />
 
               <p>타임캡슐 주소 👉 bit.ly/두근두근타임캡슐</p>
+              <p>타이머 주소 👉 bit.ly/심플타이머</p>
               <p>
                 타임캡슐 비밀번호{" "}
                 <span style={{ color: "white" }}>from-indi</span> (왼쪽을

@@ -9,23 +9,21 @@ import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import ExampleModal from "./ExampleModal";
 import byExcel from "../../assets/student/teacher-excel.gif";
-import mainImg from "../../assets/notice/0424main.jpg";
+import mainImg from "../../assets/notice/0427main.gif";
 import dayjs from "dayjs";
-import "dayjs/locale/ko";
 import AttendCalendar from "components/Attendance/AttendCalendar";
 import donationImg from "../../assets/notice/donation.png";
 
 dayjs.locale("ko");
-const update_title = `자리뽑기 '빈자리만' 업데이트 / 데이터 저장하세요!`;
+const update_title = `타이머 기능 추가!`;
 
 const update_text = `* 메뉴바의 로그인 버튼 -
-"공지사항"에 들어오시면 내용을 다시 보실 수 있어요.(업데이트 미반영시 사이트를 새로고침 해주세요!)<br/><br/> 자리뽑기에 <b>'빈자리만 설정' 기능이 추가</b>되었습니다!🪄
+"공지사항"에 들어오시면 내용을 다시 보실 수 있어요.(업데이트 미반영시 사이트를 새로고침 해주세요!)<br/><br/> [제자랑]에  <b> [타이머] 기능이 추가</b>되었습니다!🪄
 <br/>
 <br/>
-빈자리만 설정하신 후에 학생들 자리를 랜덤으로 뽑으실 수 있습니다!
+타이머 창의 크기를 변경해서 다양하게 활용이 가능합니다! 시간조절이 간단하게 버튼으로 가능하며, 시간의 절반이 지났을 때, 1분 남았을 때, 10초 부터는 카운트 다운 음성이 지원됩니다!(브라우저마다 지원이 안 될수도 있습니다.)
 <br/><br/>
-<b>매월 / 학기말에 전체 데이터를 저장해주세요!</b> 첵스쿨은 따로 선생님들의 데이터를 백업, 복사하지 않습니다! 매월말이나 학기말에 전체 데이터를 저장해주세요!
-<br/><br/><b>항상 응원해주시고 함께해주시는, 모든 선생님들께 진심으로 감사드립니다!!!</b>(후원해주신 세 분의 선생님, 감사합니다!!)🤩 `;
+<b>항상 응원해주시고 함께해주시는, 모든 선생님들께 진심으로 감사드립니다!!!</b>🤩 `;
 
 //오늘 날짜 yyyy-mm-dd로 만들기
 const getDateHandler = (date, titleOrQuery) => {
@@ -102,7 +100,7 @@ const MainPage = (props) => {
   const [showNotice, setShowNotice] = useState(false);
 
   useEffect(() => {
-    if (localStorage.getItem("showNotice") !== "20230424") {
+    if (localStorage.getItem("showNotice") !== "20230427") {
       setShowNotice(true);
     }
   }, []);
@@ -1530,7 +1528,7 @@ const MainPage = (props) => {
       {showNotice && (
         <ExampleModal
           onClose={() => {
-            localStorage.setItem("showNotice", "20230424");
+            localStorage.setItem("showNotice", "20230427");
             setShowNotice(false);
           }}
           imgSrc={mainImg}
