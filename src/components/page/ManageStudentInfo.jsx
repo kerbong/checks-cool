@@ -643,7 +643,6 @@ const ManageStudentInfo = (props) => {
             <b>(부) {onStudentInfo?.dad || "-"}</b>
           </span>{" "}
           {onStudentInfo?.dadTel || "-"}
-          &nbsp;&nbsp;
           <span>
             <a
               className={classes["a-link"]}
@@ -668,8 +667,7 @@ const ManageStudentInfo = (props) => {
           <span>
             <b>(모) {onStudentInfo?.mom || "-"}</b>
           </span>{" "}
-          &nbsp;&nbsp; {onStudentInfo?.momTel || "-"}
-          &nbsp;&nbsp;
+          {onStudentInfo?.momTel || "-"}
           <span>
             <a
               className={classes["a-link"]}
@@ -691,8 +689,7 @@ const ManageStudentInfo = (props) => {
         <span
           className={`${classes["margin-5"]} ${classes["flex-wrap"]} ${classes["padd-5"]} ${classes["span-left"]}`}
         >
-          <b>학생</b> &nbsp;&nbsp; {onStudentInfo?.studTel || "-"}
-          &nbsp;&nbsp;
+          <b>학생</b> {onStudentInfo?.studTel || "-"}
           <span>
             <a
               className={classes["a-link"]}

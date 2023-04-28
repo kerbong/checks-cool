@@ -1935,54 +1935,108 @@ const MainPage = (props) => {
               <li className={classes["main-li"]}> * 최근 7일 자료 없음</li>
             ) : (
               <>
-                {listMemo?.map(
-                  (event) =>
-                    event.data.length !== nowYearStd?.length && (
-                      <li
-                        key={event.id}
-                        className={classes["mainCheckLists-li"]}
-                      >
-                        <span>
-                          {isSubject && (
+                {!isSubject &&
+                  listMemo?.map((event) => {
+                    return (
+                      event.data.length !== nowYearStd?.length && (
+                        <li
+                          key={event.id}
+                          className={classes["mainCheckLists-li"]}
+                        >
+                          <span>
+                            {event.title} / 미입력 (
+                            {
+                              nowYearStd
+                                ?.filter(
+                                  (clObj) =>
+                                    Object.keys(clObj)?.[0] === event.clName
+                                )?.[0]
+                                ?.[event.clName]?.filter(
+                                  (stu) =>
+                                    !event.data
+                                      ?.map((data) => +data.num)
+                                      .includes(+stu.num)
+                                ).length
+                            }
+                            )
+                          </span>
+                          {/* 개별기록 미작성자 이름 */}
+                          <span className={classes["mainCheckLists-students"]}>
+                            {" "}
+                            {nowYearStd?.map((std) => {
+                              if (
+                                event?.data?.filter(
+                                  (data) => data.name === std.name
+                                ).length > 0
+                              )
+                                return null;
+                              return (
+                                <span
+                                  key={std.num + std.name}
+                                  className={classes["mainCheckLists-student"]}
+                                >
+                                  {/* 미제출자 이름 보여주기 */}
+                                  {`${std.name}`}
+                                </span>
+                              );
+                            })}
+                          </span>
+                        </li>
+                      )
+                    );
+                  })}
+
+                {isSubject &&
+                  listMemo?.map((event) => {
+                    let nowClassStd = nowYearStd?.filter(
+                      (clObj) => Object.keys(clObj)?.[0] === event.clName
+                    )?.[0]?.[event.clName];
+                    return (
+                      event.data.length !== nowClassStd?.length && (
+                        <li
+                          key={event.id}
+                          className={classes["mainCheckLists-li"]}
+                        >
+                          <span>
                             <span className={classes["mr-underline"]}>
                               {event.clName}
                             </span>
-                          )}
-                          {event.title} / 미입력 (
-                          {
-                            nowYearStd?.filter(
-                              (stu) =>
-                                !event.data
-                                  ?.map((data) => +data.num)
-                                  .includes(+stu.num)
-                            ).length
-                          }
-                          )
-                        </span>
-                        {/* 개별기록 미작성자 이름 */}
-                        <span className={classes["mainCheckLists-students"]}>
-                          {" "}
-                          {nowYearStd?.map((std) => {
-                            if (
-                              event?.data?.filter(
-                                (data) => data.name === std.name
-                              ).length > 0
+                            {event.title} / 미입력 (
+                            {
+                              nowClassStd?.filter(
+                                (stu) =>
+                                  !event.data
+                                    ?.map((data) => +data.num)
+                                    .includes(+stu.num)
+                              ).length
+                            }
                             )
-                              return null;
-                            return (
-                              <span
-                                key={std.num + std.name}
-                                className={classes["mainCheckLists-student"]}
-                              >
-                                {/* 미제출자 이름 보여주기 */}
-                                {`${std.name}`}
-                              </span>
-                            );
-                          })}
-                        </span>
-                      </li>
-                    )
-                )}
+                          </span>
+                          {/* 개별기록 미작성자 이름 */}
+                          <span className={classes["mainCheckLists-students"]}>
+                            {" "}
+                            {nowClassStd?.map((std) => {
+                              if (
+                                event?.data?.filter(
+                                  (data) => data.name === std.name
+                                ).length > 0
+                              )
+                                return null;
+                              return (
+                                <span
+                                  key={std.num + std.name}
+                                  className={classes["mainCheckLists-student"]}
+                                >
+                                  {/* 미제출자 이름 보여주기 */}
+                                  {`${std.name}`}
+                                </span>
+                              );
+                            })}
+                          </span>
+                        </li>
+                      )
+                    );
+                  })}
               </>
             )}
           </div>
