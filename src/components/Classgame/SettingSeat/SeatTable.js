@@ -1432,6 +1432,13 @@ const SeatTable = (props) => {
   const secretSaveHandler = async () => {
     if (props.isExist) return;
 
+    if (!seeFromBack) {
+      saveErrorSwal(
+        "학생기준 보기 (칠판이 화면 위쪽에 있는 상태) 에서만 저장이 가능합니다!"
+      );
+      return;
+    }
+
     Swal.fire({
       icon: "warning",
       title: "저장 확인",
