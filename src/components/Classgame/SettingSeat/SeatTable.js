@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import classes from "./SettingSeat.module.css";
 import Swal from "sweetalert2";
 import Button from "../../Layout/Button";
@@ -66,7 +66,9 @@ const SeatTable = (props) => {
   const [randomJustStudent, setRandomJustStudent] = useState(true);
   const [pickSeatAll, setPickSeatAll] = useState("");
   const [seeFromBack, setSeeFromBack] = useState(true);
+  const [animation, setAnimation] = useState(true);
 
+  const toggleRef = useRef();
   let navigate = useNavigate();
 
   //자리에 성별 설정을 true로 만들기 seatList거나, 비밀자료인 경우
@@ -452,7 +454,9 @@ const SeatTable = (props) => {
         (stu) => stu.name !== selectedSecretStd.name
       );
 
-      selectedSwal(selectedSecretStd.num, selectedSecretStd.name);
+      if (animation) {
+        selectedSwal(selectedSecretStd.num, selectedSecretStd.name);
+      }
 
       setStudents([...new_students]);
       setTempStudent({ ...selectedSecretStd });
@@ -508,7 +512,9 @@ const SeatTable = (props) => {
       removePickStudent();
     }
 
-    selectedSwal(selectedStudent.num, selectedStudent.name);
+    if (animation) {
+      selectedSwal(selectedStudent.num, selectedStudent.name);
+    }
 
     setStudents([...new_students]);
     setTempStudent({ ...selectedStudent });
@@ -1143,16 +1149,18 @@ const SeatTable = (props) => {
     let timer;
     if (students.length > 0) {
       //한번에 모든 학생 뽑는 로직이면.. gender면 한 성별 먼저 다 뽑기 mix면 1번부터 그냥 성별 상관없이 쭉
+      let delay = animation ? 3500 : 50;
       if (pickSeatAll === "gender") {
         //이전에 뽑힌 학생성별 계속 뽑기
+
         timer = setTimeout(() => {
           pickAndSeat("gender", tempStudent.woman);
-        }, 3500);
+        }, delay);
         // 성별 상관없이 1번부터 쭉 뽑을 경우
       } else if (pickSeatAll === "mix") {
         timer = setTimeout(() => {
           pickAndSeat("mix", "all");
-        }, 3500);
+        }, delay);
       }
 
       // 학생이 다 뽑히고 나면 pickSeatAll 설정 초기화
@@ -1244,7 +1252,9 @@ const SeatTable = (props) => {
             return stu.name !== stdNameOrNum;
           });
 
-          selectedSwal(selectedStudent.num, selectedStudent.name);
+          if (animation) {
+            selectedSwal(selectedStudent.num, selectedStudent.name);
+          }
 
           setStudents([...new_students]);
           setTempStudent({ ...selectedStudent });
@@ -1309,6 +1319,45 @@ const SeatTable = (props) => {
     } else if (consider === "mix") {
       pickAndSeat("mix", "all");
     }
+  };
+
+  //자리표 저장전 보는 기준 바꾸는 함수
+  const changeSeeHandler = () => {
+    // 만약 items가 저장이 되어있지 않으면?
+
+    let items_students = [];
+    let items_class = [];
+
+    document.getElementById(`items-div`).childNodes.forEach((item) => {
+      items_students.unshift(item.innerText);
+      items_class.unshift(
+        item.classList.contains("empty")
+          ? "empty"
+          : item.classList.contains("woman")
+          ? "woman"
+          : "undefined"
+      );
+    });
+
+    let new_items = items_students?.map((stu, index) => (
+      <div
+        key={`table-${stu}`}
+        className={`${classes["item"]} item ${items_class[index]}`}
+        id={`table-${index + 1}`}
+        onClick={(e) => itemAddStudentHandler(e)}
+      >
+        {" "}
+        {stu}{" "}
+      </div>
+    ));
+
+    if (!itemsFront) {
+      setItemsFront(new_items);
+    } else {
+      setItems(new_items);
+    }
+
+    setSeeFromBack((prev) => !prev);
   };
 
   //자리표 보는 기준 바꾸는 함수
@@ -1679,11 +1728,19 @@ const SeatTable = (props) => {
                   ""
                 ) : (
                   <>
-                    <p>자리뽑기가 끝났어요!</p>
                     <p>
                       <Button
                         name={"여학생 자리만 색칠하기"}
                         onclick={coloringGender}
+                        className={"settingSeat-btn"}
+                      />
+                      <Button
+                        name={
+                          seeFromBack
+                            ? "교사 기준으로 보기"
+                            : "학생 기준으로 보기"
+                        }
+                        onclick={changeSeeHandler}
                         className={"settingSeat-btn"}
                       />
                     </p>
@@ -1750,6 +1807,26 @@ const SeatTable = (props) => {
                     }
                     name={"학생+자리"}
                   />
+                </div>
+                <div className={`${classes["randomPickBtn-div"]}`}>
+                  <li className={classes["dropdown-li-nonehover"]}>
+                    움짤
+                    <input type="checkbox" id="toggle" hidden />
+                    <label
+                      htmlFor="toggle"
+                      className={
+                        animation
+                          ? `${classes["toggleSwitch"]} ${classes["active"]}`
+                          : `${classes["toggleSwitch"]}`
+                      }
+                      onClick={() => {
+                        setAnimation((prev) => !prev);
+                      }}
+                      ref={toggleRef}
+                    >
+                      <span className={classes["toggleButton"]}></span>
+                    </label>
+                  </li>
                 </div>
               </div>
               <div className={classes["remain-student-div"]}>

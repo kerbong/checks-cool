@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { authService } from "../../fbase";
 import Button from "./Button";
 import classes from "./HeaderMenu.module.css";
@@ -10,7 +10,7 @@ const HeaderProfileBtn = (props) => {
   const [scaleValue, setScaleValue] = useState(1);
   const [isNotificationPermission, setNotificationPermission] = useState(false);
   const [permissionChanged, setPermissionChanged] = useState(false);
-  const toggleRef = useRef();
+  // const toggleRef = useRef();
 
   useEffect(() => {
     if (showDropdown) {
