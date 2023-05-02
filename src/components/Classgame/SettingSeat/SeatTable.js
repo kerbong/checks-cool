@@ -1014,16 +1014,16 @@ const SeatTable = (props) => {
     });
 
     //기존자료가 아니고
-    if (saved_today >= 5 && props.isExist === undefined) {
+    if (saved_today >= 15 && props.isExist === undefined) {
       saveErrorSwal(
-        `하루에 최대 5개 까지만 자리표 저장이 가능해요! 불필요한 자료가 있다면 삭제해주세요!`
+        `하루에 최대 15개 까지만 자리표 저장이 가능해요! 불필요한 자료가 있다면 삭제해주세요!`
       );
       return;
     }
 
-    if (saved_month >= 10 && props.isExist === undefined) {
+    if (saved_month >= 30 && props.isExist === undefined) {
       saveErrorSwal(
-        `한 달에 최대 10개 까지만 자리표 저장이 가능해요! 불필요한 자료가 있다면 삭제해주세요!`
+        `한 달에 최대 30개 까지만 자리표 저장이 가능해요! 불필요한 자료가 있다면 삭제해주세요!`
       );
       return;
     }
