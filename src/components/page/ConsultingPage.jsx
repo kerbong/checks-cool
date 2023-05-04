@@ -27,7 +27,7 @@ const ConsultingPage = (props) => {
   const [nowClStudents, setNowClStudents] = useState([]);
   const [nowStudents, setNowStudents] = useState([]);
   const [isSubject, setIsSubject] = useState(false);
-  const [showStudentsLists, setShowStudentsLists] = useState(false);
+  const [showStudentsLists, setShowStudentsLists] = useState(true);
 
   const { state } = useLocation();
   let navigate = useNavigate();
@@ -356,7 +356,7 @@ const ConsultingPage = (props) => {
               ></i>
             </span>
           </h1>
-          <span>* 학생명단 펼쳐보기</span>
+          {!showStudentsLists && <span>* 학생명단 펼쳐보기</span>}
           {/* 전담교사만 보이는 학급 셀렉트 */}
           {isSubject && (
             <div>
