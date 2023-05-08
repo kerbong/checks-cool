@@ -11,12 +11,10 @@ import MissionInput from "./MissionInput";
 import Swal from "sweetalert2";
 
 const EXPLAINS = [
-  "* 아침 7~9시에 글쓰기가 가능해요.",
+  "* 오늘 작성한 글만 보여요.",
+  "* 아침 7 ~ 9 시에 글쓰기가 가능해요.",
   "* 하루 한 개의 글만 올릴 수 있어요.",
-  "* 글에는 한 개의 댓글만 쓸 수 있어요.",
-  "* 여러 글에 댓글을 달 수 있어요.",
-  "* 오늘 올린 글만 볼 수 있어요.",
-  "* 글은 수정, 삭제가 불가능해요!",
+  "* 작성한 글은 수정, 삭제가 불가능해요!",
 ];
 //   {/* <p>* 매주 월요일에는 지난주 핫미션이 나와요.</p> */}
 
@@ -34,16 +32,13 @@ const Mission = (props) => {
   const [showItem, setShowItem] = useState(false);
   const [showMission, setShowMission] = useState({});
   const [is7to9, setIs7to9] = useState(null);
-  const [isWritten, setIsWritten] = useState(
-    localStorage.getItem("isWritten") || false
-  );
 
   let navigate = useNavigate();
 
   useEffect(() => {
     //7-9
     const nowHour = +new Date().toTimeString().slice(0, 2);
-    if (nowHour >= 7 && nowHour <= 9) {
+    if (nowHour >= 21 && nowHour <= 24) {
       setIs7to9(true);
     } else {
       setIs7to9(false);
@@ -176,63 +171,66 @@ const Mission = (props) => {
   };
 
   return (
-    <div>
-      {showItem && (
-        <Modal
-          onClose={() => {
-            setShowItem(false);
-            setShowMission({});
-            setShowReply([]);
-          }}
-        >
-          <Item
-            userUid={props.userUid}
-            mission={showMission}
-            itemClickHandler={() => {}}
-            onPopup={true}
-            likeNonClick={false}
-            dataDate={TODAYDATE}
-          />
-          <Reply
-            userState={userState}
-            mission={showMission}
-            userUid={props.userUid}
-            dataDate={TODAYDATE}
-          />
-        </Modal>
-      )}
+    <div className={classes["flex-center"]}>
+      <div style={{ width: "90vw", maxWidth: "800px" }}>
+        {showItem && (
+          <Modal
+            onClose={() => {
+              setShowItem(false);
+              setShowMission({});
+              setShowReply([]);
+            }}
+          >
+            <Item
+              userUid={props.userUid}
+              mission={showMission}
+              itemClickHandler={() => {}}
+              onPopup={true}
+              likeNonClick={false}
+              dataDate={TODAYDATE}
+            />
+            <Reply
+              userState={userState}
+              mission={showMission}
+              userUid={props.userUid}
+              dataDate={TODAYDATE}
+            />
+          </Modal>
+        )}
 
-      <h1 className={classes.h1} onClick={() => setExplainOn((prev) => !prev)}>
-        🌞 오늘의 아침한마디{" "}
-        <span className={classes.h1Span}>
-          {explainOn ? (
-            <i className="fa-solid fa-chevron-up"></i>
-          ) : (
-            <i className="fa-solid fa-chevron-down"></i>
-          )}{" "}
-        </span>
-      </h1>
-
-      <div className={explainOn ? classes.explainDiv : classes.explainDivHide}>
-        {EXPLAINS?.map((explain, index) => (
-          <span key={`explain-${index}`} className={classes.explainP}>
-            {explain}
+        <h1 className={classes.h1}>🌞 오늘의 아침한마디 </h1>
+        <span onClick={() => setExplainOn((prev) => !prev)}>
+          * 사용설명서
+          <span className={classes.h1Span}>
+            {explainOn ? (
+              <i className="fa-solid fa-chevron-up"></i>
+            ) : (
+              <i className="fa-solid fa-chevron-down"></i>
+            )}{" "}
           </span>
-        ))}
-      </div>
+        </span>
+        <div className={classes["flex-center"]}>
+          <div
+            className={explainOn ? classes.explainDiv : classes.explainDivHide}
+          >
+            {EXPLAINS?.map((explain, index) => (
+              <span key={`explain-${index}`} className={classes.explainP}>
+                {explain}
+              </span>
+            ))}
+          </div>
+        </div>
 
-      {/* 아침미션 입력 7~9시에만 보이기 */}
-      {is7to9 && (
-        <MissionInput
-          missionAddHandler={(title, text) => {
-            missionAddHandler(title, text);
-          }}
-        />
-      )}
+        {/* 아침미션 입력 7~9시에만 보이기 */}
+        {is7to9 && (
+          <MissionInput
+            missionAddHandler={(title, text) => {
+              missionAddHandler(title, text);
+            }}
+          />
+        )}
 
-      {/* 글을 하나라도 쓴 사람만 보이기기 */}
-      {isWritten ? (
-        missions?.map((mission) => (
+        {missions?.map((mission) => (
           <Item
             likeNonClick={true}
             key={mission.nickName}
@@ -243,14 +241,8 @@ const Mission = (props) => {
               setShowReply(mission.reply);
             }}
           />
-        ))
-      ) : (
-        <>
-          <br />
-          <br />
-          <h2>* 한 개 이상의 글을 작성해주세요.</h2>
-        </>
-      )}
+        ))}
+      </div>
     </div>
   );
 };

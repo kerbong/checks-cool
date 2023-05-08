@@ -2,11 +2,15 @@
 // Scripts for firebase and firebase messaging
 importScripts("https://www.gstatic.com/firebasejs/8.2.0/firebase-app.js");
 importScripts("https://www.gstatic.com/firebasejs/8.2.0/firebase-messaging.js");
-importScripts("./fbaseSwconfig.js");
 
 // Initialize the Firebase app in the service worker by passing the generated config
 
-firebase.initializeApp(fbaseSwconfig);
+firebase.initializeApp({
+  apiKey: "AIzaSyAK7LLwtvPzIJoX_loNqoVpat-SbPjCbVo",
+  projectId: "checks-cho-ok",
+  messagingSenderId: "1085563899383",
+  appId: "1:1085563899383:web:2e0d2f63c7613dd31472f2",
+});
 
 // Retrieve firebase messaging
 const messaging = firebase.messaging();

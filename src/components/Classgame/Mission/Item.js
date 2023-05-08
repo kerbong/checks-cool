@@ -44,7 +44,8 @@ const Item = (props) => {
     // console.log(mission);
     //해당 날짜의 자료에서
 
-    const nowOnRef = doc(dbService, "mission", props.dataDate);
+    // const nowOnRef = doc(dbService, "mission", props.dataDate);
+    const nowOnRef = doc(dbService, "mission", "2023-03-31");
     setLike((prev) => !prev);
 
     const getNowData = await getDoc(nowOnRef);
@@ -89,12 +90,15 @@ const Item = (props) => {
     >
       <div key={mission.nickName + "item"}>
         <div className={classes.nameArea}>
-          <span className={classes.nameIcon}>🏁</span>
-          <span className={classes.titleSpan} id={"1" + mission.nickName}>
-            {`${mission.title}`}
+          <span className={classes.nameIcon}>☕</span>
+          <span id={"1" + mission.nickName}>
+            <span className={classes.titleSpan} style={{ fontWeight: "bold" }}>
+              {" "}
+              {mission.nickName}
+            </span>{" "}
           </span>
+          <span className={classes.titleNickName}>{`${mission.title}`}</span>
         </div>
-        <div className={classes.titleNickName}>by {mission.nickName}</div>
       </div>
 
       {/* text 부분 보여주기 */}
@@ -109,7 +113,7 @@ const Item = (props) => {
       <div className={classes.editDeleteArea}>
         {/* 내가 쓴 글이면 수정, 삭제 가능함 */}
         <div>
-          {mission.writtenId === props.userUid && (
+          {/* {mission.writtenId === props.userUid && (
             <>
               <Button
                 id={"edit" + mission.nickName}
@@ -124,7 +128,7 @@ const Item = (props) => {
                 icon={<i className="fa-solid fa-trash-can"></i>}
               />
             </>
-          )}
+          )} */}
         </div>
         {/* 좋아요와 댓글수 */}
         <div className={classes.likeReplyDiv}>

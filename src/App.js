@@ -74,11 +74,6 @@ function App() {
         }
         setInit(true);
 
-        //로그인해서 7~9시면 아침미션 화면 먼저 보여주기
-        const nowHour = +new Date().toTimeString().slice(0, 2);
-        if (nowHour >= 7 && nowHour <= 9) {
-          navigate(`/weteacher`, { state: "morning" });
-        }
         // else {
         //   //로그인하면 심심해요 화면 먼저보여주기
         //   navigate(`/classgame`, { state: "main" });
@@ -105,6 +100,12 @@ function App() {
       return;
     } else if (userUid) {
       getStudents(userUid);
+
+      //로그인해서 7~9시면 아침미션 화면 먼저 보여주기
+      const nowHour = +new Date().toTimeString().slice(0, 2);
+      if (nowHour >= 7 && nowHour <= 9) {
+        navigate(`/weteacher`, { state: "morning" });
+      }
     }
   }, [profile]);
 
