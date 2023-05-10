@@ -38,7 +38,7 @@ const Mission = (props) => {
   useEffect(() => {
     //7-9
     const nowHour = +new Date().toTimeString().slice(0, 2);
-    if (nowHour >= 21 && nowHour <= 24) {
+    if (nowHour >= 7 && nowHour <= 8) {
       setIs7to9(true);
     } else {
       setIs7to9(false);
@@ -240,6 +240,7 @@ const Mission = (props) => {
               setShowMission(mission);
               setShowReply(mission.reply);
             }}
+            userUid={props.userUid}
           />
         ))}
       </div>

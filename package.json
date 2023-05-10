@@ -1,5 +1,5 @@
 {
-  "homepage": "https://kerbong.github.io/checks-cool/",
+  "homepage": "/checks-cool/",
   "name": "checks-cool",
   "version": "1.1.0",
   "private": true,
@@ -26,6 +26,7 @@
     "node-schedule": "^2.1.1",
     "os-browserify": "^0.3.0",
     "path-browserify": "^1.0.1",
+    "qrcode.react": "^3.1.0",
     "querystring-es3": "^0.2.1",
     "react": "^18.2.0",
     "react-beautiful-dnd": "^13.1.1",

@@ -43,10 +43,9 @@ const Item = (props) => {
   const changeLikeHandler = async () => {
     // console.log(mission);
     //해당 날짜의 자료에서
+    if (props.likeNonClick) return;
 
-    // const nowOnRef = doc(dbService, "mission", props.dataDate);
-    const nowOnRef = doc(dbService, "mission", "2023-03-31");
-    setLike((prev) => !prev);
+    const nowOnRef = doc(dbService, "mission", props.dataDate);
 
     const getNowData = await getDoc(nowOnRef);
     //이번달 자료 중 현재 자료의 인덱스 저장하고
@@ -58,8 +57,10 @@ const Item = (props) => {
         nowData_index = index;
       }
     });
+
     let nowOnData = new_missionData[nowData_index];
     let nowOnData_like = nowOnData.like;
+    // console.log(nowOnData_like);
 
     //만약 이전이 좋아요였으면 해제
     if (like) {
@@ -76,6 +77,8 @@ const Item = (props) => {
       // console.log(nowOnData);
       // console.log(new_missionData);
     }
+
+    setLike((prev) => !prev);
 
     await updateDoc(nowOnRef, { mission_data: new_missionData });
   };
@@ -134,7 +137,7 @@ const Item = (props) => {
         <div className={classes.likeReplyDiv}>
           <LikeBtn
             like={like}
-            changeLike={!props.likeNonClick && changeLikeHandler}
+            changeLike={changeLikeHandler}
             likeNonClick={props.likeNonClick}
           />
           {props.mission?.like?.length}

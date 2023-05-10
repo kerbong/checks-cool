@@ -103,7 +103,7 @@ function App() {
 
       //로그인해서 7~9시면 아침미션 화면 먼저 보여주기
       const nowHour = +new Date().toTimeString().slice(0, 2);
-      if (nowHour >= 7 && nowHour <= 9) {
+      if (nowHour >= 7 && nowHour <= 8) {
         navigate(`/weteacher`, { state: "morning" });
       }
     }

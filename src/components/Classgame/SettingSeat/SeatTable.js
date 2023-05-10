@@ -869,15 +869,17 @@ const SeatTable = (props) => {
         }
       });
       let new_existItems = [];
-      //전체뽑기가 아니고 빈자리만 설정한게 아니면,
+      //빈자리만 설정한게 아니면,
       // 각 성별 자리만 모아줌
-      if (isWoman !== "all" && !onlyEmptySeat) {
+
+      // if (isWoman !== "all" && !onlyEmptySeat) {
+      if (!onlyEmptySeat) {
         existItems.forEach((item) => {
-          if (isWoman) {
+          if (isWoman === true || selectedStudent.woman) {
             if (item.classList.contains("woman")) {
               new_existItems.push(item);
             }
-          } else if (!isWoman) {
+          } else if (isWoman === false || !selectedStudent.woman) {
             if (!item.classList.contains("woman")) {
               new_existItems.push(item);
             }
