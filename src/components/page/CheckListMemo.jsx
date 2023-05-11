@@ -67,6 +67,7 @@ const CheckListMemo = (props) => {
           userUid={props.userUid}
           about={showWhat}
           isSubject={props.isSubject}
+          addClicked={state?.todo === "add" ? true : false}
         />
       )}
     </div>

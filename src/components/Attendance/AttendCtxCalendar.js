@@ -17,6 +17,7 @@ const thisMonth = () => {
 
 const AttendCtxCalendar = (props) => {
   const [currentMonth, setCurrentMonth] = useState(thisMonth);
+  const [eventsDone, setEventsDone] = useState(false);
   const [dayEventIsShown, setDayEventIsShown] = useState(false);
   const [fixIsShown, setFixIsShown] = useState("0");
   //전담용 전체 이벤트
@@ -74,6 +75,7 @@ const AttendCtxCalendar = (props) => {
           // }
         });
         setEvents([...new_attends]);
+        setEventsDone(true);
       }
     });
   };
@@ -184,6 +186,52 @@ const AttendCtxCalendar = (props) => {
     //state로 설정함
     setCurrentMonth(currentM);
 
+    function dayOutClick(day) {
+      let currentM = getCurrentMonth();
+      let move_to = 1;
+      if (day.getAttribute("aria-label").split(" ")[3].slice(0, -1) > 20) {
+        move_to = -1;
+      }
+      let fixedM = fixCurrentMonth(currentM, move_to);
+      //state 설정
+      setCurrentMonth(fixedM);
+    }
+
+    function dayOnClick(day) {
+      //클릭한 날짜정보와 일치하는 보여줄 정보만 저장
+      let day_date = day.getAttribute("aria-label");
+      let yyyymmdd = calEventDayToYMD(day);
+
+      if (events.length !== 0) {
+        // 기존 코드, eventByDays 자료에 지금 날짜와 같은 자료가 있는지 확인해서 새로운 배열에 넣기
+        // console.log(yyyymmdd.split("-")[2]);
+        let new_eventOnDay = events?.filter(
+          (event) => event?.id?.slice(5, 10) === yyyymmdd?.slice(5, 10)
+        );
+        //만약 오늘 날짜에 해당하는 게 있으면
+        if (new_eventOnDay.length > 0) {
+          //중복되는 자료 있으면 제거
+          let stringEventOnDay = new_eventOnDay?.map((event) => {
+            event = { ...event, eventDate: day_date };
+            return JSON.stringify(event);
+          });
+
+          let fixed_eventOnDay = [...new Set(stringEventOnDay)]?.map((event) =>
+            JSON.parse(event)
+          );
+
+          setEventOnDay(() => fixed_eventOnDay);
+          //만약 오늘 날짜에 해당하는 자료가 없으면
+        } else {
+          setEventOnDay(() => [{ eventDate: day_date }]);
+        }
+      } else {
+        setEventOnDay(() => [{ eventDate: day_date }]);
+      }
+
+      setDayEventIsShown(true);
+    }
+
     //모든 날짜에 이벤트 보여주는 클릭 이벤트리스너 등록 useEffect밖으로 나가면.. 무한로딩;;
     const showAllDayEvents = (events) => {
       let mondayToFridays = document.querySelectorAll(
@@ -193,54 +241,10 @@ const AttendCtxCalendar = (props) => {
       mondayToFridays.forEach((day) => {
         //만약 다음달의 날짜인 경우 currentMonth state를 변경시켜서 useEffect를 실행해줌.(다음달 클릭했을 때 실행하는 것처럼)
         if (day.getAttribute("class").includes("--outside-month")) {
-          day.onclick = function () {
-            let currentM = getCurrentMonth();
-            let move_to = 1;
-            if (
-              day.getAttribute("aria-label").split(" ")[3].slice(0, -1) > 20
-            ) {
-              move_to = -1;
-            }
-            let fixedM = fixCurrentMonth(currentM, move_to);
-            //state 설정
-            setCurrentMonth(fixedM);
-          };
+          day.onclick = () => dayOutClick(day);
           //해당 월의 일반적인 주중 날짜를 클릭하면..
         } else {
-          day.onclick = function dayOnClick() {
-            //클릭한 날짜정보와 일치하는 보여줄 정보만 저장
-            let day_date = day.getAttribute("aria-label");
-            let yyyymmdd = calEventDayToYMD(day);
-
-            if (events.length !== 0) {
-              // 기존 코드, eventByDays 자료에 지금 날짜와 같은 자료가 있는지 확인해서 새로운 배열에 넣기
-              // console.log(yyyymmdd.split("-")[2]);
-              let new_eventOnDay = events?.filter(
-                (event) => event?.id?.slice(5, 10) === yyyymmdd?.slice(5, 10)
-              );
-              //만약 오늘 날짜에 해당하는 게 있으면
-              if (new_eventOnDay.length > 0) {
-                //중복되는 자료 있으면 제거
-                let stringEventOnDay = new_eventOnDay?.map((event) => {
-                  event = { ...event, eventDate: day_date };
-                  return JSON.stringify(event);
-                });
-
-                let fixed_eventOnDay = [...new Set(stringEventOnDay)]?.map(
-                  (event) => JSON.parse(event)
-                );
-
-                setEventOnDay(() => fixed_eventOnDay);
-                //만약 오늘 날짜에 해당하는 자료가 없으면
-              } else {
-                setEventOnDay(() => [{ eventDate: day_date }]);
-              }
-            } else {
-              setEventOnDay(() => [{ eventDate: day_date }]);
-            }
-
-            setDayEventIsShown(true);
-          };
+          day.onclick = () => dayOnClick(day);
         }
         setEventOnDay([]);
       });
@@ -337,6 +341,12 @@ const AttendCtxCalendar = (props) => {
 
     showAllDayEvents(events);
     eventDrawOnCalendar();
+
+    // 컴포넌트 언마운트 시 이벤트 리스너 제거
+    return () => {
+      document.removeEventListener("click", dayOutClick);
+      document.removeEventListener("click", dayOnClick);
+    };
   }, [currentMonth, events]);
 
   //달력에서 받은 date 형식을 바꾸기
@@ -518,11 +528,18 @@ const AttendCtxCalendar = (props) => {
     fixEvents(data, data.eventDate, "del");
   };
 
-  // //휴일 달력에 그려주기!
-  // useEffect(() => {
-  //   if (!currentMonth) return;
+  // //메인화면에서 바로 추가 단축키로 온 경우
+  useEffect(() => {
+    if (!props.addClicked) return;
+    if (!eventsDone) return;
 
-  // }, [currentMonth]);
+    let day = document.getElementsByClassName(
+      "react-datepicker__day--today"
+    )?.[0];
+
+    //오늘날짜 클릭해줌
+    day.click();
+  }, [eventsDone]);
 
   return (
     <>
@@ -544,6 +561,7 @@ const AttendCtxCalendar = (props) => {
             students={!props.isSubject ? props.students : nowClStudents}
             userUid={props.userUid}
             isSubject={props.isSubject}
+            addClicked={props.addClicked || false}
           />
         </Modal>
       )}

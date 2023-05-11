@@ -29,6 +29,7 @@ const CheckLists = (props) => {
   //선택된 셀렉트 밸류
   const [nowClassName, setNowClassName] = useState("");
   const [isSubject, setIsSubject] = useState(false);
+  const [dataDone, setDataDone] = useState(false);
 
   //인풋에 전달할 학생정보
   const [inputStudents, setInputStudents] = useState([]);
@@ -85,6 +86,7 @@ const CheckLists = (props) => {
             new_checkLists.push(data);
           });
           setCheckLists([...new_checkLists]);
+          setDataDone(true);
         }
         //학년도 저장 및 체크리스트기록 저장
         if (years.length > 0) {
@@ -121,6 +123,7 @@ const CheckLists = (props) => {
             new_listMemo.push(data);
           });
           setListMemo([...new_listMemo]);
+          setDataDone(true);
         }
         //학년도 저장 및 체크리스트기록 저장
         if (years.length > 0) {
@@ -571,6 +574,18 @@ const CheckLists = (props) => {
           ?.filter((cl) => Object.keys(cl)[0] === item.clName)?.[0]
           ?.[item.clName]?.filter((stu) => filterQuery(stu));
   };
+
+  //전달받은 state에서 add일경우, 추가 버튼 누른 상태로 만들어주기
+  useEffect(() => {
+    if (!props.addClicked) return;
+    if (!dataDone) return;
+
+    if (props.about === "checkLists") {
+      setAddCheckItem(true);
+    } else {
+      setAddListMemo(true);
+    }
+  }, [dataDone]);
 
   return (
     <>

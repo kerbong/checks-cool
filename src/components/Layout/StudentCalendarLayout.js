@@ -23,7 +23,7 @@ const StudentCalendarLayout = (props) => {
   const { state } = useLocation();
 
   useEffect(() => {
-    if (state?.doWhat === "addAttend") {
+    if (state?.doWhat === "addAttend" || state?.todo === "add") {
       setAllFalse();
       setShowCalendar(true);
     } else if (state?.doWhat === "showAttend") {
@@ -203,6 +203,7 @@ const StudentCalendarLayout = (props) => {
             isSubject={isSubject}
             students={nowStudents}
             userUid={props.userUid}
+            addClicked={state?.todo === "add" ? true : false}
           />
 
           {!isSubject && (

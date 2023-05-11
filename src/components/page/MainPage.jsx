@@ -15,15 +15,26 @@ import AttendCalendar from "components/Attendance/AttendCalendar";
 import donationImg from "../../assets/notice/donation.png";
 
 dayjs.locale("ko");
-const update_title = `타이머 기능 추가!`;
+const update_title = `메인화면) 단축키 & 상담 바로가기 추가`;
 
-const update_text = `* 메뉴바의 로그인 버튼 -
-"공지사항"에 들어오시면 내용을 다시 보실 수 있어요.(업데이트 미반영시 사이트를 새로고침 해주세요!)<br/><br/> [제자랑]에  <b> [타이머] 기능이 추가</b>되었습니다!🪄
+const update_text = `* 화면상단 메뉴바의 <i class="fa-solid fa-user"></i> -
+"공지사항"에 들어오시면 내용을 다시 보실 수 있어요.(업데이트 미반영시 사이트를 새로고침 해주세요!)<br/><br/>  <b>메인화면에서 키보드의 숫자 1, 2, 3 을 눌러보세요!</b>🪄 
 <br/>
 <br/>
-타이머 창의 크기를 변경해서 다양하게 활용이 가능합니다! 시간조절이 간단하게 버튼으로 가능하며, 시간의 절반이 지났을 때, 1분 남았을 때, 10초 부터는 카운트 다운 음성이 지원됩니다!(브라우저마다 지원이 안 될수도 있습니다.)
+<b>숫자 '1' 을 누르시면 <br/>👉 오늘 날짜의 출결 추가화면</b>으로 바로 이동합니다.
 <br/><br/>
-<b>항상 응원해주시고 함께해주시는, 모든 선생님들께 진심으로 감사드립니다!!!</b>🤩 `;
+<b>숫자 '2' 를 누르시면, <br/>👉  제출ox 자료 추가화면</b>으로 바로 이동합니다.
+<br/><br/>
+<b>숫자 '3' 을 누르시면, <br/>👉  개별기록 자료 추가화면</b>으로 바로 이동합니다.
+<br/><br/>
+** 추후에 단축키 개별 설정 및 추가 계획입니다. 좋은 의견 있으시면 언제든 알려주세요! (담임선생님만 가능합니다..ㅠ 전담선생님들, 필요한 기능 있으시면 말씀해주세요!!)
+<br/><br/>
+** 메인화면에서 <b>상담 영역을 누르시면, 상담화면으로 바로 이동</b>합니다.
+<br/><br/>
+** <b>사이트 접속주소가 추가</b>되었어요! 혹시 접속이 어려우신 분들은 아래의 주소도 활용해주세요! https://checks-cho-ok.firebaseapp.com
+<br/><br/>
+
+<b>뜨거운 5월이지만, 마음은 시원하시길 바랍니다. 함께 해주시는 3000여 분의 선생님들께 진심으로 감사드립니다!!!</b>🤩 `;
 
 //오늘 날짜 yyyy-mm-dd로 만들기
 const getDateHandler = (date, titleOrQuery) => {
@@ -54,6 +65,11 @@ const CLASSLISTS = [
 ];
 
 const MainPage = (props) => {
+  const [shortCutKey, setShortCutKey] = useState(
+    localStorage.getItem("shortCutKey")
+      ? JSON.parse(localStorage.getItem("shortCutKey"))
+      : ["1", "2", "3"]
+  );
   const [attendEvents, setAttendEvents] = useState([]);
   const [schedule, setSchedule] = useState([]);
   const [toDoLists, setToDoLists] = useState([]);
@@ -100,7 +116,7 @@ const MainPage = (props) => {
   const [showNotice, setShowNotice] = useState(false);
 
   useEffect(() => {
-    if (localStorage.getItem("showNotice") !== "20230427") {
+    if (localStorage.getItem("showNotice") !== "20230511") {
       setShowNotice(true);
     }
   }, []);
@@ -1498,6 +1514,41 @@ const MainPage = (props) => {
     writeFile(book, fileName);
   };
 
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      //전담은 작동안함..
+      if (isSubject) return;
+      //현재 커서 위치가 시간표 내부에 있으면 작동안함
+      if (window.getSelection()?.anchorNode?.className?.slice(0, 5) === "Class")
+        return;
+
+      // 출결 추가 눌린 상태로 이동
+      if (event.key === shortCutKey[0]) {
+        navigate(`/attendance`, {
+          state: { todo: "add" },
+        });
+      } else if (event.key === shortCutKey[1]) {
+        navigate(`/checkListMemo`, {
+          state: { about: "checkLists", todo: "add" },
+        });
+      } else if (event.key === shortCutKey[2]) {
+        navigate(`/checkListMemo`, {
+          state: { about: "listMemo", todo: "add" },
+        });
+      }
+    };
+
+    // 이벤트 리스너 등록
+    document.addEventListener("keydown", handleKeyDown);
+
+    // 컴포넌트 언마운트 시 이벤트 리스너 제거
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
+
+  // 실직적으로 화면 그리기... 휴 어렵다.
+
   return (
     <div className={classes["whole-div"]}>
       {props.showMainExample && (
@@ -1528,10 +1579,10 @@ const MainPage = (props) => {
       {showNotice && (
         <ExampleModal
           onClose={() => {
-            localStorage.setItem("showNotice", "20230427");
+            localStorage.setItem("showNotice", "20230511");
             setShowNotice(false);
           }}
-          imgSrc={mainImg}
+          // imgSrc={mainImg}
           text={
             <>
               <h1
@@ -1552,7 +1603,7 @@ const MainPage = (props) => {
           bottomText={
             <>
               <p className={classes.p}>
-                * 화면 우측 상단의 <i className="fa-solid fa-user"></i> -
+                * 화면상단 메뉴바의 <i className="fa-solid fa-user"></i> -
                 "공지사항"에 들어오시면 내용을 다시 보실 수 있어요.
               </p>
             </>
@@ -2041,46 +2092,58 @@ const MainPage = (props) => {
             )}
           </div>
 
-          {/* 모든 데이티 다운받기 부분 */}
-          <div className={classes["event-div"]}>
-            <div className={classes["event-title"]}>
-              💾 데이터 저장 & 후원하기
-            </div>
-            <hr className={classes["main-hr"]} />
-            <p>
-              * 다운 버튼을 누르시면, 저장 버튼이 생성됩니다.(담임, 전담 모두
-              가능)
-            </p>
+          <div>
+            {/* 상담 부분 */}
             <div
-              className={classes["event-title"]}
-              style={{ justifyContent: "space-evenly" }}
+              className={classes["event-div"]}
+              onClick={() => navigate(`/consulting`)}
             >
-              <div>
-                <Button
-                  name=" 다운"
-                  style={{ minWidth: "85px" }}
-                  icon={<i className="fa-solid fa-download"></i>}
-                  className={"show-basicClass-button"}
-                  onclick={getAllDataHandler}
-                />
-                {/* 모든자료 불러오고 나면 보이는 저장버튼 */}
-                {getAllDataDone && (
-                  <Button
-                    name=" 저장"
-                    style={{ minWidth: "85px" }}
-                    icon={<i className="fa-regular fa-floppy-disk"></i>}
-                    className={"show-basicClass-button"}
-                    onclick={allDataExcelSaveHandler}
-                  />
-                )}
-              </div>
+              <div className={classes["event-title"]}>📒 상담</div>
+              <hr className={classes["main-hr"]} />
+              <p>* 상담화면으로 이동</p>
+            </div>
 
-              <div>
-                <img
-                  src={donationImg}
-                  className={classes.img}
-                  alt="donationImg"
-                />
+            {/* 모든 데이티 다운받기 부분 */}
+            <div className={classes["event-div"]}>
+              <div className={classes["event-title"]}>
+                💾 데이터 저장 | 후원
+              </div>
+              <hr className={classes["main-hr"]} />
+              <p>
+                * 다운 버튼을 누르시면, 저장 버튼이 생성됩니다.(담임, 전담 모두
+                가능)
+              </p>
+              <div
+                className={classes["event-title"]}
+                style={{ justifyContent: "space-evenly" }}
+              >
+                <div>
+                  <Button
+                    name=" 다운"
+                    style={{ minWidth: "85px" }}
+                    icon={<i className="fa-solid fa-download"></i>}
+                    className={"show-basicClass-button"}
+                    onclick={getAllDataHandler}
+                  />
+                  {/* 모든자료 불러오고 나면 보이는 저장버튼 */}
+                  {getAllDataDone && (
+                    <Button
+                      name=" 저장"
+                      style={{ minWidth: "85px" }}
+                      icon={<i className="fa-regular fa-floppy-disk"></i>}
+                      className={"show-basicClass-button"}
+                      onclick={allDataExcelSaveHandler}
+                    />
+                  )}
+                </div>
+
+                <div>
+                  <img
+                    src={donationImg}
+                    className={classes.img}
+                    alt="donationImg"
+                  />
+                </div>
               </div>
             </div>
           </div>

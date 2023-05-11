@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import EventItem from "./EventItem";
 import Swal from "sweetalert2";
@@ -166,6 +166,14 @@ const EventLists = (props) => {
   const closeHandler = () => {
     setAddEvent(false);
   };
+
+  //메인화면에서 바로 추가하는 기능 사용할 경우(출결)
+  useEffect(() => {
+    if (!props?.addClicked) return;
+
+    setAddEvent(true);
+    props?.setFixIsShown("0");
+  }, [props?.addClicked]);
 
   return (
     <div className="eventOnDayList">
