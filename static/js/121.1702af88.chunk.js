@@ -1,1 +1,0 @@
-"use strict";(self.webpackChunkchecks_cool=self.webpackChunkchecks_cool||[]).push([[121],{3121:function(c,e,s){s.r(e);s(7313);var n=s(7890),o=s(6417);e.default=function(){var c=(0,n.UO)().roomName;return(0,o.jsxs)("div",{children:["PadItem \ubc29\uc774\ub984",c," "]})}}}]);
