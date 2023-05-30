@@ -1,0 +1,47 @@
+.header-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.closeBtn {
+  color: black;
+  font-size: 1.3em;
+  float: right;
+  position: relative;
+  left: 90%;
+  width: 40px;
+}
+
+.existed-area {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.span {
+  margin: 5px 10px;
+}
+
+.key {
+  width: 30px;
+  text-align: center;
+}
+
+.div1,
+.div2 {
+  display: flex;
+  justify-content: center;
+}
+
+.div2 {
+  width: 90%;
+  flex-direction: column;
+  max-width: 400px;
+}
+
+.div1 {
+  flex-direction: row;
+  width: 100%;
+}

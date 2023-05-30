@@ -13,28 +13,29 @@ import mainImg from "../../assets/notice/0427main.gif";
 import dayjs from "dayjs";
 import AttendCalendar from "components/Attendance/AttendCalendar";
 import donationImg from "../../assets/notice/donation.png";
+import Modal from "components/Layout/Modal";
+import MainShortCut from "components/Main/MainShortCut";
 
 dayjs.locale("ko");
-const update_title = `메인화면) 단축키 & 상담 바로가기 추가`;
+const update_title = `내 마음대로! 단축키 설정 가능!`;
 
 const update_text = `* 화면상단 메뉴바의 <i class="fa-solid fa-user"></i> -
-"공지사항"에 들어오시면 내용을 다시 보실 수 있어요.(업데이트 미반영시 사이트를 새로고침 해주세요!)<br/><br/>  <b>메인화면에서 키보드의 숫자 1, 2, 3 을 눌러보세요!</b>🪄 
+"공지사항"에 들어오시면 내용을 다시 보실 수 있어요.(업데이트 미반영시 사이트를 새로고침 해주세요!)<br/><br/>  <b>메인화면에서 내가 원하는 단축키를 설정하실 수 있어요!</b>🪄 
 <br/>
 <br/>
-<b>숫자 '1' 을 누르시면 <br/>👉 오늘 날짜의 출결 추가화면</b>으로 바로 이동합니다.
+출결화면, 제출ox, 개별기록 추가로 바로 넘어갈 수 있는 단축키를 직접 수정할 수 있습니다.
+기본 설정 <b>숫자 '1', '2', '3' </b> 👉 원하는 <b>숫자, 혹은 영문자</b>로 설정할 수 있어요!
+(일정 크기 이상의 창에서만 버튼이 활성화 되며, 시간표 확대 오른쪽의 "단축키"를 누르면 바꿀 수 있어요!)
 <br/><br/>
-<b>숫자 '2' 를 누르시면, <br/>👉  제출ox 자료 추가화면</b>으로 바로 이동합니다.
+
+** 저녁 11시 30분~ 12시 30분은 앱의 유지보수 및 업데이트가 진행될 수 있으니 사용을 자제해주세요!
 <br/><br/>
-<b>숫자 '3' 을 누르시면, <br/>👉  개별기록 자료 추가화면</b>으로 바로 이동합니다.
-<br/><br/>
-** 추후에 단축키 개별 설정 및 추가 계획입니다. 좋은 의견 있으시면 언제든 알려주세요! (담임선생님만 가능합니다..ㅠ 전담선생님들, 필요한 기능 있으시면 말씀해주세요!!)
-<br/><br/>
-** 메인화면에서 <b>상담 영역을 누르시면, 상담화면으로 바로 이동</b>합니다.
+** 패들렛과 유사한, 학생들의 의견을 간단하게 모을 수 있는 기능을 구상, 개발하고 있습니다. 의견 있으시면 [교사랑] - [이거해요] 에 의견주세요!
 <br/><br/>
 ** <b>사이트 접속주소가 추가</b>되었어요! 혹시 접속이 어려우신 분들은 아래의 주소도 활용해주세요! https://checks-cho-ok.firebaseapp.com
 <br/><br/>
 
-<b>뜨거운 5월이지만, 마음은 시원하시길 바랍니다. 함께 해주시는 3000여 분의 선생님들께 진심으로 감사드립니다!!!</b>🤩 `;
+<b>함께 해주시는 모든 선생님들께 진심으로 감사드립니다!!!</b>🤩 `;
 
 //오늘 날짜 yyyy-mm-dd로 만들기
 const getDateHandler = (date, titleOrQuery) => {
@@ -98,6 +99,8 @@ const MainPage = (props) => {
   const [scaleValue, setScaleValue] = useState(document.body.style.zoom || 1);
   const [classFromSchedule, setClassFromSchedule] = useState([]);
   const [getAllDataDone, setGetAllDataDone] = useState(false);
+  const [makeShortCut, setMakeShortCut] = useState(false);
+
   // 올해자료들 모아두기 위한 상태들
   const [nowYearAttends, setNowYearAttends] = useState([]);
   const [nowYearCheckLists, setNowYearCheckLists] = useState([]);
@@ -116,7 +119,7 @@ const MainPage = (props) => {
   const [showNotice, setShowNotice] = useState(false);
 
   useEffect(() => {
-    if (localStorage.getItem("showNotice") !== "20230511") {
+    if (localStorage.getItem("showNotice") !== "20230519") {
       setShowNotice(true);
     }
   }, []);
@@ -1515,23 +1518,54 @@ const MainPage = (props) => {
   };
 
   useEffect(() => {
+    let year = todayYyyymmdd.slice(0, 4);
+    let month = todayYyyymmdd.slice(5, 7);
+
+    if (+month <= 1) {
+      year = String(+year - 1);
+    }
+
+    let isSubject = false;
+    props.isSubject?.forEach((yearData) => {
+      if (Object.keys(yearData)?.[0] === year) {
+        isSubject = yearData[year];
+      }
+    });
+
     const handleKeyDown = (event) => {
       //전담은 작동안함..
       if (isSubject) return;
+
+      //브라우저가 event.key를 허용하지 않으면 작동하지 않음
+      if (!event.key) {
+        Swal.fire(
+          "단축키 작동 에러",
+          "해당 브라우저에서는 단축키가 작동하지 않습니다. 브라우저의 최신 버전으로 업데이트를 진행해주세요.",
+          "warning"
+        );
+        return;
+      }
+
       //현재 커서 위치가 시간표 내부에 있으면 작동안함
       if (window.getSelection()?.anchorNode?.className?.slice(0, 5) === "Class")
         return;
 
+      //현재 커서 위치가 단축키 설정화면의 입력창에 있는경우 실행하지 않음
+      if (
+        window.getSelection()?.anchorNode?.className?.includes("MainShortCut")
+      )
+        return;
+
       // 출결 추가 눌린 상태로 이동
-      if (event.key === shortCutKey[0]) {
+      if (event.key.toLowerCase() === shortCutKey[0]) {
         navigate(`/attendance`, {
           state: { todo: "add" },
         });
-      } else if (event.key === shortCutKey[1]) {
+      } else if (event.key.toLowerCase() === shortCutKey[1]) {
         navigate(`/checkListMemo`, {
           state: { about: "checkLists", todo: "add" },
         });
-      } else if (event.key === shortCutKey[2]) {
+      } else if (event.key.toLowerCase() === shortCutKey[2]) {
         navigate(`/checkListMemo`, {
           state: { about: "listMemo", todo: "add" },
         });
@@ -1545,7 +1579,7 @@ const MainPage = (props) => {
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
     };
-  }, []);
+  }, [shortCutKey]);
 
   // 실직적으로 화면 그리기... 휴 어렵다.
 
@@ -1579,7 +1613,7 @@ const MainPage = (props) => {
       {showNotice && (
         <ExampleModal
           onClose={() => {
-            localStorage.setItem("showNotice", "20230511");
+            localStorage.setItem("showNotice", "20230519");
             setShowNotice(false);
           }}
           // imgSrc={mainImg}
@@ -1609,6 +1643,21 @@ const MainPage = (props) => {
             </>
           }
         />
+      )}
+
+      {/* 단축키 설정 모달창 */}
+      {makeShortCut && (
+        <>
+          <Modal onClose={() => setMakeShortCut(false)}>
+            <MainShortCut
+              shortCutKey={shortCutKey}
+              closeModal={() => setMakeShortCut(false)}
+              saveShortCut={(keys) => {
+                setShortCutKey(keys);
+              }}
+            />
+          </Modal>
+        </>
       )}
 
       <div className={`${classes["events"]} events`}>
@@ -1681,7 +1730,7 @@ const MainPage = (props) => {
           {isLgWidth && (
             <>
               <Button
-                name={gridFr3or4 === "3fr" ? " 시간표확대" : " 시간표축소"}
+                name={" 시간표"}
                 onclick={tableCssHandler}
                 className={`main-studentPage`}
                 icon={
@@ -1692,6 +1741,14 @@ const MainPage = (props) => {
                   )
                 }
               />
+              {!isSubject && (
+                <Button
+                  name={" 단축키"}
+                  onclick={() => setMakeShortCut(true)}
+                  className={`main-studentPage`}
+                  icon={<i className="fa-solid fa-gear"></i>}
+                />
+              )}
             </>
           )}
           {!/iPhone|iPad|iPod|Android/i.test(window.navigator.userAgent) && (

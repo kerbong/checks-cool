@@ -71,7 +71,6 @@ const MemoTodayTodoItemList = ({
                   todoList?.map((todoItem, index) => {
                     // checkedList 값에 따라 '할 일 목록' 또는 '완료한 목록'을 출력
                     if (checkedList !== todoItem.checked) return null;
-
                     return (
                       <Draggable
                         draggableId={String(todoItem.id)}
@@ -115,7 +114,7 @@ const MemoTodayTodoItemList = ({
                 <>
                   {/* // map을 이용하여 ToDoItem을 출력 */}
                   <MemoTodayTodoItem
-                    key={"checked" + todoItem.id}
+                    key={todoItem.id + todoItem.text}
                     todoItem={todoItem}
                     todoList={todoList}
                     setTodoList={setTodoList}

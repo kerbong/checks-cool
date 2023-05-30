@@ -24,6 +24,8 @@ const Auth = (props) => {
   const [showAgency, setShowAgency] = useState(false);
   const [isSamePw, setIsSamePw] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isTeacher, setIsTeacher] = useState(false);
+  const [isTeacherInput, setIsTeacherInput] = useState("");
 
   useEffect(() => {
     let isKakaoNaver = "";
@@ -70,6 +72,8 @@ const Auth = (props) => {
       setEmail(value);
     } else if (name === "password") {
       setPassword(value);
+    } else if (name === "isTeacherInput") {
+      setIsTeacherInput(value);
     }
   };
 
@@ -240,138 +244,178 @@ const Auth = (props) => {
     });
   };
 
+  const confirmTeacherHandler = (e) => {
+    e.preventDefault();
+    if (isTeacherInput === "") {
+      return false;
+    } else if (isTeacherInput === "from-indi") {
+      setIsTeacher(true);
+    } else {
+      Swal.fire(
+        "인증실패!",
+        "교사 인증에 실패했습니다. indischool.com/boards/square/37298755 에서 인증번호를 확인해주세요.",
+        "warning"
+      );
+      setIsTeacher(false);
+    }
+  };
+
   return !isLoading ? (
     <div>
-      <form onSubmit={onSubmit} className={classes["logInOut-form"]}>
-        <input
-          name="email"
-          type="email"
-          placeholder="이메일 주소"
-          required
-          value={email}
-          onChange={onChange}
-          className={classes["logInOut-input"]}
-        />
-        <input
-          name="password"
-          type="password"
-          placeholder="비밀번호"
-          required
-          value={password}
-          onChange={onChange}
-          className={classes["logInOut-input"]}
-        />
-        {newAccount && (
-          <input
-            name="passwordCheck"
-            type="password"
-            placeholder="비밀번호 확인"
-            required
-            onChange={checkPwHandler}
-            className={classes["logInOut-input"]}
-          />
-        )}
-
-        {!newAccount && (
-          <>
-            <p>* 이메일/연동 로그인 후 잠시 기다려주세요.</p>
-          </>
-        )}
-
-        {newAccount && (
-          <div>
-            <div style={{ margin: "10px 0" }}>
-              <span style={{ marginLeft: "10px" }}>
-                이용약관 및 개인정보제공동의
-              </span>
-              <span
-                style={{ margin: "0 10px", color: "gray" }}
-                onClick={() => {
-                  setShowAgency((prev) => !prev);
-                }}
-              >
-                {!showAgency ? (
-                  <i className="fa-solid fa-chevron-down"></i>
-                ) : (
-                  <i className="fa-solid fa-chevron-up"></i>
-                )}
-              </span>
-            </div>
-            <p className={classes["terms-checkbox-area"]}>
+      {/* 교사 인증화면 추가. 인증 후에  */}
+      {isTeacher ? (
+        <>
+          <form onSubmit={onSubmit} className={classes["logInOut-form"]}>
+            <input
+              name="email"
+              type="email"
+              placeholder="이메일 주소"
+              required
+              value={email}
+              onChange={onChange}
+              className={classes["logInOut-input"]}
+            />
+            <input
+              name="password"
+              type="password"
+              placeholder="비밀번호"
+              required
+              value={password}
+              onChange={onChange}
+              className={classes["logInOut-input"]}
+            />
+            {newAccount && (
               <input
-                type="checkbox"
-                name="terms-checkbox"
-                onClick={(e) => {
-                  if (e.target.checked) {
-                    setAgreeTerms(true);
-                  } else {
-                    setAgreeTerms(false);
-                  }
-                }}
+                name="passwordCheck"
+                type="password"
+                placeholder="비밀번호 확인"
+                required
+                onChange={checkPwHandler}
+                className={classes["logInOut-input"]}
               />
-              <span> 동의함 </span>
-            </p>
+            )}
 
-            {showAgency && (
-              <div className={classes["terms-area"]}>
-                <div className={classes["terms-text"]}>
-                  <AuthTerms />
+            {!newAccount && (
+              <>
+                <p>* 이메일/연동 로그인 후 잠시 기다려주세요.</p>
+              </>
+            )}
+
+            {newAccount && (
+              <div>
+                <div style={{ margin: "10px 0" }}>
+                  <span style={{ marginLeft: "10px" }}>
+                    이용약관 및 개인정보제공동의
+                  </span>
+                  <span
+                    style={{ margin: "0 10px", color: "gray" }}
+                    onClick={() => {
+                      setShowAgency((prev) => !prev);
+                    }}
+                  >
+                    {!showAgency ? (
+                      <i className="fa-solid fa-chevron-down"></i>
+                    ) : (
+                      <i className="fa-solid fa-chevron-up"></i>
+                    )}
+                  </span>
                 </div>
+                <p className={classes["terms-checkbox-area"]}>
+                  <input
+                    type="checkbox"
+                    name="terms-checkbox"
+                    onClick={(e) => {
+                      if (e.target.checked) {
+                        setAgreeTerms(true);
+                      } else {
+                        setAgreeTerms(false);
+                      }
+                    }}
+                  />
+                  <span> 동의함 </span>
+                </p>
+
+                {showAgency && (
+                  <div className={classes["terms-area"]}>
+                    <div className={classes["terms-text"]}>
+                      <AuthTerms />
+                    </div>
+                  </div>
+                )}
               </div>
             )}
+
+            <input
+              type="submit"
+              value={newAccount ? "회원가입" : "로그인"}
+              disabled={newAccount && !agreeTerms && true}
+              className={classes["logInOut-SignUp"]}
+            />
+          </form>
+          <div className={classes["google-login"]}>
+            <button
+              name="google"
+              onClick={onSocialClick}
+              disabled={newAccount && !agreeTerms && true}
+              className={classes["logInOut-SignUp"]}
+            >
+              <i className="fa-brands fa-google"></i>{" "}
+              {newAccount ? "Google로 가입" : "Google 로그인"}
+            </button>
+
+            {!newAccount && (
+              <button
+                name="google"
+                onClick={findPassword}
+                disabled={newAccount && !agreeTerms && true}
+                className={classes["logInOut-SignUp"]}
+              >
+                비밀번호 찾기
+              </button>
+            )}
+            <span>
+              {newAccount && !agreeTerms && (
+                <>
+                  <p>* 구글 연동가입이 아니면 이메일 인증이 진행됩니다.</p>
+                  <p>* 약관 동의 후 회원가입이 가능합니다.</p>
+                </>
+              )}
+              {newAccount && agreeTerms && (
+                <>
+                  <p>* 구글 연동가입이 아니면 이메일 인증이 진행됩니다.</p>
+                  <p>* 회원가입 후 잠시 기다려주세요.</p>
+                </>
+              )}
+            </span>
           </div>
-        )}
-
-        <input
-          type="submit"
-          value={newAccount ? "회원가입" : "로그인"}
-          disabled={newAccount && !agreeTerms && true}
-          className={classes["logInOut-SignUp"]}
-        />
-      </form>
-      <div className={classes["google-login"]}>
-        <button
-          name="google"
-          onClick={onSocialClick}
-          disabled={newAccount && !agreeTerms && true}
-          className={classes["logInOut-SignUp"]}
-        >
-          <i className="fa-brands fa-google"></i>{" "}
-          {newAccount ? "Google로 가입" : "Google 로그인"}
-        </button>
-
-        {!newAccount && (
-          <button
-            name="google"
-            onClick={findPassword}
-            disabled={newAccount && !agreeTerms && true}
-            className={classes["logInOut-SignUp"]}
-          >
-            비밀번호 찾기
-          </button>
-        )}
-        <span>
-          {newAccount && !agreeTerms && (
-            <>
-              <p>* 구글 연동가입이 아니면 이메일 인증이 진행됩니다.</p>
-              <p>* 약관 동의 후 회원가입이 가능합니다.</p>
-            </>
-          )}
-          {newAccount && agreeTerms && (
-            <>
-              <p>* 구글 연동가입이 아니면 이메일 인증이 진행됩니다.</p>
-              <p>* 회원가입 후 잠시 기다려주세요.</p>
-            </>
-          )}
-        </span>
-      </div>
-      <div className={classes["logInOut-SignUp-Change"]}>
-        <hr />
-        {newAccount ? "이미 가입하셨나요? -> " : "아직 회원이 아니신가요? -> "}
-        <button onClick={toggleAccount} className={classes["change-btn"]}>
-          {newAccount ? "로그인하기" : "가입하기"}
-        </button>
-      </div>
+          <div className={classes["logInOut-SignUp-Change"]}>
+            <hr />
+            {newAccount
+              ? "이미 가입하셨나요? -> "
+              : "아직 회원이 아니신가요? -> "}
+            <button onClick={toggleAccount} className={classes["change-btn"]}>
+              {newAccount ? "로그인하기" : "가입하기"}
+            </button>
+          </div>
+        </>
+      ) : (
+        <>
+          <div className={classes["auth-main"]}>
+            <h2>교사인증 후, 서비스 이용이 가능합니다.</h2>
+            <form onSubmit={confirmTeacherHandler}>
+              <input
+                placeholder="교사 인증번호"
+                name={"isTeacherInput"}
+                required
+                value={isTeacherInput}
+                onChange={onChange}
+                style={{ textAlign: "center" }}
+                className={classes["logInOut-input"]}
+              />
+            </form>
+          </div>
+        </>
+      )}
     </div>
   ) : (
     <Loading />

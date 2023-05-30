@@ -59,8 +59,14 @@ hr {
   height: 25px;
 }
 
-.google-login {
+.google-login,
+.auth-main {
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+.auth-main {
+  height: 70vh;
+  justify-content: center;
 }

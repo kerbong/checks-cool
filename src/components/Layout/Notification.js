@@ -24,6 +24,7 @@ const Notification = (props) => {
 
   requestForToken().then((token) => {
     // 토큰 받으면 App으로 전달하고 거기에서 저장/수정여부 판단하기
+    if (!token) return;
     props.saveTokenHandler(token);
   });
 

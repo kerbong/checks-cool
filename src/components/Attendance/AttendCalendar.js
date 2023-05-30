@@ -14,8 +14,11 @@ const AttendCalendar = (props) => {
     } else if (props.about === "tableInput") {
       if (!props.setStart || typeof props.setStart !== "object") return;
       setStartDate(props.setStart);
+    } else if (props.about === "todo") {
+      setStartDate(props.setStart);
+      setEndDate(props.setStart);
     }
-  }, [props.setStart]);
+  }, []);
 
   const isWeekday = (date) => {
     if (props.filterNone) return date;
@@ -30,7 +33,7 @@ const AttendCalendar = (props) => {
   ));
 
   const onChange = (dates) => {
-    if (props.about === "attendance") {
+    if (props.about === "attendance" || props.about === "todo") {
       const [start, end] = dates;
       setStartDate(start);
       setEndDate(end);
@@ -57,8 +60,12 @@ const AttendCalendar = (props) => {
         showMonthDropdown
         onMonthChange={onMonthChange}
         dateFormatCalendar="yyyy년 "
-        endDate={props.about === "attendance" && endDate}
-        selectsRange={props.about === "attendance" && true}
+        endDate={
+          (props.about === "attendance" || props.about === "todo") && endDate
+        }
+        selectsRange={
+          (props.about === "attendance" || props.about === "todo") && true
+        }
         disabledKeyboardNavigation
         highlightDates={props.highlight}
         customInput={<ExampleCustomInput />}

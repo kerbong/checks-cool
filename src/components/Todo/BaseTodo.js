@@ -6,6 +6,10 @@ import classes from "./BaseTodo.module.css";
 import dayjs from "dayjs";
 import Swal from "sweetalert2";
 
+//요일을 한글로 보여주기설정
+import "dayjs/locale/ko";
+dayjs.locale("ko");
+
 const BaseTodo = (props) => {
   const [eventDates, setEventDates] = useState([]);
   const [title, setTitle] = useState("");

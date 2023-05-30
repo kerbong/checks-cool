@@ -42,6 +42,12 @@
   height: 60px;
 }
 
+@media screen and (min-width: 800px) {
+  .excel-save {
+    width: 100px;
+  }
+}
+
 .title-div {
   display: grid;
   align-items: center;

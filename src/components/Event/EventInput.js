@@ -5,8 +5,12 @@ import Button from "../Layout/Button";
 import Student from "../Student/Student";
 import Modal from "../Layout/Modal";
 import Swal from "sweetalert2";
+import AttendCalendar from "components/Attendance/AttendCalendar";
 // import { scheduleJob } from "node-schedule";
-// import dayjs from "dayjs";
+import dayjs from "dayjs";
+import "dayjs/locale/ko";
+
+dayjs.locale("ko");
 
 const EventInput = (props) => {
   const [student, setStudent] = useState("");
@@ -14,7 +18,9 @@ const EventInput = (props) => {
   const [reserveAlarm, setReserveAlarm] = useState(false);
   const [paperSubmit, setPaperSubmit] = useState(false);
   const [optionsSet, setOptionsSet] = useState([]);
-
+  const [todoDate, setTodoDate] = useState(new Date());
+  const [showCal, setShowCal] = useState(false);
+  const [currentMonth, setCurrentMonth] = useState(dayjs().format("YYYY-MM"));
   const noteRef = useRef(null);
 
   //사이즈조절
@@ -137,29 +143,75 @@ const EventInput = (props) => {
       }
     }
 
-    //EventLists saveFixedData함수에서 필요한 것만 보냄
-    if (props.about !== "todo") {
-      new_data = {
-        eventDate: eventDate,
-        num: student.split(" ")[0],
-        name: student.split(" ")[1],
-        id: new_data_id,
-      };
+    //todo 이고 기간설정이 가능한 경우에 시작날짜와 끝날짜가 다를 경우 해당 주중날짜를 모두 선택해서 props로 저장데이터 보내고 함수 끝냄
+
+    if (Array.isArray(todoDate)) {
+      function formatKoreanDate(dateString) {
+        const date = dayjs(dateString, "YYYY-MM-DD");
+        const formattedDate = date.format("YYYY년 M월 D일 dddd");
+        return `Choose ${formattedDate}`;
+      }
+
+      let start;
+      let end;
+      [start, end] = todoDate;
+
+      const startDate = dayjs(start);
+      const endDate = dayjs(end);
+
+      // Array to store all the valid dates (excluding weekends)
+      const validDates = [];
+
+      // Loop through the dates and add valid dates to the array
+      let currentDate = startDate;
+      while (
+        currentDate.isBefore(endDate) ||
+        currentDate.isSame(endDate, "day")
+      ) {
+        if (currentDate.day() !== 0 && currentDate.day() !== 6) {
+          validDates.push(currentDate.format("YYYY-MM-DD"));
+        }
+        currentDate = currentDate.add(1, "day");
+      }
+
+      let new_datas = [];
+      validDates.forEach((dates) => {
+        new_data = {
+          id: dates + todo_eventName,
+          eventName: todo_eventName,
+          option: document.getElementById("option-select").value,
+          note: document.getElementById("option-note").value,
+        };
+        new_datas.push(new_data);
+      });
+      props.rangeTodoData(new_datas);
     } else {
-      new_data = {
-        eventDate: eventDate,
-        eventName: todo_eventName,
-        id: new_data_id,
-      };
+      //EventLists saveFixedData함수에서 필요한 것만 보냄
+      if (props.about !== "todo") {
+        new_data = {
+          eventDate: eventDate,
+          num: student.split(" ")[0],
+          name: student.split(" ")[1],
+          id: new_data_id,
+        };
+        //같은 경우(todo에서 기존자료)
+      } else {
+        new_data = {
+          eventDate: eventDate,
+          eventName: todo_eventName,
+          id: new_data_id,
+        };
+      }
+
+      //출결에는 서류 제출부분 추가해서 보냄.
+      if (props.about === "attendance") {
+        new_data["paper"] = paperSubmit;
+      }
+      // if (props.about.slice(0, 4) === "todo") {
+      //   showNotification(todo_eventName);
+      // }
+      props.saveNewData(new_data);
     }
-    //출결에는 서류 제출부분 추가해서 보냄.
-    if (props.about === "attendance") {
-      new_data["paper"] = paperSubmit;
-    }
-    // if (props.about.slice(0, 4) === "todo") {
-    //   showNotification(todo_eventName);
-    // }
-    props.saveNewData(new_data);
   };
 
   //학생을 선택하면, 그 학생이 지금까지 썼던 출결관련 내용 간략하게 보여줌.
@@ -178,6 +230,30 @@ const EventInput = (props) => {
     });
     setOptionsSet(new_optionsSet);
   }, [student]);
+
+  const getDateHandler = (date) => {
+    setTodoDate(date);
+  };
+
+  //달력에서 받은 month로 currentMonth변경하기
+  const getMonthHandler = (month) => {
+    setCurrentMonth(dayjs(month).format("YYYY-MM"));
+  };
+
+  //기간설정을 on off 하면 화면의 기존 height값에 달력만큼 더하고 뺌.
+  useEffect(() => {
+    //true가 되면, 즉, 켜지면 모달창에 최대 크기 더하기
+    let modal = document.querySelector(".modal");
+    if (showCal) {
+      let origin = modal.clientHeight;
+      let new_height = origin + 350 + "px";
+      modal.style.height = new_height;
+      //false 기간설정 off가 되면, 원래 크기로!
+    } else {
+      modal.style.height =
+        document.querySelector(".eventOnDayList").clientHeight + 45 + "px";
+    }
+  }, [showCal]);
 
   return (
     <>
@@ -230,14 +306,22 @@ const EventInput = (props) => {
                 />
               </>
             ) : (
-              <input
-                type="text"
-                placeholder="행사명"
-                id={"todo-eventName"}
-                className={classes["eventNameInput-area"]}
-                autoFocus
-                onInput={(e) => handleOnInput(e, 20)}
-              />
+              <>
+                <Button
+                  className={showCal ? "paperSub-btn-clicked" : "paperSub-btn"}
+                  onclick={() => setShowCal((prev) => !prev)}
+                  name={"반복"}
+                />
+
+                <input
+                  type="text"
+                  placeholder="행사명"
+                  id={"todo-eventName"}
+                  className={classes["eventNameInput-area"]}
+                  autoFocus
+                  onInput={(e) => handleOnInput(e, 20)}
+                />
+              </>
             )}
 
             <div className={classes["button-area"]}>
@@ -358,6 +442,28 @@ const EventInput = (props) => {
                   </span>
                 ))}
               </span>
+            </>
+          )}
+
+          {/* 메모- 일정 달력화면인 경우 */}
+          {props.about?.slice(0, 4) === "todo" && (
+            <>
+              {/* 사용기한 날짜 선택 달력부분 */}
+
+              <div
+                className={classes["attendInfo-student"]}
+                style={{ textAlign: "center" }}
+              >
+                {showCal && (
+                  <AttendCalendar
+                    filterNone={true}
+                    setStart={new Date(changeYyyyMmDd(props.today))}
+                    getDateValue={getDateHandler}
+                    about={"todo"}
+                    getMonthValue={getMonthHandler}
+                  />
+                )}
+              </div>
             </>
           )}
 

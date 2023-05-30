@@ -122,3 +122,21 @@ input {
 .fs-40px {
   font-size: 40px;
 }
+
+.memoAdd-textarea {
+  width: 90%;
+  border: none;
+  padding: 15px;
+  transition: background-color 0.3s;
+  height: 47px;
+  overflow-y: hidden;
+  resize: none;
+  word-break: break-all;
+  background-color: inherit;
+}
+
+.memoAdd-textarea:focus {
+  outline: none;
+  background-color: #ddddddba;
+  border-radius: 10px;
+}

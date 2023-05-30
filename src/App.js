@@ -1,4 +1,10 @@
-import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
+import {
+  Routes,
+  Route,
+  Navigate,
+  useNavigate,
+  useLocation,
+} from "react-router-dom";
 import "./App.css";
 import { useState, useEffect, Suspense, lazy } from "react";
 import { doc, onSnapshot, getDoc, setDoc } from "firebase/firestore";
@@ -32,6 +38,9 @@ const Notice = lazy(() => import("./components/page/Notice"));
 const ClassTableBasic = lazy(() => import("./components/page/ClassTableBasic"));
 const Auth = lazy(() => import("./components/page/Auth"));
 const StudentLists = lazy(() => import("./components/page/StudentLists"));
+const PadList = lazy(() => import("components/PadIt/PadList"));
+const PadItem = lazy(() => import("components/PadIt/PadItem"));
+const PadIt = lazy(() => import("components/PadIt/PadIt"));
 
 function App() {
   const [init, setInit] = useState(false);
@@ -43,6 +52,8 @@ function App() {
   const [showMainExample, setShowMainExample] = useState();
   const [profile, setProfile] = useState({});
   const [nowToken, setNowToken] = useState("");
+  const [isStudent, setIsStudent] = useState(false);
+  const [padItInfo, setPadItInfo] = useState({});
 
   let navigate = useNavigate();
 
@@ -222,6 +233,23 @@ function App() {
     //토큰 최종 저장
     await setDoc(fcmTokenRef, { fcmToken_data: new_token });
   };
+
+  const location = useLocation();
+
+  useEffect(() => {
+    //  예시  /padIt/선생님게시글제목/비번
+    let address = decodeURI(location.pathname);
+
+    //학생들이 padIt이 포함된 qr코드로 접속하는 경우
+    if (address.includes("padIt")) {
+      let addressSplit = address?.split("/");
+      setPadItInfo({
+        roomName: addressSplit[2],
+        roomPw: addressSplit[3],
+      });
+      setIsStudent(true);
+    }
+  }, []);
 
   return (
     <div>
@@ -417,23 +445,66 @@ function App() {
                 />
 
                 <Route path="notice" element={<Notice />} />
+
+                <Route path="padIt" element={<PadIt />} />
+
+                <Route path="*" element={<Navigate replace to="/" />} />
               </>
             ) : (
               // 초기화되었지만 로그인 되지 않은 상태
               <>
-                <Route
-                  index
-                  element={
-                    <Auth
-                      safariHandler={(credential) => {
-                        signInWithCredential(authService, credential);
-                      }}
+                {!isStudent ? (
+                  <>
+                    <Route
+                      index
+                      element={
+                        <Auth
+                          safariHandler={(credential) => {
+                            signInWithCredential(authService, credential);
+                          }}
+                          studentsHandler={() => {}}
+                        />
+                      }
                     />
-                  }
-                />
+
+                    <Route path="*" element={<Navigate replace to="/" />} />
+                  </>
+                ) : (
+                  <>
+                    <Route
+                      path="padIt"
+                      element={
+                        <PadIt isStudent={isStudent} padItInfo={padItInfo} />
+                      }
+                    />
+
+                    <Route
+                      path="/*"
+                      element={<Navigate replace to="padIt" />}
+                    />
+                    {/* <Route
+                      path="/*"
+                      element={<Navigate replace to="padIt" />}
+                    />
+
+                    <Route path="padIt" element={<PadIt />}></Route>
+
+                    <Route path="padIt/:nickName" element={<PadIt />} /> */}
+
+                    {/* <Route path="padIt" element={<PadIt />}>
+                      <Route path=":nickName/:roomName" element={<PadList />} />
+                      <Route path=":nickName" element={<PadList />} />
+                    </Route>
+
+                    <Route
+                      path="/*"
+                      element={<Navigate replace to="padIt" />}
+                    /> */}
+                  </>
+                )}
               </>
             )}
-            <Route path="*" element={<Navigate replace to="/" />} />
+            {/* <Route path="*" element={<Navigate replace to="/" />} /> */}
           </Routes>
         </Suspense>
       </div>

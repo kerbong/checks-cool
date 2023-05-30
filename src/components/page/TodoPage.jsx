@@ -268,10 +268,8 @@ const TodoPage = (props) => {
       all_day?.forEach((dayTag) => {
         //바뀌기 전 노드 기준인가...;;;
         //현재 선택된 날짜들이 아니면 모두 색깔 원래대로..
-        // dayTag.style.backgroundColor = "inherit";
-        if (dayTag.getAttribute("aria-selected") === "true") {
-          dayTag.style.backgroundColor = "rgb(211, 140, 133)";
-        }
+        //모든 날짜 태그의 백그라운드 컬러 속성을 지워줌.
+        dayTag.style.backgroundColor = "";
         // dayTag.style.backgroundColor = "inherit";
         // while (dayTag.hasChildNodes()) {
         while (dayTag?.children?.length > 0) {
@@ -384,6 +382,7 @@ const TodoPage = (props) => {
     // let new_events = JSON.parse(JSON.stringify(events));
     let now_data = await getDoc(todoRef);
     let new_events = now_data.data()?.todo_data || [];
+
     //만약 events가 있었으면,
     if (new_events?.length !== 0) {
       //학교 공용 이벤트 todo에서는 무조건 새롭게 저장함. 기존꺼 지우고.
@@ -449,6 +448,7 @@ const TodoPage = (props) => {
         new_events.push(data);
         let new_data = [...new_events];
         const fixed_data = { todo_data: new_data };
+
         await setDoc(todoRef, fixed_data).then(() => {
           //events에도 추가!
           // console.log(data);
@@ -464,6 +464,7 @@ const TodoPage = (props) => {
 
       //firestore에 추가!
       const new_data = { todo_data: [data] };
+      console.log(new_data);
       await setDoc(todoRef, new_data);
       //events에도 추가!
       let event = { ...data, eventDate: eventDate };
@@ -578,6 +579,22 @@ const TodoPage = (props) => {
     weekDayName[0].style.width = "14%";
     weekDayName[6].style.width = "14%";
   }, [showCal]);
+
+  const rangeTodoData = async (datas) => {
+    let todoRef;
+    if (showPublicEvent) {
+      todoRef = doc(dbService, "todo", publicRoom);
+    } else {
+      todoRef = doc(dbService, "todo", props.userUid);
+    }
+
+    let now_data = await getDoc(todoRef);
+    let new_events = now_data.data()?.todo_data || [];
+    new_events.push(...datas);
+    const fixed_data = { todo_data: new_events };
+    await setDoc(todoRef, fixed_data);
+    dayEventHideHandler();
+  };
 
   return (
     <>
@@ -750,6 +767,7 @@ const TodoPage = (props) => {
             dayEventHideHandler={dayEventHideHandler}
             about={showPublicEvent ? `todo${publicRoom}` : "todopersonal"}
             userUid={props.userUid}
+            rangeTodoData={(datas) => rangeTodoData(datas)}
           />
         </Modal>
       )}

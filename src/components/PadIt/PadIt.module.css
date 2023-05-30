@@ -1,0 +1,159 @@
+.flex-center,
+.flex-center-wrap,
+.flex-center-all {
+  display: flex;
+  justify-content: center;
+}
+
+.flex-center-all {
+  align-items: center;
+}
+
+.flex-center-wrap {
+  flex-wrap: wrap;
+}
+
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-auto-rows: minmax(100px, auto);
+  gap: 10px;
+}
+
+.flex-col-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.margin10,
+.margin10-wid95 {
+  margin: 10px;
+  width: 370px;
+  display: flex;
+}
+
+.margin10-wid95 {
+  width: 95%;
+  flex-wrap: wrap;
+}
+
+.minwid-250 {
+  min-width: 250px;
+  padding: 10px;
+}
+
+.memoAdd-input,
+.memoAdd-textarea {
+  width: 90%;
+  border: none;
+  padding: 15px;
+  transition: background-color 0.3s;
+}
+
+.memoAdd-textarea {
+  height: 47px;
+  overflow-y: hidden;
+  resize: none;
+}
+
+.memoAdd-input:focus,
+.memoAdd-textarea:focus {
+  outline: none;
+  background-color: #ddddddba;
+  border-radius: 10px;
+}
+.flex-around-80 {
+  display: flex;
+  justify-content: space-around;
+  width: 90%;
+}
+
+.fs-2rem {
+  font-size: 2rem;
+}
+
+.fs-17rem {
+  font-size: 1.7rem;
+}
+
+.fs-14rem {
+  font-size: 1.4rem;
+}
+
+.li-btn {
+  padding: 10px 15px;
+  border-radius: 5px;
+  background-color: #687f7f;
+  color: whitesmoke;
+  border-width: 0;
+  margin: 15px 3px;
+}
+
+.li {
+  list-style: none;
+  padding: 15px;
+  width: 270px;
+  border-radius: 15px;
+  background-color: #76b1b16b;
+  margin: 10px;
+}
+.bgcolor-div {
+  width: 340px;
+  background-color: #f1f0f0;
+  border-radius: 35px;
+  padding: 5px;
+}
+
+.add-btn {
+  padding: 10px;
+  border-radius: 30px;
+  width: 60px;
+  height: 60px;
+  border-width: 0;
+  background-color: coral;
+  font-size: 1.5rem;
+  text-align: center;
+  font-weight: bold;
+  position: fixed;
+  right: 30px;
+  bottom: 45px;
+  z-index: 9999;
+}
+
+.ul {
+  padding: 0;
+  margin: 20px 0;
+}
+.closeBtn {
+  color: rgb(85, 85, 85);
+  font-size: 1.3em;
+  position: fixed;
+  right: 20px;
+}
+
+.color-area,
+.color-area-clicked {
+  height: 28px;
+  border-radius: 16px;
+  margin: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  width: 28px;
+}
+
+.color-area-clicked {
+  border: 3px solid #00000096;
+}
+
+.color-span {
+  margin: 5px;
+}
+
+.date {
+  position: relative;
+  right: -30%;
+  font-size: 0.9rem;
+}

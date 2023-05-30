@@ -1,26 +1,27 @@
 import React, { useState, useEffect } from "react";
 import Button from "../Layout/Button";
 import classes from "../Classgame/SettingSeat/SettingSeat.module.css";
-import { useLocation } from "react-router-dom";
 import TitleBtn from "components/Memo/TitleBtn";
 
 import SettingSeat from "../Classgame/SettingSeat/SettingSeat";
 import RandomPick from "../Classgame/RandomPick/RandomPick";
 import Alarm from "components/Classgame/AlarmNotice/Alarm";
+import PadIt from "components/PadIt/PadIt";
 
 const ClassgamePage = (props) => {
   const [selectedMenu, setSelectedMenu] = useState("");
   //알림장 세팅
   const [showAlarm, setShowAlarm] = useState(false);
 
-  const SHOW_WHAT = ["settingSeat", "randomPick", "alarm"];
+  const SHOW_WHAT = ["settingSeat", "randomPick", "alarm", "padIt"];
 
-  const MENU_NAME = ["자리<br/>뽑기", "뽑기", "알림장"];
+  const MENU_NAME = ["자리<br/>뽑기", "뽑기", "알림장", "패드잇"];
 
   const ICONS = [
     <i className="fa-sharp fa-solid fa-chair"></i>,
     <i className="fa-solid fa-shuffle"></i>,
     <i className="fa-solid fa-chalkboard"></i>,
+    <i className="fa-regular fa-copy"></i>,
   ];
 
   return (
@@ -35,6 +36,7 @@ const ClassgamePage = (props) => {
               {selectedMenu === "settingSeat" && <>{ICONS[0]} 자리뽑기</>}
               {selectedMenu === "randomPick" && <>{ICONS[1]} 랜덤뽑기</>}
               {selectedMenu === "alarm" && <>{ICONS[2]} 알림장</>}
+              {selectedMenu === "padIt" && <>{ICONS[3]} 패드잇</>}
               {selectedMenu === "" && (
                 <>
                   <i className="fa-solid fa-gamepad"></i> 제자랑
@@ -99,6 +101,12 @@ const ClassgamePage = (props) => {
                 }
               />
 
+              <Button
+                name={"패드잇"}
+                className={"settingSeat"}
+                onclick={() => setSelectedMenu("padIt")}
+              />
+
               <p>타임캡슐 주소 👉 bit.ly/두근두근타임캡슐</p>
               <p>타이머 주소 👉 bit.ly/심플타이머</p>
               <p>
@@ -122,6 +130,7 @@ const ClassgamePage = (props) => {
                 userUid={props.userUid}
               />
             )}
+            {selectedMenu === "padIt" && <PadIt userUid={props.userUid} />}
           </div>
         </div>
       )}

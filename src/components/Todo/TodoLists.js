@@ -14,34 +14,43 @@ const TodoLists = (props) => {
   let fixIsShown = props.fixIsShown;
 
   //옵션 선택했는지 확인하기(저장가능여부 확인)
-  const enoughData = (item) => {
+  const enoughData = (item, range) => {
     //출결 옵션 선택값, note 부분은 입력 필수아님
     let optionValue;
 
     //행사명
     let eventName;
-    //새로 추가하거나 바로 입력한 자료인 경우
-    if (item["eventName"] === undefined) {
-      eventName = document.getElementById("todo-eventName");
-      let option = document.getElementById(`option-select`);
-      // console.log(eventName);
-      // console.log(option);
-      //새로운 자료(input)인 경우 있음
-      if (option !== null || eventName !== null) {
-        optionValue = option.value;
+
+    //기간 저장자료가 아닌경우
+    if (!range) {
+      //새로 추가하거나 바로 입력한 자료인 경우
+      if (item["eventName"] === undefined) {
+        eventName = document.getElementById("todo-eventName");
+        let option = document.getElementById(`option-select`);
+        // console.log(eventName);
+        // console.log(option);
+        //새로운 자료(input)인 경우 있음
+        if (option !== null || eventName !== null) {
+          optionValue = option.value;
+        } else {
+          eventName = eventName.value;
+          // console.log(item);
+          optionValue = document.getElementById(
+            `option-select${eventName.replace(/ /g, "")}`
+          ).value;
+        }
+        //업로드 되어있던 자료인 경우
       } else {
-        eventName = eventName.value;
-        // console.log(item);
+        eventName = item.eventName;
         optionValue = document.getElementById(
-          `option-select${eventName.replace(/ /g, "")}`
+          `option-select${item.eventName.replace(/ /g, "")}`
         ).value;
       }
-      //업로드 되어있던 자료인 경우
+
+      //기간설정자료의 경우
     } else {
       eventName = item.eventName;
-      optionValue = document.getElementById(
-        `option-select${item.eventName.replace(/ /g, "")}`
-      ).value;
+      optionValue = item.option;
     }
 
     //빈 공용 자료에는 저장 불가
@@ -183,10 +192,10 @@ const TodoLists = (props) => {
         // });
 
         props.removeData(data);
+        document.querySelectorAll(`button[id='${data.id}']`)[0].remove();
         //자료 복제하고 기존 자료도 남겨둘 경우
       }
     });
-    document.querySelectorAll(`button[id='${data.id}']`)[0].remove();
   }; //달력에서 자료 삭제 함수 끝
 
   return (
@@ -227,6 +236,7 @@ const TodoLists = (props) => {
             selectOption={props.selectOption}
             placeholder="(예시) 3교시@컴퓨터실"
             about={props.about}
+            today={eventOnDay[0].eventDate}
             // dafaultValue={defaultOptionValue}
             saveNewData={(item) => {
               let getEnoughData = enoughData(item);
@@ -237,6 +247,13 @@ const TodoLists = (props) => {
               }
             }}
             when={1}
+            rangeTodoData={(datas) => {
+              let getEnoughData = enoughData(datas[0], true);
+              if (getEnoughData) {
+                props.rangeTodoData(datas);
+                setAddEvent(false);
+              }
+            }}
           />
         )}
       </div>

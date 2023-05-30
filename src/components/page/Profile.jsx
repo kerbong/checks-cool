@@ -1,14 +1,17 @@
 import React, { useState, useEffect } from "react";
-import { dbService } from "../../fbase";
+import { dbService, authService } from "../../fbase";
 import { setDoc, doc, getDoc, updateDoc } from "firebase/firestore";
 import Button from "../Layout/Button";
 import classes from "./Profile.module.css";
 import Swal from "sweetalert2";
 import dayjs from "dayjs";
 
+import { sendPasswordResetEmail } from "firebase/auth";
+
 const Profile = (props) => {
   const [userInfo, setUserInfo] = useState({});
   const [existUserInfo, setExistUserInfo] = useState({});
+  const [loginType, setLoginType] = useState("");
 
   //firestore에서 해당 이벤트 자료 받아오기
   const getDatasFromDb = async () => {
@@ -193,15 +196,51 @@ const Profile = (props) => {
     }
   };
 
+  //이메일 로그인의 경우 비밀번호 찾기 로직
+  const resetPassword = () => {
+    Swal.fire({
+      icon: "question",
+      title: "메일 전송",
+      html: "비밀번호 변경(재설정) 메일을 전송할까요?",
+      confirmButtonText: "확인",
+      confirmButtonColor: "#85bd82",
+      denyButtonText: "취소",
+      showDenyButton: true,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        sendPasswordResetEmail(authService, props.user.email).then(() => {
+          console.log("email sent");
+          Swal.fire(
+            "메일전송 완료",
+            `이메일 주소 ( ${props.user.email} ) 로 비밀번호 재설정 메일이 전송되었습니다.`,
+            "success"
+          );
+        });
+      }
+    });
+  };
+
+  useEffect(() => {
+    props.user.providerData.forEach(function (profile) {
+      if (
+        profile.providerId === "password" &&
+        profile.providerId === "google.com"
+      ) {
+        setLoginType("email & Google연동");
+      } else if (profile.providerId === "google.com") {
+        setLoginType("Google연동");
+      } else if (profile.providerId === "password") {
+        setLoginType("email");
+      }
+    });
+  }, []);
+
   return (
     <div>
-      <div className={classes["loginEmail-div"]}>
-        <p className={classes["loginEmail-p"]}>현재 로그인 아이디</p>
-        <p className={classes["loginEmail-p"]}>{props.user.email}</p>
-      </div>
       <form
         className={classes["userProfile-form"]}
         onSubmit={userInfoSaveHandler}
+        style={{ marginTop: "30px" }}
       >
         <h3>닉네임</h3>
         <input
@@ -272,8 +311,43 @@ const Profile = (props) => {
           style={{ width: "73%" }}
           onclick={userInfoSaveHandler}
         />
+        <hr style={{ width: "73%" }} />
       </form>
-      <p className={classes["explain-p"]}>
+
+      <div className={classes["userProfile-form"]}>
+        <div className={classes["check-h3"]}>
+          <div>
+            <p className={classes["loginEmail-p"]}>현재 로그인 아이디</p>
+            <p className={classes["loginEmail-p"]}>{props.user.email}</p>
+          </div>
+          <div>
+            <Button
+              name={loginType}
+              className={"add-event-button"}
+              style={{ fontSize: "1rem" }}
+              onclick={() =>
+                Swal.fire(
+                  `가입 & 로그인 방식`,
+                  `${loginType} 방식을 사용해서 가입, 로그인 하신 상태입니다.`,
+                  "info"
+                )
+              }
+            />
+          </div>
+          <div>
+            <Button
+              name={"비밀번호 변경"}
+              id={"userInfo-saveBtn"}
+              className={"add-event-button"}
+              style={{ fontSize: "1rem" }}
+              onclick={resetPassword}
+            />
+          </div>
+        </div>
+        <hr style={{ width: "73%" }} />
+      </div>
+
+      <p className={classes["explain-p"]} style={{ marginBottom: "50px" }}>
         * 메뉴의 <i className="fa-solid fa-user"></i> - "프로필 수정" 을 통해
         현재 페이지로 이동이 가능합니다.{" "}
       </p>

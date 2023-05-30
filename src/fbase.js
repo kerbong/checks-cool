@@ -87,10 +87,11 @@ export const requestForToken = async () => {
     `${process.env.PUBLIC_URL}/firebase-messaging-sw.js`
   );
 
-  const token = await getToken(messaging, {
-    vapidKey: process.env.REACT_APP_VAPID_KEY,
-    serviceWorkerRegistration: swRegistration,
-  });
+  const token =
+    (await getToken(messaging, {
+      vapidKey: process.env.REACT_APP_VAPID_KEY,
+      serviceWorkerRegistration: swRegistration,
+    })) || null;
 
   // console.log(token);
 
