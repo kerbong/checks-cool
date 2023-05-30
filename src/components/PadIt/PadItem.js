@@ -5,7 +5,9 @@ import Modal from "components/Layout/Modal";
 import PadMemoAdd from "./PadMemoAdd";
 import SortableItem from "./SortableItem";
 import Grid from "./Grid";
+import Item from "./Item";
 
+import Swal from "sweetalert2";
 import {
   DndContext,
   closestCenter,
@@ -14,8 +16,6 @@ import {
   DragOverlay,
   useSensor,
   useSensors,
-  DragStartEvent,
-  DragEndEvent,
 } from "@dnd-kit/core";
 import {
   arrayMove,
@@ -25,7 +25,6 @@ import {
 
 import dayjs from "dayjs";
 import { v4 } from "uuid";
-import Item from "./Item";
 
 const PadItem = ({
   padDatas,
@@ -64,75 +63,22 @@ const PadItem = ({
     setPadItems(padDatas);
   }, [padDatas]);
 
-  // const handleDragStart = useCallback((event) => {
-  //   setActiveId(event.active.id);
-  // }, []);
-
-  // const startTimerRef = useRef(null);
-
-  // const handlePointerDown = useCallback(() => {
-  //   startTimerRef.current = setTimeout(() => {
-  //     startTimerRef.current = null;
-  //   }, 2000); // Adjust the delay time as needed
-  // }, []);
-
-  // const startTimerRef = useRef(null);
   const clickStartTimeRef = useRef(0);
 
-  const handlePointerDown = useCallback(() => {
-    clickStartTimeRef.current = Date.now();
-    // startTimerRef.current = setTimeout(() => {
-    //   startTimerRef.current = null;
-    // }, 1000); // Adjust the delay time as needed
-    setLongClick(false);
-  }, []);
-
-  // const handleDragStart = useCallback(
-  //   (event) => {
-  //     if (startTimerRef.current) {
-  //       clearTimeout(startTimerRef.current);
-  //       startTimerRef.current = null;
-  //       console.log("Click");
-  //       // Delay time not reached, perform another action
-  //       // setEachItem(padDatas?.filter((data) => data.id === event.active.id)?.[0]);
-  //       // setShowEachItem(true);
-  //     } else {
-  //       console.log("Drag");
-  //       setEachItem({});
-  //       setShowEachItem(false);
-  //       setActiveId(event.active.id);
-  //       console.log("Dragging started");
-  //     }
-  //   },
-  //   [setEachItem, setShowEachItem, setActiveId]
-  // );
-
   const handleDragStart = useCallback((event) => {
-    // clearTimeout(startTimerRef.current);
-
-    // if (startTimerRef.current) {
-    //   // Delay time not reached, perform action for short click
-    //   console.log("Short click");
-    //   // Perform action for short click
-    // } else {
-    //   // Delay time reached, perform action for long click
-    //   console.log("Long click");
-    //   // Perform action for long click
-    // }
-
+    clickStartTimeRef.current = Date.now();
+    setLongClick(false);
     setActiveId(event.active.id);
-    console.log("Dragging started");
   }, []);
 
-  const handleDragEnd = useCallback((event) => {
+  const handleDragEnd = (event) => {
     // clearTimeout(startTimerRef.current);
     const clickEndTime = Date.now();
     const clickDuration = clickEndTime - clickStartTimeRef.current;
 
     // Perform action for short click
-    if (clickDuration < 1000) {
-      console.log("Short click");
-      setEachItem(padDatas?.filter((data) => data.id === event.active.id)?.[0]);
+    if (clickDuration < 500) {
+      setEachItem(padItems?.filter((data) => data.id === event.active.id)?.[0]);
       setShowEachItem(true);
 
       // Perform action for long click
@@ -156,20 +102,19 @@ const PadItem = ({
           return new_padItems;
         });
       }
-
-      // setActiveId(null);
     }
 
     setActiveId(null);
-  }, []);
+  };
 
   const handleDragCancel = useCallback(() => {
     // clearTimeout(startTimerRef.current);
     setActiveId(null);
   }, []);
 
-  const addMemoHandler = (e, bgColor) => {
+  const addMemoHandler = (e, bgColor, data) => {
     //패드 추가 또는 접속 함수(검증까지)
+    //data가 존재하면 기존데이터 수정
 
     e.preventDefault();
     let title = e.target.title.value;
@@ -178,33 +123,80 @@ const PadItem = ({
     //제목이나 내용이 없으면 저장 불가
     if (title?.trim() === "" || text?.trim() === "") return;
 
-    //기존에 로컬스토리지에 저장된 uuid가 있는지 확인
-    let userInfo = localStorage.getItem("padUserInfo");
-    if (!userInfo) {
-      userInfo = v4();
-      localStorage.setItem("padUserInfo", userInfo);
-    }
-
-    // console.log(e.target.parentNode.innerText);
+    let userInfo;
+    let memo_data;
+    let new_padDatas;
     //여기 부분... 부모 태그에서 속성값 받아오기
     let grid = !gridTemplate ? "0" : e.target.parentNode.innerText;
 
-    let memo_data = {
-      title,
-      text,
-      userInfo,
-      createdAt: dayjs().format("MM-DD HH:mm"),
-      bgColor,
-      grid,
-      id: String(padItems.length + 1),
-      // 0은 기본 flex wrap 의미. 나머지 문자 찬성, 혹은 반대 같은 분류로 저장되면 grid 속성 의미
-    };
+    //기존 자료 수정의 경우
+    if (data) {
+      memo_data = {
+        title,
+        text,
+        userInfo: data.userInfo,
+        createdAt: dayjs().format("MM-DD HH:mm"),
+        bgColor,
+        grid,
+        id: data.id,
+      };
 
-    let new_padDatas = [...padItems];
-    new_padDatas.push(memo_data);
+      new_padDatas = [...padItems];
+      let data_index = new_padDatas.findIndex((item) => item.id === data.id);
+      new_padDatas.splice(data_index, 1, memo_data);
+      setShowEachItem(false);
+
+      // 새로운 데이터 저장
+    } else {
+      //기존에 로컬스토리지에 저장된 uuid가 있는지 확인
+      userInfo = localStorage.getItem("padUserInfo");
+      if (!userInfo) {
+        userInfo = v4();
+        localStorage.setItem("padUserInfo", userInfo);
+      }
+
+      // console.log(e.target.parentNode.innerText);
+
+      memo_data = {
+        title,
+        text,
+        userInfo,
+        createdAt: dayjs().format("MM-DD HH:mm"),
+        bgColor,
+        grid,
+        id: String(padItems.length + 1),
+        // 0은 기본 flex wrap 의미. 나머지 문자 찬성, 혹은 반대 같은 분류로 저장되면 grid 속성 의미
+      };
+      setShowNewMemo(false);
+      new_padDatas = [...padItems];
+      new_padDatas.push(memo_data);
+    }
+
     setPadItems(new_padDatas);
     padDatasHandler(new_padDatas);
-    setShowNewMemo(false);
+  };
+
+  //기존 메모 삭제함수
+  const delMemoHandler = (data) => {
+    Swal.fire({
+      icon: "warning",
+      title: "메모를 삭제할까요?",
+      text: `${data.title} 제목의 메모를 삭제할까요?`,
+      confirmButtonText: "확인",
+      showDenyButton: true,
+      denyButtonText: "취소",
+      confirmButtonColor: "#85bd82",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        let new_padDatas = [...padItems];
+        new_padDatas = new_padDatas.filter((item) => item.id !== data.id);
+        setPadItems(new_padDatas);
+        padDatasHandler(new_padDatas);
+        setShowEachItem(false);
+      } else {
+        return;
+      }
+    });
   };
 
   return (
@@ -226,6 +218,7 @@ const PadItem = ({
             data={eachItem}
             isTeacher={isTeacher}
             addMemoHandler={addMemoHandler}
+            delMemoHandler={delMemoHandler}
           />
         </Modal>
       )}
@@ -273,30 +266,13 @@ const PadItem = ({
                 isTeacher={isTeacher}
                 color={data.bgColor}
                 data={data}
-                isDragging={longClick ? true : false}
-                onPointerDown={handlePointerDown}
+                // onPointerDown={handlePointerDown}
               />
             ))}
           </Grid>
         </SortableContext>
         <DragOverlay adjustScale style={{ transformOrigin: "0 0 " }}>
-          {/* {activeId ? (
-            <>
-              <Item
-                id={activeId}
-                color={{
-                  backgroundColor: padItems?.filter(
-                    (data) => data.id === activeId
-                  )?.[0]?.bgColor,
-                }}
-                data={padItems?.filter((data) => data.id === activeId)?.[0]}
-                isTeacher={isTeacher}
-                isDragging
-              />
-            </>
-          ) : null} */}
-
-          {longClick && (
+          {longClick && activeId && (
             <>
               <Item
                 id={activeId}
@@ -319,6 +295,9 @@ const PadItem = ({
         <button
           className={classes["add-btn"]}
           onClick={() => {
+            if (showEachItem) {
+              setShowEachItem(false);
+            }
             setShowNewMemo(true);
           }}
         >

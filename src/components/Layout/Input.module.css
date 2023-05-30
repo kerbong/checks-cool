@@ -133,6 +133,7 @@ input {
   resize: none;
   word-break: break-all;
   background-color: inherit;
+  font-size: 1.3rem;
 }
 
 .memoAdd-textarea:focus {

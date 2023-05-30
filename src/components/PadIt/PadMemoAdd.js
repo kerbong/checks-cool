@@ -15,7 +15,14 @@ const BG_COLORS = [
   "#FFFFFF",
 ];
 
-const PadMemoAdd = ({ onClose, addMemoHandler, nowMemo, data, isTeacher }) => {
+const PadMemoAdd = ({
+  onClose,
+  delMemoHandler,
+  addMemoHandler,
+  nowMemo,
+  data,
+  isTeacher,
+}) => {
   const [bgColor, setBgColor] = useState("#FFACAC");
   const [isEdited, setIsEdited] = useState(false);
 
@@ -52,11 +59,16 @@ const PadMemoAdd = ({ onClose, addMemoHandler, nowMemo, data, isTeacher }) => {
 
   // 수정중이고, 내가 작성한 자료가 아닐때만 보여주기
   useEffect(() => {
+    if (!data) return;
+    setIsEdited(true);
+    setBgColor(data.bgColor);
+  }, [data]);
+
+  // 수정중이고, 내가 작성한 자료가 아닐때만 보여주기
+  useEffect(() => {
     if (!isEdited) return;
     document.querySelector(".modal").style.backgroundColor = bgColor;
-  }, [bgColor]);
-
-  console.log(isTeacher);
+  }, [isEdited]);
 
   return (
     <>
@@ -71,93 +83,130 @@ const PadMemoAdd = ({ onClose, addMemoHandler, nowMemo, data, isTeacher }) => {
         </span>
 
         <form
-          onSubmit={(e) => addMemoHandler(e, bgColor)}
+          onSubmit={(e) => {
+            e.preventDefault();
+            isEdited
+              ? addMemoHandler(e, bgColor, data)
+              : addMemoHandler(e, bgColor);
+          }}
           className={classes["flex-col-center"]}
         >
-          {/* 제목 입력 div */}
-          <div className={classes["margin10-wid95"]}>
-            {/* 만약 데이터를 전달받고, 내가 입력한 데이터인 경우 input태그 보여주고, 아니면 그냥 span으로 보여주기 */}
+          {/* 만약 데이터를 전달받고, 내가 입력한 데이터인 경우 input태그 보여주고, 아니면 그냥 span으로 보여주기 */}
 
-            {/* 인풋태그 - data가 없거나, 교사 혹 내가 쓴 글인 경우 */}
-            {(!data ||
-              isTeacher ||
-              data.userInfo === localStorage.getItem("padUserInfo")) && (
-              <input
-                type="text"
-                name="title"
-                required
-                placeholder={"제목"}
-                title={"제목을 입력해주세요."}
-                className={classes["memoAdd-input"]}
-                autoFocus
-                defaultValue={data ? data.title : ""}
-              />
+          {/* 인풋태그 - data가 없거나, 교사 혹 내가 쓴 글인 경우 */}
+          {(!data ||
+            isTeacher ||
+            data.userInfo === localStorage.getItem("padUserInfo")) && (
+            <>
+              {/* 제목 입력 div */}
+              <div className={classes["margin10-wid95"]}>
+                <input
+                  type="text"
+                  name="title"
+                  required
+                  placeholder={"제목"}
+                  title={"제목을 입력해주세요."}
+                  className={classes["memoAdd-input"]}
+                  autoFocus
+                  defaultValue={data ? data.title : ""}
+                />
+              </div>
+
+              {/* 제목과 내용 구분선 */}
+              <hr style={{ width: "96%", margin: "13px" }} />
+
+              {/* 내용 입력 div */}
+              <div className={classes["margin10-wid95"]}>
+                <Input
+                  myKey={"text-input"}
+                  className={`memoAdd-textarea`}
+                  label="insteadText"
+                  input={{
+                    name: "text",
+                    type: "textarea",
+                    required: true,
+                  }}
+                  onInput={(e) => handleOnInput(e, 500)}
+                  required
+                  placeholder="내용을 입력해주세요."
+                  defaultValue={data ? data.text : ""}
+                />
+              </div>
+
+              {/* 배경색, 메모추가 버튼 div(추후 파일업로드 추가)*/}
+              <div
+                className={classes["margin10-wid95"]}
+                style={{ justifyContent: "space-between" }}
+              >
+                {/* 배경색 선택 */}
+                {/* 배경색을 리스트로 만들고 고를 수 있도록 버튼 그려주기 */}
+
+                <div
+                  className={`${classes["flex-center-all"]} ${classes["bgcolor-div"]} `}
+                >
+                  <span className={classes["color-span"]}>배경</span>
+
+                  {BG_COLORS.map((color, index) => (
+                    <span
+                      key={index}
+                      onClick={() => setBgColor(color)}
+                      className={
+                        bgColor !== color
+                          ? classes["color-area"]
+                          : classes["color-area-clicked"]
+                      }
+                      style={{ backgroundColor: color }}
+                    ></span>
+                  ))}
+                </div>
+                {/* 파일추가 기능 추가할 부분, 버튼 추가하기 */}
+
+                {/* 수정중이면 보일 삭제버튼 */}
+                {isEdited && (
+                  <input
+                    type="button"
+                    name="delete"
+                    value={"삭제"}
+                    className={classes["li-btn"]}
+                    onClick={(e) => {
+                      delMemoHandler(data);
+                    }}
+                  />
+                )}
+                {/* 메모추가버튼 */}
+                <input
+                  type="submit"
+                  value={!isEdited ? "추가" : "수정"}
+                  className={classes["li-btn"]}
+                />
+              </div>
+            </>
+          )}
+
+          {/* span태그 - data가 있고, 내가 쓴 글이 아닌 경우 */}
+          {data &&
+            !isTeacher &&
+            data.userInfo !== localStorage.getItem("padUserInfo") && (
+              <>
+                <div
+                  className={classes["margin10-wid95"]}
+                  style={{ fontSize: "1.5rem", padding: "15px" }}
+                >
+                  {data.title}
+                </div>
+
+                {/* 제목과 내용 구분선 */}
+                <hr style={{ width: "96%", margin: "13px" }} />
+
+                {/* 내용 입력 div */}
+                <div
+                  className={classes["margin10-wid95"]}
+                  style={{ fontSize: "1.3rem", padding: "15px" }}
+                >
+                  {data.text}
+                </div>
+              </>
             )}
-
-            {/* span태그 - data가 있고, 내가 쓴 글이 아닌 경우 */}
-            {data &&
-              !isTeacher &&
-              data.userInfo !== localStorage.getItem("padUserInfo") && (
-                <>{data.title}</>
-              )}
-          </div>
-
-          {/* 제목과 내용 구분선 */}
-          <hr style={{ width: "96%", margin: "13px" }} />
-
-          {/* 내용 입력 div */}
-          <div className={classes["margin10-wid95"]}>
-            <Input
-              myKey={"text-input"}
-              className={`memoAdd-textarea`}
-              label="insteadText"
-              input={{
-                name: "text",
-                type: "textarea",
-                required: true,
-              }}
-              onInput={(e) => handleOnInput(e, 500)}
-              required
-              placeholder="내용을 입력해주세요."
-            />
-          </div>
-
-          {/* 배경색, 메모추가 버튼 div(추후 파일업로드 추가)*/}
-          {/* 새거, 수정가능(기존+(내가 작성자 || 내가 교사))일 때만 보이도록,  */}
-          <div
-            className={classes["margin10-wid95"]}
-            style={{ justifyContent: "space-between" }}
-          >
-            {/* 배경색 선택 */}
-            {/* 배경색을 리스트로 만들고 고를 수 있도록 버튼 그려주기 */}
-
-            <div
-              className={`${classes["flex-center-all"]} ${classes["bgcolor-div"]} `}
-            >
-              <span className={classes["color-span"]}>배경</span>
-
-              {BG_COLORS.map((color, index) => (
-                <span
-                  key={index}
-                  onClick={() => setBgColor(color)}
-                  className={
-                    bgColor !== color
-                      ? classes["color-area"]
-                      : classes["color-area-clicked"]
-                  }
-                  style={{ backgroundColor: color }}
-                ></span>
-              ))}
-            </div>
-            {/* 파일추가 기능 추가할 부분, 버튼 추가하기 */}
-
-            {/* 메모추가버튼 */}
-            <input
-              type="submit"
-              value={!isEdited ? "추가하기" : "수정하기"}
-              className={classes["li-btn"]}
-            />
-          </div>
         </form>
       </div>
     </>

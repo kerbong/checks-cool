@@ -49,6 +49,8 @@
   border: none;
   padding: 15px;
   transition: background-color 0.3s;
+  background-color: inherit;
+  font-size: 1.5rem;
 }
 
 .memoAdd-textarea {
@@ -156,4 +158,9 @@
   position: relative;
   right: -30%;
   font-size: 0.9rem;
+}
+
+.memoAdd-span {
+  font-size: 1.5rem;
+  padding: 15px;
 }
