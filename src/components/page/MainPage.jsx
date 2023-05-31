@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import ExampleModal from "./ExampleModal";
 import byExcel from "../../assets/student/teacher-excel.gif";
-import mainImg from "../../assets/notice/0427main.gif";
+import mainImg from "../../assets/notice/0530main.jpg";
 import dayjs from "dayjs";
 import AttendCalendar from "components/Attendance/AttendCalendar";
 import donationImg from "../../assets/notice/donation.png";
@@ -17,20 +17,21 @@ import Modal from "components/Layout/Modal";
 import MainShortCut from "components/Main/MainShortCut";
 
 dayjs.locale("ko");
-const update_title = `내 마음대로! 단축키 설정 가능!`;
+const update_title = `[메모-일정] 반복기능! & 패들렛??!!`;
 
 const update_text = `* 화면상단 메뉴바의 <i class="fa-solid fa-user"></i> -
-"공지사항"에 들어오시면 내용을 다시 보실 수 있어요.(업데이트 미반영시 사이트를 새로고침 해주세요!)<br/><br/>  <b>메인화면에서 내가 원하는 단축키를 설정하실 수 있어요!</b>🪄 
+"공지사항"에 들어오시면 내용을 다시 보실 수 있어요.(업데이트 미반영시 사이트를 새로고침 해주세요!)<br/><br/>  <b>[메모]-[일정] 간단한 반복기능이 추가되었어요!!🪄<br/>  </b> 설정한 기간동안 일정이 반복 저장됩니다.(주말제외)
 <br/>
 <br/>
-출결화면, 제출ox, 개별기록 추가로 바로 넘어갈 수 있는 단축키를 직접 수정할 수 있습니다.
-기본 설정 <b>숫자 '1', '2', '3' </b> 👉 원하는 <b>숫자, 혹은 영문자</b>로 설정할 수 있어요!
-(일정 크기 이상의 창에서만 버튼이 활성화 되며, 시간표 확대 오른쪽의 "단축키"를 누르면 바꿀 수 있어요!)
-<br/><br/>
-
+기존의 차시별 반복기능과는 별개로, 같은 내용의 일정을 간단하게 반복할 수 있는 반복 기능이 추가되었어요~ <br/>1. 일정 달력에서 "추가" 버튼을 누르기 <br/> 2. 화면에서 "반복" 버튼을 누르기 <br/> 3. 아래에 생긴 기간을 설정하기 <br/> 4. 행사명과 옵션, 내용을 기록 후 저장하기. 
+<br/><br/> 
+<b>[제자랑]-[패드잇] 기능이 추가되었어요!!🪄<br/>  </b> 현재는 메모만 저장, 수정, 삭제가 가능한.. 패들렛이라고 보시면 됩니다! (파일 업로드 및 기능 추가 예정)<br/>
+꼭!!!! 테스트 하신 후에 사용해주세요~ 학생들은 qr코드를 통해 입장할 수 있습니다.
+<br/>
+<br/>
+<hr style={{ margin: "20px 15px" }} />
+<br/>
 ** 저녁 11시 30분~ 12시 30분은 앱의 유지보수 및 업데이트가 진행될 수 있으니 사용을 자제해주세요!
-<br/><br/>
-** 패들렛과 유사한, 학생들의 의견을 간단하게 모을 수 있는 기능을 구상, 개발하고 있습니다. 의견 있으시면 [교사랑] - [이거해요] 에 의견주세요!
 <br/><br/>
 ** <b>사이트 접속주소가 추가</b>되었어요! 혹시 접속이 어려우신 분들은 아래의 주소도 활용해주세요! https://checks-cho-ok.firebaseapp.com
 <br/><br/>
@@ -119,7 +120,7 @@ const MainPage = (props) => {
   const [showNotice, setShowNotice] = useState(false);
 
   useEffect(() => {
-    if (localStorage.getItem("showNotice") !== "20230519") {
+    if (localStorage.getItem("showNotice") !== "20230530") {
       setShowNotice(true);
     }
   }, []);
@@ -1613,21 +1614,22 @@ const MainPage = (props) => {
       {showNotice && (
         <ExampleModal
           onClose={() => {
-            localStorage.setItem("showNotice", "20230519");
+            localStorage.setItem("showNotice", "20230530");
             setShowNotice(false);
           }}
-          // imgSrc={mainImg}
+          imgSrc={mainImg}
+          title={
+            <h1
+              style={{
+                margin: "10px 0 25px 0",
+                display: "flex",
+                justifyContent: "center",
+              }}
+              dangerouslySetInnerHTML={{ __html: update_title }}
+            ></h1>
+          }
           text={
             <>
-              <h1
-                style={{
-                  margin: "10px 0 25px 0",
-                  display: "flex",
-                  justifyContent: "center",
-                }}
-                dangerouslySetInnerHTML={{ __html: update_title }}
-              ></h1>
-              <hr style={{ margin: "20px 15px" }} />
               <p
                 className={`${classes.p} ${classes.top}`}
                 dangerouslySetInnerHTML={{ __html: update_text }}

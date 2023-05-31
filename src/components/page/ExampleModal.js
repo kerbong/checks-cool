@@ -8,12 +8,15 @@ const ExampleModal = (props) => {
       <span onClick={props.onClose} className={classes.xmark}>
         <i className="fa-regular fa-circle-xmark"></i>
       </span>
-      <div>{props.text}</div>
+      <div>{props.title}</div>
+      <hr style={{ margin: "20px 15px" }} />
+
       <div className={classes["img-div"]}>
         {props.imgSrc && (
           <img src={props.imgSrc} className={classes.img} alt="exampleGif" />
         )}
       </div>
+      <div>{props.text}</div>
       <div>{props.bottomText}</div>
     </Modal>
   );

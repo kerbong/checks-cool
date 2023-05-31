@@ -77,34 +77,20 @@ const CheckInput = (props) => {
     setSubmitStudents([...new_submitStudents]);
   };
 
-  const saveCheckItem = async (auto) => {
+  const saveCheckItem = (auto) => {
     let tempId = localStorage.getItem("itemId");
-    // console.log(tempId);
-    //처음 새로운 자료 자동 저장할 때는 null 임..
-    //처음 자동 저장되면 처음 저장하면 시간으로 tempId 찍힘
-
-    let titleTag = document.getElementById("title-input");
-
-    //타이틀 없으면(새로운 자료면) 오류내용 보여줌.
-    if (!checkTitle) {
-      Swal.fire({
-        icon: "error",
-        title: "정보가 부족해요!",
-        text: "체크리스트 제목을 입력해주세요.",
-        confirmButtonText: "확인",
-        confirmButtonColor: "#85bd82",
-        timer: 5000,
-      });
-      return;
-    }
-
     let item_id;
     //현재 화면의 아이디
     let nowOn_id;
-    setTodayYyyymmdd((prev) => {
-      nowOn_id = dayjs(prev).format("YYYY-MM-DD") + dayjs().format(" HH:mm:ss");
-      return prev;
-    });
+    let screenDate = document
+      .querySelector(".custom-input")
+      .innerText.split(" ");
+
+    let year = "20" + screenDate[0].split("년")[0];
+    let month = screenDate[1].split("월")[0].padStart(2, "0");
+    let day = screenDate[2].split("일")[0].padStart(2, "0");
+
+    nowOn_id = year + "-" + month + "-" + day + dayjs().format(" HH:mm:ss");
 
     //기존의 아이템인 경우 기존 아이디 쓰고
     if (props?.item?.id || (tempId !== "null" && tempId)) {
@@ -117,6 +103,23 @@ const CheckInput = (props) => {
     //혹시나.. id가 null같은게 들어가 있으면 현재 시간으로 찍어줌..!
     if (item_id === null || item_id === "null") {
       item_id = dayjs().format("YYYY-MM-DD HH:mm:ss");
+    }
+    //처음 새로운 자료 자동 저장할 때는 null 임..
+    //처음 자동 저장되면 처음 저장하면 시간으로 tempId 찍힘
+
+    let titleTag = document.getElementById("title-input");
+
+    //타이틀 없으면(새로운 자료면) 오류내용 보여줌.
+    if (!titleTag || titleTag.value.trim().length === 0) {
+      Swal.fire({
+        icon: "error",
+        title: "정보가 부족해요!",
+        text: "체크리스트 제목을 입력해주세요.",
+        confirmButtonText: "확인",
+        confirmButtonColor: "#85bd82",
+        timer: 5000,
+      });
+      return;
     }
 
     const new_checkItem = {
@@ -193,16 +196,16 @@ const CheckInput = (props) => {
     let timer;
     const checkInput = () => {
       clearTimeout(timer);
-      timer = setTimeout(async () => {
+      timer = setTimeout(() => {
         // console.log("10초 지남");
         // if (props.unSubmitStudents) {
         if (
           JSON.stringify(props.unSubmitStudents) !==
           JSON.stringify(unSubmitStudents)
         ) {
-          await saveCheckItem(true);
+          saveCheckItem(true);
         }
-      }, 10000);
+      }, 2000);
     };
     checkInput();
     return () => clearTimeout(timer);

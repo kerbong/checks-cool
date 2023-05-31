@@ -6,6 +6,7 @@ import PadMemoAdd from "./PadMemoAdd";
 import SortableItem from "./SortableItem";
 import Grid from "./Grid";
 import Item from "./Item";
+import Column from "./Column";
 
 import Swal from "sweetalert2";
 import {
@@ -16,12 +17,17 @@ import {
   DragOverlay,
   useSensor,
   useSensors,
+  KeyboardSensor,
+  PointerSensor,
 } from "@dnd-kit/core";
 import {
   arrayMove,
   SortableContext,
   rectSortingStrategy,
+  sortableKeyboardCoordinates,
 } from "@dnd-kit/sortable";
+
+import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
 
 import dayjs from "dayjs";
 import { v4 } from "uuid";
@@ -35,7 +41,7 @@ const PadItem = ({
   padDatasHandler,
 }) => {
   const [showNewMemo, setShowNewMemo] = useState(false);
-  const [gridTemplate, setGridTemplate] = useState(false);
+  const [gridTemplate, setGridTemplate] = useState(true);
   const [activeId, setActiveId] = useState(null);
   const sensors = useSensors(useSensor(MouseSensor), useSensor(TouchSensor));
   const [clientWidth, setClientWidth] = useState(window.innerWidth);
@@ -164,7 +170,7 @@ const PadItem = ({
         createdAt: dayjs().format("MM-DD HH:mm"),
         bgColor,
         grid,
-        id: String(padItems.length + 1),
+        id: String(padItems.length),
         // 0은 기본 flex wrap 의미. 나머지 문자 찬성, 혹은 반대 같은 분류로 저장되면 grid 속성 의미
       };
       setShowNewMemo(false);
@@ -176,7 +182,7 @@ const PadItem = ({
     padDatasHandler(new_padDatas);
   };
 
-  //기존 메모 삭제함수
+  //기존 메모 삭제함수, 삭제할 경우, id를 재설정해줘야함!
   const delMemoHandler = (data) => {
     Swal.fire({
       icon: "warning",
@@ -190,6 +196,10 @@ const PadItem = ({
       if (result.isConfirmed) {
         let new_padDatas = [...padItems];
         new_padDatas = new_padDatas.filter((item) => item.id !== data.id);
+        new_padDatas = new_padDatas.map((item, index) => {
+          let new_item = { ...item, id: String(index) };
+          return new_item;
+        });
         setPadItems(new_padDatas);
         padDatasHandler(new_padDatas);
         setShowEachItem(false);
@@ -223,17 +233,28 @@ const PadItem = ({
         </Modal>
       )}
 
-      {/* 뒤로가기 버튼 */}
-      <span
-        className={classes.closeBtn}
-        onClick={onClose}
-        style={{ fontSize: "1rem" }}
-      >
-        <i className="fa-solid fa-reply"></i>
-        {" 뒤로"}
-      </span>
+      {/* 스타일 변경, 뒤로가기 버튼 모음 */}
+      <div className={classes["flex-end"]}>
+        {/* 보여주기 속성 바꾸는 버튼 */}
+        {/* <span
+          className={classes.closeBtn}
+          onClick={() => setGridTemplate((prev) => !prev)}
+          style={{ fontSize: "1rem" }}
+        >
+          <i className="fa-solid fa-reply"></i>
+          {gridTemplate ? " 섹션스타일" : " 기본스타일"}
+        </span> */}
 
-      {/* 보여주기 속성 바꾸는 버튼 */}
+        {/* 뒤로가기 버튼 */}
+        <span
+          className={classes.closeBtn}
+          onClick={onClose}
+          style={{ fontSize: "1rem" }}
+        >
+          <i className="fa-solid fa-reply"></i>
+          {" 뒤로"}
+        </span>
+      </div>
 
       {/* 패드아이템 제목 */}
       <h1 className={classes["fs-17rem"]}>{padName?.slice(10)}</h1>
@@ -248,47 +269,110 @@ const PadItem = ({
         </div>
       )}
 
-      {/* 패드 메모들 보여주는 부분 */}
-      <DndContext
-        sensors={sensors} //마우스, 터치 센서사용
-        collisionDetection={closestCenter}
-        onDragStart={handleDragStart} // 드래그 시작할 때 실행되는 함수
-        onDragEnd={handleDragEnd} // 드래그 끝나면 배열 바꿔주는 함수
-        onDragCancel={handleDragCancel} // 드래그 취소함수
-      >
-        <SortableContext items={padItems} strategy={rectSortingStrategy}>
-          {/* <div className={classes["grid-container"]}></div> */}
-          <Grid columns={Math.floor(clientWidth / 280)}>
-            {padItems?.map((data) => (
-              <SortableItem
-                key={data.id}
-                id={data.id}
-                isTeacher={isTeacher}
-                color={data.bgColor}
-                data={data}
-                // onPointerDown={handlePointerDown}
-              />
-            ))}
-          </Grid>
-        </SortableContext>
-        <DragOverlay adjustScale style={{ transformOrigin: "0 0 " }}>
-          {longClick && activeId && (
-            <>
-              <Item
-                id={activeId}
-                color={{
-                  backgroundColor: padItems?.filter(
-                    (data) => data.id === activeId
-                  )?.[0]?.bgColor,
-                }}
-                data={padItems?.filter((data) => data.id === activeId)?.[0]}
-                isTeacher={isTeacher}
-                isDragging
-              />
-            </>
-          )}
-        </DragOverlay>
-      </DndContext>
+      {/* 패드 메모들 - 그리드스타일 */}
+      {gridTemplate && (
+        <DndContext
+          sensors={sensors} //마우스, 터치 센서사용
+          collisionDetection={closestCenter}
+          onDragStart={handleDragStart} // 드래그 시작할 때 실행되는 함수
+          onDragEnd={handleDragEnd} // 드래그 끝나면 배열 바꿔주는 함수
+          onDragCancel={handleDragCancel} // 드래그 취소함수
+        >
+          <SortableContext items={padItems} strategy={rectSortingStrategy}>
+            <Grid columns={Math.floor(clientWidth / 280)}>
+              {padItems?.map((data) => (
+                <SortableItem
+                  key={data.id}
+                  id={data.id}
+                  isTeacher={isTeacher}
+                  color={data.bgColor}
+                  data={data}
+                />
+              ))}
+            </Grid>
+          </SortableContext>
+          <DragOverlay adjustScale style={{ transformOrigin: "0 0 " }}>
+            {longClick && activeId && (
+              <>
+                <Item
+                  id={activeId}
+                  color={{
+                    backgroundColor: padItems?.filter(
+                      (data) => data.id === activeId
+                    )?.[0]?.bgColor,
+                  }}
+                  data={padItems?.filter((data) => data.id === activeId)?.[0]}
+                  isTeacher={isTeacher}
+                  isDragging
+                />
+              </>
+            )}
+          </DragOverlay>
+        </DndContext>
+      )}
+
+      {/* 패드 메모들 - 컬럼스타일 */}
+      {/* {!gridTemplate && (
+        <DndContext
+          sensors={sensors} //마우스, 터치 센서사용
+          collisionDetection={closestCenter}
+          onDragStart={handleDragStart} // 드래그 시작할 때 실행되는 함수
+          onDragEnd={handleDragEnd} // 드래그 끝나면 배열 바꿔주는 함수
+          onDragCancel={handleDragCancel} // 드래그 취소함수
+        >
+          <SortableContext items={padItems} strategy={rectSortingStrategy}>
+            <div className={classes["flex-center"]}>
+              <Grid columns={1}>
+                {padItems?.map((data) => {
+                  if (data.grid === "찬성") return null;
+
+                  return (
+                    <SortableItem
+                      key={data.id}
+                      id={data.id}
+                      isTeacher={isTeacher}
+                      color={data.bgColor}
+                      data={data}
+                    />
+                  );
+                })}
+              </Grid>
+              <Grid columns={1}>
+                {padItems?.map((data) => {
+                  if (data.grid === "반대") return null;
+
+                  return (
+                    <SortableItem
+                      key={data.id}
+                      id={data.id}
+                      isTeacher={isTeacher}
+                      color={data.bgColor}
+                      data={data}
+                    />
+                  );
+                })}
+              </Grid>
+            </div>
+          </SortableContext>
+          <DragOverlay adjustScale style={{ transformOrigin: "0 0 " }}>
+            {longClick && activeId && (
+              <>
+                <Item
+                  id={activeId}
+                  color={{
+                    backgroundColor: padItems?.filter(
+                      (data) => data.id === activeId
+                    )?.[0]?.bgColor,
+                  }}
+                  data={padItems?.filter((data) => data.id === activeId)?.[0]}
+                  isTeacher={isTeacher}
+                  isDragging
+                />
+              </>
+            )}
+          </DragOverlay>
+        </DndContext>
+      )} */}
 
       {/* 패드 추가하는 버튼 */}
       <div>

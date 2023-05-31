@@ -5,6 +5,7 @@
   "private": true,
   "dependencies": {
     "@dnd-kit/core": "^6.0.8",
+    "@dnd-kit/modifiers": "^6.0.1",
     "@dnd-kit/sortable": "^7.0.2",
     "@google-cloud/vision": "^3.0.1",
     "@testing-library/jest-dom": "^5.16.4",

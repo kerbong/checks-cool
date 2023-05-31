@@ -5,20 +5,8 @@ import "../Layout/Calendar.css";
 import { ko } from "date-fns/esm/locale";
 
 const AttendCalendar = (props) => {
-  const [startDate, setStartDate] = useState(new Date());
+  const [startDate, setStartDate] = useState(props.setStart || new Date());
   const [endDate, setEndDate] = useState(startDate);
-
-  useEffect(() => {
-    if (props.about === "main") {
-      setStartDate(props.setStart);
-    } else if (props.about === "tableInput") {
-      if (!props.setStart || typeof props.setStart !== "object") return;
-      setStartDate(props.setStart);
-    } else if (props.about === "todo") {
-      setStartDate(props.setStart);
-      setEndDate(props.setStart);
-    }
-  }, []);
 
   const isWeekday = (date) => {
     if (props.filterNone) return date;
@@ -50,6 +38,26 @@ const AttendCalendar = (props) => {
     props.getMonthValue(month);
   };
 
+  useEffect(() => {
+    if (props.about === "main") {
+      setStartDate(props.setStart);
+    } else if (props.about === "tableInput") {
+      if (!props.setStart || typeof props.setStart !== "object") return;
+      setStartDate(props.setStart);
+    }
+  }, [props.setStart]);
+
+  const clickDateHandler = () => {
+    if (!props.filterNone) return;
+    //월화수목금 크기 일정하게
+    let weekDayNames = document.querySelector(".react-datepicker__day-names");
+    let weekDayName = document.querySelectorAll(".react-datepicker__day-name");
+    if (!weekDayNames || !weekDayName) return;
+    weekDayNames.style.width = "95%";
+    weekDayName[0].style.width = "14%";
+    weekDayName[6].style.width = "14%";
+  };
+
   return (
     <>
       <DatePicker
@@ -68,7 +76,7 @@ const AttendCalendar = (props) => {
         }
         disabledKeyboardNavigation
         highlightDates={props.highlight}
-        customInput={<ExampleCustomInput />}
+        customInput={<ExampleCustomInput onClick={clickDateHandler} />}
         fixedHeight={props.fixedHeight}
         inline={props.inline}
         locale={ko}

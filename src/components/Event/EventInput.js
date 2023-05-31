@@ -248,6 +248,7 @@ const EventInput = (props) => {
       let origin = modal.clientHeight;
       let new_height = origin + 350 + "px";
       modal.style.height = new_height;
+
       //false 기간설정 off가 되면, 원래 크기로!
     } else {
       modal.style.height =

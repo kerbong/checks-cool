@@ -5,6 +5,11 @@
   justify-content: center;
 }
 
+.flex-end {
+  display: flex;
+  justify-content: flex-end;
+}
+
 .flex-center-all {
   align-items: center;
 }
@@ -130,8 +135,9 @@
 .closeBtn {
   color: rgb(85, 85, 85);
   font-size: 1.3em;
-  position: fixed;
+  position: relative;
   right: 20px;
+  margin: 0 10px;
 }
 
 .color-area,
