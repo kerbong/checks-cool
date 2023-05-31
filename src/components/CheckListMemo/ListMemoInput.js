@@ -103,6 +103,19 @@ const ListMemoInput = (props) => {
 
     // setStudentMemo((prev) => [...prev, new_memo]);
 
+    if (new_memo.id === undefined) {
+      let screenDate = document
+        .querySelector(".custom-input")
+        .innerText.split(" ");
+
+      let year = "20" + screenDate[0].split("년")[0];
+      let month = screenDate[1].split("월")[0].padStart(2, "0");
+      let day = screenDate[2].split("일")[0].padStart(2, "0");
+
+      new_memo.id =
+        year + "-" + month + "-" + day + dayjs().format(" HH:mm:ss");
+    }
+
     // 수동저장이면...
     if (!auto) {
       props.onClose();

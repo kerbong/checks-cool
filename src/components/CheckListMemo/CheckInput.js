@@ -205,7 +205,7 @@ const CheckInput = (props) => {
         ) {
           saveCheckItem(true);
         }
-      }, 2000);
+      }, 10000);
     };
     checkInput();
     return () => clearTimeout(timer);

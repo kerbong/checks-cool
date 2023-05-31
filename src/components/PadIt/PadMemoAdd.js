@@ -22,6 +22,8 @@ const PadMemoAdd = ({
   nowMemo,
   data,
   isTeacher,
+  gridTemplate,
+  sectionNames,
 }) => {
   const [bgColor, setBgColor] = useState("#FFACAC");
   const [isEdited, setIsEdited] = useState(false);
@@ -75,6 +77,7 @@ const PadMemoAdd = ({
       <div>
         <span
           className={classes.closeBtn}
+          style={{ display: "flex", justifyContent: "flex-end" }}
           onClick={() => {
             onClose();
           }}
@@ -98,6 +101,22 @@ const PadMemoAdd = ({
             isTeacher ||
             data.userInfo === localStorage.getItem("padUserInfo")) && (
             <>
+              {/* 섹션스타일이면 섹션 선택하는거 보여주기*/}
+              {!gridTemplate && (
+                <div className={classes["margin10-wid95"]}>
+                  {/* 섹션 선택하는 셀렉트 */}
+                  <select defaultValue={data?.grid || ""}>
+                    <option value="">-섹션 선택-</option>
+                    {sectionNames?.map((section_name, index) => (
+                      <option key={index} value={section_name}>
+                        {" "}
+                        {section_name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
               {/* 제목 입력 div */}
               <div className={classes["margin10-wid95"]}>
                 <input
