@@ -107,10 +107,13 @@ const CheckInput = (props) => {
     //처음 새로운 자료 자동 저장할 때는 null 임..
     //처음 자동 저장되면 처음 저장하면 시간으로 tempId 찍힘
 
-    let titleTag = document.getElementById("title-input");
+    //기존 아이템이면 innerText 새로운거면 input의 value
+    let titleValue = props?.item?.id
+      ? document.getElementById("title-input").innerText
+      : document.getElementById("title-input").value;
 
     //타이틀 없으면(새로운 자료면) 오류내용 보여줌.
-    if (!titleTag || titleTag.value.trim().length === 0) {
+    if (titleValue.trim().length === 0) {
       Swal.fire({
         icon: "error",
         title: "정보가 부족해요!",
@@ -123,7 +126,7 @@ const CheckInput = (props) => {
     }
 
     const new_checkItem = {
-      title: titleTag?.value || checkTitle,
+      title: titleValue || checkTitle,
       unSubmitStudents,
       id: item_id,
       // fixOrNew,
