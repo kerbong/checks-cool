@@ -13,6 +13,7 @@ import Modal from "components/Layout/Modal";
 const PadIt = (props) => {
   const [isTeacher, setIsTeacher] = useState(false);
   const [padDatas, setPadDatas] = useState([]);
+  const [padSectionNames, setPadSectionNames] = useState([]);
   const [roomName, setRoomName] = useState("");
   const [roomPw, setRoomPw] = useState("");
   const [roomNames, setRoomNames] = useState([]);
@@ -89,6 +90,7 @@ const PadIt = (props) => {
 
       onSnapshot(padRef, (doc) => {
         setPadDatas(doc?.data()?.datas);
+        setPadSectionNames(doc?.data()?.sectionNames);
       });
 
       setShowLogInRoomInput(false);
@@ -136,9 +138,13 @@ const PadIt = (props) => {
   };
 
   //패드 데이터 추가, 삭제 등 함수
-  const padDatasHandler = async (new_datas) => {
+  const padDatasHandler = async (new_datas, new_sectionNames) => {
     let padRef = doc(dbService, "padIt", roomName);
-    let new_pad_data = { datas: new_datas, pw: roomPw };
+    let new_pad_data = {
+      datas: new_datas,
+      pw: roomPw,
+      sectionNames: new_sectionNames,
+    };
     await setDoc(padRef, new_pad_data);
   };
 
@@ -212,6 +218,7 @@ const PadIt = (props) => {
             <PadItem
               padName={roomName}
               padDatas={padDatas}
+              padSectionNames={padSectionNames}
               onClose={() => {
                 itemCloseHandler();
               }}

@@ -12,6 +12,7 @@ import Modal from "components/Layout/Modal";
 
 const PadList = (props) => {
   const [padDatas, setPadDatas] = useState([]);
+  const [padSectionNames, setPadSectionNames] = useState([]);
   const [padName, setPadName] = useState("");
   const [padPw, setPadPw] = useState("");
   const [showItem, setShowItem] = useState(false);
@@ -25,6 +26,7 @@ const PadList = (props) => {
     let padRef = doc(dbService, "padIt", roomName);
     onSnapshot(padRef, (doc) => {
       setPadDatas(doc?.data()?.datas);
+      setPadSectionNames(doc?.data()?.sectionNames);
       setShowItem(true);
       //교사용 padit에서 패드 추가하기 보이지 않도록
       props.setPadPwHandler(doc?.data()?.pw);
@@ -127,6 +129,7 @@ const PadList = (props) => {
           onClose={() => {
             itemCloseHandler();
           }}
+          padSectionNames={padSectionNames}
           isTeacher={props.isTeacher}
           padDatasHandler={props.padDatasHandler}
         />

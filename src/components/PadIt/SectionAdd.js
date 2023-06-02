@@ -58,18 +58,33 @@ const SectionAdd = ({
               required
               placeholder={"새로 추가할 섹션의 이름을 입력해주세요."}
               className={classes["memoAdd-input"]}
-              style={{ width: "80%" }}
+              style={{ width: "80%", textAlign: "center" }}
               autoFocus
               onChange={changeHandler}
               value={name}
             />
           </div>
 
-          {/* 섹션추가 버튼 div*/}
+          {/* 섹션추가 삭제 버튼 div*/}
           <div
             className={classes["margin10-wid95"]}
-            style={{ justifyContent: "end" }}
+            style={
+              !existName
+                ? { justifyContent: "end" }
+                : { justifyContent: "space-between" }
+            }
           >
+            {existName && (
+              <input
+                type="button"
+                name="delete"
+                value={"삭제"}
+                className={classes["li-btn"]}
+                onClick={(e) => {
+                  delSectionHandler(existName);
+                }}
+              />
+            )}
             {/* 섹션 추가버튼 */}
             <input
               type="submit"

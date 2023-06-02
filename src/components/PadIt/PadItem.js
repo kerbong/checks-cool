@@ -37,7 +37,7 @@ const PadItem = ({
   padName,
   onClose,
   isTeacher,
-  addPadHandler,
+  padSectionNames,
   padDatasHandler,
 }) => {
   const [showNewMemo, setShowNewMemo] = useState(false);
@@ -69,15 +69,15 @@ const PadItem = ({
   }, []);
 
   useEffect(() => {
-    if (padDatas.length === 0) return;
-    // 섹션이름 설정해주기
-    let new_sectionNames = [];
-    padDatas?.forEach((data) => {
-      new_sectionNames.push(data.grid);
-    });
-    new_sectionNames = [...new Set(new_sectionNames)];
-    setSectionNames(new_sectionNames);
+    if (padSectionNames.length === 0) {
+      setSectionNames(["0"]);
+    } else {
+      setSectionNames(padSectionNames);
+    }
+  }, [padSectionNames]);
 
+  useEffect(() => {
+    if (padDatas.length === 0) return;
     setPadItems(padDatas);
   }, [padDatas]);
 
@@ -118,7 +118,7 @@ const PadItem = ({
             );
             let new_padItems = arrayMove(items, oldIndex, newIndex);
 
-            padDatasHandler(new_padItems);
+            padDatasHandler(new_padItems, sectionNames);
             return new_padItems;
           });
 
@@ -129,6 +129,7 @@ const PadItem = ({
               if (item.id !== event.active.id) return item;
               return { ...item, grid: targetGrid };
             });
+            padDatasHandler(new_items, sectionNames);
             return new_items;
           });
         }
@@ -151,15 +152,23 @@ const PadItem = ({
     e.preventDefault();
     let title = e.target.title.value;
     let text = e.target.text.value;
+    let option = e.target.option.value;
+
+    // console.log(option);
+    // return;
 
     //제목이나 내용이 없으면 저장 불가
     if (title?.trim() === "" || text?.trim() === "") return;
 
+    //섹션 추가중인데 옵션 선택 안하면 저장불가
+    if (!gridTemplate && option?.trim() === "") return;
+
     let userInfo;
     let memo_data;
     let new_padDatas;
+
     //여기 부분... 부모 태그에서 속성값 받아오기
-    let grid = !gridTemplate ? "0" : e.target.parentNode.innerText;
+    let grid = gridTemplate ? "0" : option;
 
     //기존 자료 수정의 경우
     if (data) {
@@ -204,8 +213,10 @@ const PadItem = ({
       new_padDatas.push(memo_data);
     }
 
+    console.log(new_padDatas);
+
     setPadItems(new_padDatas);
-    padDatasHandler(new_padDatas);
+    padDatasHandler(new_padDatas, sectionNames);
   };
 
   //기존 메모 삭제함수, 삭제할 경우, id를 재설정해줘야함!
@@ -227,7 +238,7 @@ const PadItem = ({
           return new_item;
         });
         setPadItems(new_padDatas);
-        padDatasHandler(new_padDatas);
+        padDatasHandler(new_padDatas, sectionNames);
         setShowEachItem(false);
       } else {
         return;
@@ -241,7 +252,6 @@ const PadItem = ({
 
   const handleDragMove = (event) => {
     const { active, over } = event;
-    console.log(over);
     //드래그해서 위에 가져간 항목 섹션에 현재active id가 없으면 targetGrid에 저장
     if (over && over?.data?.current) {
       const isAnotherGrid = !over?.data?.current?.sortable?.items?.includes(
@@ -316,22 +326,49 @@ const PadItem = ({
         return new_item;
       });
 
-      setPadItems(new_padItems);
-      padDatasHandler(new_padItems);
-
       let index = new_sectionNames.indexOf(nowSectionName);
       new_sectionNames.splice(index, 1, name);
       setSectionNames(new_sectionNames);
+
+      setPadItems(new_padItems);
+      padDatasHandler(new_padItems, new_sectionNames);
 
       //새로운 섹션 추가하는 경우
     } else {
       new_sectionNames.push(name);
       setSectionNames(new_sectionNames);
+      padDatasHandler(padItems, new_sectionNames);
     }
   };
 
   //섹션 제거하는 함수
-  const delSectionHandler = () => {};
+  const delSectionHandler = (name) => {
+    Swal.fire({
+      icon: "warning",
+      title: "섹션을 삭제할까요?",
+      text: `${name} 제목의 섹션을 삭제할까요? *(주의)* 삭제할 경우 섹션에 포함된 모든 데이터도 함께 삭제됩니다.`,
+      confirmButtonText: "확인",
+      showDenyButton: true,
+      denyButtonText: "취소",
+      confirmButtonColor: "#85bd82",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        let new_padDatas = [...padItems]?.filter((item) => item.grid !== name);
+        new_padDatas = new_padDatas?.map((item, index) => {
+          let new_item = { ...item, id: String(index) };
+          return new_item;
+        });
+
+        let new_sectionNames = [...sectionNames]?.filter((n) => n !== name);
+
+        setPadItems(new_padDatas);
+        padDatasHandler(new_padDatas, new_sectionNames);
+        setAddNewSection(false);
+      } else {
+        return;
+      }
+    });
+  };
 
   return (
     <div>
@@ -491,6 +528,7 @@ const PadItem = ({
 
               return (
                 <SortableContext
+                  key={name}
                   items={items}
                   strategy={rectSortingStrategy}
                   onDragOver={() => {
@@ -526,7 +564,7 @@ const PadItem = ({
             {isTeacher && (
               <div
                 className={classes["section-title"]}
-                style={{ margin: "40px 20px 0 0" }}
+                style={{ margin: "40px 20px 0 0", width: "30%" }}
                 onClick={() => setAddNewSection(true)}
               >
                 {"+"}

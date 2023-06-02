@@ -175,9 +175,17 @@
   font-size: 1.5rem;
   letter-spacing: 3px;
   background-color: #e6e6e6;
-  width: 270px;
+  width: 80%;
   border-radius: 30px;
   padding: 10px 0;
   height: 40px;
+  text-align: center;
+  max-width: 270px;
+}
+
+.select {
+  padding: 10px;
+  margin-top: -20px;
+  border-radius: 10px;
   text-align: center;
 }

@@ -10,7 +10,8 @@ const Item = forwardRef(
           height: "auto",
           //   height: `${Math.max(200, data.text.length * 3)}px`,
           //   minHeight: "200px",
-          width: "250px",
+          maxWidth: "250px",
+          width: "80%",
           borderRadius: "10px",
           padding: "20px 10px",
           cursor: isDragging ? "grabbing" : "grab",
@@ -25,7 +26,8 @@ const Item = forwardRef(
           ...style,
         }
       : {
-          width: "250px",
+          maxWidth: "250px",
+          width: "80%",
           borderRadius: "10px",
           padding: "20px 10px",
           ...style,

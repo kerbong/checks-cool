@@ -105,7 +105,11 @@ const PadMemoAdd = ({
               {!gridTemplate && (
                 <div className={classes["margin10-wid95"]}>
                   {/* 섹션 선택하는 셀렉트 */}
-                  <select defaultValue={data?.grid || ""}>
+                  <select
+                    name={"option"}
+                    defaultValue={data?.grid || ""}
+                    className={classes["select"]}
+                  >
                     <option value="">-섹션 선택-</option>
                     {sectionNames?.map((section_name, index) => (
                       <option key={index} value={section_name}>
