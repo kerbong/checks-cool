@@ -1,14 +1,15 @@
 import { useState, useEffect } from "react";
 
-import PadList from "./PadList";
-import PadItem from "./PadItem";
+import PadList from "../PadIt/PadList";
+import PadItem from "../PadIt/PadItem";
 import Swal from "sweetalert2";
-import PadAdd from "./PadAdd";
-import classes from "./PadIt.module.css";
+import PadAdd from "../PadIt/PadAdd";
+import classes from "../PadIt/PadIt.module.css";
 
 import { dbService } from "../../fbase";
 import { getDoc, doc, onSnapshot, setDoc, updateDoc } from "firebase/firestore";
 import Modal from "components/Layout/Modal";
+import dayjs from "dayjs";
 
 const PadIt = (props) => {
   const [isTeacher, setIsTeacher] = useState(false);
@@ -16,10 +17,13 @@ const PadIt = (props) => {
   const [padSectionNames, setPadSectionNames] = useState([]);
   const [roomName, setRoomName] = useState("");
   const [roomPw, setRoomPw] = useState("");
+  const [userUid, setUserUid] = useState("");
   const [roomNames, setRoomNames] = useState([]);
   const [showPadAdd, setShowPadAdd] = useState(false);
   const [hideAddBtn, setHideAddBtn] = useState(false);
   const [showLogInRoomInput, setShowLogInRoomInput] = useState(true);
+  const [students, setStudents] = useState([]);
+  const [checkListsRefData, setCheckListsRefData] = useState({});
 
   useEffect(() => {
     if (!props.userUid) return;
@@ -46,7 +50,24 @@ const PadIt = (props) => {
 
     getRoomNames();
   }, [isTeacher]);
+  //교사는 학생들 데이터 직접 app에서 받아서 쓰기
+  useEffect(() => {
+    if (props.students) {
+      let year = now_year();
+      //학년도에 해당하는 학생 목록 설정하기
+      let now_students = props.students?.filter(
+        (yearStd) => Object.keys(yearStd)[0] === year
+      )?.[0]?.[year];
+      setStudents(now_students);
+    }
+  }, [props.students]);
 
+  //현재 학년도 정보 반환하는 함수
+  const now_year = () => {
+    return +dayjs().format("MM") <= 2
+      ? String(+dayjs().format("YYYY") - 1)
+      : dayjs().format("YYYY");
+  };
   //pad data 구성...
   //  {
   //  pw: "",
@@ -67,10 +88,12 @@ const PadIt = (props) => {
     );
   };
 
-  //pad 데이터 가져오는 함수
+  //학생들이 pad 데이터 가져오는 함수
   const getPadDatas = async (roomName, roomPw) => {
     let padRef = doc(dbService, "padIt", roomName);
     let padSnap = await getDoc(padRef);
+    //학생용인경우, 화면의 nav바, 헤더 없애주기
+    document.querySelector("nav").style.display = "none";
 
     if (padSnap.exists()) {
       // onSnapshot(memoRef, (doc) => {
@@ -91,6 +114,8 @@ const PadIt = (props) => {
       onSnapshot(padRef, (doc) => {
         setPadDatas(doc?.data()?.datas);
         setPadSectionNames(doc?.data()?.sectionNames);
+        setStudents([...doc?.data()?.students]);
+        setUserUid(doc?.data()?.userUid);
       });
 
       setShowLogInRoomInput(false);
@@ -107,13 +132,9 @@ const PadIt = (props) => {
     )
       return;
 
-    //학생용인경우, 화면의 nav바, 헤더 없애주기
-    document.querySelector("nav").style.display = "none";
-
     let roomName = props.padItInfo.roomName;
     let roomPw = props.padItInfo.roomPw;
-    setRoomName(roomName);
-    setRoomPw(roomPw);
+
     // 가져온 데이터를 padList 상태에 저장한다.
     getPadDatas(roomName, roomPw);
   }, [props.padItInfo]);
@@ -137,6 +158,85 @@ const PadIt = (props) => {
     });
   };
 
+  // useEffect(() => {
+  //   if (!padDatas) return;
+  //   checkListsHandler();
+  // }, [padDatas]);
+
+  //제출ox 자료 실행함수
+  const checkListsHandler = async (userUid, new_datas) => {
+    let checkRef = doc(dbService, "checkLists", userUid);
+    let checkDoc = await getDoc(checkRef);
+    // onSnapshot(checkRef, (doc) => {
+
+    let new_checkLists = [...checkDoc?.data()?.checkLists_data] || [];
+    // let new_checkLists = [...doc?.data()?.checkLists_data] || [];
+    let checkListsData = {};
+    let exist_index = 0;
+    // 기존 제출ox에서 같은 이름으로 저장된거 있는지 확인
+    new_checkLists?.forEach((list, index) => {
+      if (list?.title === roomName) {
+        exist_index = index;
+        checkListsData = list;
+      }
+    });
+
+    //미제출 학생목록만들기
+    let unSubmitStudents = [];
+    let pad_titles = new_datas?.map((data) => data?.title);
+
+    let new_checkList;
+    // 제출ox에 없던거면
+    if (exist_index === 0) {
+      //올해학생이름이 제목에 포함되어 있지 않으면 미제출학생에 추가
+      students?.forEach((std) => {
+        if (!pad_titles?.includes(std.name)) {
+          unSubmitStudents.push(std);
+        }
+      });
+
+      new_checkList = {
+        //시분초,  yearGroup 수정하기
+        id: roomName.slice(0, 10) + dayjs().format(" HH:mm:ss"),
+        title: roomName,
+        unSubmitStudents,
+        yearGroup: now_year(),
+      };
+      new_checkLists.push(new_checkList);
+    } else {
+      //이미존재하는 unsubmitstudents에서 뺴주기
+      unSubmitStudents = [...checkListsData.unSubmitStudents];
+      unSubmitStudents = unSubmitStudents?.filter(
+        (std) => !pad_titles?.includes(std.name)
+      );
+
+      new_checkList = {
+        //yearGroup 수정하기
+        id: checkListsData.id,
+        title: checkListsData.title,
+        unSubmitStudents,
+        yearGroup: now_year(),
+      };
+      new_checkLists.splice(exist_index, 1, new_checkList);
+    }
+
+    setCheckListsRefData({
+      uid: userUid,
+      data: new_checkLists,
+    });
+    // });
+  };
+
+  const saveCheckLists = async (uid, data) => {
+    await setDoc(doc(dbService, "checkLists", uid), { checkLists_data: data });
+  };
+
+  useEffect(() => {
+    if (!checkListsRefData.uid) return;
+    if (!checkListsRefData.data) return;
+    saveCheckLists(checkListsRefData.uid, checkListsRefData.data);
+  }, [checkListsRefData]);
+
   //패드 데이터 추가, 삭제 등 함수
   const padDatasHandler = async (new_datas, new_sectionNames) => {
     let padRef = doc(dbService, "padIt", roomName);
@@ -144,8 +244,16 @@ const PadIt = (props) => {
       datas: new_datas,
       pw: roomPw,
       sectionNames: new_sectionNames,
+      userUid: userUid,
+      students: students,
+      //userUid 가 "" 아니면 학생정보
     };
+
     await setDoc(padRef, new_pad_data);
+    //제출 연동의 경우.. 제출함수 실행!
+    if (userUid !== "") {
+      checkListsHandler(userUid, new_datas);
+    }
   };
 
   return (
@@ -161,6 +269,7 @@ const PadIt = (props) => {
                 userUid={props.userUid}
                 roomNames={roomNames}
                 isTeacher={isTeacher}
+                students={students}
               />
             </Modal>
           )}
@@ -186,7 +295,12 @@ const PadIt = (props) => {
             roomNames={roomNames}
             hidePadAdd={(tOrF) => setHideAddBtn(tOrF)}
             isTeacher={isTeacher}
+            userUid={props.userUid}
             padDatasHandler={padDatasHandler}
+            userUidHandler={(userID) => {
+              setUserUid(userID);
+            }}
+            students={students}
             setPadPwHandler={(pw) => setRoomPw(pw)}
             setPadNameHandler={(room) => setRoomName(room)}
           />
@@ -218,6 +332,7 @@ const PadIt = (props) => {
             <PadItem
               padName={roomName}
               padDatas={padDatas}
+              userUid={props.userUid}
               padSectionNames={padSectionNames}
               onClose={() => {
                 itemCloseHandler();

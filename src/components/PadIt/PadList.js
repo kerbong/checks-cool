@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 
 import { dbService } from "../../fbase";
-import { getDoc, doc, onSnapshot, setDoc, updateDoc } from "firebase/firestore";
+import { getDoc, doc, onSnapshot } from "firebase/firestore";
 import { QRCodeSVG } from "qrcode.react";
 import Swal from "sweetalert2";
 
@@ -18,7 +18,7 @@ const PadList = (props) => {
   const [showItem, setShowItem] = useState(false);
   const [showQrCode, setShowQrCode] = useState(false);
 
-  //방 데이터 받아오기
+  //교사가 방 데이터 받아오기
   const getRoomData = async (roomName) => {
     // 해당 방 이름의 문서를 불러와서, 방에 입력된 자료들만 padDatas에 저장
     setPadName(roomName);
@@ -27,6 +27,7 @@ const PadList = (props) => {
     onSnapshot(padRef, (doc) => {
       setPadDatas(doc?.data()?.datas);
       setPadSectionNames(doc?.data()?.sectionNames);
+      props.userUidHandler(doc?.data()?.userUid);
       setShowItem(true);
       //교사용 padit에서 패드 추가하기 보이지 않도록
       props.setPadPwHandler(doc?.data()?.pw);
@@ -129,6 +130,8 @@ const PadList = (props) => {
           onClose={() => {
             itemCloseHandler();
           }}
+          userUid={props.userUid}
+          students={props.students}
           padSectionNames={padSectionNames}
           isTeacher={props.isTeacher}
           padDatasHandler={props.padDatasHandler}
@@ -139,26 +142,3 @@ const PadList = (props) => {
 };
 
 export default PadList;
-
-// <div className={classes["flex-center-wrap"]}>
-// {padDatas?.map((data, index) => (
-//   <div
-//     key={index}
-//     className={classes["li"]}
-//     style={{ backgroundColor: data.bgColor }}
-//   >
-//     <div className={classes["flex-col-center"]}>
-//       {/* 패드 메모 제목 */}
-//       <span className={classes["fs-14rem"]}>{data.title}</span>
-//       {/* (교사만 보임) 패드 메모 입력날짜 */}
-//       {isTeacher && (
-//         <span className={classes["date"]}>{data.createdAt}</span>
-//       )}
-//       {/* 구분선 */}
-//       <hr style={{ width: "90%", margin: "20px 5px" }} />
-//       {/* 패드 메모 내용 */}
-//       <span>{data.text}</span>
-//     </div>
-//   </div>
-// ))}
-// </div>

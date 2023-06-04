@@ -6,7 +6,7 @@ import TitleBtn from "components/Memo/TitleBtn";
 import SettingSeat from "../Classgame/SettingSeat/SettingSeat";
 import RandomPick from "../Classgame/RandomPick/RandomPick";
 import Alarm from "components/Classgame/AlarmNotice/Alarm";
-import PadIt from "components/PadIt/PadIt";
+import PadIt from "components/page/PadIt";
 
 const ClassgamePage = (props) => {
   const [selectedMenu, setSelectedMenu] = useState("");
@@ -130,7 +130,9 @@ const ClassgamePage = (props) => {
                 userUid={props.userUid}
               />
             )}
-            {selectedMenu === "padIt" && <PadIt userUid={props.userUid} />}
+            {selectedMenu === "padIt" && (
+              <PadIt userUid={props.userUid} students={props.students} />
+            )}
           </div>
         </div>
       )}

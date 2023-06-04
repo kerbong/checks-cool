@@ -6,6 +6,10 @@ import PadMemoAdd from "./PadMemoAdd";
 import SortableItem from "./SortableItem";
 import Grid from "./Grid";
 import Item from "./Item";
+import CheckInput from "components/CheckListMemo/CheckInput";
+
+import { dbService } from "../../fbase";
+import { getDoc, doc, onSnapshot, setDoc, updateDoc } from "firebase/firestore";
 
 import Swal from "sweetalert2";
 import {
@@ -39,6 +43,8 @@ const PadItem = ({
   isTeacher,
   padSectionNames,
   padDatasHandler,
+  students,
+  userUid,
 }) => {
   const [showNewMemo, setShowNewMemo] = useState(false);
   const [gridTemplate, setGridTemplate] = useState(true);
@@ -53,6 +59,9 @@ const PadItem = ({
   const [targetGrid, setTargetGrid] = useState(null);
   const [addNewSection, setAddNewSection] = useState(false);
   const [nowSectionName, setNowSectionName] = useState("");
+  const [addCheckItem, setAddCheckItem] = useState(false);
+  const [checkListItem, setCheckListItem] = useState({});
+  const [checkListsData, setCheckListsData] = useState([]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -152,7 +161,7 @@ const PadItem = ({
     e.preventDefault();
     let title = e.target.title.value;
     let text = e.target.text.value;
-    let option = e.target.option.value;
+    let option = !gridTemplate ? e.target.option.value : "";
 
     // console.log(option);
     // return;
@@ -212,8 +221,6 @@ const PadItem = ({
       new_padDatas = [...padItems];
       new_padDatas.push(memo_data);
     }
-
-    console.log(new_padDatas);
 
     setPadItems(new_padDatas);
     padDatasHandler(new_padDatas, sectionNames);
@@ -370,6 +377,172 @@ const PadItem = ({
     });
   };
 
+  //교사인 경우, 제출ox 데이터 받아오기
+  const getCheckListData = async () => {
+    let checkRef = doc(dbService, "checkLists", userUid);
+    // let checkDoc = await getDoc(checkRef);
+    onSnapshot(checkRef, (doc) => {
+      let new_checkLists = [...doc?.data()?.checkLists_data] || [];
+      // let new_checkLists = [...doc?.data()?.checkLists_data] || [];
+      let checkListItem = {};
+      // 기존 제출ox에서 같은 이름으로 저장된거 있는지 확인
+      new_checkLists?.forEach((list) => {
+        if (list?.title === padName) {
+          checkListItem = list;
+        }
+      });
+      setCheckListsData(new_checkLists);
+      setCheckListItem(checkListItem);
+    });
+  };
+
+  useEffect(() => {
+    if (!isTeacher) return;
+    getCheckListData();
+  }, [isTeacher]);
+
+  //현재 학년도 정보 반환하는 함수
+  const now_year = () => {
+    return +dayjs().format("MM") <= 2
+      ? String(+dayjs().format("YYYY") - 1)
+      : dayjs().format("YYYY");
+  };
+
+  const saveItemHandler = async (new_item, auto) => {
+    //자료 저장할 떄 실제로 실행되는 함수
+
+    const dataSaved = async (newOrSame) => {
+      //동일한 이름의 자료가 이미 있는, 새로운 저장이면 팝업 띄우기
+      if (newOrSame === "sameTitle" && !auto) {
+        Swal.fire({
+          icon: "warning",
+          title: "동일한 제목 존재",
+          text: "기존 자료에 동일한 제목의 자료가 존재합니다. 계속 저장 하시겠어요?",
+          confirmButtonText: "확인",
+          showDenyButton: true,
+          denyButtonText: "취소",
+          confirmButtonColor: "#85bd82",
+        }).then((result) => {
+          /* Read more about isConfirmed, isDenied below */
+          if (result.isConfirmed) {
+            saveLogic();
+          }
+
+          if (result.isDenied) return;
+        });
+      }
+
+      const saveLogic = async () => {
+        let upload_item;
+
+        //기존자료가 있으면?!
+        if (datas?.length > 0) {
+          // if (checkLists?.length > 0) {
+          upload_item = {
+            ...new_item,
+            yearGroup: now_year(),
+          };
+          let new_datas = [...datas];
+          let data_index = undefined;
+          new_datas.forEach((data, index) => {
+            if (data.id === upload_item.id) {
+              data_index = index;
+            }
+          });
+          //기존에 없던자료
+          if (data_index === undefined) {
+            new_datas.push(upload_item);
+            //기존에 있던자료
+          } else {
+            //로직이 모두 진행되고 나면 혹시 기존데이터에서 날짜가 바뀐 경우
+            if (new_item?.new_id) {
+              upload_item = { ...upload_item, id: new_item.new_id };
+              delete upload_item.new_id;
+            }
+            new_datas[data_index] = upload_item;
+          }
+
+          //3.17에러.. id가 null이거나 'null'인 자료 제외함
+          new_datas = new_datas.filter(
+            (data) => data.id !== null && data.id !== "null"
+          );
+
+          await setDoc(firestoreRef, {
+            checkLists_data: [...new_datas],
+          });
+
+          // setNowOnCheckLists([...new_datas]);
+
+          //처음 자료를 저장하는 경우
+        } else {
+          //학년도 데이터 추가하기
+
+          await setDoc(firestoreRef, {
+            checkLists_data: [{ ...new_item, yearGroup: now_year() }],
+          });
+
+          // setNowOnCheckLists([
+          //   { ...new_item, yearGroup: now_year()},
+          // ]);
+          // }
+        }
+
+        //새로운 자료면 저장하기
+        if (newOrSame === "new" || auto) {
+          saveLogic();
+        }
+      }; // 자료 저장 실행 함수 끝
+    };
+
+    //firebase에 있는 저장된 데이터
+    let datas = checkListsData;
+    let firestoreRef = doc(dbService, "checkLists", userUid);
+
+    //같은 이름의 체크리스트 있는지 확인하고, 저장 묻기 (id까지 같으면.. 기존자료 수정임)
+    let regex = / /gi;
+    let same_checkTitle = datas?.filter(
+      (list) =>
+        list.title.replace(regex, "") === new_item.title.replace(regex, "") &&
+        list.id !== new_item.id
+    );
+
+    //기존에 있던 자료
+    let isExist = datas?.filter(
+      (list) =>
+        list.title.replace(regex, "") === new_item.title.replace(regex, "") &&
+        list.id === new_item.id
+    );
+
+    //동일한 이름의 체크리스트가 있는데.. 기존자료가 아니면 묻기
+    if (same_checkTitle?.length > 0 && isExist?.length === 0) {
+      dataSaved("sameTitle");
+    } else {
+      dataSaved("new");
+    }
+  };
+
+  const removeData = async (item) => {
+    //checkLists 에서 중복되는거 없애기(순서가 중요함..! firestore전에)
+    let new_datas;
+
+    let newCheckRef = doc(dbService, "checkLists", userUid);
+    const checkListsSnap = await getDoc(newCheckRef);
+    const checkListsData = checkListsSnap?.data()?.checkLists_data;
+
+    new_datas = checkListsData?.filter((list) => list.id !== item.id);
+    // setCheckLists([...new_datas]);
+    // setNowOnCheckLists([
+    //   ...nowOnCheckLists?.filter((list) => list.id !== item.id),
+    // ]);
+    await setDoc(doc(dbService, "checkLists", userUid), {
+      checkLists_data: new_datas,
+    });
+  };
+
+  const setItemNull = () => {
+    setCheckListItem([]);
+  };
+
   return (
     <div>
       {showNewMemo && (
@@ -420,27 +593,67 @@ const PadItem = ({
         </>
       )}
 
+      {addCheckItem && (
+        <Modal onClose={() => setAddCheckItem(false)}>
+          <CheckInput
+            // 전담이 아니면 년도별에 따라 받아온거 보냄
+            students={students}
+            onClose={() => {
+              localStorage.setItem("itemId", "null");
+              setAddCheckItem(false);
+            }}
+            saveItemHandler={(item, auto) => {
+              saveItemHandler(item, auto);
+              if (!auto) {
+                setAddCheckItem(false);
+              }
+            }}
+            unSubmitStudents={checkListItem.unSubmitStudents}
+            item={checkListItem}
+            removeData={removeData}
+            setItemNull={setItemNull}
+            isSubject={false}
+            clName={""}
+          />
+        </Modal>
+      )}
+
       {/* 스타일 변경, 뒤로가기 버튼 모음 */}
       <div className={classes["flex-end"]}>
-        {/* 보여주기 속성 바꾸는 버튼 */}
-        <span
-          className={classes.closeBtn}
-          onClick={() => setGridTemplate((prev) => !prev)}
-          style={{ fontSize: "1rem" }}
-        >
-          <i className="fa-solid fa-reply"></i>
-          {gridTemplate ? " 섹션스타일" : " 기본스타일"}
-        </span>
+        {isTeacher && (
+          <div>
+            <span
+              className={classes.closeBtn}
+              onClick={() => setAddCheckItem((prev) => !prev)}
+              style={{ fontSize: "1rem" }}
+            >
+              <i className="fa-solid fa-reply"></i>
+              제출ox 보기
+            </span>
+          </div>
+        )}
 
-        {/* 뒤로가기 버튼 */}
-        <span
-          className={classes.closeBtn}
-          onClick={onClose}
-          style={{ fontSize: "1rem" }}
-        >
-          <i className="fa-solid fa-reply"></i>
-          {" 뒤로"}
-        </span>
+        <div>
+          {/* 보여주기 속성 바꾸는 버튼 */}
+          <span
+            className={classes.closeBtn}
+            onClick={() => setGridTemplate((prev) => !prev)}
+            style={{ fontSize: "1rem" }}
+          >
+            <i className="fa-solid fa-reply"></i>
+            {gridTemplate ? " 섹션스타일" : " 기본스타일"}
+          </span>
+
+          {/* 뒤로가기 버튼 */}
+          <span
+            className={classes.closeBtn}
+            onClick={onClose}
+            style={{ fontSize: "1rem" }}
+          >
+            <i className="fa-solid fa-reply"></i>
+            {" 뒤로"}
+          </span>
+        </div>
       </div>
 
       {/* 패드아이템 제목 */}

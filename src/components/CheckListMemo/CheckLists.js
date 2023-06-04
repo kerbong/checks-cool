@@ -428,53 +428,6 @@ const CheckLists = (props) => {
     }
   };
 
-  //엑셀로 저장하기 함수
-  // const saveExcelHandler = () => {
-  //   // listmemo가 없으면 저장하지 않기
-  //   if (listMemo.length === 0) {
-  //     return;
-  //   }
-
-  //   // console.log(listMemo);
-  //   const new_datas = [];
-  //   listMemo.forEach((memo) => {
-  //     memo.data.forEach((stud) => {
-  //       let data = [+stud.num, stud.name, memo.title, stud.memo];
-  //       if (props.isSubject) {
-  //         data.unshift(memo.clName);
-  //       }
-  //       new_datas.push(data);
-  //     });
-  //   });
-  //   if (props.isSubject) {
-  //     new_datas.unshift(["반", "번호", "이름", "개별기록 제목", "기록내용"]);
-  //   } else {
-  //     new_datas.unshift(["번호", "이름", "개별기록 제목", "기록내용"]);
-  //   }
-  //   //새로운 가상 엑셀파일 생성
-  //   const book = utils.book_new();
-  //   const listMemo_datas = utils.aoa_to_sheet(new_datas);
-  //   //셀의 넓이 지정
-  //   listMemo_datas["!cols"] = [
-  //     { wpx: 40 },
-  //     { wpx: 50 },
-  //     { wpx: 100 },
-  //     { wpx: 300 },
-  //   ];
-  //   if (props.isSubject) {
-  //     listMemo_datas["!cols"].unshift({ wpx: 40 });
-  //   }
-  //   //시트에 작성한 데이터 넣기
-  //   utils.book_append_sheet(book, listMemo_datas, "개별기록");
-
-  //   writeFile(
-  //     book,
-  //     `${listMemoYear.current.value}학년도 개별기록(${dayjs().format(
-  //       "YYYY-MM-DD"
-  //     )}).xlsx`
-  //   );
-  // };
-
   //전담만 나오는, 학급 셀렉트 선택시 실행되는 함수
   const selectClassHandler = () => {
     let className = selectRef.current.value;

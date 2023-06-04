@@ -18,13 +18,15 @@ import Header from "./components/Layout/Header";
 
 // lazy 로딩 적용
 const ManageStudentInfo = lazy(() =>
-  import("components/page/ManageStudentInfo")
+  import("./components/page/ManageStudentInfo")
 );
 const ManageCheckListMemo = lazy(() =>
-  import("components/page/ManageCheckListMemo")
+  import("./components/page/ManageCheckListMemo")
 );
-const ManageConsult = lazy(() => import("components/page/ManageConsult"));
-const ManageAttendance = lazy(() => import("components/page/ManageAttendance"));
+const ManageConsult = lazy(() => import("./components/page/ManageConsult"));
+const ManageAttendance = lazy(() =>
+  import("./components/page/ManageAttendance")
+);
 const MainPage = lazy(() => import("./components/page/MainPage"));
 const AttendancePage = lazy(() => import("./components/page/AttendancePage"));
 const ClassgamePage = lazy(() => import("./components/page/ClassgamePage"));
@@ -38,9 +40,7 @@ const Notice = lazy(() => import("./components/page/Notice"));
 const ClassTableBasic = lazy(() => import("./components/page/ClassTableBasic"));
 const Auth = lazy(() => import("./components/page/Auth"));
 const StudentLists = lazy(() => import("./components/page/StudentLists"));
-const PadList = lazy(() => import("components/PadIt/PadList"));
-const PadItem = lazy(() => import("components/PadIt/PadItem"));
-const PadIt = lazy(() => import("components/PadIt/PadIt"));
+const PadIt = lazy(() => import("./components/page/PadIt"));
 
 function App() {
   const [init, setInit] = useState(false);
@@ -446,8 +446,6 @@ function App() {
 
                 <Route path="notice" element={<Notice />} />
 
-                <Route path="padIt" element={<PadIt />} />
-
                 <Route path="*" element={<Navigate replace to="/" />} />
               </>
             ) : (
@@ -474,7 +472,11 @@ function App() {
                     <Route
                       path="padIt"
                       element={
-                        <PadIt isStudent={isStudent} padItInfo={padItInfo} />
+                        <PadIt
+                          isStudent={isStudent}
+                          padItInfo={padItInfo}
+                          students={students}
+                        />
                       }
                     />
 
@@ -482,29 +484,10 @@ function App() {
                       path="/*"
                       element={<Navigate replace to="padIt" />}
                     />
-                    {/* <Route
-                      path="/*"
-                      element={<Navigate replace to="padIt" />}
-                    />
-
-                    <Route path="padIt" element={<PadIt />}></Route>
-
-                    <Route path="padIt/:nickName" element={<PadIt />} /> */}
-
-                    {/* <Route path="padIt" element={<PadIt />}>
-                      <Route path=":nickName/:roomName" element={<PadList />} />
-                      <Route path=":nickName" element={<PadList />} />
-                    </Route>
-
-                    <Route
-                      path="/*"
-                      element={<Navigate replace to="padIt" />}
-                    /> */}
                   </>
                 )}
               </>
             )}
-            {/* <Route path="*" element={<Navigate replace to="/" />} /> */}
           </Routes>
         </Suspense>
       </div>

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import classes from "./PadIt.module.css";
 
 import dayjs from "dayjs";
@@ -10,6 +10,9 @@ const PadAdd = (props) => {
   const [isExist, setIsExist] = useState(null);
   const [roomData, setRoomData] = useState({});
   const [roomNamesData, setRoomNamesData] = useState([]);
+  const [linkCheckLists, setLinkCheckLists] = useState(true);
+
+  const toggleRef = useRef();
 
   //방이름 데이터 받아오기 함수
   const getRoomNames = async (roomName, pw) => {
@@ -77,6 +80,10 @@ const PadAdd = (props) => {
     await setDoc(doc(dbService, "padIt", roomData.name), {
       datas: [],
       pw: roomData.pw,
+      sectionNames: ["0"],
+      userUid: linkCheckLists ? props.userUid : "",
+      //학생정보도 넣어서 저장..?(학생이 데이터 저장할 때, checkLists에 미제출 학생을 비교하려면 필요)
+      students: linkCheckLists ? props.students : [],
     });
 
     //내 uid 방목록에 추가하기
@@ -114,6 +121,7 @@ const PadAdd = (props) => {
         {props.isTeacher && (
           <span
             className={classes.closeBtn}
+            style={{ display: "flex", justifyContent: "flex-end" }}
             onClick={() => {
               props.onClose();
             }}
@@ -158,6 +166,32 @@ const PadAdd = (props) => {
               className={classes["minwid-250"]}
             />
           </div>
+          {/* 제출ox 연동버튼 */}
+          {props.isTeacher && (
+            <div
+              className={classes["margin10"]}
+              style={{ justifyContent: "center" }}
+            >
+              <li className={classes["dropdown-li-nonehover"]}>
+                * [생기부] - [제출ox] 연동 &nbsp;&nbsp;
+                <input type="checkbox" id="toggle" hidden />
+                <label
+                  htmlFor="toggle"
+                  className={
+                    linkCheckLists
+                      ? `${classes["toggleSwitch"]} ${classes["active"]}`
+                      : `${classes["toggleSwitch"]}`
+                  }
+                  onClick={() => {
+                    setLinkCheckLists((prev) => !prev);
+                  }}
+                  ref={toggleRef}
+                >
+                  <span className={classes["toggleButton"]}></span>
+                </label>
+              </li>
+            </div>
+          )}
           <div className={classes["margin10"]}>
             <input
               type="submit"
