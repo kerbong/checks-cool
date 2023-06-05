@@ -63,6 +63,11 @@ const SectionAdd = ({
               onChange={changeHandler}
               value={name}
             />
+            <p>
+              {!existName
+                ? "* 추가 버튼을 누르시면, 바로 섹션이 추가됩니다."
+                : "* 삭제 버튼을 누르시면, 현재 섹션의 모든 데이터도 삭제됩니다."}
+            </p>
           </div>
 
           {/* 섹션추가 삭제 버튼 div*/}

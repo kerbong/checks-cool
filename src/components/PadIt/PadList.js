@@ -37,13 +37,15 @@ const PadList = (props) => {
 
   //qr코드 모달로 보이는 버튼 누르면 실행되는 함수
   const showQrHandler = async (room) => {
-    if (room !== padName) {
-      let padRef = doc(dbService, "padIt", room);
-      let padDoc = await getDoc(padRef);
-      let roomPw = padDoc.data()?.pw;
-      setPadPw(roomPw);
-      setPadName(room);
-    }
+    // if (room !== padName) {
+    let padRef = doc(dbService, "padIt", room);
+    let padDoc = await getDoc(padRef);
+    let roomPw = padDoc.data()?.pw;
+    setPadPw(roomPw);
+    setPadName(room);
+    // } else {
+    //   console.log("다름");
+    // }
     setShowQrCode(true);
   };
 

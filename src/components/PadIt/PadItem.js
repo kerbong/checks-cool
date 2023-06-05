@@ -20,17 +20,12 @@ import {
   DragOverlay,
   useSensor,
   useSensors,
-  KeyboardSensor,
-  PointerSensor,
 } from "@dnd-kit/core";
 import {
   arrayMove,
   SortableContext,
   rectSortingStrategy,
-  sortableKeyboardCoordinates,
 } from "@dnd-kit/sortable";
-
-import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
 
 import dayjs from "dayjs";
 import { v4 } from "uuid";
@@ -340,6 +335,9 @@ const PadItem = ({
       setPadItems(new_padItems);
       padDatasHandler(new_padItems, new_sectionNames);
 
+      setAddNewSection(false);
+      setNowSectionName("");
+
       //새로운 섹션 추가하는 경우
     } else {
       new_sectionNames.push(name);
@@ -410,7 +408,8 @@ const PadItem = ({
 
   const saveItemHandler = async (new_item, auto) => {
     //자료 저장할 떄 실제로 실행되는 함수
-
+    console.log(new_item);
+    console.log(auto);
     const dataSaved = async (newOrSame) => {
       //동일한 이름의 자료가 이미 있는, 새로운 저장이면 팝업 띄우기
       if (newOrSame === "sameTitle" && !auto) {
@@ -471,28 +470,33 @@ const PadItem = ({
             checkLists_data: [...new_datas],
           });
 
-          // setNowOnCheckLists([...new_datas]);
+          setCheckListItem(new_item);
+
+          setCheckListsData([...new_datas]);
 
           //처음 자료를 저장하는 경우
         } else {
           //학년도 데이터 추가하기
-
+          let new_itemData = { ...new_item, yearGroup: now_year() };
           await setDoc(firestoreRef, {
-            checkLists_data: [{ ...new_item, yearGroup: now_year() }],
+            checkLists_data: [new_itemData],
           });
 
+          setCheckListItem(new_item);
+
+          setCheckListsData([new_itemData]);
           // setNowOnCheckLists([
           //   { ...new_item, yearGroup: now_year()},
           // ]);
           // }
         }
+      };
 
-        //새로운 자료면 저장하기
-        if (newOrSame === "new" || auto) {
-          saveLogic();
-        }
-      }; // 자료 저장 실행 함수 끝
-    };
+      //새로운 자료면 저장하기
+      if (newOrSame === "new" || auto) {
+        saveLogic();
+      }
+    }; // 자료 저장 실행 함수 끝
 
     //firebase에 있는 저장된 데이터
     let datas = checkListsData;
@@ -539,9 +543,7 @@ const PadItem = ({
     });
   };
 
-  const setItemNull = () => {
-    setCheckListItem([]);
-  };
+  const setItemNull = () => {};
 
   return (
     <div>
@@ -627,8 +629,7 @@ const PadItem = ({
               onClick={() => setAddCheckItem((prev) => !prev)}
               style={{ fontSize: "1rem" }}
             >
-              <i className="fa-solid fa-reply"></i>
-              제출ox 보기
+              <i className="fa-regular fa-square-check"></i>&nbsp; 제출ox 보기
             </span>
           </div>
         )}
@@ -640,8 +641,16 @@ const PadItem = ({
             onClick={() => setGridTemplate((prev) => !prev)}
             style={{ fontSize: "1rem" }}
           >
-            <i className="fa-solid fa-reply"></i>
-            {gridTemplate ? " 섹션스타일" : " 기본스타일"}
+            {gridTemplate ? (
+              <>
+                <i className="fa-solid fa-grip-vertical"></i>
+                &nbsp; 섹션스타일
+              </>
+            ) : (
+              <>
+                <i className="fa-solid fa-grip"></i>&nbsp; 기본스타일
+              </>
+            )}
           </span>
 
           {/* 뒤로가기 버튼 */}

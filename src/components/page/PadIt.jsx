@@ -282,7 +282,10 @@ const PadIt = (props) => {
                 {" "}
                 패드잇 📌
               </h2>
-              <p>개발중입니다. 현재는 작성만 가능합니다.</p>
+              <p>
+                담임교사용 초기버전이 개발중입니다. 테스트만 추천드립니다.
+                (전담교사용 개발예정...)
+              </p>
               <button
                 onClick={() => setShowPadAdd(true)}
                 className={classes["li-btn"]}
