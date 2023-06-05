@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/checks-cool/static/css/main.4fe6e04c.css",
-    "main.js": "/checks-cool/static/js/main.9c3df1e0.js",
+    "main.js": "/checks-cool/static/js/main.a78b296c.js",
     "static/css/128.e88ce04a.chunk.css": "/checks-cool/static/css/128.e88ce04a.chunk.css",
     "static/js/128.b513f928.chunk.js": "/checks-cool/static/js/128.b513f928.chunk.js",
     "static/css/478.e6f5bc5a.chunk.css": "/checks-cool/static/css/478.e6f5bc5a.chunk.css",
@@ -45,7 +45,7 @@
     "static/js/76.d9e879f1.chunk.js": "/checks-cool/static/js/76.d9e879f1.chunk.js",
     "static/js/81.be6b4e20.chunk.js": "/checks-cool/static/js/81.be6b4e20.chunk.js",
     "static/js/400.004debbb.chunk.js": "/checks-cool/static/js/400.004debbb.chunk.js",
-    "static/js/577.a8f17477.chunk.js": "/checks-cool/static/js/577.a8f17477.chunk.js",
+    "static/js/577.2dbad98d.chunk.js": "/checks-cool/static/js/577.2dbad98d.chunk.js",
     "static/js/30.7cdeef00.chunk.js": "/checks-cool/static/js/30.7cdeef00.chunk.js",
     "static/js/280.0783d83f.chunk.js": "/checks-cool/static/js/280.0783d83f.chunk.js",
     "static/media/GowunDodum-Regular.ttf": "/checks-cool/static/media/GowunDodum-Regular.39c9a39c246c3c54c53e.ttf",
@@ -69,6 +69,6 @@
   },
   "entrypoints": [
     "static/css/main.4fe6e04c.css",
-    "static/js/main.9c3df1e0.js"
+    "static/js/main.a78b296c.js"
   ]
 }
