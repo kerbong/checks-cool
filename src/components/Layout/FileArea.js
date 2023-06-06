@@ -22,6 +22,8 @@ const FileArea = (props) => {
             props.attachedFileHandler(url);
             setAttachedFile(url);
           }}
+          src={attachedFile}
+          about={props.about}
         />
       )}
     </div>

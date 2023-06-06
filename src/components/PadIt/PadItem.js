@@ -8,8 +8,15 @@ import Grid from "./Grid";
 import Item from "./Item";
 import CheckInput from "components/CheckListMemo/CheckInput";
 
-import { dbService } from "../../fbase";
+import { dbService, storageService } from "../../fbase";
 import { getDoc, doc, onSnapshot, setDoc, updateDoc } from "firebase/firestore";
+import {
+  deleteObject,
+  ref,
+  uploadString,
+  getDownloadURL,
+  uploadBytes,
+} from "firebase/storage";
 
 import Swal from "sweetalert2";
 import {
@@ -57,6 +64,7 @@ const PadItem = ({
   const [addCheckItem, setAddCheckItem] = useState(false);
   const [checkListItem, setCheckListItem] = useState({});
   const [checkListsData, setCheckListsData] = useState([]);
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     const handleResize = () => {
@@ -149,7 +157,11 @@ const PadItem = ({
     setActiveId(null);
   }, []);
 
-  const addMemoHandler = (e, bgColor, data) => {
+  const delFileHandler = async (file) => {
+    await deleteObject(ref(storageService, file));
+  };
+
+  const addMemoHandler = async (e, bgColor, file, data) => {
     //패드 추가 또는 접속 함수(검증까지)
     //data가 존재하면 기존데이터 수정
 
@@ -167,12 +179,28 @@ const PadItem = ({
     //섹션 추가중인데 옵션 선택 안하면 저장불가
     if (!gridTemplate && option?.trim() === "") return;
 
+    //저장되는 시간이 필요해서.. 저장중 로딩띄우기
+    setIsSaving(true);
+
+    let url = "";
+    if (file !== "") {
+      const response = await uploadString(
+        ref(storageService, `${userUid}/${v4()}`),
+        file,
+        "data_url"
+      );
+      //firestore에 저장할 url받아오기
+      url = await getDownloadURL(response.ref);
+    }
+
     let userInfo;
     let memo_data;
     let new_padDatas;
 
     //여기 부분... 부모 태그에서 속성값 받아오기
     let grid = gridTemplate ? "0" : option;
+
+    //파일 있으면 storage에 저장하기, 업데이트하면서 파일을 바꾸지 않는 경우 패스!
 
     //기존 자료 수정의 경우
     if (data) {
@@ -184,6 +212,7 @@ const PadItem = ({
         bgColor,
         grid,
         id: data.id,
+        fileUrl: url,
       };
 
       new_padDatas = [...padItems];
@@ -210,6 +239,7 @@ const PadItem = ({
         bgColor,
         grid,
         id: String(padItems.length),
+        fileUrl: url,
         // 0은 기본 flex wrap 의미. 나머지 문자 찬성, 혹은 반대 같은 분류로 저장되면 grid 속성 의미
       };
       setShowNewMemo(false);
@@ -219,10 +249,12 @@ const PadItem = ({
 
     setPadItems(new_padDatas);
     padDatasHandler(new_padDatas, sectionNames);
+    //저장되는 시간이 필요해서.
+    setIsSaving(false);
   };
 
   //기존 메모 삭제함수, 삭제할 경우, id를 재설정해줘야함!
-  const delMemoHandler = (data) => {
+  const delMemoHandler = async (data) => {
     Swal.fire({
       icon: "warning",
       title: "메모를 삭제할까요?",
@@ -233,6 +265,12 @@ const PadItem = ({
       confirmButtonColor: "#85bd82",
     }).then((result) => {
       if (result.isConfirmed) {
+        setIsSaving(true);
+        // storage에 저장된 파일 지우기
+        if (data.fileUrl !== "") {
+          delFileHandler(data.fileUrl);
+        }
+
         let new_padDatas = [...padItems];
         new_padDatas = new_padDatas?.filter((item) => item.id !== data.id);
         new_padDatas = new_padDatas?.map((item, index) => {
@@ -242,6 +280,7 @@ const PadItem = ({
         setPadItems(new_padDatas);
         padDatasHandler(new_padDatas, sectionNames);
         setShowEachItem(false);
+        setIsSaving(false);
       } else {
         return;
       }
@@ -554,6 +593,7 @@ const PadItem = ({
             addMemoHandler={addMemoHandler}
             gridTemplate={gridTemplate}
             sectionNames={sectionNames}
+            isSaving={isSaving}
           />
         </Modal>
       )}
@@ -569,6 +609,7 @@ const PadItem = ({
             delMemoHandler={delMemoHandler}
             gridTemplate={gridTemplate}
             sectionNames={sectionNames}
+            isSaving={isSaving}
           />
         </Modal>
       )}

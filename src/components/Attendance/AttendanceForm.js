@@ -381,15 +381,9 @@ const AttendanceForm = (props) => {
             />
           </form>
 
-          <div className={classes.btnArea}>
+          <div className={classes.btnArea} style={{ justifyContent: "center" }}>
             {props.about === "consulting" ? (
               <>
-                <button
-                  className={classes.btn}
-                  onClick={() => setIsImgFile((prev) => !prev)}
-                >
-                  <i className="fa-solid fa-rotate"></i>
-                </button>
                 {isImgFile ? (
                   <FileArea
                     about={props.about}
@@ -411,6 +405,20 @@ const AttendanceForm = (props) => {
                   setAttachedFile(file);
                 }}
               />
+            )}
+          </div>
+
+          <div className={classes.btnArea}>
+            {props.about === "consulting" && (
+              <>
+                <button
+                  className={classes.btn}
+                  onClick={() => setIsImgFile((prev) => !prev)}
+                >
+                  <i className="fa-solid fa-rotate"></i>{" "}
+                  {isImgFile ? "오디오 녹음하기" : "사진 올리기"}
+                </button>
+              </>
             )}
 
             <button className={classes.btn} onClick={submitHandler}>

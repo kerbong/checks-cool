@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import Input from "components/Layout/Input";
 import classes from "./PadIt.module.css";
 import Swal from "sweetalert2";
+import FileArea from "components/Layout/FileArea";
 
 //배경색목록 7개
 const BG_COLORS = [
@@ -24,9 +25,11 @@ const PadMemoAdd = ({
   isTeacher,
   gridTemplate,
   sectionNames,
+  isSaving,
 }) => {
   const [bgColor, setBgColor] = useState("#FFACAC");
   const [isEdited, setIsEdited] = useState(false);
+  const [attachedFile, setAttachedFile] = useState("");
 
   //메모 수정할 때 props로 넘어올 nowMemo edited상황인지 세팅
   useEffect(() => {
@@ -88,9 +91,11 @@ const PadMemoAdd = ({
         <form
           onSubmit={(e) => {
             e.preventDefault();
+            if (isSaving) return;
+
             isEdited
-              ? addMemoHandler(e, bgColor, data)
-              : addMemoHandler(e, bgColor);
+              ? addMemoHandler(e, bgColor, attachedFile, data)
+              : addMemoHandler(e, bgColor, attachedFile);
           }}
           className={classes["flex-col-center"]}
         >
@@ -156,6 +161,20 @@ const PadMemoAdd = ({
                 />
               </div>
 
+              {/* 파일 업로드하는 부분 */}
+              <div
+                className={classes["margin10-wid95"]}
+                style={{ justifyContent: "center" }}
+              >
+                <FileArea
+                  about={"padIt"}
+                  attachedFileHandler={(file) => {
+                    setAttachedFile(file);
+                  }}
+                  file={data.fileUrl}
+                />
+              </div>
+
               {/* 배경색, 메모추가 버튼 div(추후 파일업로드 추가)*/}
               <div
                 className={classes["margin10-wid95"]}
@@ -192,6 +211,7 @@ const PadMemoAdd = ({
                     value={"삭제"}
                     className={classes["li-btn"]}
                     onClick={(e) => {
+                      if (isSaving) return;
                       delMemoHandler(data);
                     }}
                   />
@@ -228,6 +248,19 @@ const PadMemoAdd = ({
                 >
                   {data.text}
                 </div>
+                {/* 이미지 있으면.. div */}
+                {data.fileUrl && (
+                  <div
+                    className={classes["margin10-wid95"]}
+                    style={{ justifyContent: "center" }}
+                  >
+                    <img
+                      src={attachedFile}
+                      className={classes.previewImg}
+                      alt="filePreview"
+                    />
+                  </div>
+                )}
               </>
             )}
         </form>

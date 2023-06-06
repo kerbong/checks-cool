@@ -180,7 +180,7 @@
   padding: 10px 0;
   height: 40px;
   text-align: center;
-  max-width: 270px;
+  max-width: 250px;
 }
 
 .select {
@@ -249,4 +249,11 @@
 .toggleSwitch,
 .toggleButton {
   transition: all 0.2s ease-in;
+}
+
+.previewImg {
+  height: 70%;
+  width: 90%;
+  object-fit: cover;
+  margin-bottom: 10px;
 }
