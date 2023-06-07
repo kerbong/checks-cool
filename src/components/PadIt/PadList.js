@@ -17,6 +17,8 @@ const PadList = (props) => {
   const [padPw, setPadPw] = useState("");
   const [showItem, setShowItem] = useState(false);
   const [showQrCode, setShowQrCode] = useState(false);
+  const [clName, setClName] = useState("");
+  const [students, setStudents] = useState(props.students || []);
 
   //교사가 방 데이터 받아오기
   const getRoomData = async (roomName) => {
@@ -25,6 +27,20 @@ const PadList = (props) => {
     props.setPadNameHandler(roomName);
     let padRef = doc(dbService, "padIt", roomName);
     onSnapshot(padRef, (doc) => {
+      //전담이라 학급명이 저장되어 있으면 따로 저장
+      let doc_clName = doc?.data()?.clName;
+      if (doc_clName) {
+        setClName(doc_clName);
+        props.nowItemClName(doc_clName);
+        setStudents(
+          Object.values(
+            props.students?.filter(
+              (clObj) => Object.keys(clObj)[0] === doc_clName
+            )?.[0]
+          )?.[0]
+        );
+      }
+
       setPadDatas(doc?.data()?.datas);
       setPadSectionNames(doc?.data()?.sectionNames);
       props.userUidHandler(doc?.data()?.userUid);
@@ -133,10 +149,13 @@ const PadList = (props) => {
             itemCloseHandler();
           }}
           userUid={props.userUid}
-          students={props.students}
+          students={students}
           padSectionNames={padSectionNames}
           isTeacher={props.isTeacher}
-          padDatasHandler={props.padDatasHandler}
+          padDatasHandler={(items, names) =>
+            props.padDatasHandler(items, names, clName)
+          }
+          clName={clName}
         />
       )}
     </div>

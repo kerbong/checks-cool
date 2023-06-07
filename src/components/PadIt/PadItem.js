@@ -47,6 +47,7 @@ const PadItem = ({
   padDatasHandler,
   students,
   userUid,
+  clName,
 }) => {
   const [showNewMemo, setShowNewMemo] = useState(false);
   const [gridTemplate, setGridTemplate] = useState(true);

@@ -11,11 +11,12 @@ const PadAdd = (props) => {
   const [roomData, setRoomData] = useState({});
   const [roomNamesData, setRoomNamesData] = useState([]);
   const [linkCheckLists, setLinkCheckLists] = useState(true);
+  const [clName, setClName] = useState("");
 
   const toggleRef = useRef();
 
   //방이름 데이터 받아오기 함수
-  const getRoomNames = async (roomName, pw) => {
+  const getRoomNames = async (roomName, pw, clName) => {
     let padRef = doc(dbService, "padIt", "roomNames");
     let date_roomName = dayjs().format("YYYY-MM-DD") + roomName;
     onSnapshot(padRef, (doc) => {
@@ -24,7 +25,11 @@ const PadAdd = (props) => {
         setRoomData({});
         setIsExist(true);
       } else {
-        setRoomData({ name: date_roomName, pw: pw });
+        let new_roomData = { name: date_roomName, pw: pw };
+        if (props.isSubject) {
+          new_roomData["clName"] = clName;
+        }
+        setRoomData(new_roomData);
         setIsExist(false);
       }
     });
@@ -35,6 +40,9 @@ const PadAdd = (props) => {
     e.preventDefault();
     let roomName = e.target.roomName.value;
     let roomPw = e.target.roomPw.value;
+
+    //전담이면 학급 선택안하면 저장불가
+    if (props.isSubject && e.target.option.value.trim() === "") return;
 
     //빈자료 만들기, 접속 불가
     if (roomName.trim() === "" || roomPw.trim() === "") return;
@@ -59,7 +67,12 @@ const PadAdd = (props) => {
 
     if (props.isTeacher) {
       //방이름 중복되는지 확인
-      getRoomNames(roomName.trim(), roomPw.trim());
+      if (props.isSubject) {
+        getRoomNames(roomName.trim(), roomPw.trim(), e.target.option.value);
+        setClName(e.target.option.value);
+      } else {
+        getRoomNames(roomName.trim(), roomPw.trim());
+      }
     } else {
       //학생이면 접속하기..!!
       props.getPadDatasHandler(roomName.trim(), roomPw.trim());
@@ -76,15 +89,29 @@ const PadAdd = (props) => {
       datas: new_roomNames,
     });
 
-    //방 문서 만들기
-    await setDoc(doc(dbService, "padIt", roomData.name), {
+    let new_students = props.isSubject
+      ? Object.values(
+          props.students?.filter(
+            (clObj) => Object.keys(clObj)[0] === clName
+          )?.[0]
+        )?.[0]
+      : props.students;
+
+    let new_data = {
       datas: [],
       pw: roomData.pw,
       sectionNames: ["0"],
       userUid: linkCheckLists ? props.userUid : "",
       //학생정보도 넣어서 저장..?(학생이 데이터 저장할 때, checkLists에 미제출 학생을 비교하려면 필요)
-      students: linkCheckLists ? props.students : [],
-    });
+      students: linkCheckLists ? new_students : [],
+    };
+
+    if (props.isSubject) {
+      new_data["clName"] = clName;
+    }
+
+    //방 문서 만들기
+    await setDoc(doc(dbService, "padIt", roomData.name), new_data);
 
     //내 uid 방목록에 추가하기
     let new_userRoomNames = [...props.roomNames] || [];
@@ -133,6 +160,26 @@ const PadAdd = (props) => {
           {props.isTeacher ? "패드잇 추가" : "수동으로 접속하기"}
         </p>
         <form onSubmit={addHandler} className={classes["flex-col-center"]}>
+          {/* 교사이면서, 전담교사면 학급 선택하기 */}
+          {props.isTeacher && props.isSubject && (
+            <div className={classes["margin10"]}>
+              {/* 전담교사 학급 선택하는 셀렉트 */}
+              <select
+                name={"option"}
+                defaultValue={""}
+                className={classes["select"]}
+                required
+              >
+                <option value="">-학급 선택-</option>
+                {props.students?.map((clObj, index) => (
+                  <option key={index} value={Object.keys(clObj)?.[0]}>
+                    {" "}
+                    {Object.keys(clObj)?.[0]}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
           <div className={classes["margin10"]}>
             <label name="roomName" className={classes["margin10"]}>
               방 이름

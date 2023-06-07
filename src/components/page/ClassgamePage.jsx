@@ -131,7 +131,11 @@ const ClassgamePage = (props) => {
               />
             )}
             {selectedMenu === "padIt" && (
-              <PadIt userUid={props.userUid} students={props.students} />
+              <PadIt
+                userUid={props.userUid}
+                students={props.students}
+                isSubject={props.isSubject}
+              />
             )}
           </div>
         </div>

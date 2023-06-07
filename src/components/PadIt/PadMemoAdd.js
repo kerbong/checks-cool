@@ -171,7 +171,7 @@ const PadMemoAdd = ({
                   attachedFileHandler={(file) => {
                     setAttachedFile(file);
                   }}
-                  file={data.fileUrl}
+                  file={data?.fileUrl || ""}
                 />
               </div>
 
@@ -249,7 +249,7 @@ const PadMemoAdd = ({
                   {data.text}
                 </div>
                 {/* 이미지 있으면.. div */}
-                {data.fileUrl && (
+                {data?.fileUrl && (
                   <div
                     className={classes["margin10-wid95"]}
                     style={{ justifyContent: "center" }}

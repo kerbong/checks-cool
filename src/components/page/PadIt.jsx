@@ -24,11 +24,24 @@ const PadIt = (props) => {
   const [showLogInRoomInput, setShowLogInRoomInput] = useState(true);
   const [students, setStudents] = useState([]);
   const [checkListsRefData, setCheckListsRefData] = useState({});
+  const [isSubject, setIsSubject] = useState(false);
+  const [nowClName, setNowClName] = useState("");
 
   useEffect(() => {
     if (!props.userUid) return;
     setIsTeacher(true);
   }, [props.userUid]);
+
+  useEffect(() => {
+    let year = now_year();
+    setIsSubject(
+      props.isSubject?.filter(
+        (yearData) => Object.keys(yearData)[0] === year
+      )?.[0]?.[year]
+    );
+  }, [props.isSubject]);
+
+  useEffect(() => {}, [isSubject]);
 
   //교사로 로그인 한 경우 만들었던 방 정보 받아오기
   const getRoomNames = async () => {
@@ -189,7 +202,15 @@ const PadIt = (props) => {
     // 제출ox에 없던거면
     if (exist_index === 0) {
       //올해학생이름이 제목에 포함되어 있지 않으면 미제출학생에 추가
-      students?.forEach((std) => {
+      let new_students = isSubject
+        ? Object.values(
+            students?.filter(
+              (clObj) => Object.keys(clObj)[0] === nowClName
+            )?.[0]
+          )?.[0]
+        : students;
+
+      new_students?.forEach((std) => {
         if (!pad_titles?.includes(std.name)) {
           unSubmitStudents.push(std);
         }
@@ -238,7 +259,7 @@ const PadIt = (props) => {
   }, [checkListsRefData]);
 
   //패드 데이터 추가, 삭제 등 함수
-  const padDatasHandler = async (new_datas, new_sectionNames) => {
+  const padDatasHandler = async (new_datas, new_sectionNames, clName) => {
     let padRef = doc(dbService, "padIt", roomName);
     let new_pad_data = {
       datas: new_datas,
@@ -249,10 +270,14 @@ const PadIt = (props) => {
       //userUid 가 "" 아니면 학생정보
     };
 
+    if (clName) {
+      new_pad_data["clName"] = clName;
+    }
+
     await setDoc(padRef, new_pad_data);
     //제출 연동의 경우.. 제출함수 실행!
     if (userUid !== "") {
-      checkListsHandler(userUid, new_datas);
+      checkListsHandler(userUid, new_datas, clName);
     }
   };
 
@@ -261,7 +286,7 @@ const PadIt = (props) => {
       {isTeacher ? (
         <div style={{ marginTop: "-80px" }}>
           {/* 교사용 화면 */}
-          {/* 닉네임 만들기, 닉네임이 없으면 만드는화면으로, 있으면 방리스트  + 방 만들기 버튼 + (닉네임 수정하기 버튼)추후 업데이트! */}
+          {/* 패드 추가하기 */}
           {showPadAdd && (
             <Modal onClose={() => setShowPadAdd(false)}>
               <PadAdd
@@ -270,6 +295,7 @@ const PadIt = (props) => {
                 roomNames={roomNames}
                 isTeacher={isTeacher}
                 students={students}
+                isSubject={isSubject}
               />
             </Modal>
           )}
@@ -306,6 +332,7 @@ const PadIt = (props) => {
             students={students}
             setPadPwHandler={(pw) => setRoomPw(pw)}
             setPadNameHandler={(room) => setRoomName(room)}
+            nowItemClName={(name) => setNowClName(name)}
           />
         </div>
       ) : (
