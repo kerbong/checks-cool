@@ -81,18 +81,7 @@ const PadIt = (props) => {
       ? String(+dayjs().format("YYYY") - 1)
       : dayjs().format("YYYY");
   };
-  //pad data 구성...
-  //  {
-  //  pw: "",
-  //  datas:[
-  //  {title: "", text:'', userInfo:'', createdAt: new Date(), bg: ""}
-  // 유저인포에는 uuid를 저장하고, 만들어진 uuid는 데이터를 저장하면서 localStorage에 저장해서 나중에도 불러와서 글을 수정, 삭제할 수 있도록..
-  //교사가 작성할 경우 userInfo에 true를 넣어줌.
 
-  //교사가 방을 만들때는 roomNames 문서에 이름이 존재하는지 중복확인 후에 만들 수 있도록
-
-  //  ]
-  // }
   const showLoginPadError = () => {
     Swal.fire(
       "접속 실패",
@@ -127,6 +116,7 @@ const PadIt = (props) => {
       onSnapshot(padRef, (doc) => {
         setPadDatas(doc?.data()?.datas);
         setPadSectionNames(doc?.data()?.sectionNames);
+        setNowClName(doc?.data()?.clName);
         setStudents([...doc?.data()?.students]);
         setUserUid(doc?.data()?.userUid);
       });
@@ -171,11 +161,6 @@ const PadIt = (props) => {
     });
   };
 
-  // useEffect(() => {
-  //   if (!padDatas) return;
-  //   checkListsHandler();
-  // }, [padDatas]);
-
   //제출ox 자료 실행함수
   const checkListsHandler = async (userUid, new_datas) => {
     let checkRef = doc(dbService, "checkLists", userUid);
@@ -211,7 +196,14 @@ const PadIt = (props) => {
         : students;
 
       new_students?.forEach((std) => {
-        if (!pad_titles?.includes(std.name)) {
+        let dataExist = false;
+        pad_titles.forEach((t) => {
+          if (t.includes(std.name)) {
+            dataExist = true;
+            return;
+          }
+        });
+        if (!dataExist) {
           unSubmitStudents.push(std);
         }
       });
@@ -223,13 +215,26 @@ const PadIt = (props) => {
         unSubmitStudents,
         yearGroup: now_year(),
       };
+
+      if (nowClName) {
+        new_checkList["clName"] = nowClName;
+      }
+
       new_checkLists.push(new_checkList);
-    } else {
+
       //이미존재하는 unsubmitstudents에서 뺴주기
+    } else {
       unSubmitStudents = [...checkListsData.unSubmitStudents];
-      unSubmitStudents = unSubmitStudents?.filter(
-        (std) => !pad_titles?.includes(std.name)
-      );
+      unSubmitStudents = unSubmitStudents?.filter((std) => {
+        let dataExist = false;
+        pad_titles.forEach((t) => {
+          if (t.includes(std.name)) {
+            dataExist = true;
+            return;
+          }
+        });
+        return !dataExist;
+      });
 
       new_checkList = {
         //yearGroup 수정하기
@@ -238,6 +243,11 @@ const PadIt = (props) => {
         unSubmitStudents,
         yearGroup: now_year(),
       };
+
+      if (nowClName) {
+        new_checkList["clName"] = nowClName;
+      }
+
       new_checkLists.splice(exist_index, 1, new_checkList);
     }
 
@@ -259,7 +269,7 @@ const PadIt = (props) => {
   }, [checkListsRefData]);
 
   //패드 데이터 추가, 삭제 등 함수
-  const padDatasHandler = async (new_datas, new_sectionNames, clName) => {
+  const padDatasHandler = async (new_datas, new_sectionNames) => {
     let padRef = doc(dbService, "padIt", roomName);
     let new_pad_data = {
       datas: new_datas,
@@ -270,14 +280,17 @@ const PadIt = (props) => {
       //userUid 가 "" 아니면 학생정보
     };
 
-    if (clName) {
-      new_pad_data["clName"] = clName;
+    if (nowClName) {
+      new_pad_data["clName"] = nowClName;
+      new_pad_data["students"] = Object.values(
+        students?.filter((clObj) => Object.keys(clObj)[0] === nowClName)?.[0]
+      )?.[0];
     }
 
     await setDoc(padRef, new_pad_data);
     //제출 연동의 경우.. 제출함수 실행!
     if (userUid !== "") {
-      checkListsHandler(userUid, new_datas, clName);
+      checkListsHandler(userUid, new_datas);
     }
   };
 
@@ -367,6 +380,7 @@ const PadIt = (props) => {
               onClose={() => {
                 itemCloseHandler();
               }}
+              students={students}
               padDatasHandler={padDatasHandler}
             />
           )}

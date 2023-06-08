@@ -32,13 +32,7 @@ const PadList = (props) => {
       if (doc_clName) {
         setClName(doc_clName);
         props.nowItemClName(doc_clName);
-        setStudents(
-          Object.values(
-            props.students?.filter(
-              (clObj) => Object.keys(clObj)[0] === doc_clName
-            )?.[0]
-          )?.[0]
-        );
+        setStudents(doc?.data()?.students);
       }
 
       setPadDatas(doc?.data()?.datas);
@@ -153,7 +147,7 @@ const PadList = (props) => {
           padSectionNames={padSectionNames}
           isTeacher={props.isTeacher}
           padDatasHandler={(items, names) =>
-            props.padDatasHandler(items, names, clName)
+            props.padDatasHandler(items, names)
           }
           clName={clName}
         />

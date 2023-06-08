@@ -132,7 +132,11 @@ const PadMemoAdd = ({
                   type="text"
                   name="title"
                   required
-                  placeholder={"제목"}
+                  placeholder={
+                    isTeacher
+                      ? "제목"
+                      : "성과 이름을 포함한 제목 (예 - 김지수 입니다)"
+                  }
                   title={"제목을 입력해주세요."}
                   className={classes["memoAdd-input"]}
                   autoFocus

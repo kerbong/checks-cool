@@ -190,7 +190,7 @@ const PadAdd = (props) => {
               required
               placeholder={
                 props.isTeacher
-                  ? "접속할 방이름을 정해주세요."
+                  ? "접속할 방이름(전담은 학급넣기!)"
                   : "접속할 방이름을 입력하세요."
               }
               className={classes["minwid-250"]}
