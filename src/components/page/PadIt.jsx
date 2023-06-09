@@ -41,8 +41,6 @@ const PadIt = (props) => {
     );
   }, [props.isSubject]);
 
-  useEffect(() => {}, [isSubject]);
-
   //교사로 로그인 한 경우 만들었던 방 정보 받아오기
   const getRoomNames = async () => {
     // userUid로 저장된 문서에서 목록 가져옴
@@ -184,29 +182,28 @@ const PadIt = (props) => {
     let pad_titles = new_datas?.map((data) => data?.title);
 
     let new_checkList;
+    let new_students = isSubject
+      ? Object.values(
+          students?.filter((clObj) => Object.keys(clObj)[0] === nowClName)?.[0]
+        )?.[0]
+      : students;
+
+    new_students?.forEach((std) => {
+      let dataExist = false;
+      pad_titles.forEach((t) => {
+        if (t.includes(std.name)) {
+          dataExist = true;
+          return;
+        }
+      });
+      if (!dataExist) {
+        unSubmitStudents.push(std);
+      }
+    });
+
     // 제출ox에 없던거면
     if (exist_index === 0) {
       //올해학생이름이 제목에 포함되어 있지 않으면 미제출학생에 추가
-      let new_students = isSubject
-        ? Object.values(
-            students?.filter(
-              (clObj) => Object.keys(clObj)[0] === nowClName
-            )?.[0]
-          )?.[0]
-        : students;
-
-      new_students?.forEach((std) => {
-        let dataExist = false;
-        pad_titles.forEach((t) => {
-          if (t.includes(std.name)) {
-            dataExist = true;
-            return;
-          }
-        });
-        if (!dataExist) {
-          unSubmitStudents.push(std);
-        }
-      });
 
       new_checkList = {
         //시분초,  yearGroup 수정하기
@@ -224,18 +221,6 @@ const PadIt = (props) => {
 
       //이미존재하는 unsubmitstudents에서 뺴주기
     } else {
-      unSubmitStudents = [...checkListsData.unSubmitStudents];
-      unSubmitStudents = unSubmitStudents?.filter((std) => {
-        let dataExist = false;
-        pad_titles.forEach((t) => {
-          if (t.includes(std.name)) {
-            dataExist = true;
-            return;
-          }
-        });
-        return !dataExist;
-      });
-
       new_checkList = {
         //yearGroup 수정하기
         id: checkListsData.id,
@@ -282,9 +267,16 @@ const PadIt = (props) => {
 
     if (nowClName) {
       new_pad_data["clName"] = nowClName;
-      new_pad_data["students"] = Object.values(
-        students?.filter((clObj) => Object.keys(clObj)[0] === nowClName)?.[0]
-      )?.[0];
+      //전담교사면.. 해당학급 찾아서 학생명부
+      if (isTeacher) {
+        new_pad_data["students"] = Object.values(
+          students?.filter((clObj) => Object.keys(clObj)[0] === nowClName)?.[0]
+        )?.[0];
+
+        //학생이면 그냥 학생 ..
+      } else {
+        new_pad_data["students"] = students;
+      }
     }
 
     await setDoc(padRef, new_pad_data);

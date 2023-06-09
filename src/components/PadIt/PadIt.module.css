@@ -88,6 +88,19 @@
   font-size: 1.4rem;
 }
 
+.margin-10-0-5-0 {
+  margin: 10px 0 -5px 0;
+}
+
+.padRoomPw-p {
+  display: flex;
+  width: 80%;
+  justify-content: space-between;
+  max-width: 380px;
+  min-width: 240px;
+  flex-wrap: wrap;
+}
+
 .li-btn {
   padding: 10px 15px;
   border-radius: 5px;

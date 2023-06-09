@@ -84,7 +84,11 @@ const PadList = (props) => {
       {showQrCode && (
         <Modal onClose={() => setShowQrCode(false)}>
           <div className={classes["flex-col-center"]}>
-            <h2 className={classes["fs-2rem"]}>{padName?.slice(10)}</h2>
+            <h2
+              className={`${classes["fs-2rem"]} ${classes["margin-10-0-5-0"]}`}
+            >
+              {padName?.slice(10)}
+            </h2>
             <QRCodeSVG
               value={`https://checks-cho-ok.firebaseapp.com/padIt/${padName}/${padPw}`}
               size={`33vw`}
@@ -93,6 +97,17 @@ const PadList = (props) => {
               level={"L"}
               includeMargin={true}
             />
+            <p
+              className={`${classes["margin-10-0-5-0"]} ${classes["padRoomPw-p"]}`}
+              style={{ marginTop: "-10px" }}
+            >
+              <span>🙂 방이름</span>
+              <span>{padName}</span>
+            </p>
+            <p className={classes["padRoomPw-p"]}>
+              <span>🙂 비밀번호</span>
+              <span>{padPw}</span>
+            </p>
           </div>
         </Modal>
       )}
