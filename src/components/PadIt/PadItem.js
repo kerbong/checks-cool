@@ -435,7 +435,7 @@ const PadItem = ({
   };
 
   useEffect(() => {
-    if (!isTeacher) return;
+    if (!isTeacher || userUid === "") return;
     getCheckListData();
   }, [isTeacher]);
 
@@ -585,6 +585,8 @@ const PadItem = ({
 
   const setItemNull = () => {};
 
+  console.log(userUid);
+
   return (
     <div>
       {showNewMemo && (
@@ -664,7 +666,8 @@ const PadItem = ({
 
       {/* 스타일 변경, 뒤로가기 버튼 모음 */}
       <div className={classes["flex-end"]}>
-        {isTeacher && (
+        {/* userUid가 있으면 제출ox 연동 */}
+        {isTeacher && userUid !== "" && (
           <div>
             <span
               className={classes.closeBtn}
@@ -828,7 +831,11 @@ const PadItem = ({
             {isTeacher && (
               <div
                 className={classes["section-title"]}
-                style={{ margin: "40px 20px 0 0", width: "30%" }}
+                style={{
+                  margin: "40px 20px 0 0",
+                  width: "30%",
+                  maxWidth: "80px",
+                }}
                 onClick={() => setAddNewSection(true)}
               >
                 {"+"}

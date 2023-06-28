@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import ExampleModal from "./ExampleModal";
 import byExcel from "../../assets/student/teacher-excel.gif";
-import mainImg from "../../assets/notice/0530main.jpg";
+import mainImg from "../../assets/notice/0610.gif";
 import dayjs from "dayjs";
 import AttendCalendar from "components/Attendance/AttendCalendar";
 import donationImg from "../../assets/notice/donation.png";
@@ -17,16 +17,22 @@ import Modal from "components/Layout/Modal";
 import MainShortCut from "components/Main/MainShortCut";
 
 dayjs.locale("ko");
-const update_title = `[메모-일정] 반복기능! & 패들렛??!!`;
+
+const monthEnd_title = `월말엔, 자료다운!`;
+const monthEnd_text = `월말입니다! 선생님들의 소중한 정보를 다운로드 해주세요!<br/>
+메인화면의 '💾 데이터 저장'을 활용해주세요!!<br/><br/>
+** 첵스-쿨은 선생님들의 모든 학급일지 데이터를 <br/> 엑셀파일 하나로 만들고 관리하는데 도움을 드리려고 합니다! <br/><br/> ** <b>첵스쿨 활용 팁👉</b> 을 <u>아침한마디에 공유</u>해주세요!
+ `;
+
+const update_title = `과제제출? 의견모으기? 패드잇!`;
 
 const update_text = `* 화면상단 메뉴바의 <i class="fa-solid fa-user"></i> -
-"공지사항"에 들어오시면 내용을 다시 보실 수 있어요.(업데이트 미반영시 사이트를 새로고침 해주세요!)<br/><br/>  <b>[메모]-[일정] 간단한 반복기능이 추가되었어요!!🪄<br/>  </b> 설정한 기간동안 일정이 반복 저장됩니다.(주말제외)
-<br/>
-<br/>
-기존의 차시별 반복기능과는 별개로, 같은 내용의 일정을 간단하게 반복할 수 있는 반복 기능이 추가되었어요~ <br/>1. 일정 달력에서 "추가" 버튼을 누르기 <br/> 2. 화면에서 "반복" 버튼을 누르기 <br/> 3. 아래에 생긴 기간을 설정하기 <br/> 4. 행사명과 옵션, 내용을 기록 후 저장하기. 
-<br/><br/> 
-<b>[제자랑]-[패드잇] 기능이 추가되었어요!!🪄<br/>  </b> 현재는 메모만 저장, 수정, 삭제가 가능한.. 패들렛이라고 보시면 됩니다! (파일 업로드 및 기능 추가 예정)<br/>
-꼭!!!! 테스트 하신 후에 사용해주세요~ 학생들은 qr코드를 통해 입장할 수 있습니다.
+"공지사항"에 들어오시면 내용을 다시 보실 수 있어요.(업데이트 미반영시 사이트를 새로고침 해주세요!)<br/><br/>  
+<b>[제자랑]-[패드잇] 기능이 추가되었어요!!🪄<br/>  </b> 1. qr코드로 간단하게 접속 <br/>
+2. 간단한 메모 작성 및 보기 방법 <br/>
+3. 파일추가 가능! <br/>
+4. 자동으로 제출ox와 연동! <br/>
+베타버전이며 담임, 전담교사 모두가 사용 가능합니다! 아직 베타버전이므로 테스트를 꼭!!!! 거쳐주시고 문제가 생기실 경우 바로 알려주세요~
 <br/>
 <br/>
 <hr style={{ margin: "20px 15px" }} />
@@ -118,10 +124,17 @@ const MainPage = (props) => {
 
   //업데이트 내용 보여주기 로컬스토리지에서 showNotice를 스트링으로 저장해서 확인 후에 이전에 봤으면 안보여주기
   const [showNotice, setShowNotice] = useState(false);
+  const [showMonthEnd, setShowMonthEnd] = useState(false);
 
   useEffect(() => {
-    if (localStorage.getItem("showNotice") !== "20230530") {
+    if (localStorage.getItem("showNotice") !== "20230612") {
       setShowNotice(true);
+    }
+    if (
+      +dayjs().format("DD") < 23 ||
+      localStorage.getItem("showMonthEnd") !== dayjs().format("YYYYMM")
+    ) {
+      setShowMonthEnd(true);
     }
   }, []);
 
@@ -1610,11 +1623,40 @@ const MainPage = (props) => {
         />
       )}
 
+      {/* 매달 말 나오느느 팝업창 */}
+      {/* //update 업데이트 시 보여줄 팝업창 */}
+      {showMonthEnd && (
+        <ExampleModal
+          onClose={() => {
+            localStorage.setItem("showMonthEnd", dayjs().format("YYYYMM"));
+            setShowMonthEnd(false);
+          }}
+          title={
+            <h1
+              style={{
+                margin: "10px 0 25px 0",
+                display: "flex",
+                justifyContent: "center",
+              }}
+              dangerouslySetInnerHTML={{ __html: monthEnd_title }}
+            ></h1>
+          }
+          text={
+            <>
+              <p
+                className={`${classes.p} ${classes.top}`}
+                dangerouslySetInnerHTML={{ __html: monthEnd_text }}
+              ></p>
+            </>
+          }
+        />
+      )}
+
       {/* //update 업데이트 시 보여줄 팝업창 */}
       {showNotice && (
         <ExampleModal
           onClose={() => {
-            localStorage.setItem("showNotice", "20230530");
+            localStorage.setItem("showNotice", "20230612");
             setShowNotice(false);
           }}
           imgSrc={mainImg}

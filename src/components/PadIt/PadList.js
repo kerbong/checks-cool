@@ -19,6 +19,7 @@ const PadList = (props) => {
   const [showQrCode, setShowQrCode] = useState(false);
   const [clName, setClName] = useState("");
   const [students, setStudents] = useState(props.students || []);
+  const [userUid, setUserUid] = useState("");
 
   //교사가 방 데이터 받아오기
   const getRoomData = async (roomName) => {
@@ -38,6 +39,7 @@ const PadList = (props) => {
       setPadDatas(doc?.data()?.datas);
       setPadSectionNames(doc?.data()?.sectionNames);
       props.userUidHandler(doc?.data()?.userUid);
+      setUserUid(doc?.data()?.userUid);
       setShowItem(true);
       //교사용 padit에서 패드 추가하기 보이지 않도록
       props.setPadPwHandler(doc?.data()?.pw);
@@ -157,7 +159,7 @@ const PadList = (props) => {
           onClose={() => {
             itemCloseHandler();
           }}
-          userUid={props.userUid}
+          userUid={userUid}
           students={students}
           padSectionNames={padSectionNames}
           isTeacher={props.isTeacher}

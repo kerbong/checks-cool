@@ -198,8 +198,8 @@ const ConsultEdit = (props) => {
           <>
             <img
               src={consult.attachedFileUrl}
-              width="100%"
-              max-height="20vh"
+              width="60%"
+              max-height="250px"
               alt="filePreview"
               onError={imageOnError}
             />
@@ -246,6 +246,7 @@ const ConsultEdit = (props) => {
       </div>
       <div className={classes.editFileArea}>
         <FileForm
+          src={consult.attachedFileUrl || ""}
           attachedFileHandler={(url) => {
             setAttachedFileUrl(url);
           }}

@@ -7,6 +7,7 @@ import Doit from "../Classgame/Doit/Doit";
 import { useLocation } from "react-router-dom";
 import TitleBtn from "components/Memo/TitleBtn";
 import AssistanceAi from "components/Classgame/AssistanceAi/AssistanceAi";
+import Crawling from "components/Classgame/Crawling/Crawling";
 // import SpeechToText from "components/Main/SpeechToText";
 
 const WeTeacher = (props) => {
@@ -19,7 +20,7 @@ const WeTeacher = (props) => {
     "심심<br/>해요",
     "아침<br/>한마디",
     "이거<br/>해요",
-    "헤이<br/>비서",
+    "자료<br/>다운",
   ];
 
   const ICONS = [
@@ -51,7 +52,7 @@ const WeTeacher = (props) => {
             {selectedMenu === "simsim" && <>{ICONS[0]} 심심해요</>}
             {selectedMenu === "mission" && <>{ICONS[1]} 아침한마디</>}
             {selectedMenu === "doThis" && <>{ICONS[2]} 이거해요 </>}
-            {selectedMenu === "ai" && <>{ICONS[3]} 헤이비서 </>}
+            {selectedMenu === "ai" && <>{ICONS[3]} 자료다운 </>}
           </button>
 
           <div className={classes["title-btns"]}>
@@ -89,7 +90,7 @@ const WeTeacher = (props) => {
               onclick={() => setSelectedMenu("doThis")}
             />
             <Button
-              name={"비서"}
+              name={"자료다운"}
               className={"settingSeat"}
               onclick={() => setSelectedMenu("ai")}
             />
@@ -121,9 +122,10 @@ const WeTeacher = (props) => {
             />
           )}
 
-          {selectedMenu === "ai" && (
-            <AssistanceAi userUid={props.userUid} nickName={props.nickName} />
-          )}
+          {
+            selectedMenu === "ai" && <p>다른 좋은 기능을 고민 중입니다!</p>
+            // <Crawling userUid={props.userUid} />
+          }
         </div>
       </div>
     </>

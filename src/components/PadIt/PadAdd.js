@@ -190,13 +190,27 @@ const PadAdd = (props) => {
               required
               placeholder={
                 props.isTeacher
-                  ? "접속할 방이름(전담은 학급넣기!)"
+                  ? "접속할 방이름"
                   : "접속할 방이름을 입력하세요."
               }
               className={classes["minwid-250"]}
               autoFocus
             />
           </div>
+          {props.isTeacher && (
+            <div
+              className={classes["margin10"]}
+              style={{ justifyContent: "center" }}
+            >
+              {" "}
+              * (학급의 별칭 + 제목) 형태 추천
+              {props.isSubject && (
+                <>
+                  <br />* 방이름에 (학급 명)을 추가하기!!
+                </>
+              )}
+            </div>
+          )}
           <div className={classes["margin10"]}>
             <label name="roomPw" className={classes["margin10"]}>
               비밀번호
@@ -215,29 +229,31 @@ const PadAdd = (props) => {
           </div>
           {/* 제출ox 연동버튼 */}
           {props.isTeacher && (
-            <div
-              className={classes["margin10"]}
-              style={{ justifyContent: "center" }}
-            >
-              <li className={classes["dropdown-li-nonehover"]}>
-                * [생기부] - [제출ox] 연동 &nbsp;&nbsp;
-                <input type="checkbox" id="toggle" hidden />
-                <label
-                  htmlFor="toggle"
-                  className={
-                    linkCheckLists
-                      ? `${classes["toggleSwitch"]} ${classes["active"]}`
-                      : `${classes["toggleSwitch"]}`
-                  }
-                  onClick={() => {
-                    setLinkCheckLists((prev) => !prev);
-                  }}
-                  ref={toggleRef}
-                >
-                  <span className={classes["toggleButton"]}></span>
-                </label>
-              </li>
-            </div>
+            <>
+              <div
+                className={classes["margin10"]}
+                style={{ justifyContent: "center" }}
+              >
+                <li className={classes["dropdown-li-nonehover"]}>
+                  * [생기부] - [제출ox] 연동 &nbsp;&nbsp;
+                  <input type="checkbox" id="toggle" hidden />
+                  <label
+                    htmlFor="toggle"
+                    className={
+                      linkCheckLists
+                        ? `${classes["toggleSwitch"]} ${classes["active"]}`
+                        : `${classes["toggleSwitch"]}`
+                    }
+                    onClick={() => {
+                      setLinkCheckLists((prev) => !prev);
+                    }}
+                    ref={toggleRef}
+                  >
+                    <span className={classes["toggleButton"]}></span>
+                  </label>
+                </li>
+              </div>
+            </>
           )}
           <div className={classes["margin10"]}>
             <input

@@ -26,6 +26,7 @@ const PadIt = (props) => {
   const [checkListsRefData, setCheckListsRefData] = useState({});
   const [isSubject, setIsSubject] = useState(false);
   const [nowClName, setNowClName] = useState("");
+  const [explainOn, setExplainOn] = useState(false);
 
   useEffect(() => {
     if (!props.userUid) return;
@@ -261,21 +262,26 @@ const PadIt = (props) => {
       pw: roomPw,
       sectionNames: new_sectionNames,
       userUid: userUid,
-      students: students,
+      students: userUid ? students : [],
       //userUid 가 "" 아니면 학생정보
     };
 
     if (nowClName) {
       new_pad_data["clName"] = nowClName;
-      //전담교사면.. 해당학급 찾아서 학생명부
-      if (isTeacher) {
-        new_pad_data["students"] = Object.values(
-          students?.filter((clObj) => Object.keys(clObj)[0] === nowClName)?.[0]
-        )?.[0];
+      //userUid 있으면 제출ox 연동
+      if (userUid !== "") {
+        //전담교사면.. 해당학급 찾아서 학생명부
+        if (isTeacher) {
+          new_pad_data["students"] = Object.values(
+            students?.filter(
+              (clObj) => Object.keys(clObj)[0] === nowClName
+            )?.[0]
+          )?.[0];
 
-        //학생이면 그냥 학생 ..
-      } else {
-        new_pad_data["students"] = students;
+          //학생이면 그냥 학생 ..
+        } else {
+          new_pad_data["students"] = students;
+        }
       }
     }
 
@@ -285,6 +291,73 @@ const PadIt = (props) => {
       checkListsHandler(userUid, new_datas);
     }
   };
+
+  //설명부분 html
+  const showHowToUse = (
+    <>
+      <h2 onClick={() => setExplainOn((prev) => !prev)}>
+        {" "}
+        😮 사용 방법 및 주의사항{" "}
+        <span>
+          {explainOn ? (
+            <i className="fa-solid fa-chevron-up"></i>
+          ) : (
+            <i className="fa-solid fa-chevron-down"></i>
+          )}{" "}
+        </span>
+      </h2>
+      <div className={explainOn ? classes.explainDiv : classes.explainDivHide}>
+        {isTeacher && (
+          <>
+            <p className={classes[`ul`]} style={{ width: "90%" }}>
+              <p className={classes["ex-title"]}>👉 패드 추가하기 </p>
+              접속할 방이름과 비밀번호 (전담은 학급도 선택)를 설정해주세요.
+              <br />* 주의 * 전담의 경우, 방이름에 학급명을 넣어주셔야
+              패드리스트에서 구분이 편리합니다!
+            </p>
+            <p className={classes[`ul`]} style={{ width: "90%" }}>
+              <p className={classes["ex-title"]}>👉 생기부 - 제출ox 연동?</p>
+              연동을 설정하여 패드를 만든 경우, 학생들이 제목에 성을 포함한
+              전체이름을 적어서 자료를 올릴 경우, 자동으로 [생기부] - [제출ox]에
+              자료가 생성, 수정됩니다!
+            </p>
+            <p className={classes[`ul`]} style={{ width: "90%" }}>
+              <p className={classes["ex-title"]}>👉 학생 접속방법</p>
+              1. qr코드 접속 - 교사가 만든 방의 qr코드 확인을 누르면 나오는,
+              qr코드를 태블릿, 혹은 핸드폰 카메라로 인식하여 접속하여
+              사용합니다. <br />
+              2. 수동접속 - qr코드 확인에 있는 방이름(날짜를 포함한!!)과
+              비밀번호를 학생이 직접 입력하여 접속합니다.
+            </p>
+          </>
+        )}
+
+        {!isTeacher && (
+          <p className={classes[`ul`]} style={{ width: "90%" }}>
+            <p className={classes["ex-title"]}>👉 수동접속 방법</p>
+            선생님에게 방이름과 비밀번호를 물어보고 그대로 입력하여 접속합니다.
+          </p>
+        )}
+        <p className={classes[`ul`]} style={{ width: "90%" }}>
+          <p className={classes["ex-title"]}>👉 자료 스타일 (기본? 섹션?)</p>
+          1. 기본스타일 - 칠판에 포스트잇을 붙인 형태로 자료가 자동으로
+          정렬됩니다. <br />
+          2. 섹션스타일 - 선생님이 미리 만들어둔 찬성, 반대와 같은 섹션별로
+          자료를 정렬합니다.
+        </p>
+        <p className={classes[`ul`]} style={{ width: "90%" }}>
+          <p className={classes["ex-title"]}>👉 자료 세부 내용 확인</p>
+          자료를 짧게 클릭하면 세부 내용을 확인할 수 있습니다. * 내가 쓴 자료 /
+          선생님은 자료의 내용을 수정, 삭제할 수 있습니다.
+        </p>
+        <p className={classes[`ul`]} style={{ width: "90%" }}>
+          <p className={classes["ex-title"]}>👉 자료 순서 바꾸기(이동)</p>
+          자료를 길게 클릭하여 드래그하면 자료가 보이는 순서를 변경할 수
+          있습니다!
+        </p>
+      </div>
+    </>
+  );
 
   return (
     <>
@@ -313,10 +386,7 @@ const PadIt = (props) => {
                 {" "}
                 패드잇 📌
               </h2>
-              <p>
-                담임교사용 초기버전이 개발중입니다. 테스트만 추천드립니다.
-                (전담교사용 개발예정...)
-              </p>
+              <p>초기버전 개발 완료. 테스트 후 사용해주세요.</p>
               <button
                 onClick={() => setShowPadAdd(true)}
                 className={classes["li-btn"]}
@@ -378,6 +448,7 @@ const PadIt = (props) => {
           )}
         </>
       )}
+      {showHowToUse}
     </>
   );
 };
