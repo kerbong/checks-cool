@@ -18,31 +18,37 @@ import MainShortCut from "components/Main/MainShortCut";
 
 dayjs.locale("ko");
 
+const deploy_title = `앱 정비 시간!`;
+const deploy_text = `매일 오후 11:30 ~ 12:30 에는 오류 수정 및 앱 개선 작업이 이루어 집니다!<br/>
+사이트 사용 시 저장된 데이터에 문제가 생길 수 있으니, <br/>11시 30분 ~ 0시 30분 에는 사용을 피해주세요. <br/><br/>
+** 첵스-쿨은 선생님들의 학급일지 데이터 관리에  도움을 드리고 싶어요! <br/> <b>불편한 점, 개선할 점</b>을 알려주세요! <br/><br/> 
+ `;
+
 const monthEnd_title = `월말엔, 자료다운!`;
 const monthEnd_text = `월말입니다! 선생님들의 소중한 정보를 다운로드 해주세요!<br/>
 메인화면의 '💾 데이터 저장'을 활용해주세요!!<br/><br/>
 ** 첵스-쿨은 선생님들의 모든 학급일지 데이터를 <br/> 엑셀파일 하나로 만들고 관리하는데 도움을 드리려고 합니다! <br/><br/> ** <b>첵스쿨 활용 팁👉</b> 을 <u>아침한마디에 공유</u>해주세요!
  `;
 
-const update_title = `과제제출? 의견모으기? 패드잇!`;
+const update_title = `1학기 마무리!!`;
 
 const update_text = `* 화면상단 메뉴바의 <i class="fa-solid fa-user"></i> -
 "공지사항"에 들어오시면 내용을 다시 보실 수 있어요.(업데이트 미반영시 사이트를 새로고침 해주세요!)<br/><br/>  
-<b>[제자랑]-[패드잇] 기능이 추가되었어요!!🪄<br/>  </b> 1. qr코드로 간단하게 접속 <br/>
-2. 간단한 메모 작성 및 보기 방법 <br/>
-3. 파일추가 가능! <br/>
-4. 자동으로 제출ox와 연동! <br/>
-베타버전이며 담임, 전담교사 모두가 사용 가능합니다! 아직 베타버전이므로 테스트를 꼭!!!! 거쳐주시고 문제가 생기실 경우 바로 알려주세요~
+<b>1학기 동안 다들 고생하셨습니다!!😂 </b> 선생님들의 업무 경감에 조금이나마 도움이 되었는지 모르겠네요.. 최근 일이 있어서 조금, 소홀했습니다.(문제는 꾸준히 체크하고 있습니다!)<br/>
+아울러, 방학 중 업데이트를 계획하고 있습니다! 아래의 것들 중에 우선 만들어 졌으면 하는 것을 알려주세요! <b> kerbong@gmail.com 혹은, [교사랑] - [이거해요] </b> (여러 개를 선택, 알려주셔도 좋습니다)<br/><br/>
+1. 체험학습 자동화 기능 사이트(학부모 신청=>교사 허가=> ...출결에 자동 입력) <br/>
+2. 간단하고 심플한 학생투표 기능 <br/>
+3. 그 외 <br/><br/>
+1번 같은 큰 기능은.. 방학 중에 끝나지 않을지도 모릅니다ㅎㅎ 그리고, 현재 있는 기능들의 불편한 점을 말씀해주셔도 됩니다!
 <br/>
 <br/>
 <hr style={{ margin: "20px 15px" }} />
 <br/>
-** 저녁 11시 30분~ 12시 30분은 앱의 유지보수 및 업데이트가 진행될 수 있으니 사용을 자제해주세요!
-<br/><br/>
+
 ** <b>사이트 접속주소가 추가</b>되었어요! 혹시 접속이 어려우신 분들은 아래의 주소도 활용해주세요! https://checks-cho-ok.firebaseapp.com
 <br/><br/>
 
-<b>함께 해주시는 모든 선생님들께 진심으로 감사드립니다!!!</b>🤩 `;
+<b>1학기 동안, 함께 해주신 모든 선생님들께 진심으로 감사드립니다!!! (많은 사용 / 의견제시 / 아침한마디에 글을 써주시는 선생님들께는 조금 더..🤩) <br/> 더 나은 모습으로, 꾸준함으로 2학기에 뵙겠습니다!! </b> `;
 
 //오늘 날짜 yyyy-mm-dd로 만들기
 const getDateHandler = (date, titleOrQuery) => {
@@ -76,7 +82,7 @@ const MainPage = (props) => {
   const [shortCutKey, setShortCutKey] = useState(
     localStorage.getItem("shortCutKey")
       ? JSON.parse(localStorage.getItem("shortCutKey"))
-      : ["1", "2", "3"]
+      : ["c", "w", "r"]
   );
   const [attendEvents, setAttendEvents] = useState([]);
   const [schedule, setSchedule] = useState([]);
@@ -125,16 +131,24 @@ const MainPage = (props) => {
   //업데이트 내용 보여주기 로컬스토리지에서 showNotice를 스트링으로 저장해서 확인 후에 이전에 봤으면 안보여주기
   const [showNotice, setShowNotice] = useState(false);
   const [showMonthEnd, setShowMonthEnd] = useState(false);
+  const [showDeployNotice, setShowDeployNotice] = useState(false);
 
   useEffect(() => {
-    if (localStorage.getItem("showNotice") !== "20230612") {
+    if (
+      localStorage.getItem("showNotice") > "20230712" &&
+      localStorage.getItem("showNotice") < "20230726"
+    ) {
       setShowNotice(true);
     }
     if (
-      +dayjs().format("DD") < 23 ||
+      +dayjs().format("DD") > 23 ||
       localStorage.getItem("showMonthEnd") !== dayjs().format("YYYYMM")
     ) {
       setShowMonthEnd(true);
+    }
+
+    if (22 <= +dayjs().format("H") && 0 === +dayjs().format("H")) {
+      setShowDeployNotice(true);
     }
   }, []);
 
@@ -1625,6 +1639,34 @@ const MainPage = (props) => {
 
       {/* 매달 말 나오느느 팝업창 */}
       {/* //update 업데이트 시 보여줄 팝업창 */}
+      {showDeployNotice && (
+        <ExampleModal
+          onClose={() => {
+            setShowDeployNotice(false);
+          }}
+          title={
+            <h1
+              style={{
+                margin: "10px 0 25px 0",
+                display: "flex",
+                justifyContent: "center",
+              }}
+              dangerouslySetInnerHTML={{ __html: deploy_title }}
+            ></h1>
+          }
+          text={
+            <>
+              <p
+                className={`${classes.p} ${classes.top}`}
+                dangerouslySetInnerHTML={{ __html: deploy_text }}
+              ></p>
+            </>
+          }
+        />
+      )}
+
+      {/* 매달 말 나오느느 팝업창 */}
+      {/* //update 업데이트 시 보여줄 팝업창 */}
       {showMonthEnd && (
         <ExampleModal
           onClose={() => {
@@ -1656,7 +1698,7 @@ const MainPage = (props) => {
       {showNotice && (
         <ExampleModal
           onClose={() => {
-            localStorage.setItem("showNotice", "20230612");
+            localStorage.setItem("showNotice", dayjs().format("YYYYMMDD"));
             setShowNotice(false);
           }}
           imgSrc={mainImg}

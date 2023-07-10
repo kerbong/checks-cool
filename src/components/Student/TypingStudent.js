@@ -149,8 +149,9 @@ const TypingStudent = (props) => {
 
         <p className={classes.studentBgColorInfo}>
           {" "}
-          <span className={classes.genderExample}>여학생</span>
-          &nbsp;&nbsp;&nbsp;남학생&nbsp;&nbsp;&nbsp;| 이름 클릭하면 성별 변경
+          <span className={classes.genderExample}>여</span>
+          &nbsp;&nbsp;&nbsp;남&nbsp;&nbsp;&nbsp;| 성별 변경 👉 학생이름 클릭,
+          저장
         </p>
         <div className={classes.studentListArea}>
           {props.studentsInfo?.map((student) => (

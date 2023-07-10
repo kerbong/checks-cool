@@ -108,12 +108,10 @@ const CheckInput = (props) => {
     //처음 자동 저장되면 처음 저장하면 시간으로 tempId 찍힘
 
     //기존 아이템이면 innerText 새로운거면 input의 value
-    let titleValue = props?.item?.id
-      ? document.getElementById("title-input").innerText
-      : document.getElementById("title-input").value;
+    let titleValue = document.getElementById("title-input")?.value;
 
     //타이틀 없으면(새로운 자료면) 오류내용 보여줌.
-    if (titleValue.trim().length === 0) {
+    if (titleValue?.trim()?.length === 0) {
       Swal.fire({
         icon: "error",
         title: "정보가 부족해요!",
@@ -269,7 +267,15 @@ const CheckInput = (props) => {
                 </span>
               </div>
 
-              <h2 id={"title-input"}>{checkTitle}</h2>
+              {/* <h2 id={"title-input"}>{checkTitle}</h2> */}
+              <input
+                type="text"
+                placeholder="제목"
+                id={"title-input"}
+                value={checkTitle || ""}
+                onChange={(e) => setCheckTitle(e.target.value)}
+                className={classes.checkTitle}
+              />
             </div>
           ) : (
             <>
