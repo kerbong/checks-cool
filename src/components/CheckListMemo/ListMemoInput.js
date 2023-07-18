@@ -40,6 +40,33 @@ const ListMemoInput = (props) => {
     setTodayYyyymmdd(props.item.id);
   }, [props.item]);
 
+  /**파라미터로 전달한 학생 목록에서 전학생을 제외한 학생 목록을 반환하는 함수 */
+  const exceptGoneStds = (students) => {
+    let goneStds = props.goneStudents;
+
+    // 현재 날짜가 전학생의 전학 날짜보다 미래인 경우, 즉 이미 전학간 이후가 아닌 학생만 남기기
+    goneStds = goneStds?.filter(
+      (std) => std.date < String(dayjs(todayYyyymmdd).format("YYYY-MM-DD"))
+    );
+
+    //전담이면 현재 선택된 학급의 전학생만 걸러주기
+    if (props.isSubject) {
+      goneStds?.filter((std) => std.clName === props.clName);
+    }
+
+    let new_students = students?.filter((item2) => {
+      return !goneStds?.some(
+        (item1) => item1?.name === item2?.name && item1?.num === item2?.num
+      );
+    });
+
+    if (!new_students) {
+      new_students = [];
+    }
+
+    return new_students;
+  };
+
   const saveMemo = (auto) => {
     let tempId = localStorage.getItem("listId");
     let item_id;
@@ -400,11 +427,16 @@ const ListMemoInput = (props) => {
       });
     };
 
+    //전학생 제외 로직
+    let new_hasNoInputStd = exceptGoneStds(hasNoInputStd);
+
     //noinput stds
-    let noInputArea = showInputArea(hasNoInputStd);
+    let noInputArea = showInputArea(new_hasNoInputStd);
+
     //input stds
-    let hasNoInputStdNames = hasNoInputStd?.map((std) => std.name);
-    let hasInputStd = students.filter(
+    let hasNoInputStdNames = new_hasNoInputStd?.map((std) => std.name);
+    let new_students = exceptGoneStds(students);
+    let hasInputStd = new_students.filter(
       (std) => !hasNoInputStdNames?.includes(std.name)
     );
     let inputArea = showInputArea(hasInputStd);
@@ -422,11 +454,19 @@ const ListMemoInput = (props) => {
     );
   };
 
-  //미입력 혹은 입력 학생들 이름버튼 보여주는 함수
+  /** 미입력 혹은 입력 학생들 이름버튼 html반환 함수 */
   const makeStdNameBtns = (showNoInput) => {
+    //전학생 제외 로직
+
+    console.log(hasNoInputStd);
+    let new_hasNoInputStd = exceptGoneStds(hasNoInputStd);
+    console.log(new_hasNoInputStd);
+
     //input stds
-    let hasNoInputStdNames = hasNoInputStd?.map((std) => std.name);
-    let hasInputStd = students.filter(
+    let hasNoInputStdNames = new_hasNoInputStd?.map((std) => std.name);
+
+    let new_students = exceptGoneStds(students);
+    let hasInputStd = new_students.filter(
       (std) => !hasNoInputStdNames?.includes(std.name)
     );
 
@@ -446,7 +486,7 @@ const ListMemoInput = (props) => {
     };
 
     return showNoInput
-      ? showStdNameBtns(hasNoInputStd)
+      ? showStdNameBtns(new_hasNoInputStd)
       : showStdNameBtns(hasInputStd);
   };
 
@@ -454,9 +494,13 @@ const ListMemoInput = (props) => {
     <>
       <h2 className={classes["title-section"]}>
         <div className={classes["title-dateInputBtnDiv"]}>
-          <div className={classes["x-classDiv"]}>
+          <div
+            className={classes["x-classDiv"]}
+            style={{ textAlign: "center" }}
+          >
             <p
               className={classes["listMemo-closeBtn"]}
+              style={{ width: "100%" }}
               onClick={() => {
                 localStorage.removeItem("listId");
                 props.onClose();
@@ -548,7 +592,7 @@ const ListMemoInput = (props) => {
               name={
                 showNoInput
                   ? ` 미입력 (${hasNoInputStd?.length})`
-                  : ` 입력(${students.length - hasNoInputStd?.length})`
+                  : ` 입력(${students?.length - hasNoInputStd?.length})`
               }
             />{" "}
             &nbsp;

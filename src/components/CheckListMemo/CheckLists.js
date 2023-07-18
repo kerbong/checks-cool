@@ -36,10 +36,32 @@ const CheckLists = (props) => {
   //성적 단계 설정, 모달 보여주기
   const [showScoreGrade, setShowScoreGrade] = useState(false);
   const [scoreGrade, setScoreGrade] = useState([]);
+  const [goneStudents, setGoneStudents] = useState([]);
 
   const checkListsYear = useRef();
   const listMemoYear = useRef();
   const selectRef = useRef();
+
+  //전학생 목록 받아옴
+  const getGoneStdFromDb = async () => {
+    let goneStdRef = doc(dbService, "goneStd", props.userUid);
+    const goneStdSnap = await getDoc(goneStdRef);
+
+    //id가 이번학년도 인 자료만 저장해둠.
+    onSnapshot(goneStdRef, (doc) => {
+      if (goneStdSnap.exists()) {
+        let new_goneStd = [];
+
+        new_goneStd = doc.data()?.goneStd_data?.[nowYear()];
+
+        setGoneStudents(new_goneStd);
+      }
+    });
+  };
+
+  useEffect(() => {
+    getGoneStdFromDb();
+  }, []);
 
   //브라우저에 저장된 평가기록단계가 있으면 불러오고 없으면 기본 4단계로 세팅함.
   useEffect(() => {
@@ -547,6 +569,7 @@ const CheckLists = (props) => {
           {addCheckItem && (
             <Modal onClose={() => setAddCheckItem(false)}>
               <CheckInput
+                goneStudents={goneStudents}
                 // 전담이 아니면 년도별에 따라 받아온거 보냄
                 students={!isSubject ? students : inputStudents}
                 onClose={() => {
@@ -718,6 +741,7 @@ const CheckLists = (props) => {
               }}
             >
               <ListMemoInput
+                goneStudents={goneStudents}
                 hasNoInputStd={listMemoShowStdOnList(item, "not")?.map(
                   (data) => ({
                     name: data.name,

@@ -272,7 +272,7 @@ const StudentLists = (props) => {
     let new_studentsInfo = [...studentsInfo];
     new_studentsInfo.forEach((stu, index) => {
       if (stu.name === student.name) {
-        new_studentsInfo[index]["woman"] = student.woman;
+        new_studentsInfo[index]["woman"] = !student.woman;
       }
     });
     setStudentsInfo([...new_studentsInfo]);
@@ -481,7 +481,9 @@ const StudentLists = (props) => {
             deleteAllHandler={() => {
               setStudentsInfo([]);
             }}
+            userUid={props.userUid}
             isSubject={props.isSubject}
+            nowClassName={nowClassName}
           />
         </>
       )}

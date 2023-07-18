@@ -3,10 +3,13 @@ import Button from "../Layout/Button";
 import classes from "./TypingStudent.module.css";
 import StudentLiWithDelete from "./StudentLiWithDelete";
 import Swal from "sweetalert2";
+import GoneStd from "./GoneStd";
+import Modal from "components/Layout/Modal";
 
 const TypingStudent = (props) => {
   const [tempAutoNum, setTempAutoNum] = useState(1);
   const [tempStudent, setTempStudent] = useState({});
+  const [showGoneStd, setShowGoneStd] = useState(false);
   let numberRef = useRef(null);
   const nameRef = useRef(null);
 
@@ -29,7 +32,6 @@ const TypingStudent = (props) => {
     } else {
       studentData.woman = false;
     }
-    console.log(studentData);
 
     props.setAddStudentsInfo(studentData);
 
@@ -87,12 +89,23 @@ const TypingStudent = (props) => {
     numberRef.current.value = student.num;
     nameRef.current.value = student.name;
     setTempStudent({ ...student });
-    //성별 바꾸기 함수
-    props.studentGenderChange(student);
   };
 
   return (
     <>
+      {/* 전학생 설정..! 모달 보여주기 */}
+      {showGoneStd && (
+        <Modal onClose={() => setShowGoneStd(false)} addStyle={"showCopyCal"}>
+          <GoneStd
+            userUid={props.userUid}
+            closeModal={() => setShowGoneStd(false)}
+            student={tempStudent}
+            isSubject={props.isSubject}
+            nowClassName={props.nowClassName}
+          />
+        </Modal>
+      )}
+
       <div className={classes.addStudent}>
         <div className={classes.addStudentInputs}>
           <form onSubmit={submitHandler}>
@@ -148,11 +161,28 @@ const TypingStudent = (props) => {
         </div>
 
         <p className={classes.studentBgColorInfo}>
-          {" "}
-          <span className={classes.genderExample}>여</span>
-          &nbsp;&nbsp;&nbsp;남&nbsp;&nbsp;&nbsp;| 성별 변경 👉 학생이름 클릭,
-          저장
+          (성별 변경 👉 1.학생이름 클릭 &nbsp; 2.&nbsp;
+          <i className="fa-solid fa-venus-mars"></i>&nbsp;클릭&nbsp; 3.&nbsp;
+          <i className="fa-regular fa-floppy-disk"></i> &nbsp;클릭&nbsp;)
         </p>
+        {/* 선택된 학생이 있으면.. 성별바꾸기 버튼 만들어주기 */}
+        {tempStudent?.name && (
+          <p className={classes.studentBgColorInfo}>
+            <Button
+              className="student-save"
+              style={{ width: "120px" }}
+              name={
+                <>
+                  성별변경
+                  <i className="fa-solid fa-venus-mars"></i>
+                </>
+              }
+              onclick={() => props.studentGenderChange(tempStudent)}
+            />
+          </p>
+        )}
+        <br />
+
         <div className={classes.studentListArea}>
           {props.studentsInfo?.map((student) => (
             <StudentLiWithDelete
@@ -168,8 +198,38 @@ const TypingStudent = (props) => {
             />
           ))}
         </div>
+
+        <p className={classes.studentBgColorInfo}>
+          {" "}
+          <span className={classes.genderExample}>여</span>
+          <span
+            className={classes.genderExample}
+            style={{ backgroundColor: "inherit" }}
+          >
+            남
+          </span>
+        </p>
+
         {/* 전체삭제 버튼 */}
         <div className={classes["deleteAll-div"]}>
+          {props.studentsInfo && (
+            <Button
+              className="student-save"
+              style={{ width: "150px" }}
+              name="전출학생 관리"
+              onclick={() => {
+                if (!tempStudent?.name || !tempStudent?.num) {
+                  Swal.fire(
+                    "전출학생을 선택해주세요!",
+                    "먼저 학생 명단에서 전학갈 학생 | 수정할 학생을 선택해주세요.",
+                    "warning"
+                  );
+                } else {
+                  setShowGoneStd(true);
+                }
+              }}
+            />
+          )}
           {props.studentsInfo?.length !== 0 && (
             <Button
               className="student-save"

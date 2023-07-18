@@ -1,0 +1,37 @@
+.flex-col-cen {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.flex--cen,
+.flex--cen-100 {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}
+
+.flex--cen-100 {
+  width: 100%;
+}
+
+.add-save-btn {
+  padding: 10px 30px;
+  background-color: beige;
+  border: 0;
+  border-radius: 8px;
+  margin: 10px;
+  letter-spacing: 5px;
+}
+
+.absol-ringt-top {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+}
+
+h2,
+h3 {
+  margin-bottom: 10px;
+}

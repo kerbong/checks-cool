@@ -27,11 +27,46 @@ const CheckInput = (props) => {
     )
   );
 
-  //기존자료의 경우.. 시작날짜를 기존 날짜로!
+  //기존자료의 경우.. 시작날짜를 기존 날짜로하고 새로운 자료의 경우, 전학생을 제외하고 보여주기
   useEffect(() => {
     if (!props?.item?.id) return;
     setTodayYyyymmdd(props.item.id.slice(0, 10));
   }, [props.item]);
+
+  useEffect(() => {
+    let goneStds = props.goneStudents;
+
+    // 현재 날짜가 전학생의 전학 날짜보다 미래인 경우, 즉 이미 전학간 이후가 아닌 학생만 남기기
+    goneStds = goneStds?.filter(
+      (std) => std.date < String(dayjs(todayYyyymmdd).format("YYYY-MM-DD"))
+    );
+
+    //전담이면 현재 선택된 학급의 전학생만 걸러주기
+    if (props.isSubject) {
+      goneStds?.filter((std) => std.clName === props.clName);
+    }
+
+    const new_unSubmitStudents = props.unSubmitStudents?.filter((item2) => {
+      return !goneStds?.some(
+        (item1) => item1.name === item2.name && item1.num === item2.num
+      );
+    });
+
+    setUnSubmitStudents(new_unSubmitStudents);
+
+    const new_submitStudents = students
+      ?.filter(
+        (stu1) =>
+          !goneStds?.some(
+            (stu2) => +stu1.num === +stu2.num && stu1.name === stu2.name
+          )
+      )
+      ?.filter(
+        (stu1) => !new_unSubmitStudents?.some((stu2) => +stu1.num === +stu2.num)
+      );
+
+    setSubmitStudents(new_submitStudents);
+  }, [todayYyyymmdd, props.item]);
 
   const calDateHandler = (date) => {
     setTodayYyyymmdd(dayjs(date).format("YYYY-MM-DD"));

@@ -9,7 +9,7 @@ const StudentLiWithDelete = (props) => {
     Swal.fire({
       icon: "question",
       title: "삭제할까요?",
-      text: `"${student.name}" 학생정보를 삭제할까요?.`,
+      html: `"${student.name}" 학생정보를 삭제할까요? <br/><br/>** 전출 학생은 화면 하단의"전출학생 관리"를<br/>  활용해주세요!`,
       showDenyButton: true,
       confirmButtonText: "삭제",
       confirmButtonColor: "#db100cf2",
@@ -31,14 +31,14 @@ const StudentLiWithDelete = (props) => {
     });
   };
 
-  //번호와 이름을 누르면 수정 or 성별 변경 가능
+  //번호와 이름을 누르면 수정 가능
   const studentFixHandler = () => {
     let woman = props.student.woman || false;
     //수정하는 기능
     props.studentFixHandler({
       num: props.student.num,
       name: props.student.name,
-      woman: !woman,
+      woman: woman,
     });
   };
 
