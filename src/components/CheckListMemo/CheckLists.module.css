@@ -167,6 +167,10 @@
   margin-top: 10px;
 }
 
+/* .listMemoBtn-div{
+  max-width: 240px;
+} */
+
 .listMemoSelect-div {
   display: flex;
   width: 65%;

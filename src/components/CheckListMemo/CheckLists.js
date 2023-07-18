@@ -37,6 +37,7 @@ const CheckLists = (props) => {
   const [showScoreGrade, setShowScoreGrade] = useState(false);
   const [scoreGrade, setScoreGrade] = useState([]);
   const [goneStudents, setGoneStudents] = useState([]);
+  const [exceptGone, setExceptGone] = useState(false);
 
   const checkListsYear = useRef();
   const listMemoYear = useRef();
@@ -191,26 +192,6 @@ const CheckLists = (props) => {
     //자료 저장할 떄 실제로 실행되는 함수
 
     const dataSaved = async (newOrSame) => {
-      //동일한 이름의 자료가 이미 있는, 새로운 저장이면 팝업 띄우기
-      if (newOrSame === "sameTitle" && !auto) {
-        Swal.fire({
-          icon: "warning",
-          title: "동일한 제목 존재",
-          text: "기존 자료에 동일한 제목의 자료가 존재합니다. 계속 저장 하시겠어요?",
-          confirmButtonText: "확인",
-          showDenyButton: true,
-          denyButtonText: "취소",
-          confirmButtonColor: "#85bd82",
-        }).then((result) => {
-          /* Read more about isConfirmed, isDenied below */
-          if (result.isConfirmed) {
-            saveLogic();
-          }
-
-          if (result.isDenied) return;
-        });
-      }
-
       const saveLogic = async () => {
         //checkList 일경우
         let upload_item;
@@ -251,7 +232,18 @@ const CheckLists = (props) => {
               checkLists_data: [...new_datas],
             });
 
-            setNowOnCheckLists([...new_datas]);
+            //전담은.. clname 고려해서 보여주기
+
+            // 전담이면.. 학급의 자료만 보여주기!
+            let showCheckLists = !isSubject
+              ? [...new_datas]
+              : [...new_datas]?.filter(
+                  (data) =>
+                    data.yearGroup === checkListsYear.current.value &&
+                    data.clName === nowClassName
+                );
+
+            setNowOnCheckLists(showCheckLists);
 
             //처음 자료를 저장하는 경우
           } else {
@@ -306,7 +298,16 @@ const CheckLists = (props) => {
               listMemo_data: [...new_datas],
             });
 
-            setNowOnListMemo([...new_datas]);
+            // 전담이면.. 학급의 자료만 보여주기!
+            let showListMemo = !isSubject
+              ? [...new_datas]
+              : [...new_datas]?.filter(
+                  (data) =>
+                    data.yearGroup === listMemoYear.current.value &&
+                    data.clName === nowClassName
+                );
+
+            setNowOnListMemo(showListMemo);
 
             //처음 자료를 저장하는 경우
           } else {
@@ -323,6 +324,18 @@ const CheckLists = (props) => {
           }
         }
       };
+
+      //동일한 이름의 자료가 이미 있는, 새로운 저장이면 팝업 띄우기
+      if (newOrSame === "sameTitle" && !auto) {
+        Swal.fire({
+          icon: "success",
+          title: "저장성공(동일한 제목)",
+          html: "기존 자료에 동일한 제목의 자료가 존재합니다. <br/> 날짜로 자료를 구분해주시거나 제목을 수정해주세요.",
+          confirmButtonText: "확인",
+          confirmButtonColor: "#85bd82",
+        });
+        saveLogic();
+      }
 
       //새로운 자료면 저장하기
       if (newOrSame === "new" || auto) {
@@ -377,7 +390,7 @@ const CheckLists = (props) => {
       const checkListsData = checkListsSnap?.data()?.checkLists_data;
 
       new_datas = checkListsData?.filter((list) => list.id !== item.id);
-      // setCheckLists([...new_datas]);
+
       setNowOnCheckLists([
         ...nowOnCheckLists?.filter((list) => list.id !== item.id),
       ]);
@@ -527,6 +540,10 @@ const CheckLists = (props) => {
         }
       });
       // console.log(now_students);
+      //전학생 제외 설정인 경우, 전학생 제외하기
+      if (exceptGone) {
+        now_students = exceptGoneStds(true, now_students);
+      }
       setInputStudents(now_students);
     }
   };
@@ -545,9 +562,7 @@ const CheckLists = (props) => {
 
     return !isSubject
       ? students?.filter((stu) => filterQuery(stu))
-      : studentsYear
-          ?.filter((cl) => Object.keys(cl)[0] === item.clName)?.[0]
-          ?.[item.clName]?.filter((stu) => filterQuery(stu));
+      : inputStudents?.filter((stu) => filterQuery(stu));
   };
 
   //전달받은 state에서 add일경우, 추가 버튼 누른 상태로 만들어주기
@@ -562,6 +577,51 @@ const CheckLists = (props) => {
     }
   }, [dataDone]);
 
+  /**학생 목록에서 전학생을 제외 / 원상복귀 하는 함수 */
+  const exceptGoneStds = (trueOrFalse, clStudents) => {
+    let new_goneStd = [...goneStudents];
+    //전담이면 현재 선택된 학급의 전학생만 걸러주기
+    if (isSubject) {
+      new_goneStd = new_goneStd?.filter((std) => std.clName === nowClassName);
+    }
+
+    let new_students = !clStudents ? students : clStudents;
+    //전학생 제외하기
+    if (trueOrFalse) {
+      new_students = new_students?.filter((item2) => {
+        return !new_goneStd?.some(
+          (item1) => item1?.name === item2?.name && item1?.num === item2?.num
+        );
+      });
+      //전학생 포함하기
+    } else {
+      //전학생의 자료에서 필요없는 데이터 지우기
+      new_goneStd = new_goneStd?.map((stu) => {
+        return { name: stu.name, num: stu.num, woman: stu.woman };
+      });
+      new_students = new_students.concat(new_goneStd);
+    }
+
+    // console.log(new_students);
+    return new_students;
+  };
+
+  useEffect(() => {
+    //전담은 버튼 누르거나 자료 클릭할 때 inputStudentsHandler로 세팅함.
+    if (isSubject) return;
+    let new_stds;
+    if (exceptGone) {
+      new_stds = exceptGoneStds(true);
+    } else {
+      new_stds = exceptGoneStds(false);
+    }
+    setStudents(new_stds);
+  }, [exceptGone]);
+
+  useEffect(() => {
+    setNowClassName("");
+  }, [props.about]);
+
   return (
     <>
       {props.about === "checkLists" && (
@@ -570,6 +630,7 @@ const CheckLists = (props) => {
             <Modal onClose={() => setAddCheckItem(false)}>
               <CheckInput
                 goneStudents={goneStudents}
+                exceptGone={exceptGone}
                 // 전담이 아니면 년도별에 따라 받아온거 보냄
                 students={!isSubject ? students : inputStudents}
                 onClose={() => {
@@ -639,7 +700,7 @@ const CheckLists = (props) => {
 
             {/* 담임인 경우 현재 학년도 자료에만 추가 버튼이 보임 */}
             {!isSubject && checkListsYear?.current?.value === nowYear() && (
-              <div>
+              <div className={classes["h3"]}>
                 <Button
                   icon={<i className="fa-solid fa-plus"></i>}
                   id={"add-checkItemBtn"}
@@ -649,12 +710,28 @@ const CheckLists = (props) => {
                     setAddCheckItem(true);
                   }}
                 />
+                {/* 전학생제외 */}
+                <Button
+                  icon={
+                    exceptGone ? (
+                      <i className="fa-solid fa-user"></i>
+                    ) : (
+                      <i className="fa-regular fa-user"></i>
+                    )
+                  }
+                  id={"add-checkItemBtn"}
+                  className={"check-memo-button"}
+                  onclick={() => {
+                    setExceptGone((prev) => !prev);
+                  }}
+                  title={exceptGone ? "전학생 보기" : "전학생 숨기기"}
+                />
               </div>
             )}
 
             {/* 전담버전에서는 학급을 선택하거나 전체학급이 아닐경우에만 보임 */}
             {isSubject && nowClassName !== "" && nowClassName !== "whole" && (
-              <div>
+              <div className={classes["h3"]}>
                 <Button
                   icon={<i className="fa-solid fa-plus"></i>}
                   id={"add-checkItemBtn"}
@@ -668,6 +745,23 @@ const CheckLists = (props) => {
                     setUnSubmitStudents([]);
                     setAddCheckItem(true);
                   }}
+                />
+
+                {/* 전학생제외 */}
+                <Button
+                  icon={
+                    exceptGone ? (
+                      <i className="fa-solid fa-user"></i>
+                    ) : (
+                      <i className="fa-regular fa-user"></i>
+                    )
+                  }
+                  id={"add-checkItemBtn"}
+                  className={"check-memo-button"}
+                  onclick={() => {
+                    setExceptGone((prev) => !prev);
+                  }}
+                  title={exceptGone ? "전학생보기" : "전학생숨기기"}
                 />
               </div>
             )}
@@ -742,6 +836,7 @@ const CheckLists = (props) => {
             >
               <ListMemoInput
                 goneStudents={goneStudents}
+                exceptGone={exceptGone}
                 hasNoInputStd={listMemoShowStdOnList(item, "not")?.map(
                   (data) => ({
                     name: data.name,
@@ -826,7 +921,7 @@ const CheckLists = (props) => {
             <div>
               {/* 담임인 경우 현재 학년도 자료에만 추가 버튼이 보임 */}
               {!isSubject && listMemoYear?.current?.value === nowYear() && (
-                <div>
+                <div className={classes["h3"]}>
                   <Button
                     icon={<i className="fa-solid fa-plus"></i>}
                     id={"add-listMemoBtn"}
@@ -836,13 +931,29 @@ const CheckLists = (props) => {
                       setAddListMemo(true);
                     }}
                   />
+                  {/* 전학생제외 */}
+                  <Button
+                    icon={
+                      exceptGone ? (
+                        <i className="fa-solid fa-user"></i>
+                      ) : (
+                        <i className="fa-regular fa-user"></i>
+                      )
+                    }
+                    id={"add-checkItemBtn"}
+                    className={"check-memo-button"}
+                    onclick={() => {
+                      setExceptGone((prev) => !prev);
+                    }}
+                    title={exceptGone ? "전학생 보기" : "전학생 숨기기"}
+                  />
                 </div>
               )}
             </div>
 
             {/* 전담버전에서는 학급을 선택하거나 전체학급이 아닐경우에만 보임 */}
             {isSubject && nowClassName !== "" && nowClassName !== "whole" && (
-              <div>
+              <div className={classes["h3"]}>
                 <Button
                   icon={<i className="fa-solid fa-plus"></i>}
                   id={"add-listMemoBtn"}
@@ -857,6 +968,23 @@ const CheckLists = (props) => {
                     setAddListMemo(true);
                   }}
                 />
+
+                {/* 전학생제외 */}
+                <Button
+                  icon={
+                    exceptGone ? (
+                      <i className="fa-solid fa-user"></i>
+                    ) : (
+                      <i className="fa-regular fa-user"></i>
+                    )
+                  }
+                  id={"add-checkItemBtn"}
+                  className={"check-memo-button"}
+                  onclick={() => {
+                    setExceptGone((prev) => !prev);
+                  }}
+                  title={exceptGone ? "전학생 보기" : "전학생 숨기기"}
+                />
               </div>
             )}
 
@@ -866,6 +994,7 @@ const CheckLists = (props) => {
               id={"save-listMemoBtn"}
               className={"check-memo-button"}
               onclick={() => setShowScoreGrade(true)}
+              title={"평가단계 설정하기"}
             />
 
             {/* 엑셀저장버튼 */}

@@ -12,61 +12,88 @@ const CheckInput = (props) => {
   const [checkTitle, setCheckTitle] = useState(
     props.item ? props.item.title : ""
   );
-  const [students, setStudents] = useState(props.students);
+  const [students, setStudents] = useState([]);
   const [showCal, setShowCal] = useState(false);
   const [currentMonth, setCurrentMonth] = useState(dayjs().format("YYYY-MM"));
   const [todayYyyymmdd, setTodayYyyymmdd] = useState(new Date());
 
-  const [unSubmitStudents, setUnSubmitStudents] = useState(
-    props.unSubmitStudents
-  );
+  const [unSubmitStudents, setUnSubmitStudents] = useState([]);
 
-  const [submitStudents, setSubmitStudents] = useState(
-    students?.filter(
-      (stu1) => !unSubmitStudents?.some((stu2) => +stu1.num === +stu2.num)
-    )
-  );
+  const [submitStudents, setSubmitStudents] = useState([]);
 
+  useEffect(() => {
+    if (props.exceptGone && props.goneStudents && props.unSubmitStudents) {
+      let goneStds = !props.isSubject
+        ? props.goneStudents
+        : props.goneStudents?.filter((std) => std.clName === props.clName);
+
+      let new_unSubmitStudents = props.unSubmitStudents?.filter((stu) => {
+        return !goneStds.some(
+          (g_stu) => g_stu.num === stu.num && g_stu.name === stu.name
+        );
+      });
+
+      let new_students = props.students?.filter((stu) => {
+        return !goneStds.some(
+          (g_stu) => g_stu.num === stu.num && g_stu.name === stu.name
+        );
+      });
+
+      setUnSubmitStudents(new_unSubmitStudents);
+      setStudents(new_students);
+    } else {
+      setUnSubmitStudents(props.unSubmitStudents);
+      setStudents(props.students);
+    }
+  }, [props.unSubmitStudents, props.students]);
+
+  useEffect(() => {
+    setSubmitStudents(
+      students?.filter(
+        (stu1) => !unSubmitStudents?.some((stu2) => +stu1.num === +stu2.num)
+      )
+    );
+  }, [students]);
   //기존자료의 경우.. 시작날짜를 기존 날짜로하고 새로운 자료의 경우, 전학생을 제외하고 보여주기
   useEffect(() => {
     if (!props?.item?.id) return;
     setTodayYyyymmdd(props.item.id.slice(0, 10));
   }, [props.item]);
 
-  useEffect(() => {
-    let goneStds = props.goneStudents;
+  // useEffect(() => {
+  //   let goneStds = props.goneStudents;
 
-    // 현재 날짜가 전학생의 전학 날짜보다 미래인 경우, 즉 이미 전학간 이후가 아닌 학생만 남기기
-    goneStds = goneStds?.filter(
-      (std) => std.date < String(dayjs(todayYyyymmdd).format("YYYY-MM-DD"))
-    );
+  //   // 현재 날짜가 전학생의 전학 날짜보다 미래인 경우, 즉 이미 전학간 이후가 아닌 학생만 남기기
+  //   goneStds = goneStds?.filter(
+  //     (std) => std.date < String(dayjs(todayYyyymmdd).format("YYYY-MM-DD"))
+  //   );
 
-    //전담이면 현재 선택된 학급의 전학생만 걸러주기
-    if (props.isSubject) {
-      goneStds?.filter((std) => std.clName === props.clName);
-    }
+  //   //전담이면 현재 선택된 학급의 전학생만 걸러주기
+  //   if (props.isSubject) {
+  //     goneStds?.filter((std) => std.clName === props.clName);
+  //   }
 
-    const new_unSubmitStudents = props.unSubmitStudents?.filter((item2) => {
-      return !goneStds?.some(
-        (item1) => item1.name === item2.name && item1.num === item2.num
-      );
-    });
+  //   const new_unSubmitStudents = props.unSubmitStudents?.filter((item2) => {
+  //     return !goneStds?.some(
+  //       (item1) => item1.name === item2.name && item1.num === item2.num
+  //     );
+  //   });
 
-    setUnSubmitStudents(new_unSubmitStudents);
+  //   setUnSubmitStudents(new_unSubmitStudents);
 
-    const new_submitStudents = students
-      ?.filter(
-        (stu1) =>
-          !goneStds?.some(
-            (stu2) => +stu1.num === +stu2.num && stu1.name === stu2.name
-          )
-      )
-      ?.filter(
-        (stu1) => !new_unSubmitStudents?.some((stu2) => +stu1.num === +stu2.num)
-      );
+  //   const new_submitStudents = students
+  //     ?.filter(
+  //       (stu1) =>
+  //         !goneStds?.some(
+  //           (stu2) => +stu1.num === +stu2.num && stu1.name === stu2.name
+  //         )
+  //     )
+  //     ?.filter(
+  //       (stu1) => !new_unSubmitStudents?.some((stu2) => +stu1.num === +stu2.num)
+  //     );
 
-    setSubmitStudents(new_submitStudents);
-  }, [todayYyyymmdd, props.item]);
+  //   setSubmitStudents(new_submitStudents);
+  // }, [todayYyyymmdd, props.item]);
 
   const calDateHandler = (date) => {
     setTodayYyyymmdd(dayjs(date).format("YYYY-MM-DD"));
@@ -158,7 +185,7 @@ const CheckInput = (props) => {
       return;
     }
 
-    const new_checkItem = {
+    let new_checkItem = {
       title: titleValue || checkTitle,
       unSubmitStudents,
       id: item_id,
@@ -169,6 +196,24 @@ const CheckInput = (props) => {
     if (props.isSubject) {
       new_checkItem["clName"] =
         document.getElementById("item-clName").innerText;
+    }
+
+    //전학생이 숨겨져 있을때, 전학생의 데이터가 기존 자료에 있는 경우 그것도 추가해주기
+    if (props.exceptGone && props.goneStudents && props.unSubmitStudents) {
+      let goneStds = !props.isSubject
+        ? props.goneStudents
+        : props.goneStudents?.filter((std) => std.clName === props.clName);
+
+      goneStds?.forEach((stu) => {
+        props.unSubmitStudents?.forEach((data_stu) => {
+          if (data_stu.num === stu.num) {
+            new_checkItem["unSubmitStudents"].push({
+              name: stu.name,
+              num: stu.num,
+            });
+          }
+        });
+      });
     }
 
     //만약 기존 아이템인데, 날짜를 수정할 경우 new_id를 추가해서 보냄
