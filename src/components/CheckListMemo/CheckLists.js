@@ -622,6 +622,22 @@ const CheckLists = (props) => {
     setNowClassName("");
   }, [props.about]);
 
+  //미제출 학생목록을 전학생 보여주기 여부에 따라 만들어주는 함수
+  const check_lists_unsub = (listItem) => {
+    let unsubStu = listItem.unSubmitStudents;
+    if (exceptGone) {
+      let goneStds = !isSubject
+        ? goneStudents
+        : goneStudents?.filter((std) => std.clName === nowClassName);
+      unsubStu = unsubStu?.filter((stu) => {
+        return !goneStds.some(
+          (g_stu) => +g_stu.num === +stu.num && g_stu.name === stu.name
+        );
+      });
+    }
+    return unsubStu;
+  };
+
   return (
     <>
       {props.about === "checkLists" && (
@@ -722,7 +738,16 @@ const CheckLists = (props) => {
                   id={"add-checkItemBtn"}
                   className={"check-memo-button"}
                   onclick={() => {
-                    setExceptGone((prev) => !prev);
+                    if (goneStudents?.length === 0) {
+                      Swal.fire({
+                        title: "전출학생 정보 없음",
+                        icon: "info",
+                        html: "이 기능을 사용하시려면 먼저 전출학생을 등록해주세요.<br/><br/> * [메인화면] - [학생명부] - 화면하단 [전출학생 관리]",
+                        confirmButtonText: "확인",
+                      });
+                    } else {
+                      setExceptGone((prev) => !prev);
+                    }
                   }}
                   title={exceptGone ? "전학생 보기" : "전학생 숨기기"}
                 />
@@ -800,11 +825,11 @@ const CheckLists = (props) => {
                   <hr style={{ margin: "10px" }} />
                   <p className={classes.checkP}>
                     {item.unSubmitStudents.length !== 0
-                      ? `미제출(${item.unSubmitStudents.length})`
+                      ? `미제출(${check_lists_unsub(item)?.length})`
                       : "😎 모두 제출했네요!"}
                   </p>
                   <div className={classes.unsubmitArea}>
-                    {item.unSubmitStudents?.map((stu) => (
+                    {check_lists_unsub(item)?.map((stu) => (
                       <Button
                         key={item.id + stu.num}
                         name={stu.name}

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 
 import classes from "./GoneStd.module.css";
 import AttendCalendar from "components/Attendance/AttendCalendar";
@@ -14,6 +14,8 @@ const GoneStd = ({ student, closeModal, userUid, isSubject, nowClassName }) => {
   const [todayYyyymmdd, setTodayYyyymmdd] = useState(new Date());
   const [goneStudents, setGoneStudents] = useState([]);
   const [allYearData, setAllYearData] = useState({});
+
+  const addOrFix = useRef();
 
   const nowYear =
     +dayjs().format("MM") < 2
@@ -90,6 +92,24 @@ const GoneStd = ({ student, closeModal, userUid, isSubject, nowClassName }) => {
       setGoneStudents(new_goneStd);
       updateGoneStdDb(new_goneStd);
     }
+
+    const btnText = addOrFix.current.innerText;
+    let swalTitle;
+    let swalHtml;
+    if (btnText === "수정하기") {
+      swalTitle = "수정 완료";
+      swalHtml = `${tempStd.name} 학생의 전출과 관련된 내용이 수정되었습니다.`;
+    } else {
+      swalTitle = "추가 완료";
+      swalHtml = `${tempStd.name} 학생의 전출 자료가 추가되었습니다.`;
+    }
+    Swal.fire({
+      title: swalTitle,
+      icon: "success",
+      html: swalHtml,
+      confirmButtonText: "확인",
+      timer: 5000,
+    });
   };
 
   //전학생 삭제하기
@@ -173,8 +193,9 @@ const GoneStd = ({ student, closeModal, userUid, isSubject, nowClassName }) => {
           className={classes["flex--cen-100"]}
           style={{ marginBottom: "15px" }}
         >
-          {/* 추가 or 수정버튼, 무조건 오른쪽 상단 배치 */}
+          {/* 추가 or 수정버튼 */}
           <button
+            ref={addOrFix}
             className={classes["add-save-btn"]}
             onClick={addGoneStdHandler}
           >
