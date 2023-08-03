@@ -24,3 +24,9 @@
 .title-bold {
   font-weight: bold;
 }
+
+.time-div {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+}

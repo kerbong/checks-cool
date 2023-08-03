@@ -29,7 +29,6 @@
     "http-proxy-middleware": "^2.0.6",
     "https-browserify": "^1.0.0",
     "loader-utils": "^3.2.1",
-    "marked": "^5.1.1",
     "node-schedule": "^2.1.1",
     "os-browserify": "^0.3.0",
     "path-browserify": "^1.0.1",

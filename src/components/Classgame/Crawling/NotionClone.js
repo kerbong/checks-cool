@@ -31,6 +31,11 @@ const NotionClone = (props) => {
     document.execCommand("italic", false, null);
   };
 
+  const handleThrough = () => {
+    // 기울임 스타일을 적용하는 로직 추가
+    document.execCommand("strikeThrough", false, null);
+  };
+
   const handleColorChange = (color) => {
     // 색상 변경 로직 추가
     document.execCommand("foreColor", false, color);
@@ -73,6 +78,10 @@ const NotionClone = (props) => {
         {/* 밑줄 버튼 */}
         <button onClick={handleUnderline} className={classes["font-style-btn"]}>
           <i className="fa-solid fa-underline"></i>
+        </button>
+        {/* 취소선 버튼 */}
+        <button onClick={handleThrough} className={classes["font-style-btn"]}>
+          <i className="fa-solid fa-strikethrough"></i>
         </button>
 
         {/* 색깔 버튼들 */}
