@@ -1,0 +1,83 @@
+/* NotionStyle.css */
+
+.notion-style-editor-container {
+  font-family: "Arial", sans-serif;
+  width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 5px;
+}
+
+.notion-style-editor-header {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.notion-style-editor-content {
+  display: flex;
+}
+
+.notion-style-editor-preview {
+  width: 50%;
+  padding: 10px;
+  border-radius: 5px;
+  box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.1);
+  background-color: #f6f8fa;
+  overflow-y: auto;
+}
+
+.notion-style-editor-preview p {
+  margin: 0;
+  padding: 0;
+  line-height: 1.5;
+}
+
+.notion-style-editor-preview h1,
+.notion-style-editor-preview h2,
+.notion-style-editor-preview h3,
+.notion-style-editor-preview h4,
+.notion-style-editor-preview h5,
+.notion-style-editor-preview h6 {
+  margin-top: 20px;
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+.notion-style-editor-preview a {
+  color: #0366d6;
+  text-decoration: none;
+}
+
+.notion-style-editor-preview a:hover {
+  text-decoration: underline;
+}
+
+.color-area {
+  height: 23px;
+  border-radius: 16px;
+  margin: 5px;
+  width: 23px;
+}
+
+.block-highlight {
+  position: absolute;
+  width: 230px;
+  pointer-events: none;
+  background-color: #ffffffb0;
+  border-radius: 10px;
+}
+
+.font-style-btn {
+  pointer-events: auto;
+  border-radius: 10px;
+  margin: 0 3px;
+}
+
+.class-memo {
+  border: 1px solid #ccc;
+  padding: 10px;
+  background-color: white;
+  text-align: start;
+}

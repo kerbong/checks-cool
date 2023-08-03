@@ -9,6 +9,7 @@ import TitleBtn from "components/Memo/TitleBtn";
 import AssistanceAi from "components/Classgame/AssistanceAi/AssistanceAi";
 import Crawling from "components/Classgame/Crawling/Crawling";
 import HwpControl from "components/Classgame/Crawling/HwpControl";
+import NotionClone from "components/Classgame/Crawling/NotionClone";
 // import SpeechToText from "components/Main/SpeechToText";
 
 const WeTeacher = (props) => {
@@ -126,7 +127,8 @@ const WeTeacher = (props) => {
           {selectedMenu === "ai" && (
             // <p>다른 좋은 기능을 고민 중입니다!</p>
             // <Crawling userUid={props.userUid} />
-            <HwpControl userUid={props.userUid} />
+            // <HwpControl userUid={props.userUid} />
+            <NotionClone />
           )}
         </div>
       </div>

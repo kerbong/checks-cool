@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import Input from "../Layout/Input";
 import classes from "./ClassItem.module.css";
 import dayjs from "dayjs";
+import NotionClone from "components/Classgame/Crawling/NotionClone";
 
 const ClassItem = (props) => {
   const [memoDefValue, setMemoDefValue] = useState("");
@@ -50,7 +51,13 @@ const ClassItem = (props) => {
         </div>
 
         <div className={classes["classNote-section"]}>
-          <Input
+          <NotionClone
+            id={`classMemo-${props.classNum}`}
+            myKey={`classMemo-${props.classNum}`}
+            className={"class-memo"}
+            defaultValue={memoDefValue}
+          />
+          {/* <Input
             key={`classMemo-${props.classNum}`}
             id={`classMemo-${props.classNum}`}
             myKey={`classMemo-${props.classNum}`}
@@ -60,7 +67,7 @@ const ClassItem = (props) => {
               type: "textarea",
             }}
             defaultValue={memoDefValue}
-          />
+          /> */}
         </div>
       </li>
     </>

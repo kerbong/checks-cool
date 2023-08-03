@@ -3,16 +3,15 @@
   display: flex;
   align-items: flex-start;
   width: 100%;
+  margin-top: 10px;
 }
 
 .class-section {
   width: 30%;
-  margin-top: 10px;
 }
 
 .classNote-section {
   width: 50%;
-  margin-top: 10px;
 }
 
 .title-section {

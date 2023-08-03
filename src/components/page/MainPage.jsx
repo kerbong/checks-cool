@@ -669,7 +669,8 @@ const MainPage = (props) => {
 
       new_classMemo["classMemo"].push({
         subject: subject.value.trim(),
-        memo: memo.value.trim(),
+        // memo: memo.value.trim(),
+        memo: memo.innerHTML,
       });
     });
 
@@ -746,26 +747,6 @@ const MainPage = (props) => {
       await setDoc(classMemoRef, new_classData);
     }
   };
-
-  //날짜를 변경하고 나면 시간표 내용이 있는지 확인하고, 없으면 dom에서 직접 바꿔주기??
-  useEffect(() => {
-    // 주말이 아닐 때만 실행함.
-    if (titleDate.slice(-2, -1) === "토" || titleDate.slice(-2, -1) === "일")
-      return;
-
-    //시간표 보여주기 상태일때만 실행
-    if (hideClassTable) return;
-
-    let time = setTimeout(() => {
-      classLists?.forEach((item) => {
-        let textareaTag = document.getElementById(`classMemo-${item}`);
-        if (!textareaTag) return;
-        textareaTag.style.height = textareaTag.scrollHeight - 20 + "px";
-      });
-    }, 100);
-
-    return () => clearTimeout(time);
-  }, [todayClassTable, hideClassTable]);
 
   //할일 목록 중요한 거 부터 보여주는 sort 함수
   const sortEmg = (todo_list) => {
@@ -1287,6 +1268,31 @@ const MainPage = (props) => {
 
     // 가로축의 명칭에는 날짜 써주고
 
+    /** html요소가 담긴 시간표 내용에서 텍스트만 추출하는 함수 */
+    const removeTagsAndExtractText = (memo) => {
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(memo, "text/html");
+      const textNodes = doc.evaluate(
+        "//text()[normalize-space()]",
+        doc,
+        null,
+        XPathResult.ORDERED_NODE_SNAPSHOT_TYPE,
+        null
+      );
+
+      let extractedText = "";
+      for (let i = 0; i < textNodes.snapshotLength; i++) {
+        const textNode = textNodes.snapshotItem(i);
+        // Check if the node contains only text content
+        if (textNode.parentNode && textNode.parentNode.nodeName !== "STYLE") {
+          extractedText += textNode.textContent.trim();
+        }
+      }
+
+      console.log(extractedText.trim());
+      return extractedText.trim();
+    };
+
     // ========== 시간표 저장=========
     const new_classTable_datas = [];
 
@@ -1305,7 +1311,11 @@ const MainPage = (props) => {
       classLists?.forEach((clTime, time_index) => {
         clTable.classMemo.forEach((memo, memo_index) => {
           if (time_index !== memo_index) return;
-          new_classTable_datas.push([clTime, memo.subject, memo.memo]);
+          new_classTable_datas.push([
+            clTime,
+            memo.subject,
+            removeTagsAndExtractText(memo.memo),
+          ]);
         });
       });
       //날짜 별 구분을 위한 두줄 띄기
