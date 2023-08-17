@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import classes from "../Notice/NoticeList.module.css";
 
 const NoticeList = (props) => {

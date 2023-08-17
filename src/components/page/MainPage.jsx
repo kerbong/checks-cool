@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import ExampleModal from "./ExampleModal";
 import byExcel from "../../assets/student/teacher-excel.gif";
-import mainImg from "../../assets/notice/0610.gif";
+import mainImg from "../../assets/notice/0812united.gif";
 import dayjs from "dayjs";
 import AttendCalendar from "components/Attendance/AttendCalendar";
 import donationImg from "../../assets/notice/donation.png";
@@ -30,25 +30,35 @@ const monthEnd_text = `월말입니다! 선생님들의 소중한 정보를 다�
 ** 첵스-쿨은 선생님들의 모든 학급일지 데이터를 <br/> 엑셀파일 하나로 만들고 관리하는데 도움을 드리려고 합니다! <br/><br/> ** <b>첵스쿨 활용 팁👉</b> 을 <u>아침한마디에 공유</u>해주세요!
  `;
 
-const update_title = `1학기 마무리!!🎉🥳`;
+const update_title = `new🎉 시간표 스타일 기능 / 전출학생 숨기기`;
 
-const update_text = `* 화면상단 메뉴바의 <i class="fa-solid fa-user"></i> -
-"공지사항"에 들어오시면 내용을 다시 보실 수 있어요.(업데이트 미반영시 사이트를 새로고침 해주세요!)<br/><br/>  
-<b>1학기 동안 다들 고생하셨습니다!!😂 </b><br/> <br/> 선생님들의 업무 경감에 조금이나마 도움이 되었는지 모르겠네요.. 최근 일이 있어서 조금, 소홀했습니다.😣(선생님들의 이거해요는 꾸준히 체크하고 있습니다!)<br/><br/>
-방학 중 업데이트를 계획하고 있습니다! 아래의 것들 중에 우선 만들어 졌으면 하는 것을 알려주세요! <b> kerbong@gmail.com 혹은, [교사랑] - [이거해요] </b> (여러 개를 선택, 알려주셔도 좋습니다)<br/><br/>
-1. 체험학습 자동화 기능 사이트(학부모 신청=>교사 허가=> ...출결에 자동 입력) <br/>
-2. 간단하고 심플한 학생투표 기능 <br/>
-3. 그 외 <br/><br/>
-1번 같은 큰 기능은.. 방학 중에 끝나지 않을 것 같습니다ㅎㅎ <br/>+ 현재 있는 기능들의 불편한 점을 말씀해주셔도 됩니다!
-<br/>
-<br/>
+const update_text = `<br/><br/>  
+<b>선생님들과 관련된 안타까운 소식과<br/>  
+폭우, 폭염으로 마음이 착잡한 방학이었습니다..  </b><br/> <br/> 
+많은 문제들이 올바른 방향으로 잘 해결되었으면 합니다.<br/><br/>
 <hr style={{ margin: "20px 15px" }} />
 <br/>
+방학 중 업데이트가 진행되었습니다. 의견을 주신 선생님들 감사합니다!!👍<br/><br/> 
+<b> 1. 시간표 스타일 기능 </b> <br/><br/>
+메인화면에서 시간표의 내용을 작성할 때 <br/>
+블록처리를 하시면 진하게, 밑줄, 취소선, 색깔 등을<br/>
+설정하실 수 있어요!!<br/>
+** PC에서만 가능합니다. <br/><br/>
+<b> 2. 전출학생 숨기기 </b> <br/><br/>
+전학간 학생들을 등록해서 [제출ox] 와 [개별기록]에서 <br/>
+숨기거나 보이도록 설정할 수 있습니다!<br/>
+움짤을 참고해주세요!<br/><br/>
+<hr style={{ margin: "20px 15px" }} />
+<br/>
+<b>2학기에는 행복한 일들이 가득하셨으면 합니다!🤩<br/> 모든 선생님들을 응원합니다. 건강하세요🙏 </b><br/><br/> 
 
-** <b>사이트 접속주소가 추가</b>되었어요! 혹시 접속이 어려우신 분들은 아래의 주소도 활용해주세요! https://checks-cho-ok.firebaseapp.com
+** <b>사이트 접속주소가 추가</b>되었어요! 접속이 어려우신 분들은 아래의 주소를 활용해주세요! https://checks-cho-ok.firebaseapp.com
 <br/><br/>
 
-<b>1학기 동안, 함께 해주신 모든 선생님들께 진심으로 감사드립니다!!!🙏 <br/>(많은 사용 / 의견제시 / 아침한마디에 글을 써주시는 선생님들께는 조금 더..🤩) <br/> 조금 더 나은 모습으로, 2학기에도 자주 만나요!! </b><br/><br/> `;
+* 화면상단 메뉴바의 <i class="fa-solid fa-user"></i> -
+"공지사항"에 들어오시면 내용을 다시 보실 수 있어요.(업데이트 미반영시 사이트를 새로고침 해주세요!)<br/><br/>
+
+`;
 
 //오늘 날짜 yyyy-mm-dd로 만들기
 const getDateHandler = (date, titleOrQuery) => {
@@ -82,7 +92,7 @@ const MainPage = (props) => {
   const [shortCutKey, setShortCutKey] = useState(
     localStorage.getItem("shortCutKey")
       ? JSON.parse(localStorage.getItem("shortCutKey"))
-      : ["c", "w", "r"]
+      : ["1", "2", "3"]
   );
   const [attendEvents, setAttendEvents] = useState([]);
   const [schedule, setSchedule] = useState([]);
@@ -134,11 +144,7 @@ const MainPage = (props) => {
   const [showDeployNotice, setShowDeployNotice] = useState(false);
 
   useEffect(() => {
-    localStorage.setItem("showNotice", dayjs().format("YYYYMMDD"));
-    if (
-      localStorage.getItem("showNotice") > "20230713" &&
-      localStorage.getItem("showNotice") < "20230722"
-    ) {
+    if (localStorage.getItem("showNotice") <= "20230831") {
       setShowNotice(true);
     }
     if (
@@ -638,6 +644,7 @@ const MainPage = (props) => {
   //시간표 저장 함수
   const saveClassMemoHandler = async (auto) => {
     //오늘 날짜 데이터를 받을 때... 상태를 쓰면 최신을 쓰지 못할 수 있음(setTImeout때문...)
+    // console.log("와이");
     //년 월 일
     let nowDate = document.getElementById("todayYYYYMMDD")?.innerText;
     //다른 페이지로 이동해서 혹시 안보이면 사라지도록.. 왜 useEffect return이 작동을 안하지...
@@ -1708,9 +1715,10 @@ const MainPage = (props) => {
       {showNotice && (
         <ExampleModal
           onClose={() => {
+            localStorage.setItem("showNotice", dayjs().format("YYYYMMDD"));
             setShowNotice(false);
           }}
-          // imgSrc={mainImg}
+          imgSrc={mainImg}
           title={
             <h1
               style={{
@@ -1729,14 +1737,14 @@ const MainPage = (props) => {
               ></p>
             </>
           }
-          bottomText={
-            <>
-              <p className={classes.p}>
-                * 화면상단 메뉴바의 <i className="fa-solid fa-user"></i> -
-                "공지사항"에 들어오시면 내용을 다시 보실 수 있어요.
-              </p>
-            </>
-          }
+          // bottomText={
+          //   <>
+          //     <p className={classes.p}>
+          //       * 화면상단 메뉴바의 <i className="fa-solid fa-user"></i> -
+          //       "공지사항"에 들어오시면 내용을 다시 보실 수 있어요.
+          //     </p>
+          //   </>
+          // }
         />
       )}
 
