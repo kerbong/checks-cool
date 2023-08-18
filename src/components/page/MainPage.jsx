@@ -92,7 +92,7 @@ const MainPage = (props) => {
   const [shortCutKey, setShortCutKey] = useState(
     localStorage.getItem("shortCutKey")
       ? JSON.parse(localStorage.getItem("shortCutKey"))
-      : ["1", "2", "3"]
+      : ["c", "w", "r"]
   );
   const [attendEvents, setAttendEvents] = useState([]);
   const [schedule, setSchedule] = useState([]);
@@ -1593,8 +1593,20 @@ const MainPage = (props) => {
         return;
       }
 
-      //현재 커서 위치가 시간표 내부에 있으면 작동안함
-      if (window.getSelection()?.anchorNode?.className?.slice(0, 5) === "Class")
+      //현재 커서 위치가 시간표 내용 / 과목 입력 부분에 있으면 작동안함
+      if (
+        window
+          .getSelection()
+          ?.baseNode?.parentNode?.className?.includes("NotionClone") ||
+        window.getSelection()?.anchorNode?.id?.includes("classMemo")
+      )
+        return;
+      if (
+        window
+          .getSelection()
+          ?.baseNode?.className?.includes("ClassItem_class-section") ||
+        window.getSelection()?.anchorNode?.id?.includes("classSubject")
+      )
         return;
 
       //현재 커서 위치가 단축키 설정화면의 입력창에 있는경우 실행하지 않음
