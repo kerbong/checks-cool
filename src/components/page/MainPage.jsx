@@ -1593,27 +1593,16 @@ const MainPage = (props) => {
         return;
       }
 
-      //현재 커서 위치가 시간표 내용 / 과목 입력 부분에 있으면 작동안함
-      if (
-        window
-          .getSelection()
-          ?.baseNode?.parentNode?.className?.includes("NotionClone") ||
-        window.getSelection()?.anchorNode?.id?.includes("classMemo")
-      )
-        return;
-      if (
-        window
-          .getSelection()
-          ?.baseNode?.className?.includes("ClassItem_class-section") ||
-        window.getSelection()?.anchorNode?.id?.includes("classSubject")
-      )
-        return;
+      const { target } = event;
+
+      //현재 커서 위치가 시간표 과목입력 부분에 있으면 작동안함
+      if (target?.id?.includes("classSubject") === true) return;
+
+      //현재 커서 위치가 시간표 내용입력 부분에 있으면 작동안함
+      if (target?.getAttribute("contentEditable") === "true") return;
 
       //현재 커서 위치가 단축키 설정화면의 입력창에 있는경우 실행하지 않음
-      if (
-        window.getSelection()?.anchorNode?.className?.includes("MainShortCut")
-      )
-        return;
+      if (target?.className?.includes("MainShortCut") === true) return;
 
       // 출결 추가 눌린 상태로 이동
       if (event.key.toLowerCase() === shortCutKey[0]) {
