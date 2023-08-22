@@ -101,7 +101,7 @@ const ListMemoInput = (props) => {
 
       goneStds?.forEach((stu) => {
         props.item?.data?.forEach((data_stu) => {
-          if (data_stu.num === stu.num) {
+          if (+data_stu.num === +stu.num) {
             new_memo["data"].push({
               name: stu.name,
               num: stu.num,

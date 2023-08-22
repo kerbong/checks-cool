@@ -37,7 +37,7 @@ const CheckLists = (props) => {
   const [showScoreGrade, setShowScoreGrade] = useState(false);
   const [scoreGrade, setScoreGrade] = useState([]);
   const [goneStudents, setGoneStudents] = useState([]);
-  const [exceptGone, setExceptGone] = useState(false);
+  const [exceptGone, setExceptGone] = useState(true);
 
   const checkListsYear = useRef();
   const listMemoYear = useRef();
@@ -590,7 +590,7 @@ const CheckLists = (props) => {
     if (trueOrFalse) {
       new_students = new_students?.filter((item2) => {
         return !new_goneStd?.some(
-          (item1) => item1?.name === item2?.name && item1?.num === item2?.num
+          (item1) => item1?.name === item2?.name && +item1?.num === +item2?.num
         );
       });
       //전학생 포함하기

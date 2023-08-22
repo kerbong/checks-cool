@@ -69,12 +69,12 @@ const CheckInput = (props) => {
     setTodayYyyymmdd(dayjs(date).format("YYYY-MM-DD"));
   };
 
-  //달력에서 받은 month로 currentMonth변경하기
+  /** 달력에서 받은 month로 currentMonth변경하기 */
   const getMonthHandler = (month) => {
     setCurrentMonth(dayjs(month).format("YYYY-MM"));
   };
 
-  //중복학생 제외 함수
+  /** 중복학생 제외 함수 */
   const uniqueArray = (students) => {
     let new_students = students.reduce((accumulator, current) => {
       const duplicate = accumulator.find(
@@ -129,8 +129,8 @@ const CheckInput = (props) => {
     setUnSubmitStudents(new_unSubmitStudents);
 
     //중복제거하기
-    new_unSubmitStudents = uniqueArray(new_submitStudents);
-    setSubmitStudents(new_unSubmitStudents);
+    new_submitStudents = uniqueArray(new_submitStudents);
+    setSubmitStudents(new_submitStudents);
   };
 
   const saveCheckItem = (auto) => {
@@ -200,7 +200,7 @@ const CheckInput = (props) => {
 
       goneStds?.forEach((stu) => {
         props.unSubmitStudents?.forEach((data_stu) => {
-          if (data_stu.num === stu.num) {
+          if (+data_stu.num === +stu.num) {
             new_checkItem["unSubmitStudents"].push({
               name: stu.name,
               num: stu.num,
