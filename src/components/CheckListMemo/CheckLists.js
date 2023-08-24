@@ -196,6 +196,7 @@ const CheckLists = (props) => {
         //checkList 일경우
         let upload_item;
         if (new_item.unSubmitStudents) {
+          setUnSubmitStudents(new_item.unSubmitStudents);
           //기존자료가 있으면?!
           if (datas?.length > 0) {
             // if (checkLists?.length > 0) {
@@ -540,10 +541,10 @@ const CheckLists = (props) => {
         }
       });
       // console.log(now_students);
-      //전학생 제외 설정인 경우, 전학생 제외하기
-      if (exceptGone) {
-        now_students = exceptGoneStds(true, now_students);
-      }
+      // //전학생 제외 설정인 경우, 전학생 제외하기
+      // if (exceptGone) {
+      //   now_students = exceptGoneStds(true, now_students);
+      // }
       setInputStudents(now_students);
     }
   };
@@ -561,8 +562,8 @@ const CheckLists = (props) => {
     };
 
     return !isSubject
-      ? students?.filter((stu) => filterQuery(stu))
-      : inputStudents?.filter((stu) => filterQuery(stu));
+      ? except_gone_stds(students)?.filter((stu) => filterQuery(stu))
+      : except_gone_stds(inputStudents)?.filter((stu) => filterQuery(stu));
   };
 
   //전달받은 state에서 add일경우, 추가 버튼 누른 상태로 만들어주기
@@ -577,54 +578,13 @@ const CheckLists = (props) => {
     }
   }, [dataDone]);
 
-  /**학생 목록에서 전학생을 제외 / 원상복귀 하는 함수 */
-  const exceptGoneStds = (trueOrFalse, clStudents) => {
-    let new_goneStd = [...goneStudents];
-    //전담이면 현재 선택된 학급의 전학생만 걸러주기
-    if (isSubject) {
-      new_goneStd = new_goneStd?.filter((std) => std.clName === nowClassName);
-    }
-
-    let new_students = !clStudents ? students : clStudents;
-    //전학생 제외하기
-    if (trueOrFalse) {
-      new_students = new_students?.filter((item2) => {
-        return !new_goneStd?.some(
-          (item1) => item1?.name === item2?.name && +item1?.num === +item2?.num
-        );
-      });
-      //전학생 포함하기
-    } else {
-      //전학생의 자료에서 필요없는 데이터 지우기
-      new_goneStd = new_goneStd?.map((stu) => {
-        return { name: stu.name, num: stu.num, woman: stu.woman };
-      });
-      new_students = new_students.concat(new_goneStd);
-    }
-
-    // console.log(new_students);
-    return new_students;
-  };
-
-  useEffect(() => {
-    //전담은 버튼 누르거나 자료 클릭할 때 inputStudentsHandler로 세팅함.
-    if (isSubject) return;
-    let new_stds;
-    if (exceptGone) {
-      new_stds = exceptGoneStds(true);
-    } else {
-      new_stds = exceptGoneStds(false);
-    }
-    setStudents(new_stds);
-  }, [exceptGone]);
-
   useEffect(() => {
     setNowClassName("");
   }, [props.about]);
 
-  //미제출 학생목록을 전학생 보여주기 여부에 따라 만들어주는 함수
-  const check_lists_unsub = (listItem) => {
-    let unsubStu = listItem.unSubmitStudents;
+  /** 학생목록을 전학생 보여주기 여부에 따라 바꿔주는 함수, 매개변수에 학생목록 넣어주기 */
+  const except_gone_stds = (stds) => {
+    let unsubStu = stds;
     if (exceptGone) {
       let goneStds = !isSubject
         ? goneStudents
@@ -648,7 +608,11 @@ const CheckLists = (props) => {
                 goneStudents={goneStudents}
                 exceptGone={exceptGone}
                 // 전담이 아니면 년도별에 따라 받아온거 보냄
-                students={!isSubject ? students : inputStudents}
+                students={
+                  !isSubject
+                    ? except_gone_stds(students)
+                    : except_gone_stds(inputStudents)
+                }
                 onClose={() => {
                   localStorage.setItem("itemId", "null");
                   setAddCheckItem(false);
@@ -661,10 +625,10 @@ const CheckLists = (props) => {
                 }}
                 unSubmitStudents={
                   item.length !== 0
-                    ? unSubmitStudents
+                    ? except_gone_stds(unSubmitStudents)
                     : !isSubject
-                    ? students
-                    : inputStudents
+                    ? except_gone_stds(students)
+                    : except_gone_stds(inputStudents)
                 }
                 item={item}
                 removeData={removeData}
@@ -801,7 +765,10 @@ const CheckLists = (props) => {
                   id={item.id}
                   className={classes.checkLi}
                   onClick={() => {
-                    setUnSubmitStudents(item.unSubmitStudents);
+                    // setUnSubmitStudents(item.unSubmitStudents);
+                    setUnSubmitStudents(
+                      except_gone_stds(item.unSubmitStudents)
+                    );
                     setItem([]);
                     inputStudentsHandler(item);
                     setItem(item);
@@ -825,11 +792,13 @@ const CheckLists = (props) => {
                   <hr style={{ margin: "10px" }} />
                   <p className={classes.checkP}>
                     {item.unSubmitStudents.length !== 0
-                      ? `미제출(${check_lists_unsub(item)?.length})`
+                      ? `미제출(${
+                          except_gone_stds(item.unSubmitStudents)?.length
+                        })`
                       : "😎 모두 제출했네요!"}
                   </p>
                   <div className={classes.unsubmitArea}>
-                    {check_lists_unsub(item)?.map((stu) => (
+                    {except_gone_stds(item.unSubmitStudents)?.map((stu) => (
                       <Button
                         key={item.id + stu.num}
                         name={stu.name}
@@ -870,7 +839,11 @@ const CheckLists = (props) => {
                   })
                 )}
                 scoreGrade={scoreGrade}
-                students={!isSubject ? students : inputStudents}
+                students={
+                  !isSubject
+                    ? except_gone_stds(students)
+                    : except_gone_stds(inputStudents)
+                }
                 onClose={() => setAddListMemo(false)}
                 saveItemHandler={(item, auto) => {
                   saveItemHandler(item, auto);

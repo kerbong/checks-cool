@@ -39,11 +39,15 @@ const CheckInput = (props) => {
         );
       });
 
-      setUnSubmitStudents(new_unSubmitStudents.sort((a, b) => +a.num - +b.num));
+      // 중복되는 학생들 있을 수 있어서.. 제거해줌!
+      setUnSubmitStudents(
+        uniqueArray(new_unSubmitStudents.sort((a, b) => +a.num - +b.num))
+      );
       setStudents(new_students.sort((a, b) => +a.num - +b.num));
     } else {
+      // 중복되는 학생들 있을 수 있어서.. 제거해줌!
       setUnSubmitStudents(
-        props.unSubmitStudents.sort((a, b) => +a.num - +b.num)
+        uniqueArray(props.unSubmitStudents.sort((a, b) => +a.num - +b.num))
       );
       setStudents(props.students.sort((a, b) => +a.num - +b.num));
     }
@@ -405,6 +409,7 @@ const CheckInput = (props) => {
       <div>
         <h3 className={classes.h3}> 미 제 출 ({unSubmitStudents?.length})</h3>
         <div className={classes.div}>
+          {/* 미제출 학생 보여주기 */}
           {unSubmitStudents &&
             unSubmitStudents?.map((stu) => (
               <StudentBtn
@@ -440,6 +445,7 @@ const CheckInput = (props) => {
         <h3 className={classes.h3}> 제 출 ({submitStudents?.length})</h3>
 
         <div className={classes.div}>
+          {/* 제출 학생 보여주기 */}
           {submitStudents?.map((stu) => (
             <StudentBtn
               className={"checklist-student"}
