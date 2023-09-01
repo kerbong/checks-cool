@@ -1485,9 +1485,12 @@ const SeatTable = (props) => {
         genderEmptySeat: items_gender,
       };
 
-      // 전담인경우 학급명을 추가해서 저장.
-      if (props.nowClassName) {
-        data["clName"] = props.nowClassName;
+      // 전담인경우 학급명을 추가해서 저장. (기존자료면 props.clName으로 넘어옴..)
+      let className = props?.nowClassName
+        ? props?.nowClassName
+        : props?.clName || "";
+      if (className !== "") {
+        data["clName"] = className;
       }
 
       Swal.fire({
