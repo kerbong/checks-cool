@@ -520,7 +520,6 @@ const StudentLists = (props) => {
                   deleteStudentHandler={(student) => {
                     deleteStudentHandler(student);
                   }}
-                  isSubject={props.isSubject}
                 />
               ))}
           </div>

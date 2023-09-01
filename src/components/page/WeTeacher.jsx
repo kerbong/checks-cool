@@ -6,10 +6,12 @@ import Mission from "../Classgame/Mission/Mission";
 import Doit from "../Classgame/Doit/Doit";
 import { useLocation } from "react-router-dom";
 import TitleBtn from "components/Memo/TitleBtn";
-import AssistanceAi from "components/Classgame/AssistanceAi/AssistanceAi";
-import Crawling from "components/Classgame/Crawling/Crawling";
 import HwpControl from "components/Classgame/Crawling/HwpControl";
-import NotionClone from "components/Classgame/Crawling/NotionClone";
+import dayjs from "dayjs";
+
+// import AssistanceAi from "components/Classgame/AssistanceAi/AssistanceAi";
+// import Crawling from "components/Classgame/Crawling/Crawling";
+// import NotionClone from "components/Classgame/Crawling/NotionClone";
 // import SpeechToText from "components/Main/SpeechToText";
 
 const WeTeacher = (props) => {
@@ -22,7 +24,7 @@ const WeTeacher = (props) => {
     "심심<br/>해요",
     "아침<br/>한마디",
     "이거<br/>해요",
-    "자료<br/>다운",
+    "현장<br/>체험",
   ];
 
   const ICONS = [
@@ -40,6 +42,13 @@ const WeTeacher = (props) => {
     }
   }, [state]);
 
+  //현재 학년도 정보 반환하는 함수
+  const now_year = () => {
+    return +dayjs().format("MM") <= 1
+      ? String(+dayjs().format("YYYY") - 1)
+      : dayjs().format("YYYY");
+  };
+
   return (
     <>
       <div>
@@ -54,7 +63,7 @@ const WeTeacher = (props) => {
             {selectedMenu === "simsim" && <>{ICONS[0]} 심심해요</>}
             {selectedMenu === "mission" && <>{ICONS[1]} 아침한마디</>}
             {selectedMenu === "doThis" && <>{ICONS[2]} 이거해요 </>}
-            {selectedMenu === "ai" && <>{ICONS[3]} 자료다운 </>}
+            {selectedMenu === "ai" && <>{ICONS[3]} 현장체험 </>}
           </button>
 
           <div className={classes["title-btns"]}>
@@ -92,7 +101,7 @@ const WeTeacher = (props) => {
               onclick={() => setSelectedMenu("doThis")}
             />
             <Button
-              name={"자료다운"}
+              name={"현장체험"}
               className={"settingSeat"}
               onclick={() => setSelectedMenu("ai")}
             />
@@ -125,10 +134,15 @@ const WeTeacher = (props) => {
           )}
 
           {selectedMenu === "ai" && (
-            // <p>다른 좋은 기능을 고민 중입니다!</p>
-            // <Crawling userUid={props.userUid} />
-            <HwpControl userUid={props.userUid} />
-            // <NotionClone />
+            <HwpControl
+              userUid={props.userUid}
+              students={props.students}
+              isSubject={
+                props?.isSubject?.filter(
+                  (yearData) => Object.keys(yearData)[0] === now_year()
+                )?.[0]?.[now_year()]
+              }
+            />
           )}
         </div>
       </div>

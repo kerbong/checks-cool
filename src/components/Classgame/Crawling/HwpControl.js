@@ -3,17 +3,16 @@ import { dbService, storageService } from "../../../fbase";
 import { ref, uploadBytes, getBlob, getDownloadURL } from "firebase/storage";
 
 import Swal from "sweetalert2";
+
 import Docxtemplater from "docxtemplater";
 import PizZip from "pizzip";
 import saveAs from "file-saver";
+import SettingAttendCheck from "./SettingAttendCheck";
 
 const HwpControl = (props) => {
   const [file, setFile] = useState(null);
   const [uploadDone, setUploadDone] = useState(false);
-  const [scLoSelect, setScLoSelect] = useState("");
-  const [scName, setScName] = useState("");
-  const [scResult, setScResult] = useState([]);
-  const [school, setSchool] = useState("");
+
   const [templateData, setTemplateData] = useState([
     {
       name: "홍길동",
@@ -21,48 +20,11 @@ const HwpControl = (props) => {
     },
   ]);
 
-  // 학교명 입력하면면 api로 받아오기
-  const findSchool = (e) => {
-    e.preventDefault();
-    if (scName === "") return;
-    let filter = "&SCHUL_NM=" + scName + "초등학교";
-    getSchoolDatas(filter);
-  };
-
   useEffect(() => {
     if (file) return;
     // 화면 로딩 시에 파일 다운로드
     downloadFile();
   }, [uploadDone]);
-
-  useEffect(() => {
-    if (school === "") return;
-    // 화면 로딩 시에 파일 다운로드
-    console.log(school);
-  }, [school]);
-
-  // 학교정보 api 다운로드
-  const getSchoolDatas = (filter) => {
-    let baseUrl =
-      "https://open.neis.go.kr/hub/schoolInfo?Type=json&pIndex=1&pSize=1000&SCHUL_KND_SC_NM=초등학교";
-    let key = "&KEY=" + process.env.REACT_APP_NEIS_OPEN_API;
-
-    const fetchData = async () => {
-      const res = await fetch(baseUrl + key + filter);
-      const result = res.json();
-      return result;
-    };
-
-    fetchData().then((res) => {
-      if (res?.schoolInfo) {
-        setScResult(res?.schoolInfo?.[1]?.row);
-        console.log(res?.schoolInfo?.[1]?.row);
-      } else {
-        Swal.fire("검색오류", "학교명을 확인해주세요", "info");
-        setScResult([]);
-      }
-    });
-  };
 
   // Firebase Storage에 파일 업로드
   const uploadFile = async (file) => {
@@ -199,7 +161,7 @@ const HwpControl = (props) => {
             iframe.contentWindow.print();
             URL.revokeObjectURL(fileURL);
             document.body.removeChild(iframe);
-          }, 1500); // 인쇄가 시작되기 전에 충분한 시간을 기다립니다.
+          }, 2000); // 인쇄가 시작되기 전에 충분한 시간을 기다립니다.
         }
       };
     } catch (error) {
@@ -207,47 +169,41 @@ const HwpControl = (props) => {
     }
   };
 
+  const saveAttendCheck = (title) => {
+    console.log(title);
+
+    // 받아온 타이틀에 학생들 이름 섞어서 데이터 만들고 저장하기
+    // attendCheck => title*김이봄 =>info:{num:번호, 성별:},data:  [{type: }]
+    //
+
+    // swal로 마지막 확인 하고 저장하기
+  };
+
   return (
     <div>
-      <label>
+      <h1>교외현장체험학습 신청 기능 개발중🔥🔥(얼마나 걸릴지는..😣)</h1>
+
+      {/* <label>
         <input type="file" accept=".docx" onChange={handleFileChange} />
-      </label>
-      {templateData?.map((temp_data, index) => (
-        <div key={index}>
-          <p>이름 : {temp_data.name}</p>
-          <p>날짜 : {temp_data.date}</p>
-          <button onClick={() => saveFile(temp_data)}>파일저장</button>
-          <button onClick={() => printFile(temp_data)}>인쇄</button>
-        </div>
-      ))}
+      </label> */}
 
-      {/* 학교찾기 */}
-      <form onSubmit={(e) => findSchool(e)}>
-        <input
-          type="text"
-          placeholder="학교명 입력(초등학교 제외 / 가나초의 경우 가나)"
-          onChange={(e) => setScName(e.target.value)}
-          value={scName}
-        />{" "}
-        <span>초등학교</span>
-        <button onClick={findSchool}>검색</button>
-      </form>
-
-      {/* 찾으면 학교보여주기 */}
-      <ul>
-        {scResult?.map((sc, index) => (
-          <li
-            key={index}
-            onClick={() => {
-              let name =
-                sc.JU_ORG_NM?.split("교육지원청")?.[0] + "*" + sc.SCHUL_NM;
-              setSchool(name);
-            }}
-          >
-            위치 : {sc.ORG_RDNMA}
-          </li>
+      {/* 현재 존재하는 체험학습 신청 리스트  */}
+      {/* <div>
+        {templateData?.map((temp_data, index) => (
+          <div key={index}>
+            <p>이름 : {temp_data.name}</p>
+            <p>날짜 : {temp_data.date}</p>
+            <button onClick={() => saveFile(temp_data)}>파일저장</button>
+            <button onClick={() => printFile(temp_data)}>인쇄</button>
+          </div>
         ))}
-      </ul>
+      </div> */}
+
+      <SettingAttendCheck
+        students={props.students}
+        isSubject={props.isSubject}
+        doneHandler={(dataTitle) => saveAttendCheck(dataTitle)}
+      />
     </div>
   );
 };

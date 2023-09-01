@@ -47,6 +47,7 @@ const StudentLiWithDelete = (props) => {
       key={props.myKey}
       id={props.student.num}
       className={classes.inputStudentLi}
+      style={{ justifyContent: props.noEdit ? "center" : "flex-start" }}
     >
       <span
         className={`${classes.studentNumName}${
@@ -56,13 +57,15 @@ const StudentLiWithDelete = (props) => {
       >
         {props.student.num + " " + props.student.name}
       </span>
-      <Button
-        className="student-remove"
-        name={<i className="fa-solid fa-minus"></i>}
-        onclick={() => {
-          deleteConfirmHandler(props.student);
-        }}
-      />
+      {!props.noEdit && (
+        <Button
+          className="student-remove"
+          name={<i className="fa-solid fa-minus"></i>}
+          onclick={() => {
+            deleteConfirmHandler(props.student);
+          }}
+        />
+      )}
     </li>
   );
 };

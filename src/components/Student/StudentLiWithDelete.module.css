@@ -8,6 +8,7 @@
   margin-bottom: 0.3em;
   justify-content: flex-start;
   width: 27vw;
+  max-width: 220px;
   letter-spacing: -2px;
 }
 
