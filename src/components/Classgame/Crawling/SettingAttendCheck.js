@@ -6,6 +6,7 @@ import Swal from "sweetalert2";
 
 import GradeSelection from "./GradeSelection";
 import StudentLiWithDelete from "../../Student/StudentLiWithDelete";
+import classes from "./HwpControl.module.css";
 
 const SettingAttendCheck = (props) => {
   const [schoolConfirm, setSchoolConfirm] = useState(false);
@@ -29,14 +30,12 @@ const SettingAttendCheck = (props) => {
     let now_year = setYear();
 
     //현재학년도 자료만 입력가능하고,, 불러오기
-    console.log(props.students);
     let nowStudents = props?.students?.filter(
       (yearStd) => String(Object.keys(yearStd)[0]) === now_year
     )?.[0]?.[now_year];
 
     if (!props.isSubject) {
       setStudentsInfo(nowStudents);
-      console.log(nowStudents);
     } else {
       Swal.fire(
         "사용불가",
@@ -61,7 +60,6 @@ const SettingAttendCheck = (props) => {
     fetchData().then((res) => {
       if (res?.schoolInfo) {
         setScResult(res?.schoolInfo?.[1]?.row);
-        console.log(res?.schoolInfo?.[1]?.row);
       } else {
         Swal.fire("검색오류", "학교명을 확인해주세요", "info");
         setScResult([]);
@@ -86,6 +84,7 @@ const SettingAttendCheck = (props) => {
       showDenyButton: "true",
       denyButtonText: "취소",
       confirmButtonText: "확인",
+      confirmButtonColor: "#006B5F",
     }).then((result) => {
       if (result.isConfirmed) {
         setStudentsConfirm(true);
@@ -102,6 +101,11 @@ const SettingAttendCheck = (props) => {
 
     let filter = "&SCHUL_NM=" + scName + "초등학교";
     getSchoolDatas(filter);
+  };
+
+  /** 기초 정보 확정함수, 교육청명*학교명*학급명, 학생정보 전달 */
+  const saveBasicSetting = () => {
+    props.doneHandler(school + "*" + gradeClass, studentsInfo);
   };
 
   return (
@@ -127,11 +131,16 @@ const SettingAttendCheck = (props) => {
               />
             ))}
           </div>
-          <div>
-            <button onClick={studentsConfirmHandler}>확인</button>
-            <button onClick={() => navigate(`/student-manage`)}>
+          <div className={classes["flex-row"]}>
+            <button
+              className={classes["btn"]}
+              onClick={() => navigate(`/student-manage`)}
+            >
               {" "}
               학생명부 수정하러 가기{" "}
+            </button>
+            <button className={classes["btn"]} onClick={studentsConfirmHandler}>
+              확인
             </button>
           </div>
         </>
@@ -139,55 +148,80 @@ const SettingAttendCheck = (props) => {
         <div>
           {/* 학교찾기 */}
           {!schoolConfirm ? (
-            <form onSubmit={(e) => findSchool(e)}>
+            <form onSubmit={(e) => findSchool(e)} className={classes["m20"]}>
               <input
                 type="text"
                 placeholder="학교명 입력(가나초의 경우 가나)"
                 onChange={(e) => setScName(e.target.value)}
                 value={scName}
+                className={classes["input"]}
               />{" "}
               <span>초등학교</span>
-              <button onClick={findSchool}>검색</button>
+              <button
+                className={`${classes["btn"]} ${classes["m-l20"]}`}
+                onClick={findSchool}
+              >
+                찾기
+              </button>
             </form>
           ) : (
             <div>
-              <span>{school}</span>
+              {/* 선택된 학교명 */}
+              <span className={classes["fs14"]}>{school}</span>
+              <br />
               <button
                 onClick={() => {
                   setSchoolConfirm(false);
                   setGradeClass("");
                 }}
+                className={classes["mini-btn"]}
               >
-                다시선택
+                학교 변경
               </button>
+              <br />
             </div>
           )}
 
           {/* 찾으면 학교보여주기 학교 확정상태가 아닐때만 */}
-          {!schoolConfirm && (
-            <div>
-              {scResult?.map((sc, index) => (
-                <label key={index}>
-                  <input
-                    type="radio"
-                    name="school"
-                    value={`${sc.JU_ORG_NM?.split("교육지원청")?.[0]}*${
-                      sc.SCHUL_NM
-                    }`}
-                    checked={
-                      school ===
-                      `${sc.JU_ORG_NM?.split("교육지원청")?.[0]}*${sc.SCHUL_NM}`
-                    }
-                    onChange={(e) => {
-                      setSchool(e.target.value);
-                    }}
-                  />
-                  위치: {sc.ORG_RDNMA}
-                </label>
-              ))}
-              <button onClick={() => setSchoolConfirm(true)}>확인</button>
-            </div>
-          )}
+          {!schoolConfirm &&
+            (scResult?.length === 0 ? (
+              <span>학교 이름을 확인해주세요!</span>
+            ) : (
+              <>
+                <div className={classes["flex-column"]}>
+                  {scResult?.map((sc, index) => (
+                    <label key={index} className={classes["school-list"]}>
+                      <input
+                        type="radio"
+                        name="school"
+                        value={`${sc.JU_ORG_NM?.split("교육지원청")?.[0]}*${
+                          sc.SCHUL_NM
+                        }`}
+                        // 만약 전국에 하나밖에 안나오면 자동 선택하기..
+                        checked={
+                          scResult?.length === 1 ||
+                          school ===
+                            `${sc.JU_ORG_NM?.split("교육지원청")?.[0]}*${
+                              sc.SCHUL_NM
+                            }`
+                        }
+                        onChange={(e) => {
+                          setSchool(e.target.value);
+                        }}
+                      />
+                      주소 : {sc.ORG_RDNMA}
+                    </label>
+                  ))}
+                </div>
+                <button
+                  onClick={() => setSchoolConfirm(true)}
+                  className={classes["btn"]}
+                  style={{ width: "300px" }}
+                >
+                  확인
+                </button>
+              </>
+            ))}
 
           {/* 학교명 school이 선택되어 확정되면, 학년 반 선택하기 */}
           {school !== "" && schoolConfirm && (
@@ -200,7 +234,9 @@ const SettingAttendCheck = (props) => {
           {/* 학교명까지 선택이 확정되면 기초자료 만들기 설정하기 */}
           {gradeClass !== "" && (
             <button
-              onClick={() => props.doneHandler(school + "*" + gradeClass)}
+              onClick={saveBasicSetting}
+              className={classes["btn"]}
+              style={{ width: "300px" }}
             >
               저장하기
             </button>

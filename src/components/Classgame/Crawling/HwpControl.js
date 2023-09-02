@@ -1,6 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { dbService, storageService } from "../../../fbase";
-import { ref, uploadBytes, getBlob, getDownloadURL } from "firebase/storage";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import {
+  onSnapshot,
+  doc,
+  getDoc,
+  setDoc,
+  updateDoc,
+  arrayUnion,
+} from "firebase/firestore";
 
 import Swal from "sweetalert2";
 
@@ -169,14 +177,48 @@ const HwpControl = (props) => {
     }
   };
 
-  const saveAttendCheck = (title) => {
-    console.log(title);
+  const saveAttendCheck = async (title, students) => {
+    const atCheckListRef = doc(dbService, "attendCheck", "teacherLists");
+    const atCheckList_doc = await getDoc(atCheckListRef);
 
-    // 받아온 타이틀에 학생들 이름 섞어서 데이터 만들고 저장하기
-    // attendCheck => title*김이봄 =>info:{num:번호, 성별:},data:  [{type: }]
-    //
+    const existTeacher =
+      atCheckList_doc?.data()?.lists?.includes(props.userUid) || false;
 
-    // swal로 마지막 확인 하고 저장하기
+    //이미 저장된 게 있으면,
+    if (existTeacher) {
+      Swal.fire(
+        "기존 자료 존재",
+        "기존 자료들이 존재할 경우 추가만 가능합니다.",
+        "info"
+      );
+      return;
+
+      //새롭게 데이터들 저장하기
+    } else {
+      // 교사들 목록에 추가하기
+
+      await updateDoc(atCheckListRef, {
+        lists: arrayUnion(props.userUid),
+      });
+
+      // 받아온 타이틀에 학생들 이름 섞어서 데이터 만들고 저장하기
+      try {
+        students?.forEach(async (std) => {
+          const now_doc_title = title + "*" + std.name;
+          const atCheckRef = doc(dbService, "attendCheck", now_doc_title);
+          await updateDoc(atCheckRef, {
+            info: { num: +std.num, woman: std.woman },
+          });
+        });
+      } catch (error) {
+        console.log(error);
+        Swal.fire(
+          "저장 오류",
+          "저장 과정에 오류가 생겼어요. 오류가 지속되면 개발자 메일로 알려주세요. kerbong@gmail.com",
+          "error"
+        );
+      }
+    }
   };
 
   return (
@@ -202,7 +244,9 @@ const HwpControl = (props) => {
       <SettingAttendCheck
         students={props.students}
         isSubject={props.isSubject}
-        doneHandler={(dataTitle) => saveAttendCheck(dataTitle)}
+        doneHandler={(dataTitle, studentsInfo) =>
+          saveAttendCheck(dataTitle, studentsInfo)
+        }
       />
     </div>
   );

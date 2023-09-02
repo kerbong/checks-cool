@@ -1,0 +1,64 @@
+.btn,
+.mini-btn {
+  padding: 10px 15px;
+  font-size: 1.2rem;
+  background-color: #006b5f;
+  color: whitesmoke;
+  border: 0;
+  border-radius: 10px;
+  letter-spacing: 2px;
+}
+
+.mini-btn {
+  font-size: 0.8rem;
+  margin: 20px 0px;
+}
+
+.flex-row {
+  margin: 20px 10px;
+  display: flex;
+  justify-content: space-around;
+}
+
+.input {
+  width: 100px;
+  text-align: center;
+  border-radius: 10px;
+  font-size: 1.2rem;
+}
+
+.m20 {
+  margin: 20px;
+}
+
+.m-l20 {
+  margin-left: 20px;
+}
+
+.flex-column {
+  display: flex;
+  flex-direction: column;
+  margin: 20px;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  align-content: center;
+}
+
+.school-list {
+  margin: 10px;
+}
+
+.fs14 {
+  font-size: 1.4rem;
+}
+.fs12 {
+  font-size: 1.2rem;
+}
+
+.grade-select {
+  font-size: 1.2rem;
+  padding: 10px;
+  border-radius: 10px;
+  margin-left: 20px;
+  text-align: center;
+}
