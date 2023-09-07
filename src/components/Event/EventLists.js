@@ -100,7 +100,29 @@ const EventLists = (props) => {
         notEnough();
         return false;
       } else {
-        return true;
+        // 하루에 똑같은 학생의 데이터는 3개 까지 가능!
+        let todayEventData = [];
+
+        //날짜랑 학생번호까지만 저장해두기
+        document.querySelectorAll("h2")?.forEach((evt) => {
+          if (!evt?.id?.includes("eventName")) return;
+          todayEventData.push(evt?.id?.split(" ")[0]);
+        });
+
+        if (
+          findRepeatedElements(todayEventData) &&
+          findRepeatedElements(todayEventData)?.slice(9) ===
+            item?.id?.split(" ")?.[0]
+        ) {
+          Swal.fire(
+            "저장 실패",
+            "출결자료는 학생당 하루에 3개 까지만 저장할 수 있습니다.",
+            "error"
+          );
+          return false;
+        } else {
+          return true;
+        }
       }
       //기존자료인데
     } else {
@@ -139,24 +161,6 @@ const EventLists = (props) => {
 
   //새로운/ 수정된 자료 저장함수
   const saveFixedData = (item) => {
-    // 하루에 똑같은 학생의 데이터는 3개 까지 가능!
-    let todayEventData = [];
-
-    //날짜랑 학생번호까지만 저장해두기
-    document.querySelectorAll("h2")?.forEach((evt) => {
-      if (!evt?.id?.includes("eventName")) return;
-      todayEventData.push(evt?.id?.split(" ")[0]);
-    });
-
-    if (findRepeatedElements(todayEventData)) {
-      Swal.fire(
-        "저장 실패",
-        "출결자료는 학생당 하루에 3개 까지만 저장할 수 있습니다.",
-        "error"
-      );
-      return false;
-    }
-
     let new_option = document.getElementById(`option-select${item.num}`);
     let optionValue;
     let noteValue;

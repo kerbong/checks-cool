@@ -107,7 +107,7 @@ const EventInput = (props) => {
         Swal.fire({
           icon: "error",
           title: "저장 실패",
-          html: "같은 날, 같은 학생의 출결정보가 있어요! <br/>같은 학생의 정보를 추가하시려면 1분 후에 다시 시도해주세요!",
+          html: "같은 날, 같은 학생의 출결자료가 있어요! <br/> ** 같은 학생의 출결자료를 추가하시려면 <br/> 1분 후에 다시 시도해주세요!",
           confirmButtonText: "확인",
           confirmButtonColor: "#85bd82",
           timer: 5000,

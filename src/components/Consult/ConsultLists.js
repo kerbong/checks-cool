@@ -64,13 +64,29 @@ const ConsultLists = (props) => {
 
   useEffect(() => {
     if (
-      yearGroupRef.current.value === ""
+      yearGroupRef?.current?.value === ""
       //  &&
       // yearGroupRef.current.value === ""
     ) {
       return;
+    } else {
+      console.log(consults);
+      searchYearHandler(yearGroupRef?.current?.value);
     }
   }, [consults]);
+
+  useEffect(() => {
+    if (
+      yearGroupRef?.current?.value === ""
+      //  &&
+      // yearGroupRef.current.value === ""
+    ) {
+      return;
+    } else {
+      console.log(consults);
+      consultsHandler("전체학생");
+    }
+  }, [studentsOnConsults]);
 
   function sortDate(consult, upOrDown) {
     const sorted_consults = consult?.sort(function (a, b) {
@@ -166,8 +182,7 @@ const ConsultLists = (props) => {
   };
 
   //학생 이름 선택하면 실행되는 함수
-  const consultsHandler = (e) => {
-    const student = e.target.value;
+  const consultsHandler = (student) => {
     let list;
     // 현재 학년도 자료 (nowOnConsult에서 보여주기)
     let consult_data = !isSubject
@@ -188,8 +203,7 @@ const ConsultLists = (props) => {
   };
 
   //학년도 선택 함수
-  const searchYearHandler = (e) => {
-    const year_group = e.target.value;
+  const searchYearHandler = (year_group) => {
     const list = consults?.filter((data) => data.yearGroup === year_group);
     setNowOnConsult(list);
     let isSubject = changeSubjectHandler(year_group);
@@ -217,38 +231,56 @@ const ConsultLists = (props) => {
   const saveExcelHandler = () => {
     const new_datas = [];
     consults.forEach((consult) => {
+      // 번호 이름 년 월 일 옵션 노트 첨부파일 순으로
       let data = [
-        consult.num,
+        +consult.num,
         consult.name,
+        +consult.id.slice(0, 4),
+        +consult.id.slice(5, 7),
+        +consult.id.slice(8, 10),
         consult.option.slice(1),
-        `${consult.id.slice(0, 10)} ${consult.id.slice(10, 15)}`,
-        consult.note,
+        consult?.note,
+        consult?.attachedFileUrl,
       ];
       if (isSubject) {
         data.unshift(consult.clName);
       }
+
       new_datas.push(data);
     });
 
-    let data_title = ["번호", "이름", "관련", "날짜(년월일 시각)", "기록내용"];
+    let consult_title = [
+      "번호",
+      "이름",
+      "년",
+      "월",
+      "일",
+      "상담옵션",
+      "메모내용",
+      "첨부파일",
+    ];
     if (isSubject) {
-      data_title.unshift("반");
+      consult_title.unshift("반");
     }
-    new_datas.unshift(data_title);
+
+    new_datas.unshift(consult_title);
 
     //새로운 가상 엑셀파일 생성
     const book = utils.book_new();
     const consult_datas = utils.aoa_to_sheet(new_datas);
     //셀의 넓이 지정
     consult_datas["!cols"] = [
+      { wpx: 30 },
+      { wpx: 50 },
       { wpx: 40 },
+      { wpx: 25 },
+      { wpx: 25 },
       { wpx: 60 },
-      { wpx: 60 },
-      { wpx: 100 },
-      { wpx: 150 },
+      { wpx: 500 },
+      { wpx: 120 },
     ];
     if (isSubject) {
-      consult_datas["!cols"].unshift({ wpx: 30 });
+      consult_datas["!cols"].unshift({ wpx: 50 });
     }
     //시트에 작성한 데이터 넣기
     utils.book_append_sheet(book, consult_datas, "상담기록");
@@ -272,6 +304,7 @@ const ConsultLists = (props) => {
       new_datas[data_index] = isSubject
         ? { ...consult, clName: nowClassName }
         : consult;
+
       return new_datas;
     });
     //현재 보여주고 있는 자료에서 삭제하고 다시 추가
@@ -287,6 +320,7 @@ const ConsultLists = (props) => {
       new_datas[data_index] = isSubject
         ? { ...consult, clName: nowClassName }
         : consult;
+
       return new_datas;
     });
 
@@ -380,7 +414,7 @@ const ConsultLists = (props) => {
             ref={yearGroupRef}
             defaultValue={""}
             className={classes["student-select"]}
-            onChange={searchYearHandler}
+            onChange={(e) => searchYearHandler(e.target.value)}
           >
             <option value="" defaultChecked>
               --학년도--
@@ -416,7 +450,7 @@ const ConsultLists = (props) => {
             ref={studentSelectRef}
             className={classes[`student-select`]}
             defaultValue={""}
-            onChange={consultsHandler}
+            onChange={(e) => consultsHandler(e.target.value)}
           >
             <option value="" defaultChecked>
               --학생--

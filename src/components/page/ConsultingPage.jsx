@@ -203,7 +203,6 @@ const ConsultingPage = (props) => {
   };
 
   useEffect(() => {
-    console.log(props.students);
     let now_year = setYear();
     //현재학년도 자료만 입력가능하고,, 불러오기
     let now_students = props?.students?.filter(
