@@ -28,18 +28,16 @@ const MemoTodayTodoInput = ({ todoList, setTodoList }) => {
     if (text.trim().length === 0) return;
 
     //todolist에서 현재 남아있는 데이터들만 새롭게 id 만들어주기
-    let new_todoList = todoList?.map((list, index) => {
-      return { ...list, id: index };
-    });
+    let new_todoList = [...todoList];
 
     // todoItemList에 값 추가
-    const nextTodoList = new_todoList.concat({
-      id: new_todoList.length,
+    new_todoList.unshift({
+      id: +(new_todoList.length + 1),
       text,
       checked: false,
       emg: emergency,
     });
-    setTodoList(nextTodoList);
+    setTodoList(new_todoList);
 
     // input 값 초기화 및 포커싱
     setText("");

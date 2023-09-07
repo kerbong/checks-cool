@@ -33,22 +33,45 @@ const MemoTodayTodo = (props) => {
             return { ...item, id: exceptDeleted.length - index };
           });
         }
-        setTodoListHandler(exceptDeleted);
+
+        let newLists = sortLists(exceptDeleted);
+
+        setTodoListHandler(newLists);
+        // setTodoListHandler(exceptDeleted);
       });
     }
+  };
+
+  const sortLists = (beforeLists) => {
+    //데이터 받아올때 자료 수정하기
+    let on_toDoList = [];
+    let done_toDoList = [];
+    let nextTodoList = [];
+
+    beforeLists?.forEach((item) => {
+      if (!item.checked) {
+        on_toDoList.push(item);
+      } else {
+        done_toDoList.push(item);
+      }
+    });
+
+    sortEmg(on_toDoList)?.forEach((item, index) => {
+      nextTodoList.push({
+        ...item,
+        id: +(+beforeLists?.length - index),
+      });
+    });
+    sortEmg(done_toDoList)?.forEach((item, index) => {
+      nextTodoList.push({ ...item, id: +(+done_toDoList?.length - index) });
+    });
+
+    return nextTodoList;
   };
 
   useEffect(() => {
     getMemoFromDb();
   }, []);
-
-  //아이디 순으로 정렬하기
-  const sortId = (todo_list) => {
-    let sorted_lists = todo_list.sort(function (a, b) {
-      return +b.id - +a.id;
-    });
-    return sorted_lists;
-  };
 
   //중요 순으로 정렬하기
   const sortEmg = (todo_list) => {
@@ -62,7 +85,8 @@ const MemoTodayTodo = (props) => {
 
   // }, [todoList]);
   const setTodoListHandler = async (e) => {
-    setTodoList(sortEmg(sortId(e)));
+    let list = sortLists(e);
+    setTodoList(list);
     // console.log(e);
     //firestore에 업로드  e는 전체 배열 {[할일],[할일]}
     const new_data = { memoTodo: e };

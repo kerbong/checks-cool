@@ -61,20 +61,21 @@ const MemoTodayTodoItemList = ({
         // {/* 드래그 앤 드롭으로 순서 변경가능 */}
         <DragDropContext onDragEnd={onDragEnd}>
           <Droppable droppableId="todoapp__list-ul">
-            {(provided) => (
+            {(provided, index1) => (
               <div
                 className="todoapp__list-ul"
                 {...provided.droppableProps}
                 ref={provided.innerRef}
+                key={index1}
               >
                 {todoList && // todoList가 있을때만 출력
-                  todoList?.map((todoItem, index) => {
+                  todoList?.map((todoItem, index2) => {
                     // checkedList 값에 따라 '할 일 목록' 또는 '완료한 목록'을 출력
                     if (checkedList !== todoItem.checked) return null;
                     return (
                       <Draggable
                         draggableId={String(todoItem.id)}
-                        index={index}
+                        index={index2}
                         key={String(todoItem.id)}
                       >
                         {(provided, snapshot) => (
@@ -82,7 +83,7 @@ const MemoTodayTodoItemList = ({
                             {...provided.draggableProps}
                             {...provided.dragHandleProps}
                             ref={provided.innerRef}
-                            key={provided.innerRef}
+                            key={`draggable-${todoItem.id}`}
                           >
                             {/* // map을 이용하여 ToDoItem을 출력 */}
                             <MemoTodayTodoItem
