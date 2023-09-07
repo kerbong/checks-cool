@@ -62,3 +62,7 @@
   margin-left: 20px;
   text-align: center;
 }
+
+.download-link {
+  cursor: pointer;
+}

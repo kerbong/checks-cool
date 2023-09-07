@@ -169,11 +169,13 @@ const TodoLists = (props) => {
 
   //달력에서 자료 삭제 함수
   const removeCheckSwal = (data) => {
+    const option_note = document
+      .getElementById(`option-area${data.eventName}`)
+      ?.innerText.split(" |")?.[0];
+
     Swal.fire({
       title: "기존자료를 지울까요?",
-      text: `${data.id.slice(0, 10)} | ${data.eventName} | ${data.option.slice(
-        1
-      )}`,
+      html: `<br/>${data.id.slice(0, 10)} | ${data.eventName} | ${option_note}`,
       showDenyButton: true,
       confirmButtonText: "삭제",
       confirmButtonColor: "#db100cf2",

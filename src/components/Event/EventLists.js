@@ -15,9 +15,13 @@ const EventLists = (props) => {
 
   //달력에서 자료 삭제 함수
   const removeCheckSwal = (data) => {
+    const option_note = document.getElementById(
+      `option-area${data.id}`
+    )?.innerText;
+
     Swal.fire({
       title: "자료를 지울까요?",
-      text: `${data.id.slice(0, 10)} | ${data.name} | ${data.option.slice(1)}`,
+      text: `${data.id.slice(0, 10)} | ${data.name} | ${option_note}`,
       showDenyButton: true,
       confirmButtonText: "삭제",
       confirmButtonColor: "#db100cf2",
@@ -53,7 +57,7 @@ const EventLists = (props) => {
 
   //이미 있던 이벤트 수정할 때 화면 수정하는 함수
   const updateEventOnScreen = (data) => {
-    let option = document.querySelector(`#option-area${data.name}`);
+    let option = document.getElementById(`option-area${data.id}`);
     option.innerText = `${data.option.slice(1)} | ${data.note}`;
   };
 
@@ -82,8 +86,9 @@ const EventLists = (props) => {
         timer: 5000,
       });
     };
+
     //새로 추가하기 옵션 셀렉트
-    let new_option = document.querySelector(`#option-select${item.num}`);
+    let new_option = document.getElementById(`option-select${item.num}`);
     //새로추가하기인데 옵션 선택안해서 빈칸이면
     if (new_option) {
       if (new_option.value === "") {
@@ -91,7 +96,7 @@ const EventLists = (props) => {
         return false;
       }
 
-      if (!item.num || !item.name) {
+      if (!item.id || !item.name) {
         notEnough();
         return false;
       } else {
@@ -99,8 +104,8 @@ const EventLists = (props) => {
       }
       //기존자료인데
     } else {
-      let new_option = document.querySelector(`#option-select${item.name}`);
-      let new_note = document.querySelector(`#option-note${item.name}`);
+      let new_option = document.getElementById(`option-select${item.id}`);
+      let new_note = document.getElementById(`option-note${item.id}`);
 
       //옵션과 노트값이 기존과 같으면
       if (new_option.value === item.option && new_note === item.note) {
@@ -112,24 +117,60 @@ const EventLists = (props) => {
     }
   };
 
+  const findRepeatedElements = (arr) => {
+    const countMap = {};
+
+    for (let i = 0; i < arr.length; i++) {
+      const element = arr[i];
+
+      if (countMap[element]) {
+        countMap[element]++;
+      } else {
+        countMap[element] = 1;
+      }
+
+      if (countMap[element] >= 3) {
+        return element;
+      }
+    }
+
+    return null;
+  };
+
   //새로운/ 수정된 자료 저장함수
   const saveFixedData = (item) => {
-    let exist_option = document.querySelector(`#option-select${item.name}`);
+    // 하루에 똑같은 학생의 데이터는 3개 까지 가능!
+    let todayEventData = [];
+
+    //날짜랑 학생번호까지만 저장해두기
+    document.querySelectorAll("h2")?.forEach((evt) => {
+      if (!evt?.id?.includes("eventName")) return;
+      todayEventData.push(evt?.id?.split(" ")[0]);
+    });
+
+    if (findRepeatedElements(todayEventData)) {
+      Swal.fire(
+        "저장 실패",
+        "출결자료는 학생당 하루에 3개 까지만 저장할 수 있습니다.",
+        "error"
+      );
+      return false;
+    }
+
+    let new_option = document.getElementById(`option-select${item.num}`);
     let optionValue;
     let noteValue;
-
     //새로운 출결 이벤트일경우
-    if (!exist_option) {
-      optionValue = document.querySelector(`#option-select${item.num}`).value;
-      noteValue = document.querySelector(`#option-note${item.num}`).value;
+    if (new_option) {
+      optionValue = document.getElementById(`option-select${item.num}`).value;
+      noteValue = document.getElementById(`option-note${item.num}`).value;
 
       //기존 출결 이벤트의 경우
     } else {
       //출결 옵션 선택값
-      optionValue = document.querySelector(`#option-select${item.name}`).value;
-
+      optionValue = document.getElementById(`option-select${item.id}`).value;
       //비고 입력값
-      noteValue = document.querySelector(`#option-note${item.name}`).value;
+      noteValue = document.getElementById(`option-note${item.id}`).value;
     }
 
     //출결 이벤트 날짜
@@ -237,7 +278,7 @@ const EventLists = (props) => {
             item={event}
             key={event.id}
             keyId={event.id}
-            shownId={event.num}
+            shownId={event.id}
             text={event.name}
             note={event.note}
             option={event.option}

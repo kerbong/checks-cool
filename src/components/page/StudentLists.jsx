@@ -89,7 +89,7 @@ const StudentLists = (props) => {
     if (studentSnap.exists()) {
       // console.log(studentSnap.data());
       let exceptNow = [];
-      console.log(studentSnap);
+      // console.log(studentSnap);
       studentSnap.data()?.studentDatas?.forEach((yearData) => {
         if (Object.keys(yearData)[0] !== Object.keys(data)[0]) {
           exceptNow.push(yearData);
@@ -113,7 +113,7 @@ const StudentLists = (props) => {
     //명부를 전담, 담임에 맞게 수정하는 함수
     const fixStudentsData = () => {
       if (!props.isSubject) {
-        console.log(studentsInfo);
+        // console.log(studentsInfo);
         let new_studentsInfo = [...studentsInfo];
         new_studentsInfo?.map((stu) => {
           if (!stu.hasOwnProperty("woman")) {

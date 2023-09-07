@@ -6,6 +6,7 @@ let holidays2023 = [
   ["2023-08", 'div[aria-label="Choose 2023년 8월 15일 화요일"]*광복절'],
   ["2023-09", 'div[aria-label="Choose 2023년 9월 28일 목요일"]*추석연휴'],
   ["2023-09", 'div[aria-label="Choose 2023년 9월 29일 금요일"]*추석연휴'],
+  ["2023-10", 'div[aria-label="Choose 2023년 10월 2일 월요일"]*임시공휴일'],
   ["2023-10", 'div[aria-label="Choose 2023년 10월 3일 화요일"]*개천절'],
   ["2023-10", 'div[aria-label="Choose 2023년 10월 9일 월요일"]*한글날'],
   ["2023-12", 'div[aria-label="Choose 2023년 12월 25일 월요일"]*성탄절'],

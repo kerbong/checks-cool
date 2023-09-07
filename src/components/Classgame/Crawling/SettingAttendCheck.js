@@ -20,6 +20,13 @@ const SettingAttendCheck = (props) => {
   let navigate = useNavigate();
 
   useEffect(() => {
+    if (props.dataExisted) {
+      setSchoolConfirm(true);
+      setStudentsConfirm(true);
+    }
+  }, [props.dataExisted]);
+
+  useEffect(() => {
     const setYear = () => {
       //학생자료 등록의 경우..예외적으로 2월부터는 새로운 학년도로 인식함
       return +dayjs().format("MM") <= 1
@@ -151,7 +158,7 @@ const SettingAttendCheck = (props) => {
             <form onSubmit={(e) => findSchool(e)} className={classes["m20"]}>
               <input
                 type="text"
-                placeholder="학교명 입력(가나초의 경우 가나)"
+                placeholder="학교이름"
                 onChange={(e) => setScName(e.target.value)}
                 value={scName}
                 className={classes["input"]}
@@ -173,10 +180,13 @@ const SettingAttendCheck = (props) => {
                 onClick={() => {
                   setSchoolConfirm(false);
                   setGradeClass("");
+                  if (props.dataExisted) {
+                    props.dataEditHandler();
+                  }
                 }}
                 className={classes["mini-btn"]}
               >
-                학교 변경
+                {props.dataExisted ? "학생 자료 재생성" : "학교 변경"}
               </button>
               <br />
             </div>

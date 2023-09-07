@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+
 import { dbService, storageService } from "../../../fbase";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import {
@@ -11,15 +12,21 @@ import {
 } from "firebase/firestore";
 
 import Swal from "sweetalert2";
-
+import { saveSvgAsPng } from "save-svg-as-png";
 import Docxtemplater from "docxtemplater";
 import PizZip from "pizzip";
 import saveAs from "file-saver";
+import { QRCodeSVG } from "qrcode.react";
+
 import SettingAttendCheck from "./SettingAttendCheck";
+import classes from "./HwpControl.module.css";
 
 const HwpControl = (props) => {
   const [file, setFile] = useState(null);
   const [uploadDone, setUploadDone] = useState(false);
+  const [showQrCode, setShowQrCode] = useState(false);
+  const [dataExisted, setDataExisted] = useState(false);
+  const [schoolClass, setSchoolClass] = useState(false);
 
   const [templateData, setTemplateData] = useState([
     {
@@ -33,6 +40,32 @@ const HwpControl = (props) => {
     // 화면 로딩 시에 파일 다운로드
     downloadFile();
   }, [uploadDone]);
+
+  //교외현장체험학습 데이터가 있었는지 확인하기
+  const dataExist = async () => {
+    const atCheckListRef = doc(dbService, "attendCheck", "teacherLists");
+    const atCheckList_doc = await getDoc(atCheckListRef);
+
+    let existTeacher = false;
+    let title = "";
+    atCheckList_doc?.data()?.lists?.forEach((teacherData) => {
+      if (teacherData?.includes(props.userUid)) {
+        existTeacher = true;
+        title = teacherData;
+      }
+    });
+
+    // 이미 저장된 게 있으면,
+    if (existTeacher) {
+      setSchoolClass(title);
+      setDataExisted(true);
+      setShowQrCode(true);
+    }
+  };
+
+  useEffect(() => {
+    dataExist();
+  }, []);
 
   // Firebase Storage에 파일 업로드
   const uploadFile = async (file) => {
@@ -179,45 +212,51 @@ const HwpControl = (props) => {
 
   const saveAttendCheck = async (title, students) => {
     const atCheckListRef = doc(dbService, "attendCheck", "teacherLists");
-    const atCheckList_doc = await getDoc(atCheckListRef);
 
-    const existTeacher =
-      atCheckList_doc?.data()?.lists?.includes(props.userUid) || false;
+    // 교사들 목록에 추가하기
 
-    //이미 저장된 게 있으면,
-    if (existTeacher) {
-      Swal.fire(
-        "기존 자료 존재",
-        "기존 자료들이 존재할 경우 추가만 가능합니다.",
-        "info"
-      );
-      return;
+    await setDoc(atCheckListRef, {
+      lists: arrayUnion(props.userUid + "*" + title),
+    });
 
-      //새롭게 데이터들 저장하기
-    } else {
-      // 교사들 목록에 추가하기
-
-      await updateDoc(atCheckListRef, {
-        lists: arrayUnion(props.userUid),
-      });
-
-      // 받아온 타이틀에 학생들 이름 섞어서 데이터 만들고 저장하기
-      try {
-        students?.forEach(async (std) => {
-          const now_doc_title = title + "*" + std.name;
-          const atCheckRef = doc(dbService, "attendCheck", now_doc_title);
-          await updateDoc(atCheckRef, {
+    // 받아온 타이틀에 학생들 이름 섞어서 데이터 만들고 저장하기
+    try {
+      students?.forEach(async (std) => {
+        const now_doc_title = title + "*" + std.name;
+        const atCheckRef = doc(dbService, "attendCheck", now_doc_title);
+        const ref_doc = await getDoc(atCheckRef);
+        if (!ref_doc.exists()) {
+          await setDoc(atCheckRef, {
             info: { num: +std.num, woman: std.woman },
           });
-        });
-      } catch (error) {
-        console.log(error);
-        Swal.fire(
-          "저장 오류",
-          "저장 과정에 오류가 생겼어요. 오류가 지속되면 개발자 메일로 알려주세요. kerbong@gmail.com",
-          "error"
-        );
-      }
+        }
+      });
+
+      // qr코드 보여주기
+      setSchoolClass(title);
+      setShowQrCode(true);
+    } catch (error) {
+      console.log(error);
+      Swal.fire(
+        "저장 오류",
+        "저장 과정에 오류가 생겼어요. 오류가 지속되면 개발자 메일로 알려주세요. kerbong@gmail.com",
+        "error"
+      );
+    }
+  };
+
+  const downloadQR = () => {
+    const svgElement = document.getElementById("scQr");
+
+    if (svgElement) {
+      Swal.fire(
+        "qr저장중..",
+        "5초 이내에 저장이 완료됩니다. 잠시 기다려 주세요.",
+        "info"
+      );
+      saveSvgAsPng(svgElement, "(학부모용)현장체험학습 가입 qr코드.png", {
+        scale: 3,
+      });
     }
   };
 
@@ -247,7 +286,44 @@ const HwpControl = (props) => {
         doneHandler={(dataTitle, studentsInfo) =>
           saveAttendCheck(dataTitle, studentsInfo)
         }
+        dataExisted={dataExisted}
+        dataEditHandler={() => {
+          setDataExisted(false);
+          setShowQrCode(false);
+        }}
       />
+
+      {/* qr코드 보여주기 */}
+      {showQrCode && (
+        <div className={classes["flex-col-center"]}>
+          <QRCodeSVG
+            value={`${schoolClass}`}
+            size={`200px`}
+            bgColor={"#ffffff"}
+            fgColor={"#000000"}
+            level={"L"}
+            id="scQr"
+            includeMargin={true}
+            onClick={downloadQR}
+          />
+          <p>
+            <span>🏫 </span>
+            <span>{schoolClass?.split("*")[2]}</span>{" "}
+            <span>{schoolClass?.split("*")[3]}</span>
+          </p>
+          <p>
+            <a
+              onClick={downloadQR}
+              className={classes["download-link"]}
+              title="이미지로 다운로드하기"
+            >
+              {" "}
+              🙂 (학부모용) 현장체험학습 가입 Qr코드{" "}
+              <i className="fa-solid fa-download"></i>
+            </a>
+          </p>
+        </div>
+      )}
     </div>
   );
 };

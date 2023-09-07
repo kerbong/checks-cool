@@ -161,7 +161,7 @@ const EventItem = (props) => {
             {/* 옵션 + 노트 부분 */}
             {props.about.slice(0, 4) !== "todo" && (
               <span
-                id={`option-area${text.replace(/ /g, "")}`}
+                id={`option-area${keyId}`}
                 className={classes["option-area"]}
                 style={{
                   display: props.fixIsShown === shownId && "none",
@@ -267,7 +267,11 @@ const EventItem = (props) => {
           >
             <select
               name="option-selcet"
-              id={`option-select${text.replace(/ /g, "")}`}
+              id={`option-select${
+                props.about.slice(0, 4) === "todo"
+                  ? text.replace(/ /g, "")
+                  : keyId
+              }`}
               required
               key={`option-select${keyId}`}
               defaultValue={selectValue}
@@ -296,7 +300,11 @@ const EventItem = (props) => {
               onKeyUp={() => handleResizeHeight(this)}
               onClick={() => handleResizeHeight(this)}
               defaultValue={note || ""}
-              id={`option-note${text.replace(/ /g, "")}`}
+              id={`option-note${
+                props.about.slice(0, 4) === "todo"
+                  ? text.replace(/ /g, "")
+                  : keyId
+              }`}
               className={classes["note-area"]}
               onInput={(e) => {
                 handleOnInput(e, 40);

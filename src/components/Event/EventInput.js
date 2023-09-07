@@ -88,7 +88,8 @@ const EventInput = (props) => {
       new_data_id = eventDay + selectDateTime + student.split(" ")[0];
     } else if (props.about === "attendance") {
       //년월일+번호 를 식별id로 사용 나중에 지울떄(출결)
-      new_data_id = eventDay + student.split(" ")[0];
+      new_data_id =
+        eventDay + student.split(" ")[0] + " " + getTime(new Date());
 
       //같은날 같은학생의 출결이 있을경우 취소하기
       const existedEvent = document
@@ -106,7 +107,7 @@ const EventInput = (props) => {
         Swal.fire({
           icon: "error",
           title: "저장 실패",
-          text: "같은 날, 같은 학생의 출결정보가 있어요!",
+          html: "같은 날, 같은 학생의 출결정보가 있어요! <br/>같은 학생의 정보를 추가하시려면 1분 후에 다시 시도해주세요!",
           confirmButtonText: "확인",
           confirmButtonColor: "#85bd82",
           timer: 5000,

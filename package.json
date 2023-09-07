@@ -44,6 +44,7 @@
     "react-hot-toast": "^2.4.0",
     "react-router-dom": "^6.3.0",
     "react-scripts": "5.0.1",
+    "save-svg-as-png": "^1.4.17",
     "stream-browserify": "^3.0.0",
     "sweetalert2": "^11.4.24",
     "url": "^0.11.0",
