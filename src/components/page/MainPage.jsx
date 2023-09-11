@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import ExampleModal from "./ExampleModal";
 import byExcel from "../../assets/student/teacher-excel.gif";
-import mainImg from "../../assets/notice/0812united.gif";
+import mainImg from "../../assets/notice/0911.gif";
 import dayjs from "dayjs";
 import AttendCalendar from "components/Attendance/AttendCalendar";
 import donationImg from "../../assets/notice/donation.png";
@@ -30,25 +30,31 @@ const monthEnd_text = `월말입니다! 선생님들의 소중한 정보를 다�
 ** 첵스-쿨은 선생님들의 모든 학급일지 데이터를 <br/> 엑셀파일 하나로 만들고 관리하는데 도움을 드리려고 합니다! <br/><br/> ** <b>첵스쿨 활용 팁👉</b> 을 <u>아침한마디에 공유</u>해주세요!
  `;
 
-const update_title = `오류 수정 및 개선완료 🪄`;
+const update_title = `할 일 / 자리뽑기 업데이트 🪄`;
 
 const update_text = `<b>1. <br/>
-[할 일]의 순서 바꾸기 오류가 수정</b>되었어요!<br/>  
+[할 일]과 일정달력을 함께 볼 수 있어요!</b><br/> <br/> 
+창의 크기가 일정 크기를 넘어가면 달력이 보이기 시작합니다! <br/>
 혹시 제대로 작동하지 않는 분들은 제보해주세요!!🚨<br/><br/> 
 <hr style={{ margin: "20px 15px" }} />
 <b>2.<br/>
-[출결] 하루에 한 학생의 2개 이상의 출결 입력이 가능</b>합니다!<br/><br/>
-한 학생이 지각 후에, 조퇴할 경우😮‍💨 <br/>
-두 가지 출결 자료를 저장할 수 있습니다!
+[자리뽑기] 추가하기 중 기존자료 확인</b>이 가능해요!<br/><br/>
+자리뽑기 추가하기 중에 기존에 저장해둔 자료들을😮‍💨 <br/>
+확인하면서 자리를 선정할 수 있어요!!
+<br/><br/>
+<hr style={{ margin: "20px 15px" }} />
+<b>3.<br/>
+[자리뽑기] 전출학생 제외</b>가 가능해요!<br/><br/>
+전출학생을 등록하셨다면 자리뽑기 추가하기 중에<br/>
+전출학생이 자동으로 제외되어 보입니다!
 <br/><br/>
 <b>  ** 사용전, 꼭 테스트를 거쳐주세요!!<br/>
-** 의견 주신 선생님들 감사합니다!<br/><br/></b>
 
 <hr style={{ margin: "20px 15px" }} />
 <b> ++ <br/>
-현장체험학습 기능을 업데이트 중입니다. </b> <br/>
+현장체험학습 기능도 업데이트 중입니다. </b> <br/>
 안정적인 사용을 위해, 차분하게 준비하곘습니다! <br/><br/>
-<b>몸과 마음으로 하나의 검은 점이 되셨던,🎗️<br/> 눈부신 선생님들을 응원합니다🤩 </b><br/><br/> 
+<b>어디서든 눈부신, 모든 선생님들을 응원합니다🤩 </b><br/><br/> 
 
 ** 접속이 어려우신 분들은 아래의 주소를 활용해주세요!<br/> https://checks-cho-ok.firebaseapp.com
 <br/><br/>
@@ -1717,7 +1723,7 @@ const MainPage = (props) => {
             localStorage.setItem("showNotice", dayjs().format("YYYYMMDD"));
             setShowNotice(false);
           }}
-          // imgSrc={mainImg}
+          imgSrc={mainImg}
           title={
             <h1
               style={{

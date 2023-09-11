@@ -107,14 +107,11 @@ select {
 .todoapp__inputbox-del-btn {
   font-weight: normal;
   width: 65px;
-  position: absolute;
-  left: calc(75vw - 2%);
   height: 35px;
 }
 
 @media screen and (min-width: 500px) {
   .todoapp__inputbox-del-btn {
-    left: 75vw;
     width: 100px;
     font-size: 1rem;
   }
@@ -168,6 +165,9 @@ select {
   font-weight: bold;
   margin: 0;
   font-size: 1.3em;
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr;
+  justify-content: space-between;
 }
 .todoapp__item-done-btn {
   width: 10%;

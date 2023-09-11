@@ -22,16 +22,46 @@ const SettingSeat = (props) => {
   // 교사 세팅으로 정했던 목록 보여주기
   const [showTeacherPick, setShowTeacherPick] = useState(false);
   const [secretSeat, setSecretSeat] = useState({});
+  const [goneStudents, setGoneStudents] = useState([]);
 
   //학년도 설정함수
-  const setYear = () => {
-    return +dayjs().format("MM") <= 1
+  const setYear = (from1) => {
+    let month = from1 ? 1 : 2;
+    return +dayjs().format("MM") <= +month
       ? String(+dayjs().format("YYYY") - 1)
       : dayjs().format("YYYY");
   };
 
+  //전학생 목록 받아옴
+  const getGoneStdFromDb = async () => {
+    let goneStdRef = doc(dbService, "goneStd", props.userUid);
+    const goneStdSnap = await getDoc(goneStdRef);
+
+    //id가 이번학년도 인 자료만 저장해둠.
+
+    if (goneStdSnap.exists()) {
+      let new_goneStds = [];
+
+      new_goneStds = goneStdSnap.data()?.goneStd_data?.[setYear(true)];
+
+      //전출학생의 전출 날짜와 오늘 날짜를 비교해서.. 전출이 과거인 경우(이미 전학감) 전체 학생 목록에서 빼주기
+      const yyyy_mm_dd = dayjs().format("YYYY-MM-DD");
+      const now_goneStds = new_goneStds.filter((std) => yyyy_mm_dd > std.date);
+
+      setGoneStudents(now_goneStds);
+    }
+  };
+
+  useEffect(() => {
+    getGoneStdFromDb();
+  }, []);
+
+  // useEffect(() => {
+  //   getGoneStdFromDb();
+  // }, []);
+
   const nowStudentHandler = () => {
-    let now_year = setYear();
+    let now_year = setYear(false);
     //현재학년도 자료만 입력가능하고,, 불러오기
     let now_students = props?.students?.filter(
       (yearStd) => Object.keys(yearStd)[0] === now_year
@@ -62,14 +92,25 @@ const SettingSeat = (props) => {
 
   //최종 자리에 앉는 학생 세팅
   const seatStudentsHandler = (clName) => {
+    //전출학생 제외함수
+    const except_goneStds = (stds) => {
+      const new_students = stds?.filter((stu) => {
+        return !goneStudents?.some(
+          (g_stu) => +g_stu.num === +stu.num && g_stu.name === stu.name
+        );
+      });
+
+      return new_students;
+    };
     // console.log("ddd");
     if (clName === "") {
       // console.log(students);
-      setSeatStudents(students);
+      setSeatStudents(except_goneStds(students));
     } else {
-      setSeatStudents(
-        students?.filter((cl) => Object.keys(cl)[0] === clName)?.[0]?.[clName]
-      );
+      let new_seatStudents = students?.filter(
+        (cl) => Object.keys(cl)[0] === clName
+      )?.[0]?.[clName];
+      setSeatStudents(except_goneStds(new_seatStudents));
     }
     setNowClassName(clName);
   };
@@ -149,7 +190,10 @@ const SettingSeat = (props) => {
           * 주의 * 저장할 때 제목에 '@'를 추가하시면, 해당 자료를 짝을 판단하는
           자료에서 제외합니다.
         </p>
-
+        <p className={classes[`gameMenu`]}>
+          * [메인화면] - [학생명부] 에 등록된 '전출학생'의 전출 날짜와 오늘
+          날짜를 비교하여 자동으로 전출학생이 제외됩니다.
+        </p>
         <p className={classes[`gameMenu`]}>
           * 예시사용법 1. * 기존자료처럼 추가하기 상태에서 미리 원하는 학생만
           일부 or 전체를 배치하고, 왼쪽 상단에 [자리뽑기] 버튼을 눌러 저장해두기
@@ -249,6 +293,8 @@ const SettingSeat = (props) => {
             nowClassName={nowClassName}
             showJustLists={true}
             wholeStudents={props.students}
+            isNew={true}
+            goneStudents={goneStudents}
           />
           {showHowToUse}
         </>
@@ -284,6 +330,7 @@ const SettingSeat = (props) => {
             setInit(true);
           }}
           students={students}
+          goneStudents={goneStudents}
         />
       )}
 
@@ -302,6 +349,8 @@ const SettingSeat = (props) => {
             nowClassName={nowClassName}
             showJustLists={true}
             wholeStudents={props.students}
+            isNew={true}
+            goneStudents={goneStudents}
           />
           {/* 사용방법 */}
           {showHowToUse}

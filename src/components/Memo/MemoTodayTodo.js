@@ -4,9 +4,25 @@ import MemoTodayTodoItemList from "./MemoTodayTodoItemList";
 
 import { dbService } from "../../fbase";
 import { setDoc, onSnapshot, doc, getDoc } from "firebase/firestore";
+import TodoPage from "components/page/TodoPage";
 
 const MemoTodayTodo = (props) => {
   const [todoList, setTodoList] = useState([]);
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+
+  // 창의 크기가 1200px 이상이면 달력 보이도록
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
   //firestore에서 해당 이벤트 자료 받아오기
   const getMemoFromDb = async () => {
     //db에서 todo DB가져오고 작성자가 현재 유저와 동일한지 확인하고 events에 추가하기
@@ -134,32 +150,61 @@ const MemoTodayTodo = (props) => {
     setTodoListHandler(new_todoList);
   };
 
+  const divWidth = windowWidth > 1200 ? "600px" : "450px";
+
   return (
-    <div className="homepage__container">
-      {/* ToDo Item을 추가할 수 있는 input 박스 */}
-      <MemoTodayTodoInput
-        setTodoList={setTodoListHandler}
-        todoList={todoList}
-      />
+    <div
+      style={{
+        display: "flex",
+        alignItems: "flex-start",
+        justifyContent: "center",
+      }}
+    >
+      <div
+        className="homepage__container"
+        style={
+          windowWidth > 1200
+            ? { margin: "10px 40px", width: String(windowWidth - 600) + "px" }
+            : {}
+        }
+      >
+        {/* ToDo Item을 추가할 수 있는 input 박스 */}
+        <MemoTodayTodoInput
+          setTodoList={setTodoListHandler}
+          todoList={todoList}
+        />
 
-      {/* 할 일 Item 리스트 */}
+        {/* 할 일 Item 리스트 */}
 
-      <MemoTodayTodoItemList
-        title={"오늘 할 일"}
-        setTodoList={setTodoListHandler}
-        todoList={todoList}
-        checkedList={false} // (체크되지 않은) 할 일 목록
-        dragEndHandler={dragEndHandler}
-      />
+        <MemoTodayTodoItemList
+          title={"오늘 할 일"}
+          setTodoList={setTodoListHandler}
+          todoList={todoList}
+          checkedList={false} // (체크되지 않은) 할 일 목록
+          dragEndHandler={dragEndHandler}
+        />
 
-      <hr />
-      {/* 완료한 Item 리스트 */}
-      <MemoTodayTodoItemList
-        title={"완료한 항목"}
-        setTodoList={setTodoListHandler}
-        todoList={todoList}
-        checkedList={true} // (체크되어 있는)완료한 목록
-      />
+        <hr />
+        {/* 완료한 Item 리스트 */}
+        <MemoTodayTodoItemList
+          title={"완료한 항목"}
+          setTodoList={setTodoListHandler}
+          todoList={todoList}
+          checkedList={true} // (체크되어 있는)완료한 목록
+        />
+      </div>
+
+      {/*  */}
+      <div
+        style={{
+          overflowY: "auto",
+          display: windowWidth > 1000 ? "block" : "none",
+          width: divWidth,
+          margin: windowWidth > 1000 ? "20px 10px" : "0",
+        }}
+      >
+        <TodoPage userUid={props.userUid} insideLoad={true} />
+      </div>
     </div>
   );
 };

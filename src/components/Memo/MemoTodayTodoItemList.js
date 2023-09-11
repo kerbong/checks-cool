@@ -45,16 +45,19 @@ const MemoTodayTodoItemList = ({
             : "todoapp__list-tit done"
         }
       >
-        {title}
-        {/* 완료한 항목일 경우 전체삭제버튼 추가 */}
-        {title === "완료한 항목" && (
-          <button
-            className="todoapp__inputbox-del-btn"
-            onClick={checkedDelAllHandler}
-          >
-            전체삭제
-          </button>
-        )}
+        <div className="left"></div>
+        <div className="center">{title}</div>
+        <div className="right">
+          {/* 완료한 항목일 경우 전체삭제버튼 추가 */}
+          {title === "완료한 항목" && (
+            <button
+              className="todoapp__inputbox-del-btn"
+              onClick={checkedDelAllHandler}
+            >
+              전체삭제
+            </button>
+          )}
+        </div>
       </p>
 
       {!checkedList && (

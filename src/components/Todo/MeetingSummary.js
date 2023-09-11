@@ -257,7 +257,7 @@ const MeetingSummary = (props) => {
       {/* 회의록 리스트 부분 */}
       <div className={classes["title-div"]}>
         <h1 className={`${classes["m-10"]} ${classes["title"]}`}>
-          {props.showPublicEvent ? "공용 " : "개인 "}회의록
+          {props.showPublicEvent ? "공용 " : "개인 "}회의록 / 연수자료 ...
         </h1>
         {/* 추가버튼 */}
         <button

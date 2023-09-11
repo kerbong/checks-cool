@@ -598,7 +598,7 @@ const TodoPage = (props) => {
 
   return (
     <>
-      {showExample && (
+      {props.insideLoad && showExample && (
         <ExampleModal
           onClose={() => setShowExample(false)}
           imgSrc={publicSetting}
@@ -621,67 +621,69 @@ const TodoPage = (props) => {
           }
         />
       )}
-      <div id="title-div">
-        {/* 화면 좌측 상단 타이틀 나오는 부분 */}
-        <button id="title-btn" onClick={() => setShowExample(true)}>
-          <>
-            <i className="fa-regular fa-calendar-check"></i>{" "}
-            {showPublicEvent ? "공용달력" : "개인달력"}
-          </>
-        </button>
+      {!props.insideLoad && (
+        <div id="title-div">
+          {/* 화면 좌측 상단 타이틀 나오는 부분 */}
+          <button id="title-btn" onClick={() => setShowExample(true)}>
+            <>
+              <i className="fa-regular fa-calendar-check"></i>{" "}
+              {showPublicEvent ? "공용달력" : "개인달력"}
+            </>
+          </button>
 
-        <div
-          style={{
-            height: "70px",
-            display: "flex",
-            alignItems: "center",
-            width: "auto",
-            justifyContent: "flex-end",
-            lineHeight: "20px",
-            fontSize: "0.9rem",
-          }}
-        >
-          {/* 메뉴 선택하는 버튼들 */}
-          <span
-            className={classes["memo-headerBtn"]}
-            onClick={() => {
-              navigate(`/memo`, {
-                state: "budgetManage",
-              });
+          <div
+            style={{
+              height: "70px",
+              display: "flex",
+              alignItems: "center",
+              width: "auto",
+              justifyContent: "flex-end",
+              lineHeight: "20px",
+              fontSize: "0.9rem",
             }}
           >
-            <i className="fa-solid fa-money-check-dollar"></i> 예산
-          </span>
-          <span
-            className={classes["memo-headerBtn"]}
-            onClick={() => {
-              navigate(`/todo`);
-            }}
-          >
-            <i className="fa-regular fa-calendar-check"></i> 일정
-          </span>
-          <span
-            className={classes["memo-headerBtn"]}
-            onClick={() => {
-              navigate(`/memo`, {
-                state: "todayTodo",
-              });
-            }}
-          >
-            <i className="fa-solid fa-clipboard-check"></i> 할일
-          </span>
-          <span
-            className={classes["memo-headerBtn"]}
-            onClick={() => {
-              navigate(`/memo`, {
-                state: "freeMemo",
-              });
-            }}
-          >
-            <i className="fa-regular fa-folder-open"></i> 메모
-          </span>
+            {/* 메뉴 선택하는 버튼들 */}
+            <span
+              className={classes["memo-headerBtn"]}
+              onClick={() => {
+                navigate(`/memo`, {
+                  state: "budgetManage",
+                });
+              }}
+            >
+              <i className="fa-solid fa-money-check-dollar"></i> 예산
+            </span>
+            <span
+              className={classes["memo-headerBtn"]}
+              onClick={() => {
+                navigate(`/todo`);
+              }}
+            >
+              <i className="fa-regular fa-calendar-check"></i> 일정
+            </span>
+            <span
+              className={classes["memo-headerBtn"]}
+              onClick={() => {
+                navigate(`/memo`, {
+                  state: "todayTodo",
+                });
+              }}
+            >
+              <i className="fa-solid fa-clipboard-check"></i> 할일
+            </span>
+            <span
+              className={classes["memo-headerBtn"]}
+              onClick={() => {
+                navigate(`/memo`, {
+                  state: "freeMemo",
+                });
+              }}
+            >
+              <i className="fa-regular fa-folder-open"></i> 메모
+            </span>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* 페이지의 일정부분 관련 버튼 및 설명 */}
 
@@ -691,12 +693,20 @@ const TodoPage = (props) => {
           style={{ justifyContent: "flex-start" }}
         >
           {/* 설정, 공용or개인용 버튼 부분 */}
-          <span id="switch-btn" onClick={() => setShowPublicSetting(true)}>
+          <span
+            id="switch-btn"
+            onClick={() => setShowPublicSetting(true)}
+            style={props.insideLoad ? { fontSize: "0.9rem" } : {}}
+          >
             <i className="fa-solid fa-gear"></i> 설정
           </span>
 
           {/* 한번에 일정 입력하기 부분 */}
-          <span id="switch-btn" onClick={() => setShowBaseTodo(true)}>
+          <span
+            id="switch-btn"
+            onClick={() => setShowBaseTodo(true)}
+            style={props.insideLoad ? { fontSize: "0.9rem" } : {}}
+          >
             <i className="fa-regular fa-window-restore"></i> 반복
           </span>
 
@@ -705,6 +715,7 @@ const TodoPage = (props) => {
             onClick={() => {
               setShowPublicEvent((prev) => !prev);
             }}
+            style={props.insideLoad ? { fontSize: "0.9rem" } : {}}
           >
             {showPublicEvent ? (
               <>
@@ -720,19 +731,28 @@ const TodoPage = (props) => {
         {/* 일정 색깔 표시 알림 */}
 
         <div className={classes["todo-option"]}>
-          <div className={classes["todo-option-expl"]}>
+          <div
+            className={classes["todo-option-expl"]}
+            style={props.insideLoad ? { fontSize: "0.7rem" } : {}}
+          >
             <span
               className={`${classes["todoOption"]} ${classes["op1"]}`}
             ></span>
             외부강사
           </div>
-          <div className={classes["todo-option-expl"]}>
+          <div
+            className={classes["todo-option-expl"]}
+            style={props.insideLoad ? { fontSize: "0.7rem" } : {}}
+          >
             <span
               className={`${classes["todoOption"]} ${classes["op2"]}`}
             ></span>
             자체행사
           </div>
-          <div className={classes["todo-option-expl"]}>
+          <div
+            className={classes["todo-option-expl"]}
+            style={props.insideLoad ? { fontSize: "0.7rem" } : {}}
+          >
             <span
               className={`${classes["todoOption"]} ${classes["op3"]}`}
             ></span>

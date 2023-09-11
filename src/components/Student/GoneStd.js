@@ -221,7 +221,7 @@ const GoneStd = ({ student, closeModal, userUid, isSubject, nowClassName }) => {
         <span>
           <span>번호 이름 &nbsp;&nbsp;| </span> &nbsp;&nbsp;&nbsp;&nbsp;{" "}
           <span>
-            {tempStd.num} 번 {tempStd.name}
+            {tempStd?.clName} {tempStd.num} 번 {tempStd.name}
           </span>
         </span>
 

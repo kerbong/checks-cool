@@ -61,7 +61,7 @@ const JustLists = (props) => {
       let b_date = `${b.saveDate.slice(0, 10)}`;
       return new Date(a_date) - new Date(b_date);
     });
-    return sorted_lists.reverse();
+    return sorted_lists;
   };
 
   return (

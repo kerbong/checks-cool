@@ -22,19 +22,27 @@ const RowColumn = (props) => {
     e.preventDefault();
     let row = document.querySelector("#row-input").value;
     let column = document.querySelector("#column-input").value;
-    let students_num =
+    let nowStudents_num =
       nowClassName === ""
-        ? props.students?.length
-        : props.students?.filter(
-            (cl) => Object.keys(cl)[0] === nowClassName
-          )?.[0]?.[nowClassName]?.length;
+        ? props.students?.filter((stu) => {
+            return !props.goneStudents?.some(
+              (g_stu) => +g_stu.num === +stu.num && g_stu.name === stu.name
+            );
+          })?.length
+        : props.students
+            ?.filter((cl) => Object.keys(cl)[0] === nowClassName)?.[0]
+            ?.[nowClassName]?.filter((stu) => {
+              return !props.goneStudents?.some(
+                (g_stu) => +g_stu.num === +stu.num && g_stu.name === stu.name
+              );
+            })?.length;
 
     //전체 학생수보다 자리가 적을경우 취소
-    if (+row * +column < students_num) {
+    if (+row * +column < nowStudents_num) {
       Swal.fire({
         icon: "error",
         title: "자리부족",
-        text: `학생수(${students_num}명) 보다 자리수(${
+        text: `학생수(${nowStudents_num}명) 보다 자리수(${
           +row * +column
         }자리) 가 적어요!`,
         confirmButtonText: "확인",
