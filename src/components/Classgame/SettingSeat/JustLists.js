@@ -3,23 +3,28 @@ import React, { useState, useEffect } from "react";
 import classes from "./SettingSeat.module.css";
 import SeatTable from "./SeatTable";
 import { dbService } from "../../../fbase";
-import { onSnapshot, doc } from "firebase/firestore";
+import { doc, getDoc } from "firebase/firestore";
 
-const SeatLists = (props) => {
-  const [seatLists, setSeatLists] = useState([]);
+import dayjs from "dayjs";
+
+//현재 학년도 정보
+const now_year =
+  +dayjs().format("MM") <= 1
+    ? String(+dayjs().format("YYYY") - 1)
+    : dayjs().format("YYYY");
+
+const JustLists = (props) => {
   const [yearSeatLists, setYearSeatLists] = useState([]);
-  // const [showEditor, setShowEditor] = useState("");
-  const [dataYears, setDataYears] = useState([]);
-  const [changeData, setChangeData] = useState("");
 
-  const getSeatsFromDb = () => {
+  const getSeatsFromDb = async () => {
     let seatsRef = doc(dbService, "seats", props.userUid);
 
-    setSeatLists([]);
-    onSnapshot(seatsRef, (doc) => {
+    const docs = await getDoc(seatsRef);
+    setYearSeatLists([]);
+    if (docs.exists()) {
       const new_seats = [];
-      const years = [];
-      doc?.data()?.seats_data?.forEach((data) => {
+
+      docs?.data()?.seats_data?.forEach((data) => {
         //예시자료(비밀자료) 는 걸러줌!
 
         if (data.title.includes("-*-예시자료-*-")) return;
@@ -29,37 +34,26 @@ const SeatLists = (props) => {
         let data_month = data.saveDate.slice(5, 7);
         let new_data = {};
         if (+data_month >= 2) {
-          years.push(data_year);
-          //자료에 년도를 yearGroup으로 추가해둠
-          new_data = { ...data, yearGroup: data_year };
+          if (+data_year === +now_year) {
+            //자료에 년도를 yearGroup으로 추가해둠
+            new_data = { ...data, yearGroup: data_year };
+          }
         } else if (+data_month <= 1) {
-          let fixed_year = String(+data_year - 1);
-          years.push(fixed_year);
-          new_data = { ...data, yearGroup: fixed_year };
+          if (+data_year === +now_year - 1) {
+            let fixed_year = String(+data_year - 1);
+            new_data = { ...data, yearGroup: fixed_year };
+          }
         }
         new_seats.push(new_data);
       });
 
-      //학년도를 저장해둠.
-      setDataYears([...new Set(years)]);
-      setSeatLists([...new_seats]);
-    });
+      setYearSeatLists([...new_seats]);
+    }
   };
 
   useEffect(() => {
     getSeatsFromDb();
-  }, [changeData]);
-
-  useEffect(() => {
-    setYearGroupHandler("");
-    setYearGroupHandler(changeData);
-  }, [seatLists]);
-
-  //년도를 기준으로 출결기록 세팅하기(셀렉트 옵션 선택시 실행되는 함수)
-  const setYearGroupHandler = (year_group) => {
-    const list = seatLists?.filter((data) => data.yearGroup === year_group);
-    setYearSeatLists([...list]);
-  };
+  }, []);
 
   const sortList = (list) => {
     const sorted_lists = list.sort(function (a, b) {
@@ -72,24 +66,8 @@ const SeatLists = (props) => {
 
   return (
     <>
-      <select
-        className={classes["select"]}
-        name="searchYear-selcet"
-        defaultValue={""}
-        onChange={(e) => setYearGroupHandler(e.target.value)}
-      >
-        <option value="" defaultChecked>
-          --학년도--
-        </option>
-        {dataYears?.map((year) => (
-          <option value={year} key={year}>
-            {year}학년도
-          </option>
-        ))}
-      </select>
-      <div className={classes["listSpace-div"]}></div>
-      <hr />
       <div>
+        <h1 style={{ marginTop: "200px" }}>기존 자료 목록</h1>
         {yearSeatLists &&
           sortList(yearSeatLists)?.map((item) => (
             <li
@@ -111,11 +89,8 @@ const SeatLists = (props) => {
                 title={item.title}
                 userUid={props.userUid}
                 saveDate={item.saveDate}
-                changeData={(year) => {
-                  setChangeData(year);
-                }}
                 clName={item.clName}
-                showJustLists={false}
+                showJustLists={true}
               />
               <hr />
             </li>
@@ -125,4 +100,4 @@ const SeatLists = (props) => {
   );
 };
 
-export default SeatLists;
+export default JustLists;

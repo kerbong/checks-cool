@@ -30,29 +30,27 @@ const monthEnd_text = `월말입니다! 선생님들의 소중한 정보를 다�
 ** 첵스-쿨은 선생님들의 모든 학급일지 데이터를 <br/> 엑셀파일 하나로 만들고 관리하는데 도움을 드리려고 합니다! <br/><br/> ** <b>첵스쿨 활용 팁👉</b> 을 <u>아침한마디에 공유</u>해주세요!
  `;
 
-const update_title = `new🎉 시간표 스타일 기능 / 전출학생 숨기기`;
+const update_title = `오류 수정 및 개선완료 🪄`;
 
-const update_text = `<br/><br/>  
-<b>선생님들과 관련된 안타까운 소식과<br/>  
-폭우, 폭염으로 마음이 착잡한 방학이었습니다..  </b><br/> <br/> 
-많은 문제들이 올바른 방향으로 잘 해결되었으면 합니다.<br/><br/>
+const update_text = `<b>1. <br/>
+[할 일]의 순서 바꾸기 오류가 수정</b>되었어요!<br/>  
+혹시 제대로 작동하지 않는 분들은 제보해주세요!!🚨<br/><br/> 
 <hr style={{ margin: "20px 15px" }} />
-<br/>
-방학 중 업데이트가 진행되었습니다. 의견을 주신 선생님들 감사합니다!!👍<br/><br/> 
-<b> 1. 시간표 스타일 기능 </b> <br/><br/>
-메인화면에서 시간표의 내용을 작성할 때 <br/>
-블록처리를 하시면 진하게, 밑줄, 취소선, 색깔 등을<br/>
-설정하실 수 있어요!!<br/>
-** PC에서만 가능합니다. <br/><br/>
-<b> 2. 전출학생 숨기기 </b> <br/><br/>
-전학간 학생들을 등록해서 [제출ox] 와 [개별기록]에서 <br/>
-숨기거나 보이도록 설정할 수 있습니다!<br/>
-움짤을 참고해주세요!<br/><br/>
-<hr style={{ margin: "20px 15px" }} />
-<br/>
-<b>2학기에는 행복한 일들이 가득하셨으면 합니다!🤩<br/> 모든 선생님들을 응원합니다. 건강하세요🙏 </b><br/><br/> 
+<b>2.<br/>
+[출결] 하루에 한 학생의 2개 이상의 출결 입력이 가능</b>합니다!<br/><br/>
+한 학생이 지각 후에, 조퇴할 경우😮‍💨 <br/>
+두 가지 출결 자료를 저장할 수 있습니다!
+<br/><br/>
+<b>  ** 사용전, 꼭 테스트를 거쳐주세요!!<br/>
+** 의견 주신 선생님들 감사합니다!<br/><br/></b>
 
-** <b>사이트 접속주소가 추가</b>되었어요! 접속이 어려우신 분들은 아래의 주소를 활용해주세요! https://checks-cho-ok.firebaseapp.com
+<hr style={{ margin: "20px 15px" }} />
+<b> ++ <br/>
+현장체험학습 기능을 업데이트 중입니다. </b> <br/>
+안정적인 사용을 위해, 차분하게 준비하곘습니다! <br/><br/>
+<b>몸과 마음으로 하나의 검은 점이 되셨던,🎗️<br/> 눈부신 선생님들을 응원합니다🤩 </b><br/><br/> 
+
+** 접속이 어려우신 분들은 아래의 주소를 활용해주세요!<br/> https://checks-cho-ok.firebaseapp.com
 <br/><br/>
 
 * 화면상단 메뉴바의 <i class="fa-solid fa-user"></i> -
@@ -144,7 +142,7 @@ const MainPage = (props) => {
   const [showDeployNotice, setShowDeployNotice] = useState(false);
 
   useEffect(() => {
-    if (localStorage.getItem("showNotice") <= "20230831") {
+    if (localStorage.getItem("showNotice") <= "20230915") {
       setShowNotice(true);
     }
     if (
@@ -1719,7 +1717,7 @@ const MainPage = (props) => {
             localStorage.setItem("showNotice", dayjs().format("YYYYMMDD"));
             setShowNotice(false);
           }}
-          imgSrc={mainImg}
+          // imgSrc={mainImg}
           title={
             <h1
               style={{

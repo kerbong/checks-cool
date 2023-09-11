@@ -247,6 +247,8 @@ const SettingSeat = (props) => {
               setInit(true);
             }}
             nowClassName={nowClassName}
+            showJustLists={true}
+            wholeStudents={props.students}
           />
           {showHowToUse}
         </>
@@ -298,6 +300,8 @@ const SettingSeat = (props) => {
               setInit(true);
             }}
             nowClassName={nowClassName}
+            showJustLists={true}
+            wholeStudents={props.students}
           />
           {/* 사용방법 */}
           {showHowToUse}

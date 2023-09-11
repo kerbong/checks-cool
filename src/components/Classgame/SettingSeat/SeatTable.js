@@ -6,6 +6,7 @@ import { dbService } from "../../../fbase";
 import { setDoc, doc, onSnapshot } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import dayjs from "dayjs";
+import JustLists from "./JustLists";
 
 const saveErrorSwal = (text) => {
   Swal.fire({
@@ -67,9 +68,19 @@ const SeatTable = (props) => {
   const [pickSeatAll, setPickSeatAll] = useState("");
   const [seeFromBack, setSeeFromBack] = useState(true);
   const [animation, setAnimation] = useState(true);
+  const [existLists, setExistLists] = useState(false);
 
   const toggleRef = useRef();
   let navigate = useNavigate();
+
+  // 자리 추가 div높이를 저장해두기
+  const div1Ref = useRef(null);
+  const [div2Height, setDiv2Height] = useState(0);
+
+  useEffect(() => {
+    const divHeight = div1Ref.current.clientHeight;
+    setDiv2Height(divHeight);
+  }, []);
 
   //자리에 성별 설정을 true로 만들기 seatList거나, 비밀자료인 경우
   useEffect(() => {
@@ -232,6 +243,11 @@ const SeatTable = (props) => {
               : `table-${item}`
           }
           onClick={(e) => itemAddStudentHandler(e)}
+          style={
+            props.isExist && props.showJustLists
+              ? { fontSize: "0.8rem", letterSpacing: "-1px" }
+              : {}
+          }
         >
           {" "}
           {props.seatStudents?.length > 0
@@ -1553,100 +1569,142 @@ const SeatTable = (props) => {
   };
 
   return (
-    <div id={props.title || "newSeats"}>
-      {genderEmptySeat && (
-        <button className={classes["secret"]} onClick={secretSaveHandler}>
-          비밀버튼
-        </button>
-      )}
-      {/* 자리뽑기 끝이면 보여지는 부분 */}
-      {students.length === 0 && (
-        <div className={classes["title-div"]}>
-          {/* 전담의 경우 반 정보 보여주기 */}
-          {props.clName && (
-            <span className={classes["clname-span"]}>{props.clName}</span>
-          )}
-          {/* 제목 입력창 */}
-          <input
-            className={classes["title-input"]}
-            id={`title-input${props.title || ""}`}
-            type="text"
-            placeholder={"제목"}
-            defaultValue={props.title || ""}
-          />
+    <div id={props.title || "newSeats"} style={{ display: "flex" }}>
+      <div
+        className={classes["newSeat-div"]}
+        style={{ width: "100%" }}
+        ref={div1Ref}
+      >
+        {genderEmptySeat && (
+          <button className={classes["secret"]} onClick={secretSaveHandler}>
+            비밀버튼
+          </button>
+        )}
 
-          <Button
-            name={"저장"}
-            onclick={() => {
-              if (!seeFromBack) {
-                saveErrorSwal(
-                  "학생기준 보기 (칠판이 화면 위쪽에 있는 상태) 에서만 저장이 가능합니다!"
-                );
-                return;
-              }
-              saveSeatsHandler();
-            }}
-            className={"settingSeat-btn"}
-          />
-          {props.title?.length > 0 && (
-            <>
-              <Button
-                name={"삭제"}
-                onclick={() => delteSeatsHandler()}
-                className={"settingSeat-btn"}
-              />
-            </>
-          )}
-        </div>
-      )}
+        {/* 자리뽑기 끝이면 보여지는 부분 */}
+        {!props.showJustLists && students.length === 0 && (
+          <div className={classes["title-div"]}>
+            {/* 전담의 경우 반 정보 보여주기 */}
+            {props.clName && (
+              <span className={classes["clname-span"]}>{props.clName}</span>
+            )}
+            {/* 제목 입력창 */}
+            <input
+              className={classes["title-input"]}
+              id={`title-input${props.title || ""}`}
+              type="text"
+              placeholder={"제목"}
+              defaultValue={props.title || ""}
+            />
 
-      {/* 기존자리에서 보일 설명 */}
-      {props.title?.length > 0 && (
-        <div>
-          <div>
-            <p>* 자리만 바꾸시면 수정하여 저장됩니다.</p>
-            <p>* 제목을 변경하고 저장하시면 새로 저장됩니다.</p>
-          </div>
-
-          {/* 교사기준, 학생기준보기 변경 버튼 */}
-          <div>
             <Button
-              name={seeFromBack ? "교사기준" : "학생기준"}
-              onclick={changeSeeFromHandler}
+              name={"저장"}
+              onclick={() => {
+                if (!seeFromBack) {
+                  saveErrorSwal(
+                    "학생기준 보기 (칠판이 화면 위쪽에 있는 상태) 에서만 저장이 가능합니다!"
+                  );
+                  return;
+                }
+                saveSeatsHandler();
+              }}
               className={"settingSeat-btn"}
             />
+            {props.title?.length > 0 && (
+              <>
+                <Button
+                  name={"삭제"}
+                  onclick={() => delteSeatsHandler()}
+                  className={"settingSeat-btn"}
+                />
+              </>
+            )}
           </div>
-        </div>
-      )}
+        )}
 
-      {!props.isExist && (
-        <button
-          className={classes["seatsAdd-btn"]}
-          onClick={() => {
-            props.addNewCancel();
-          }}
-        >
-          <i className="fa-solid fa-xmark"></i>
-        </button>
-      )}
+        {/* 리스트만 보여주는 경우 제목만 보여줌 */}
+        {props.showJustLists && (
+          <div className={classes["title-div"]}>
+            <span>{props.title}</span>
+          </div>
+        )}
 
-      {/* 자리에 성별 세팅할 때 보여주는 설명, 버튼 */}
-      {!genderEmptySeat && (
-        <div style={{ marginTop: "-30px" }}>
-          <p>
-            {" "}
-            <br />* 먼저 자리를 클릭해서 자리의 성별과 비워둘 자리를 정해주세요.
-            <br />
-            <br />
-            * 한 번 클릭할 때마다 [ 남 => 여 => 빈자리 ]로 변경됩니다.
-            <br />
-            <br />
-            * 자리에 성별을 정하지 않고 뽑으시려면 '빈자리만 설정하기'를
-            클릭해주세요.
-            <br />
-          </p>
-          {/* 일치하면 자리성별 세팅완료 버튼 나옴 */}
-          {/* {nowSeatGender?.[0] ===
+        {/* 기존자리에서 보일 설명 */}
+        {!props.showJustLists && props.title?.length > 0 && (
+          <div>
+            <div>
+              <p>* 자리만 바꾸시면 수정하여 저장됩니다.</p>
+              <p>* 제목을 변경하고 저장하시면 새로 저장됩니다.</p>
+            </div>
+
+            {/* 교사기준, 학생기준보기 변경 버튼 */}
+            <div>
+              <Button
+                name={seeFromBack ? "교사기준" : "학생기준"}
+                onclick={changeSeeFromHandler}
+                className={"settingSeat-btn"}
+                style={{ marginBottom: seeFromBack ? "20px" : "0px" }}
+              />
+            </div>
+          </div>
+        )}
+
+        {!props.isExist && (
+          <>
+            <button
+              className={classes["seatsAdd-btn"]}
+              onClick={() => {
+                Swal.fire({
+                  title: "돌아가기",
+                  html: "자리표 추가하기를 취소하고 자리뽑기 메뉴로<br/> 돌아갈까요?",
+                  showDenyButton: true,
+                  denyButtonText: "취소",
+                  confirmButtonText: "확인",
+                  confirmButtonColor: "#85bd82",
+                }).then((result) => {
+                  if (result.isConfirmed) {
+                    props.addNewCancel();
+                  }
+                });
+              }}
+            >
+              <i className="fa-solid fa-xmark"></i>
+            </button>
+
+            <button
+              className={classes["listShow-btn"]}
+              onClick={() => {
+                setExistLists((prev) => !prev);
+              }}
+              title={!existLists ? "기존자료 보기" : "기존자료 숨기기"}
+            >
+              {!existLists ? (
+                <i className="fa-solid fa-arrow-left"></i>
+              ) : (
+                <i className="fa-solid fa-arrow-right"></i>
+              )}
+            </button>
+          </>
+        )}
+
+        {/* 자리에 성별 세팅할 때 보여주는 설명, 버튼 */}
+        {!genderEmptySeat && (
+          <div style={{ marginTop: "-30px" }}>
+            <p>
+              {" "}
+              <br />* 먼저 자리를 클릭해서 자리의 성별과 비워둘 자리를
+              정해주세요.
+              <br />
+              <br />
+              * 한 번 클릭할 때마다 [ 남 => 여 => 빈자리 ]로 변경됩니다.
+              <br />
+              <br />
+              * 자리에 성별을 정하지 않고 뽑으시려면 '빈자리만 설정하기'를
+              클릭해주세요.
+              <br />
+            </p>
+            {/* 일치하면 자리성별 세팅완료 버튼 나옴 */}
+            {/* {nowSeatGender?.[0] ===
             students?.filter((std) => !std.woman)?.length &&
           nowSeatGender?.[1] === students?.filter((std) => std.woman)?.length &&
           +nowSeatGender?.[0] + +nowSeatGender?.[1] === students?.length ? (
@@ -1656,264 +1714,265 @@ const SeatTable = (props) => {
               className={"settingSeat-btn"}
             />
           ) : ( */}
-          <>
-            <div className={classes["blackboard-area"]}>
-              <div className={classes["div-bg-gray"]}>
-                <p>
-                  <button className={classes["op1"]}></button> &nbsp;남
-                  &nbsp;👉&nbsp;&nbsp;{" "}
-                  <button className={classes["op2"]}></button>
-                  &nbsp; 여 &nbsp;👉&nbsp;&nbsp;{" "}
-                  <button className={classes["op3"]}></button>&nbsp; 빈자리
-                  &nbsp;👉
-                  <br />
-                  <br />
-                  남학생 <b>{students?.filter((std) => !std.woman)?.length}</b>
-                  &nbsp;&nbsp;&nbsp; 여학생{" "}
-                  <b>{students?.filter((std) => std.woman)?.length}</b>
-                  &nbsp;&nbsp;&nbsp; 전체학생수 <b>{students?.length}</b>
-                </p>
-                <p>
-                  남학생 자리 <b>{nowSeatGender?.[0] || students?.length}</b>
-                  &nbsp;&nbsp;&nbsp; 여학생 자리{" "}
-                  <b>{nowSeatGender?.[1] || 0}</b>
-                  &nbsp;&nbsp;&nbsp; 전체 자리수&nbsp;
-                  <b>{+nowSeatGender?.[0] + +nowSeatGender?.[1]}</b>
-                </p>
-              </div>
-            </div>
-            <p>
-              <Button
-                name={"자리뽑기로 넘어가기"}
-                onclick={genderEmptySeatHandler}
-                className={"settingSeat-btn"}
-              />
-              <Button
-                name={"빈자리만 설정하기"}
-                onclick={emptySeatOnlyHandler}
-                className={"settingSeat-btn"}
-              />
-            </p>
-          </>
-          {/* )} */}
-        </div>
-      )}
-
-      {genderEmptySeat && (
-        <>
-          {/* 자리뽑기가 진짜 시작되면 보여지는 자리 위 세팅 부분 */}
-          <div className={classes["mt--25"]}>
-            {students.length > 0 ? (
-              <>
-                남은학생 ({students.length})
-                <div className={classes["remain-student-div"]}>
-                  {students?.map((stu) => (
-                    <span
-                      key={stu.name}
-                      className={classes["remain-student"]}
-                      onClick={() => {
-                        //선택한 학생의 자리 배치 확인
-                        if (!selectSeatCheck()) {
-                          errorSwal(
-                            `뽑힌 "${tempStudent.name}" 학생의 자리를 선택해주세요!`
-                          );
-                          return false;
-                        }
-                        let new_students = [...students];
-                        setStudents([
-                          ...new_students?.filter(
-                            (student) => +student.num !== +stu.num
-                          ),
-                        ]);
-                        setTempStudent(stu);
-                      }}
-                      title={stu.name}
-                    >
-                      {stu.num}
-                    </span>
-                  ))}
-                </div>
-              </>
-            ) : (
-              <div className={classes["remain-student-div"]}>
-                {props.title ? (
-                  ""
-                ) : (
-                  <>
-                    <p>
-                      <Button
-                        name={"여학생 자리만 색칠하기"}
-                        onclick={coloringGender}
-                        className={"settingSeat-btn"}
-                      />
-                      <Button
-                        name={
-                          seeFromBack
-                            ? "교사 기준으로 보기"
-                            : "학생 기준으로 보기"
-                        }
-                        onclick={changeSeeHandler}
-                        className={"settingSeat-btn"}
-                      />
-                    </p>
-                  </>
-                )}
-              </div>
-            )}
-          </div>
-
-          {students.length > 0 && (
             <>
-              <div className={classes["remain-student-div"]}>
-                <div className={classes["randomPickBtn-div"]}>
-                  누구랑&nbsp;
-                  <Button
-                    id="newPairBtn"
-                    onclick={() => {
-                      setIsNewPair(true);
-                    }}
-                    className={
-                      isNewPair
-                        ? `switch-random-btn-selected`
-                        : `switch-random-btn`
-                    }
-                    name={"새로운짝"}
-                  />
-                  <Button
-                    id="newPairBtn"
-                    onclick={() => {
-                      setIsNewPair(false);
-                    }}
-                    className={
-                      !isNewPair
-                        ? `switch-random-btn-selected`
-                        : `switch-random-btn`
-                    }
-                    name={"인생랜덤"}
-                  />
-                </div>
-
-                <div className={`${classes["randomPickBtn-div"]}`}>
-                  어떻게&nbsp;
-                  <Button
-                    id="justStudent"
-                    onclick={() => {
-                      setRandomJustStudent(true);
-                    }}
-                    className={
-                      randomJustStudent
-                        ? `switch-random-btn-selected`
-                        : `switch-random-btn`
-                    }
-                    name={"학생만"}
-                  />
-                  <Button
-                    id="stuPlusSeat"
-                    onclick={() => {
-                      setRandomJustStudent(false);
-                    }}
-                    className={
-                      !randomJustStudent
-                        ? `switch-random-btn-selected`
-                        : `switch-random-btn`
-                    }
-                    name={"학생+자리"}
-                  />
-                </div>
-                <div className={`${classes["randomPickBtn-div"]}`}>
-                  <li className={classes["dropdown-li-nonehover"]}>
-                    움짤
-                    <input type="checkbox" id="toggle" hidden />
-                    <label
-                      htmlFor="toggle"
-                      className={
-                        animation
-                          ? `${classes["toggleSwitch"]} ${classes["active"]}`
-                          : `${classes["toggleSwitch"]}`
-                      }
-                      onClick={() => {
-                        setAnimation((prev) => !prev);
-                      }}
-                      ref={toggleRef}
-                    >
-                      <span className={classes["toggleButton"]}></span>
-                    </label>
-                  </li>
+              <div className={classes["blackboard-area"]}>
+                <div className={classes["div-bg-gray"]}>
+                  <p>
+                    <button className={classes["op1"]}></button> &nbsp;남
+                    &nbsp;👉&nbsp;&nbsp;{" "}
+                    <button className={classes["op2"]}></button>
+                    &nbsp; 여 &nbsp;👉&nbsp;&nbsp;{" "}
+                    <button className={classes["op3"]}></button>&nbsp; 빈자리
+                    &nbsp;👉
+                    <br />
+                    <br />
+                    남학생{" "}
+                    <b>{students?.filter((std) => !std.woman)?.length}</b>
+                    &nbsp;&nbsp;&nbsp; 여학생{" "}
+                    <b>{students?.filter((std) => std.woman)?.length}</b>
+                    &nbsp;&nbsp;&nbsp; 전체학생수 <b>{students?.length}</b>
+                  </p>
+                  <p>
+                    남학생 자리 <b>{nowSeatGender?.[0] || students?.length}</b>
+                    &nbsp;&nbsp;&nbsp; 여학생 자리{" "}
+                    <b>{nowSeatGender?.[1] || 0}</b>
+                    &nbsp;&nbsp;&nbsp; 전체 자리수&nbsp;
+                    <b>{+nowSeatGender?.[0] + +nowSeatGender?.[1]}</b>
+                  </p>
                 </div>
               </div>
-              <div className={classes["remain-student-div"]}>
+              <p>
+                <Button
+                  name={"자리뽑기로 넘어가기"}
+                  onclick={genderEmptySeatHandler}
+                  className={"settingSeat-btn"}
+                />
+                <Button
+                  name={"빈자리만 설정하기"}
+                  onclick={emptySeatOnlyHandler}
+                  className={"settingSeat-btn"}
+                />
+              </p>
+            </>
+            {/* )} */}
+          </div>
+        )}
+
+        {genderEmptySeat && (
+          <>
+            {/* 자리뽑기가 진짜 시작되면 보여지는 자리 위 세팅 부분 */}
+            <div className={classes["mt--25"]}>
+              {students.length > 0 ? (
                 <>
+                  남은학생 ({students.length})
+                  <div className={classes["remain-student-div"]}>
+                    {students?.map((stu) => (
+                      <span
+                        key={stu.name}
+                        className={classes["remain-student"]}
+                        onClick={() => {
+                          //선택한 학생의 자리 배치 확인
+                          if (!selectSeatCheck()) {
+                            errorSwal(
+                              `뽑힌 "${tempStudent.name}" 학생의 자리를 선택해주세요!`
+                            );
+                            return false;
+                          }
+                          let new_students = [...students];
+                          setStudents([
+                            ...new_students?.filter(
+                              (student) => +student.num !== +stu.num
+                            ),
+                          ]);
+                          setTempStudent(stu);
+                        }}
+                        title={stu.name}
+                      >
+                        {stu.num}
+                      </span>
+                    ))}
+                  </div>
+                </>
+              ) : (
+                <div className={classes["remain-student-div"]}>
+                  {props.title ? (
+                    ""
+                  ) : (
+                    <>
+                      <p>
+                        <Button
+                          name={"여학생 자리만 색칠하기"}
+                          onclick={coloringGender}
+                          className={"settingSeat-btn"}
+                        />
+                        <Button
+                          name={
+                            seeFromBack
+                              ? "교사 기준으로 보기"
+                              : "학생 기준으로 보기"
+                          }
+                          onclick={changeSeeHandler}
+                          className={"settingSeat-btn"}
+                        />
+                      </p>
+                    </>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {students.length > 0 && (
+              <>
+                <div className={classes["remain-student-div"]}>
                   <div className={classes["randomPickBtn-div"]}>
-                    {!randomJustStudent && "랜덤자리 한명씩"}
+                    누구랑&nbsp;
                     <Button
-                      id="randomWomanPickBtn"
-                      onclick={() =>
-                        randomJustStudent
-                          ? randomPickHandler(true)
-                          : pickAndSeatHandler(true)
+                      id="newPairBtn"
+                      onclick={() => {
+                        setIsNewPair(true);
+                      }}
+                      className={
+                        isNewPair
+                          ? `switch-random-btn-selected`
+                          : `switch-random-btn`
                       }
-                      className={"settingSeat-btn"}
-                      name="여학생"
+                      name={"새로운짝"}
                     />
                     <Button
-                      id="randomManPickBtn"
-                      onclick={() =>
-                        randomJustStudent
-                          ? randomPickHandler(false)
-                          : pickAndSeatHandler(false)
+                      id="newPairBtn"
+                      onclick={() => {
+                        setIsNewPair(false);
+                      }}
+                      className={
+                        !isNewPair
+                          ? `switch-random-btn-selected`
+                          : `switch-random-btn`
                       }
-                      className={"settingSeat-btn"}
-                      name="남학생"
-                    />
-                    <Button
-                      id="randomPickBtn"
-                      onclick={() =>
-                        randomJustStudent
-                          ? randomPickHandler("all")
-                          : pickAndSeatHandler("all")
-                      }
-                      className={"settingSeat-btn"}
-                      name="성별랜덤"
+                      name={"인생랜덤"}
                     />
                   </div>
 
-                  {/* 자리까지 뽑기 버전에서만 가능한 전체 뽑기, 1번자리부터 순서대로 들어감! */}
-                  {!randomJustStudent && (
-                    <div className={classes["randomPickBtn-div"]}>
-                      한번에
-                      <Button
-                        id="randomMan_WoPickBtn"
-                        onclick={() => {
-                          setPickSeatAll("mix");
-                          randomAllHandler("mix", "all");
+                  <div className={`${classes["randomPickBtn-div"]}`}>
+                    어떻게&nbsp;
+                    <Button
+                      id="justStudent"
+                      onclick={() => {
+                        setRandomJustStudent(true);
+                      }}
+                      className={
+                        randomJustStudent
+                          ? `switch-random-btn-selected`
+                          : `switch-random-btn`
+                      }
+                      name={"학생만"}
+                    />
+                    <Button
+                      id="stuPlusSeat"
+                      onclick={() => {
+                        setRandomJustStudent(false);
+                      }}
+                      className={
+                        !randomJustStudent
+                          ? `switch-random-btn-selected`
+                          : `switch-random-btn`
+                      }
+                      name={"학생+자리"}
+                    />
+                  </div>
+                  <div className={`${classes["randomPickBtn-div"]}`}>
+                    <li className={classes["dropdown-li-nonehover"]}>
+                      움짤
+                      <input type="checkbox" id="toggle" hidden />
+                      <label
+                        htmlFor="toggle"
+                        className={
+                          animation
+                            ? `${classes["toggleSwitch"]} ${classes["active"]}`
+                            : `${classes["toggleSwitch"]}`
+                        }
+                        onClick={() => {
+                          setAnimation((prev) => !prev);
                         }}
+                        ref={toggleRef}
+                      >
+                        <span className={classes["toggleButton"]}></span>
+                      </label>
+                    </li>
+                  </div>
+                </div>
+                <div className={classes["remain-student-div"]}>
+                  <>
+                    <div className={classes["randomPickBtn-div"]}>
+                      {!randomJustStudent && "랜덤자리 한명씩"}
+                      <Button
+                        id="randomWomanPickBtn"
+                        onclick={() =>
+                          randomJustStudent
+                            ? randomPickHandler(true)
+                            : pickAndSeatHandler(true)
+                        }
                         className={"settingSeat-btn"}
-                        name="1번부터"
+                        name="여학생"
                       />
-                      {/* 빈자리만 세팅되어 있으면.. 1번부터하면 그냥 여자쭈루루룩 남자 쭈루루루룩 넣어버리니까.. 안보이게 */}
-                      {!onlyEmptySeat && (
-                        <>
-                          <Button
-                            id="randomWo_manPickBtn"
-                            onclick={() => {
-                              setPickSeatAll("gender");
-                              randomAllHandler("gender", true);
-                            }}
-                            className={"settingSeat-btn"}
-                            name="여자먼저"
-                          />
-                          <Button
-                            id="randomAllPickBtn"
-                            onclick={() => {
-                              setPickSeatAll("gender");
-                              randomAllHandler("gender", false);
-                            }}
-                            className={"settingSeat-btn"}
-                            name="남자먼저"
-                          />
-                        </>
-                      )}
-                      {/* <Button
+                      <Button
+                        id="randomManPickBtn"
+                        onclick={() =>
+                          randomJustStudent
+                            ? randomPickHandler(false)
+                            : pickAndSeatHandler(false)
+                        }
+                        className={"settingSeat-btn"}
+                        name="남학생"
+                      />
+                      <Button
+                        id="randomPickBtn"
+                        onclick={() =>
+                          randomJustStudent
+                            ? randomPickHandler("all")
+                            : pickAndSeatHandler("all")
+                        }
+                        className={"settingSeat-btn"}
+                        name="성별랜덤"
+                      />
+                    </div>
+
+                    {/* 자리까지 뽑기 버전에서만 가능한 전체 뽑기, 1번자리부터 순서대로 들어감! */}
+                    {!randomJustStudent && (
+                      <div className={classes["randomPickBtn-div"]}>
+                        한번에
+                        <Button
+                          id="randomMan_WoPickBtn"
+                          onclick={() => {
+                            setPickSeatAll("mix");
+                            randomAllHandler("mix", "all");
+                          }}
+                          className={"settingSeat-btn"}
+                          name="1번부터"
+                        />
+                        {/* 빈자리만 세팅되어 있으면.. 1번부터하면 그냥 여자쭈루루룩 남자 쭈루루루룩 넣어버리니까.. 안보이게 */}
+                        {!onlyEmptySeat && (
+                          <>
+                            <Button
+                              id="randomWo_manPickBtn"
+                              onclick={() => {
+                                setPickSeatAll("gender");
+                                randomAllHandler("gender", true);
+                              }}
+                              className={"settingSeat-btn"}
+                              name="여자먼저"
+                            />
+                            <Button
+                              id="randomAllPickBtn"
+                              onclick={() => {
+                                setPickSeatAll("gender");
+                                randomAllHandler("gender", false);
+                              }}
+                              className={"settingSeat-btn"}
+                              name="남자먼저"
+                            />
+                          </>
+                        )}
+                        {/* <Button
                         id="randomAllPickBtn"
                         onclick={() => {
                           setPickSeatAll("mix");
@@ -1922,42 +1981,62 @@ const SeatTable = (props) => {
                         className={"settingSeat-btn"}
                         name="아무데나"
                       /> */}
-                    </div>
-                  )}
-                </>
-              </div>
-            </>
-          )}
+                      </div>
+                    )}
+                  </>
+                </div>
+              </>
+            )}
 
-          {students.length > 0 && (
-            <div className={classes["temp-name"]}>
-              <div>
-                <span>✋ </span>
-                {tempStudent.name}
+            {students.length > 0 && (
+              <div className={classes["temp-name"]}>
+                <div>
+                  <span>✋ </span>
+                  {tempStudent.name}
+                </div>
               </div>
-            </div>
-          )}
-        </>
-      )}
+            )}
+          </>
+        )}
 
-      {/* 초기세팅.. 뒤에서 볼때면 칠판이 자리 뒤에 */}
-      {seeFromBack && (
-        <div className={classes["blackboard-area"]}>
-          <span className={classes["blackboard"]}>칠 판</span>
+        {/* 초기세팅.. 뒤에서 볼때면 칠판이 자리 뒤에 */}
+        {seeFromBack && (
+          <div className={classes["blackboard-area"]}>
+            <span className={classes["blackboard"]}>칠 판</span>
+          </div>
+        )}
+
+        <div
+          className={classes[`items-container`]}
+          id={
+            props.title?.length > 0 ? `items-${props.title}-div` : "items-div"
+          }
+        >
+          {seeFromBack ? items : itemsFront}
         </div>
-      )}
 
-      <div
-        className={classes[`items-container`]}
-        id={props.title?.length > 0 ? `items-${props.title}-div` : "items-div"}
-      >
-        {seeFromBack ? items : itemsFront}
+        {/* 교사용으로 앞에서 볼때면 칠판이 앞에 */}
+        {!seeFromBack && (
+          <div className={classes["blackboard-area"]}>
+            <span className={classes["blackboard"]}>칠 판</span>
+          </div>
+        )}
       </div>
 
-      {/* 교사용으로 앞에서 볼때면 칠판이 앞에 */}
-      {!seeFromBack && (
-        <div className={classes["blackboard-area"]}>
-          <span className={classes["blackboard"]}>칠 판</span>
+      {/* 기존 자료들 리스트 보여주기 */}
+      {props.showJustLists && existLists && (
+        <div
+          className={classes["justLists-div"]}
+          style={{
+            height: div2Height,
+            display: !existLists ? "none" : "block",
+            width: "480px",
+          }}
+        >
+          <JustLists
+            userUid={props.userUid}
+            wholeStudents={props.wholeStudents}
+          />
         </div>
       )}
     </div>

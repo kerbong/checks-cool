@@ -151,7 +151,8 @@
   width: 40vw;
 }
 
-.seatsAdd-btn {
+.seatsAdd-btn,
+.listShow-btn {
   position: absolute;
   top: 140px;
   right: 7%;
@@ -161,6 +162,13 @@
   border-radius: 25px;
   border-width: 0;
   background-color: #e2e2e2;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.listShow-btn {
+  right: calc(7% + 70px);
 }
 
 .settingSeat {
@@ -331,4 +339,12 @@
 .toggleSwitch,
 .toggleButton {
   transition: all 0.2s ease-in;
+}
+
+.newSeat-div {
+  flex-grow: 1;
+}
+
+.justLists-div {
+  overflow-y: auto;
 }
