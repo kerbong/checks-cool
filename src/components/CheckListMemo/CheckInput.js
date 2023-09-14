@@ -487,7 +487,7 @@ const CheckInput = (props) => {
             className={"del-checkItem-button"}
             onclick={() => {
               delCheckItem(props.item);
-              props.setItemNull();
+              // props.setItemNull();
             }}
           />
         )}

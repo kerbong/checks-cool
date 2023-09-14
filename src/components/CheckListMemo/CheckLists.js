@@ -196,7 +196,9 @@ const CheckLists = (props) => {
         //checkList 일경우
         let upload_item;
         if (new_item.unSubmitStudents) {
-          setUnSubmitStudents(new_item.unSubmitStudents);
+          if (auto) {
+            setUnSubmitStudents(new_item.unSubmitStudents);
+          }
           //기존자료가 있으면?!
           if (datas?.length > 0) {
             // if (checkLists?.length > 0) {
@@ -224,6 +226,14 @@ const CheckLists = (props) => {
               new_datas[data_index] = upload_item;
             }
 
+            // 만약 자동저장일 경우, 모달창이 띄워져 있는데 setItem해줘야.. 미제출 학생 목록이 저장된 데이터로 바뀜.
+
+            if (auto) {
+              setItem(upload_item);
+            } else {
+              setItem([]);
+            }
+
             //3.17에러.. id가 null이거나 'null'인 자료 제외함
             new_datas = new_datas.filter(
               (data) => data.id !== null && data.id !== "null"
@@ -248,17 +258,24 @@ const CheckLists = (props) => {
 
             //처음 자료를 저장하는 경우
           } else {
+            let new_checkItem = {
+              ...new_item,
+              yearGroup: checkListsYear.current.value,
+            };
+            // 만약 자동저장일 경우, 모달창이 띄워져 있는데 setItem해줘야.. 미제출 학생 목록이 저장된 데이터로 바뀜.
+
+            if (auto) {
+              setItem(new_checkItem);
+            } else {
+              setItem([]);
+            }
             //학년도 데이터 추가하기
 
             await setDoc(firestoreRef, {
-              checkLists_data: [
-                { ...new_item, yearGroup: checkListsYear.current.value },
-              ],
+              checkLists_data: [new_checkItem],
             });
 
-            setNowOnCheckLists([
-              { ...new_item, yearGroup: checkListsYear.current.value },
-            ]);
+            setNowOnCheckLists([new_checkItem]);
             // }
           }
 
@@ -603,7 +620,13 @@ const CheckLists = (props) => {
       {props.about === "checkLists" && (
         <>
           {addCheckItem && (
-            <Modal onClose={() => setAddCheckItem(false)}>
+            <Modal
+              onClose={() => {
+                localStorage.setItem("itemId", "null");
+                setAddCheckItem(false);
+                setItem([]);
+              }}
+            >
               <CheckInput
                 goneStudents={goneStudents}
                 exceptGone={exceptGone}
@@ -616,6 +639,7 @@ const CheckLists = (props) => {
                 onClose={() => {
                   localStorage.setItem("itemId", "null");
                   setAddCheckItem(false);
+                  setItem([]);
                 }}
                 saveItemHandler={(item, auto) => {
                   saveItemHandler(item, auto);
