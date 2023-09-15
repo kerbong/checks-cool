@@ -159,24 +159,24 @@ const CompareListMemoTable = (props) => {
     const new_dataClNames = [];
     let new_trNums = [];
 
+    console.log(props.students);
+
     let studentsNums = 0;
     //자료의 반 이름을 모아두고
     props.listMemo?.forEach((list) => {
-      new_dataClNames?.push(list.clName);
-      new_listMemoClStudents?.push(
-        Object.values(
-          props.students?.filter(
-            (std) => Object.keys(std)?.[0] === list.clName
-          )?.[0]
-        )?.[0]
-      );
+      new_dataClNames?.push(list?.clName);
+      let list_clStds = props.students?.filter(
+        (std) => Object.keys(std)?.[0] === list?.clName
+      )?.[0];
+      if (list_clStds?.length === 0) return;
+      new_listMemoClStudents?.push(Object.values(list_clStds)?.[0]);
     });
 
     setListMemoClStudents([...new_listMemoClStudents]);
     setDataClNames([...new Set(new_dataClNames)]);
 
     //자료의 반 학생들의 이름을 모아두기
-    new_listMemoClStudents.forEach((clStd) => {
+    new_listMemoClStudents?.forEach((clStd) => {
       //자료 중 가장 학생수 많은 거 찾기
       if (studentsNums < clStd.length) {
         studentsNums = clStd.length;

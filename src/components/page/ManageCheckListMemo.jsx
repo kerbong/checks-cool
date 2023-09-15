@@ -235,11 +235,13 @@ const ManageCheckListMemo = (props) => {
   const doughnut_datas = () => {
     let submitNum = 0;
     let unSubmitNum = 0;
+    console.log("여긴가");
+    console.log(originCheckLists);
     originCheckLists?.forEach((list) => {
       // 전담인데.. 현재 선택된 학급과 자료 학급이 다르면 리턴
       if (nowIsSubject && list?.clName !== clName) return;
       list?.unSubmitStudents?.filter(
-        (stu) => stu.name === onStudent.split(" ")[1]
+        (stu) => stu?.name === onStudent?.split(" ")[1]
       )?.length > 0
         ? (unSubmitNum += 1)
         : (submitNum += 1);

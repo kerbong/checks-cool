@@ -172,9 +172,14 @@ const EventLists = (props) => {
       //기존 출결 이벤트의 경우
     } else {
       //출결 옵션 선택값
-      optionValue = document.getElementById(`option-select${item.id}`).value;
+      console.log(item);
+      optionValue =
+        document.getElementById(`option-select${item.id}`)?.value ||
+        document.getElementById(`option-select${item.beforeId}`)?.value;
       //비고 입력값
-      noteValue = document.getElementById(`option-note${item.id}`).value;
+      noteValue =
+        document.getElementById(`option-note${item.id}`)?.value ||
+        document.getElementById(`option-note${item.beforeId}`)?.value;
     }
 
     //출결 이벤트 날짜

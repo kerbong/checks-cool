@@ -67,6 +67,9 @@ const EventItem = (props) => {
       new_item["id"] = eventId;
       // console.log(new_item);
       // console.log(item);
+      if (props.about === "attendance") {
+        new_item["beforeId"] = keyId;
+      }
       //새로운거 저장하기
       props.saveFixedData(new_item);
       //날짜는 그대로 내용만 변경된 경우
