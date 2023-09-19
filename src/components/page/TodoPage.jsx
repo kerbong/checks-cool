@@ -687,7 +687,10 @@ const TodoPage = (props) => {
 
       {/* 페이지의 일정부분 관련 버튼 및 설명 */}
 
-      <div className={classes["todo-option"]}>
+      <div
+        className={classes["todo-option"]}
+        style={props.forMemoPadding ? { padding: "0" } : { padding: "0 15px" }}
+      >
         <div
           className={classes["todo-option"]}
           style={{ justifyContent: "flex-start" }}

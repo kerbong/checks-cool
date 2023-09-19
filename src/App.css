@@ -59,6 +59,7 @@ select {
   flex-direction: column;
   justify-content: center;
   padding: 10px 0;
+  width: 95%;
 }
 
 /* ToDo App Input Box */
@@ -160,6 +161,7 @@ select {
   margin-top: 10px;
   display: flex;
   flex-direction: column;
+  width: 98%;
 }
 .todoapp__list-tit {
   font-weight: bold;

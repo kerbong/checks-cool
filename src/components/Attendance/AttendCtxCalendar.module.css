@@ -101,7 +101,7 @@ select {
 }
 
 .todoOption {
-  width: 47px;
+  width: 30px;
   height: 12px;
   display: inline-block;
   border-radius: 7px;
@@ -111,10 +111,9 @@ select {
 .todo-option {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: space-between;
   font-size: 0.8rem;
   height: 60px;
-  width: 100%;
 }
 
 .todo-option-btns {

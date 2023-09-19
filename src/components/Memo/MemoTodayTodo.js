@@ -203,7 +203,11 @@ const MemoTodayTodo = (props) => {
           margin: windowWidth > 1000 ? "20px 10px" : "0",
         }}
       >
-        <TodoPage userUid={props.userUid} insideLoad={true} />
+        <TodoPage
+          userUid={props.userUid}
+          insideLoad={true}
+          forMemoPadding={windowWidth < 1200 ? true : false}
+        />
       </div>
     </div>
   );
