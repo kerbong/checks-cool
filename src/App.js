@@ -70,29 +70,24 @@ function App() {
 
   // 처음 렌더링 할 때 로그인 되었는지 확인하고 유저 정보 프로필 정보 받아오는 함수
   useEffect(() => {
-    try {
-      authService.onAuthStateChanged((user) => {
-        // console.log("실행");
-        if (user) {
-          setUserUid(user.uid);
-          getProfile(user.uid);
-          setUser(user);
-          setIsLoggedIn(true);
-        } else {
-          setIsLoggedIn(false);
-          setStudents([]);
-          setProfile({});
-        }
-        setInit(true);
+    const subscribe = authService.onAuthStateChanged((user) => {
+      // console.log("실행");
+      if (user) {
+        setUserUid(user.uid);
+        getProfile(user.uid);
+        setUser(user);
+        setIsLoggedIn(true);
+      } else {
+        setIsLoggedIn(false);
+        setStudents([]);
+        setProfile({});
+      }
+      setInit(true);
+    });
 
-        // else {
-        //   //로그인하면 심심해요 화면 먼저보여주기
-        //   navigate(`/classgame`, { state: "main" });
-        // }
-      });
-    } catch (error) {
-      console.log(error);
-    }
+    return () => {
+      subscribe();
+    };
   }, []);
 
   //로그인해서 프로필이 없으면, 프로필 화면으로 먼저 보내기

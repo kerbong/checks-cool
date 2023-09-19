@@ -214,10 +214,27 @@ const HwpControl = (props) => {
     const atCheckListRef = doc(dbService, "attendCheck", "teacherLists");
 
     // 교사들 목록에 추가하기
+    // onSnapshot(atCheckListRef, (doc)=>{
+    //   if (doc.exists()) {
 
-    await setDoc(atCheckListRef, {
-      lists: arrayUnion(props.userUid + "*" + title),
-    });
+    //   }
+    // })
+    const atCheckList_doc = await getDoc(atCheckListRef);
+    let new_teacherLists = [];
+
+    new_teacherLists = atCheckList_doc?.data()?.lists;
+
+    new_teacherLists.push(props.userUid + "*" + title);
+
+    if (atCheckList_doc.exists()) {
+      await updateDoc(atCheckListRef, {
+        lists: new_teacherLists,
+      });
+    } else {
+      await setDoc(atCheckListRef, {
+        lists: new_teacherLists,
+      });
+    }
 
     // 받아온 타이틀에 학생들 이름 섞어서 데이터 만들고 저장하기
     try {

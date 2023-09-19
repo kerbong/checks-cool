@@ -250,12 +250,11 @@
 .op1,
 .op2,
 .op3 {
-  width: 47px;
+  width: 30px;
   height: 18px;
   display: inline-block;
-  border-width: 2px;
+  border-width: 1px;
   border-color: black;
-  border-radius: 5px;
 }
 
 /* 남 */
@@ -273,7 +272,7 @@
 
 .div-bg-gray {
   padding: 15px;
-  background-color: rgb(205, 205, 205);
+  background-color: #cdcdcd40;
   border-radius: 15px;
   border-width: 0;
   width: 85vw;

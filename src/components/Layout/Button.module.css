@@ -427,7 +427,8 @@
   background-color: #c3da9a;
 }
 
-.settingSeat-btn {
+.settingSeat-btn,
+.settingSeat-btn-disabled {
   width: auto;
   font-size: 1.1rem;
   padding: 12px;
@@ -436,6 +437,12 @@
   background-color: #c3da9a;
   border-radius: 5px;
   border-width: 0;
+}
+
+.settingSeat-btn-disabled {
+  background-color: #d7d7d7;
+  color: white;
+  font-weight: bold;
 }
 
 .saveSimsim-btn {

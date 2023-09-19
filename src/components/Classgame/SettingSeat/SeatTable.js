@@ -64,7 +64,7 @@ const SeatTable = (props) => {
   const [allSeats, setAllSeats] = useState([]);
   const [seatLists, setSeatLists] = useState(null);
   const [pairStudents, setPairStudents] = useState([]);
-  const [randomJustStudent, setRandomJustStudent] = useState(true);
+  const [randomJustStudent, setRandomJustStudent] = useState(false);
   const [pickSeatAll, setPickSeatAll] = useState("");
   const [seeFromBack, setSeeFromBack] = useState(true);
   const [animation, setAnimation] = useState(true);
@@ -263,7 +263,7 @@ const SeatTable = (props) => {
     document
       .getElementById(props.title || "newSeats")
       .style.setProperty("--rows", tableRow);
-  }, [genderEmptySeat]);
+  }, [genderEmptySeat, props.seatStudents]);
 
   useEffect(() => {
     let new_students = [...students];
@@ -426,26 +426,6 @@ const SeatTable = (props) => {
     //남뽑기 여뽑기 기준 새로운 로직
     //남 혹은 여학생에서 학생 랜덤 뽑기
     const selectRnStudent = () => {
-      //만약 비밀자료가 있는데, 비밀자료에서 비어있는 자리의 학생을 뽑을 때, 비밀자료에 포함된 학생을 제외한 학생들 중에서 뽑아야 함
-
-      // let secretSeatDataStd = props.secretSeat?.students?.filter((std) =>
-      //   isNaN(+std)
-      // );
-
-      // // console.log(props.secretSeat?.students);
-
-      // //비밀자리표 상태고, 받아온 학생 자리 정보를 보니, 학급의 모든 학생이 결정된 상태가 아닐떄는 비밀자리표에 없는 학생중에 랜덤으로 뽑아야 함!
-      // if (
-      //   props.secretSeat &&
-      //   secretSeatDataStd?.length !== props.students?.length
-      // ) {
-      //   gender_students = gender_students?.filter(
-      //     (std) => !props.secretSeat?.students?.includes(std.name)
-      //   );
-      //   // 만약. 비밀자리표에 저장되지 않은 학생들이 모두 뽑히면, 그때부터는 비밀자리표의 학생들 뽑아주기
-      //   console.log(gender_students);
-      // }
-
       let randNum = Math.floor(Math.random() * gender_students.length);
 
       return gender_students[randNum];
@@ -546,8 +526,9 @@ const SeatTable = (props) => {
     return selectedStudent;
   };
 
-  //자리를 누르면 실행되는 함수
+  //자리를 누르면 실행되는 함수, 리스트만 보여줄 때는 실행되지 않아도 됨.
   const itemAddStudentHandler = (event) => {
+    if (props.showJustLists && props.isExist) return;
     let clickedSeat = event.target;
     let existItems = clickedSeat.parentNode.childNodes;
     let selectedSeats = 0;
@@ -1391,67 +1372,62 @@ const SeatTable = (props) => {
   //자리표 보는 기준 바꾸는 함수
   const changeSeeFromHandler = () => {
     //기존에 버튼을 눌렀던 적이 없으면 새롭게 itemsFromt를 만들고 아니면 seeFromBack만 바꾸기
-    if (!itemsFront) {
-      let items_students = [];
+    let items_students = [];
 
-      document
-        .getElementById(`items-${props.title}-div`)
-        .childNodes.forEach((item) => {
-          items_students.unshift(item.innerText);
-        });
+    document
+      .getElementById(`items-${props.title}-div`)
+      .childNodes.forEach((item) => {
+        items_students.unshift(item.innerText);
+      });
 
-      // console.log(items_students);
-      // console.log(props.rowColumn);
+    // console.log(items_students);
+    // console.log(props.rowColumn);
 
-      let data_month;
-      let data_year;
-      let dataYear_students;
-      //학생 자료 받아와서.. 성별 넣어주기
-      data_month = props.saveDate.slice(5, 7);
-      data_year = props.saveDate.slice(0, 4);
-      //학년도 세팅한 후에 (1월까지)
-      if (+data_month <= 1) {
-        data_year = String(+data_year - 1);
-      }
-      //받아온 전체 학생 자료에서 현재 학년도 학생 자료만 만들어 주기
-      dataYear_students = props?.wholeStudents?.filter(
-        (yearStd) => Object.keys(yearStd)[0] === data_year
-      )?.[0]?.[data_year];
-
-      if (props.clName) {
-        dataYear_students = dataYear_students?.filter(
-          (cl) => Object.keys(cl)[0] === props.clName
-        )?.[0]?.[props.clName];
-      }
-      // console.log(dataYear_students);
-
-      setItemsFront(
-        items_students?.map((stu, index) => (
-          <div
-            key={`table-${stu}`}
-            className={`${classes["item"]} item ${
-              classes[
-                dataYear_students?.filter(
-                  (student) => student.name === stu
-                )?.[0]?.woman && "existWoman"
-              ]
-            }`}
-            id={`table-${props.title}-${index + 1}`}
-            onClick={(e) => itemAddStudentHandler(e)}
-          >
-            {" "}
-            {stu}{" "}
-          </div>
-        ))
-      );
-
-      document
-        .getElementById(props.title)
-        .style.setProperty("--columns", tableColumn);
-      document
-        .getElementById(props.title)
-        .style.setProperty("--rows", tableRow);
+    let data_month;
+    let data_year;
+    let dataYear_students;
+    //학생 자료 받아와서.. 성별 넣어주기
+    data_month = props.saveDate.slice(5, 7);
+    data_year = props.saveDate.slice(0, 4);
+    //학년도 세팅한 후에 (1월까지)
+    if (+data_month <= 1) {
+      data_year = String(+data_year - 1);
     }
+    //받아온 전체 학생 자료에서 현재 학년도 학생 자료만 만들어 주기
+    dataYear_students = props?.wholeStudents?.filter(
+      (yearStd) => Object.keys(yearStd)[0] === data_year
+    )?.[0]?.[data_year];
+
+    if (props.clName) {
+      dataYear_students = dataYear_students?.filter(
+        (cl) => Object.keys(cl)[0] === props.clName
+      )?.[0]?.[props.clName];
+    }
+    // console.log(dataYear_students);
+
+    setItemsFront(
+      items_students?.map((stu, index) => (
+        <div
+          key={`table-${stu}`}
+          className={`${classes["item"]} item ${
+            classes[
+              dataYear_students?.filter((student) => student.name === stu)?.[0]
+                ?.woman && "existWoman"
+            ]
+          }`}
+          id={`table-${props.title}-${index + 1}`}
+          onClick={(e) => itemAddStudentHandler(e)}
+        >
+          {" "}
+          {stu}{" "}
+        </div>
+      ))
+    );
+
+    document
+      .getElementById(props.title)
+      .style.setProperty("--columns", tableColumn);
+    document.getElementById(props.title).style.setProperty("--rows", tableRow);
 
     setSeeFromBack((prev) => !prev);
   };
@@ -1470,7 +1446,7 @@ const SeatTable = (props) => {
     Swal.fire({
       icon: "warning",
       title: "저장 확인",
-      text: `예시자료로 저장하시겠어요? (기존 예시자료가 있으면 덮어쓰기 됩니다.)`,
+      html: `<b>기존 예시자료가 있으면 <u>덮어쓰기</u> 됩니다.</b><br/>예시자료로 저장하시겠어요? `,
       confirmButtonText: "확인",
       confirmButtonColor: "#85bd82",
       showDenyButton: true,
@@ -1544,39 +1520,15 @@ const SeatTable = (props) => {
     };
   };
 
-  //빈자리만 설정해서 뽑기 함수
-  const emptySeatOnlyHandler = () => {
-    let wholeStdNum = students?.length;
-    let wholeSeatNum = +nowSeatGender?.[0] + +nowSeatGender?.[1];
-    if (wholeStdNum !== wholeSeatNum) {
-      Swal.fire(
-        "빈자리 설정 필요",
-        "'전체학생수'와 '전체 자리수'를 일치시켜주세요.(비워둘 자리를 두 번 클릭해서 회색 빈자리로 만들어 주세요.)",
-        "warning"
-      );
-      return;
-    }
-    setGenderEmptySeat(true);
-    setOnlyEmptySeat(true);
-  };
+  //빈자리만 설정 완료되었는지 확인하는 변수
+  let emptySeatOnlyHandler =
+    students?.length === +nowSeatGender?.[0] + +nowSeatGender?.[1];
 
-  //성별 설정함수
-  const genderEmptySeatHandler = () => {
-    if (
-      nowSeatGender?.[0] === students?.filter((std) => !std.woman)?.length &&
-      nowSeatGender?.[1] === students?.filter((std) => std.woman)?.length &&
-      +nowSeatGender?.[0] + +nowSeatGender?.[1] === students?.length
-    ) {
-      setGenderEmptySeat(true);
-    } else {
-      Swal.fire(
-        "성별 설정 필요",
-        "남여학생수와 남여자리수가 일치하도록 설정해주세요. 비워둘 자리도 설정해주세요.",
-        "warning"
-      );
-      return;
-    }
-  };
+  //성별까지 설정됐는지 확인해서 반환하는 변수
+  let judgeGenderEmptyDone =
+    nowSeatGender?.[0] === students?.filter((std) => !std.woman)?.length &&
+    nowSeatGender?.[1] === students?.filter((std) => std.woman)?.length &&
+    +nowSeatGender?.[0] + +nowSeatGender?.[1] === students?.length;
 
   return (
     <div id={props.title || "newSeats"} style={{ display: "flex" }}>
@@ -1669,6 +1621,7 @@ const SeatTable = (props) => {
                 Swal.fire({
                   title: "돌아가기",
                   html: "자리표 추가하기를 취소하고 자리뽑기 메뉴로<br/> 돌아갈까요?",
+                  icon: "question",
                   showDenyButton: true,
                   denyButtonText: "취소",
                   confirmButtonText: "확인",
@@ -1703,13 +1656,20 @@ const SeatTable = (props) => {
         {/* 자리에 성별 세팅할 때 보여주는 설명, 버튼 */}
         {!genderEmptySeat && (
           <div style={{ marginTop: "-30px" }}>
+            <p style={{ fontSize: "1.7rem", marginTop: "-90px" }}>
+              자리 설정(성별까지 / 빈자리만)
+            </p>
             <p>
               {" "}
-              <br />* 먼저 자리를 클릭해서 자리의 성별과 비워둘 자리를
-              정해주세요.
+              <br />* 자리를 클릭해서 자리의 성별과 비워둘 자리를 정해주세요.
               <br />
-              <br />
-              * 한 번 클릭할 때마다 [ 남 => 여 => 빈자리 ]로 변경됩니다.
+              <br />* 한 번 클릭할 때마다 [&nbsp; &nbsp;남{" "}
+              <button className={classes["op1"]}></button>
+              &nbsp;&nbsp;&nbsp;/&nbsp;&nbsp; 여{" "}
+              <button className={classes["op2"]}></button>
+              &nbsp; &nbsp;/&nbsp;&nbsp; 빈자리{" "}
+              <button className={classes["op3"]}></button>&nbsp; &nbsp;]로
+              변경됩니다.
               <br />
               <br />
               * 자리에 성별을 정하지 않고 뽑으시려면 '빈자리만 설정하기'를
@@ -1731,14 +1691,6 @@ const SeatTable = (props) => {
               <div className={classes["blackboard-area"]}>
                 <div className={classes["div-bg-gray"]}>
                   <p>
-                    <button className={classes["op1"]}></button> &nbsp;남
-                    &nbsp;👉&nbsp;&nbsp;{" "}
-                    <button className={classes["op2"]}></button>
-                    &nbsp; 여 &nbsp;👉&nbsp;&nbsp;{" "}
-                    <button className={classes["op3"]}></button>&nbsp; 빈자리
-                    &nbsp;👉
-                    <br />
-                    <br />
                     남학생{" "}
                     <b>{students?.filter((std) => !std.woman)?.length}</b>
                     &nbsp;&nbsp;&nbsp; 여학생{" "}
@@ -1757,13 +1709,42 @@ const SeatTable = (props) => {
               <p>
                 <Button
                   name={"자리뽑기로 넘어가기"}
-                  onclick={genderEmptySeatHandler}
-                  className={"settingSeat-btn"}
+                  onclick={() => {
+                    if (judgeGenderEmptyDone) {
+                      setGenderEmptySeat(true);
+                    } else {
+                      Swal.fire({
+                        title: "성별 설정 필요",
+                        html: "'전체학생수'와 '전체 자리수'<br/> '남/여 학생수'와 '남/여 자리수'가 각각 일치하도록<br/> 자리를 클릭해주세요.",
+                        icon: "warning",
+                      });
+                    }
+                  }}
+                  className={
+                    judgeGenderEmptyDone
+                      ? "settingSeat-btn"
+                      : "settingSeat-btn-disabled"
+                  }
                 />
                 <Button
                   name={"빈자리만 설정하기"}
-                  onclick={emptySeatOnlyHandler}
-                  className={"settingSeat-btn"}
+                  onclick={() => {
+                    if (emptySeatOnlyHandler) {
+                      setGenderEmptySeat(true);
+                      setOnlyEmptySeat(true);
+                    } else {
+                      Swal.fire({
+                        title: "빈자리 설정 필요",
+                        html: "'전체학생수'와 '전체 자리수'를 일치시켜주세요.<br/>비워둘 자리를 두 번 클릭해서 회색으로 만들어 주세요.)",
+                        icon: "warning",
+                      });
+                    }
+                  }}
+                  className={
+                    emptySeatOnlyHandler
+                      ? "settingSeat-btn"
+                      : "settingSeat-btn-disabled"
+                  }
                 />
               </p>
             </>
