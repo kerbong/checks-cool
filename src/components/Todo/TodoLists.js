@@ -22,32 +22,25 @@ const TodoLists = (props) => {
     let eventName;
 
     //기간 저장자료가 아닌경우
-    if (!range) {
+    if (!range && item["eventName"] === undefined) {
       //새로 추가하거나 바로 입력한 자료인 경우
-      if (item["eventName"] === undefined) {
-        eventName = document.getElementById("todo-eventName");
-        let option = document.getElementById(`option-select`);
-        // console.log(eventName);
-        // console.log(option);
-        //새로운 자료(input)인 경우 있음
-        if (option !== null || eventName !== null) {
-          optionValue = option.value;
-        } else {
-          eventName = eventName.value;
-          // console.log(item);
-          optionValue = document.getElementById(
-            `option-select${eventName.replace(/ /g, "")}`
-          ).value;
-        }
-        //업로드 되어있던 자료인 경우
+
+      eventName = document.getElementById("todo-eventName");
+      let option = document.getElementById(`option-select`);
+      // console.log(eventName);
+      // console.log(option);
+      //새로운 자료(input)인 경우 있음
+      if (option !== null || eventName !== null) {
+        optionValue = option.value;
       } else {
-        eventName = item.eventName;
+        eventName = eventName.value;
+        // console.log(item);
         optionValue = document.getElementById(
-          `option-select${item.eventName.replace(/ /g, "")}`
+          `option-select${eventName.replace(/ /g, "")}`
         ).value;
       }
 
-      //기간설정자료의 경우
+      //업로드 되어있던 자료이거나 기간설정자료의 경우
     } else {
       eventName = item.eventName;
       optionValue = item.option;
@@ -84,6 +77,8 @@ const TodoLists = (props) => {
     let eventName;
     let optionValue;
     let noteValue;
+
+    console.log(item);
     //새로운 이벤트일 경우 name없음.
     if (!item.eventName) {
       eventName = document.getElementById(`todo-eventName`).value;
@@ -92,12 +87,8 @@ const TodoLists = (props) => {
       //기존 이벤트인 경우
     } else {
       eventName = item.eventName;
-      optionValue = document.getElementById(
-        `option-select${item.eventName.replace(/ /g, "")}`
-      ).value;
-      noteValue = document.getElementById(
-        `option-note${item.eventName.replace(/ /g, "")}`
-      ).value;
+      optionValue = item.option;
+      noteValue = item.note;
     }
 
     //todo 이벤트 자료형식
@@ -108,17 +99,19 @@ const TodoLists = (props) => {
       note: noteValue,
     };
 
+    //기존 일정에서 제목만 바뀐 경우, 수정을 위해 id는 그대로 보내고 edit_id추가해서 보냄
+    if (fixed_data.id.slice(11) !== item.id.slice(11)) {
+      fixed_data["edit_id"] = fixed_data.id;
+      fixed_data.id = item.id;
+    }
+    console.log(fixed_data);
+
     //set아이템 일경우 옵션 추가
     if (item.set) {
       fixed_data.set = item.set;
     }
 
-    // console.log(item.eventDate);
-    //events eventOnDay 를 수정하는 함수
-    // console.log(fixed_data);
     props.fixedEventHandler(fixed_data, item.eventDate);
-
-    // setEventOnDay(eventOnDay.concat());
 
     Swal.fire({
       icon: "success",
@@ -131,9 +124,6 @@ const TodoLists = (props) => {
 
     let return_data = { ...fixed_data, eventDate: item.eventDate };
 
-    //TodoPage에서 events 상태를 업데이트 해줘야 리렌더링이 되어 화면에 이벤트 보임!
-    // props.setEventsHandler(return_data);
-    //기존 데이터 수정할 떄 필요한 텍스트
     return return_data;
   };
 
@@ -282,6 +272,7 @@ const TodoLists = (props) => {
               let getEnoughData = enoughData(item);
               if (getEnoughData) {
                 let data = saveFixedData(item);
+
                 if (event.id === data.id) {
                   updateEventOnScreen(data, event);
                 }

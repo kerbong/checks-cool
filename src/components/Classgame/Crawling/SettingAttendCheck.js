@@ -16,6 +16,7 @@ const SettingAttendCheck = (props) => {
   const [scResult, setScResult] = useState([]);
   const [studentsInfo, setStudentsInfo] = useState([]);
   const [school, setSchool] = useState("");
+  const [possibleDate, setPossibleDate] = useState(20);
 
   let navigate = useNavigate();
 
@@ -112,7 +113,12 @@ const SettingAttendCheck = (props) => {
 
   /** 기초 정보 확정함수, 교육청명*학교명*학급명, 학생정보 전달 */
   const saveBasicSetting = () => {
-    props.doneHandler(school + "*" + gradeClass, studentsInfo);
+    props.doneHandler(school + "*" + gradeClass, studentsInfo, possibleDate);
+  };
+
+  const possibleDateHandler = (e) => {
+    let dateValue = e.target.value?.replace(/[^0-9]/g, "");
+    setPossibleDate(dateValue);
   };
 
   return (
@@ -243,13 +249,28 @@ const SettingAttendCheck = (props) => {
 
           {/* 학교명까지 선택이 확정되면 기초자료 만들기 설정하기 */}
           {gradeClass !== "" && (
-            <button
-              onClick={saveBasicSetting}
-              className={classes["btn"]}
-              style={{ width: "300px" }}
-            >
-              저장하기
-            </button>
+            <>
+              {/* 연간 체험학습일 설정하기 */}
+              <div className={classes["m20"]}>
+                <input
+                  type="text"
+                  placeholder="연간체험학습일"
+                  onChange={possibleDateHandler}
+                  value={possibleDate}
+                  className={classes["input"]}
+                />{" "}
+                <span> 일</span>
+              </div>
+
+              {/* 저장버튼 */}
+              <button
+                onClick={saveBasicSetting}
+                className={classes["btn"]}
+                style={{ width: "300px" }}
+              >
+                저장하기
+              </button>
+            </>
           )}
         </div>
       )}

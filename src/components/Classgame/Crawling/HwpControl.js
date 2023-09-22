@@ -117,6 +117,7 @@ const HwpControl = (props) => {
     }
   };
 
+  /** 데이터를 파일의 {} 부분에 자동으로 넣는 함수 */
   const makeFileAdapted = async (data) => {
     const reader = new FileReader(file);
 
@@ -210,7 +211,7 @@ const HwpControl = (props) => {
     }
   };
 
-  const saveAttendCheck = async (title, students) => {
+  const saveAttendCheck = async (title, students, possibleDate) => {
     const atCheckListRef = doc(dbService, "attendCheck", "teacherLists");
 
     // 교사들 목록에 추가하기
@@ -245,6 +246,8 @@ const HwpControl = (props) => {
         if (!ref_doc.exists()) {
           await setDoc(atCheckRef, {
             info: { num: +std.num, woman: std.woman },
+            possibleDate: +possibleDate,
+            parents: [],
           });
         }
       });
@@ -300,8 +303,8 @@ const HwpControl = (props) => {
       <SettingAttendCheck
         students={props.students}
         isSubject={props.isSubject}
-        doneHandler={(dataTitle, studentsInfo) =>
-          saveAttendCheck(dataTitle, studentsInfo)
+        doneHandler={(dataTitle, studentsInfo, possibleDate) =>
+          saveAttendCheck(dataTitle, studentsInfo, possibleDate)
         }
         dataExisted={dataExisted}
         dataEditHandler={() => {

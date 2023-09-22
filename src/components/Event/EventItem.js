@@ -17,6 +17,8 @@ const EventItem = (props) => {
   const [paperSubmit, setPaperSubmit] = useState(item?.paper || false);
 
   const noteRef = useRef(null);
+  const eventNameRef = useRef(null);
+  const optionRef = useRef(null);
 
   const getDateHandler = (date) => {
     let year = date.getFullYear();
@@ -60,6 +62,12 @@ const EventItem = (props) => {
     let new_item = { ...item };
     if (props.about === "attendance") {
       new_item["paper"] = paperSubmit;
+    }
+    console.log(optionRef.current.value);
+    if (props.about.slice(0, 4) === "todo") {
+      new_item["eventName"] = eventNameRef.current.value;
+      new_item["option"] = optionRef.current.value;
+      new_item["note"] = noteRef.current.value;
     }
 
     //날짜가 수정된 경우
@@ -105,7 +113,16 @@ const EventItem = (props) => {
         >
           {/* 타이틀(이름) + 날짜 달력나오는거 column*/}
           <div className={`${classes["titleDate-area"]}`}>
-            <h2 id={"eventName" + shownId} className={classes["title-h2"]}>
+            <h2
+              id={"eventName" + shownId}
+              className={classes["title-h2"]}
+              style={{
+                display:
+                  props.about.slice(0, 4) === "todo" &&
+                  props.fixIsShown === shownId &&
+                  "none",
+              }}
+            >
               {`😀 ${text} ${props?.setNum ? `(${props.setNum})` : ""}`}
               {/* 학생서류 제출했는지 체크하는 버튼 */}
               {props.about === "attendance" && (
@@ -142,7 +159,22 @@ const EventItem = (props) => {
                 </>
               )}
             </h2>
-
+            {/* 할 일에서 수정중 일 때 보일 input 태그 */}
+            {props.about.slice(0, 4) === "todo" &&
+              props.fixIsShown === shownId && (
+                <div style={{ display: "flex", justifyContent: "center" }}>
+                  <input
+                    type="text"
+                    placeholder="행사명"
+                    id={"todo-eventName"}
+                    className={classes["eventNameInput-area"]}
+                    autoFocus
+                    ref={eventNameRef}
+                    defaultValue={text}
+                    onInput={(e) => handleOnInput(e, 20)}
+                  />
+                </div>
+              )}
             <div
               className={classes["date-area"]}
               style={{
@@ -279,6 +311,7 @@ const EventItem = (props) => {
               key={`option-select${keyId}`}
               defaultValue={selectValue}
               onChange={selectChangeHandler}
+              ref={optionRef}
               style={{
                 width: "30%",
               }}

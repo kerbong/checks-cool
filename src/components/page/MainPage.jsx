@@ -19,8 +19,8 @@ import MainShortCut from "components/Main/MainShortCut";
 dayjs.locale("ko");
 
 const deploy_title = `앱 정비 시간!`;
-const deploy_text = `매일 오후 11:30 ~ 12:30 에는 오류 수정 및 앱 개선 작업이 이루어 집니다!<br/>
-사이트 사용 시 저장된 데이터에 문제가 생길 수 있으니, <br/>11시 30분 ~ 0시 30분 에는 사용을 피해주세요. <br/><br/>
+const deploy_text = `매일 저녁 11:00 ~ 12:30 에는 오류 수정 및 앱 개선 작업이 이루어 집니다!<br/>
+사이트 사용 시 저장된 데이터에 문제가 생길 수 있으니, <br/>꼭!!! 사용을 피해주세요. <br/><br/>
 ** 첵스-쿨은 선생님들의 학급일지 데이터 관리에  도움을 드리고 싶어요! <br/> <b>불편한 점, 개선할 점</b>을 알려주세요! <br/><br/> 
  `;
 
@@ -30,31 +30,23 @@ const monthEnd_text = `월말입니다! 선생님들의 소중한 정보를 다�
 ** 첵스-쿨은 선생님들의 모든 학급일지 데이터를 <br/> 엑셀파일 하나로 만들고 관리하는데 도움을 드리려고 합니다! <br/><br/> ** <b>첵스쿨 활용 팁👉</b> 을 <u>아침한마디에 공유</u>해주세요!
  `;
 
-const update_title = `할 일 / 자리뽑기 업데이트 🪄`;
+const update_title = `🕚 사이트 정비시간 조정 🕜`;
 
-const update_text = `<b>1. <br/>
-[할 일]과 일정달력을 함께 볼 수 있어요!</b><br/> <br/> 
-창의 크기가 일정 크기를 넘어가면 달력이 보이기 시작합니다! <br/>
-혹시 제대로 작동하지 않는 분들은 제보해주세요!!🚨<br/><br/> 
-<hr style={{ margin: "20px 15px" }} />
-<b>2.<br/>
-[자리뽑기] 추가하기 중 기존자료 확인</b>이 가능해요!<br/><br/>
-자리뽑기 추가하기 중에 기존에 저장해둔 자료들을😮‍💨 <br/>
-확인하면서 자리를 선정할 수 있어요!!
+const update_text = `사이트 정비 시간이 조정되었습니다. <br/> 
+<b>🚨 저녁 11시 ~ 0시 30분 🚨 까지는 업데이트가 진행</b>될 수 있으니 사용을 피해주세요!!<br/>
+(개발자의 수면시간 확보에 큰 힘이 됩니다🙏)
 <br/><br/>
-<hr style={{ margin: "20px 15px" }} />
-<b>3.<br/>
-[자리뽑기] 전출학생 제외</b>가 가능해요!<br/><br/>
-전출학생을 등록하셨다면 자리뽑기 추가하기 중에<br/>
-전출학생이 자동으로 제외되어 보입니다!
-<br/><br/>
-<b>  ** 사용전, 꼭 테스트를 거쳐주세요!!<br/>
 
-<hr style={{ margin: "20px 15px" }} />
-<b> ++ <br/>
-현장체험학습 기능도 업데이트 중입니다. </b> <br/>
-안정적인 사용을 위해, 차분하게 준비하곘습니다! <br/><br/>
-<b>어디서든 눈부신, 모든 선생님들을 응원합니다🤩 </b><br/><br/> 
+<b>
+* [제자랑] - [패드잇]의 개선, 수정에 의견 부탁드립니다!</b><br/>
+상당히 많은 시간을 들였는데 사용빈도가 낮은 편입니다..😭<br/><br/> 
+
+* 선생님들이 편하게 '기록'할 수 있는<br/>
+선생님들을 '기록'으로 보호할 수 있는<br/> 
+첵스쿨이 될 수 있도록 노력하고 있습니다.<br/> 
+함께해주셔서 감사합니다!🤩<br/><br/>
+
+<b>어디서든 눈부신, 모든 선생님들을 응원합니다. 행복한 한가위 명절되세요!🌕 </b><br/><br/> 
 
 ** 접속이 어려우신 분들은 아래의 주소를 활용해주세요!<br/> https://checks-cho-ok.firebaseapp.com
 <br/><br/>
@@ -148,7 +140,7 @@ const MainPage = (props) => {
   const [showDeployNotice, setShowDeployNotice] = useState(false);
 
   useEffect(() => {
-    if (localStorage.getItem("showNotice") <= "20230915") {
+    if (localStorage.getItem("showNotice") <= "20230926") {
       setShowNotice(true);
     }
     if (
@@ -1723,7 +1715,7 @@ const MainPage = (props) => {
             localStorage.setItem("showNotice", dayjs().format("YYYYMMDD"));
             setShowNotice(false);
           }}
-          imgSrc={mainImg}
+          // imgSrc={mainImg}
           title={
             <h1
               style={{

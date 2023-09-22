@@ -405,6 +405,12 @@ const TodoPage = (props) => {
 
           new_events.splice(event_index, 1);
 
+          //제목만 수정이 있으면
+          if (fixed_event?.["edit_id"]) {
+            fixed_event.id = fixed_event["edit_id"];
+            delete fixed_event["edit_id"];
+          }
+
           new_events.push(fixed_event);
 
           delete new_events[new_events.length - 1].eventDate;
