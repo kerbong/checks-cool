@@ -21,8 +21,13 @@ import { QRCodeSVG } from "qrcode.react";
 import SettingAttendCheck from "./SettingAttendCheck";
 import classes from "./HwpControl.module.css";
 
+const FOR_WHAT = ["attendAddForm", "attendReportForm", "absenceForm"];
+
 const HwpControl = (props) => {
-  const [file, setFile] = useState(null);
+  const [atAddFile, setAtAddFile] = useState(null);
+  const [atReportFile, setAtReportFile] = useState(null);
+  const [absenceFile, setAbsenceFile] = useState(null);
+
   const [uploadDone, setUploadDone] = useState(false);
   const [showQrCode, setShowQrCode] = useState(false);
   const [dataExisted, setDataExisted] = useState(false);
@@ -36,9 +41,16 @@ const HwpControl = (props) => {
   ]);
 
   useEffect(() => {
-    if (file) return;
-    // 화면 로딩 시에 파일 다운로드
-    downloadFile();
+    if (!atAddFile) {
+      downloadFile(FOR_WHAT[0]);
+    }
+    if (!atReportFile) {
+      downloadFile(FOR_WHAT[1]);
+    }
+    if (!absenceFile) {
+      downloadFile(FOR_WHAT[2]);
+    }
+    // 화면 로딩 시, 파일 업로드 시 파일 다운로드
   }, [uploadDone]);
 
   //교외현장체험학습 데이터가 있었는지 확인하기
@@ -68,33 +80,33 @@ const HwpControl = (props) => {
   }, []);
 
   // Firebase Storage에 파일 업로드
-  const uploadFile = async (file) => {
+  const uploadFile = async (file, forWhat) => {
     await uploadBytes(
-      ref(storageService, `${props.userUid}/attendCheck/attendForm.docx`),
+      ref(storageService, `${props.userUid}/attendCheck/${forWhat}.docx`),
       file
     ).then(() => {
       setUploadDone(true);
     });
   };
 
-  const handleFileChange = async (event) => {
+  const handleFileChange = async (event, forWhat) => {
     const selectedFile = event.target.files[0];
     if (selectedFile !== undefined) {
       let reader = new FileReader();
       reader.onloadend = (finishedEvent) => {
         const fileData = new Uint8Array(finishedEvent.currentTarget.result);
-        uploadFile(fileData);
+        uploadFile(fileData, forWhat);
       };
       //이게 중요함! readAsDataURL로 하면 오류남.
       reader.readAsArrayBuffer(selectedFile);
     }
   };
 
-  const downloadFile = async () => {
+  const downloadFile = async (forWhat) => {
     try {
       const fileRef = ref(
         storageService,
-        `${props.userUid}/attendCheck/attendForm.docx`
+        `${props.userUid}/attendCheck/${forWhat}.docx`
       );
 
       const url = await getDownloadURL(fileRef);
@@ -111,14 +123,57 @@ const HwpControl = (props) => {
         type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
       });
 
-      setFile(newFile);
+      // 파일 내부에 있는 {학생이름} 과 같은 태그의 key값 (학생이름) 들을 모으는 과정
+      const reader = new FileReader(newFile);
+
+      reader.onerror = function (event) {
+        console.error("파일 읽기 오류:", event.target.error);
+      };
+
+      reader.onloadend = function (event) {
+        const content = event.target.result;
+        console.log(content);
+        // content를 사용하여 docxtemplater 작업 수행
+        const zip = new PizZip(content);
+        let keys = [];
+
+        const options = {
+          // This is how docxtemplater is configured by default
+          parser: function (tag) {
+            // 선생님들이 만든 키 값만 저장하기..!!
+            keys.push(tag);
+            console.log(tag);
+          },
+        };
+
+        new Docxtemplater(zip, options);
+
+        // 작업 완료 후에 keys 배열을 확인
+        // console.log(keys);
+      };
+
+      reader.readAsArrayBuffer(newFile);
+
+      if (forWhat === FOR_WHAT[0]) {
+        setAtAddFile(newFile);
+      } else if (forWhat === FOR_WHAT[1]) {
+        setAtReportFile(newFile);
+      } else if (forWhat === FOR_WHAT[2]) {
+        setAbsenceFile(newFile);
+      }
     } catch (error) {
       console.log(error);
     }
   };
 
   /** 데이터를 파일의 {} 부분에 자동으로 넣는 함수 */
-  const makeFileAdapted = async (data) => {
+  const makeFileAdapted = async (data, whatFile) => {
+    let file =
+      whatFile === FOR_WHAT[0]
+        ? atAddFile
+        : whatFile === FOR_WHAT[1]
+        ? atReportFile
+        : absenceFile;
     const reader = new FileReader(file);
 
     const outputPromise = new Promise((resolve, reject) => {
@@ -132,10 +187,7 @@ const HwpControl = (props) => {
         console.log(content);
         // content를 사용하여 docxtemplater 작업 수행
         const zip = new PizZip(content);
-        const doc = new Docxtemplater().loadZip(zip);
-
-        doc.setData(data);
-        console.log(doc);
+        const doc = new Docxtemplater(zip);
 
         try {
           doc.render(data);
@@ -166,8 +218,9 @@ const HwpControl = (props) => {
     }
   };
 
-  const saveFile = async (user_data) => {
-    await makeFileAdapted(user_data).then((output) => {
+  /** 저장하는 함수인데, 두번째 인자로 FOR_WHAT에 있는 문자열 보내주기  */
+  const saveFile = async (user_data, forWhat) => {
+    await makeFileAdapted(user_data, forWhat).then((output) => {
       //개별 현장체험학습 파일 저장.이름 바꿔야함
       saveAs(
         output,
@@ -176,9 +229,10 @@ const HwpControl = (props) => {
     });
   };
 
-  const printFile = async (data) => {
+  /** 인쇄하는 함수인데, 두번째 인자로 FOR_WHAT에 있는 문자열 보내주기  */
+  const printFile = async (data, forWhat) => {
     try {
-      const output = await makeFileAdapted(data);
+      const output = await makeFileAdapted(data, forWhat);
       const fileURL = URL.createObjectURL(output);
 
       const iframe = document.createElement("iframe");
@@ -284,9 +338,9 @@ const HwpControl = (props) => {
     <div>
       <h1>교외현장체험학습 신청 기능 개발중🔥🔥(얼마나 걸릴지는..😣)</h1>
 
-      {/* <label>
+      <label>
         <input type="file" accept=".docx" onChange={handleFileChange} />
-      </label> */}
+      </label>
 
       {/* 현재 존재하는 체험학습 신청 리스트  */}
       {/* <div>
@@ -335,7 +389,7 @@ const HwpControl = (props) => {
             <a
               onClick={downloadQR}
               className={classes["download-link"]}
-              title="이미지로 다운로드하기"
+              title="QR코드 다운로드"
             >
               {" "}
               🙂 (학부모용) 현장체험학습 가입 Qr코드{" "}
