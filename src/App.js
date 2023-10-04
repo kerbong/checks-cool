@@ -17,6 +17,8 @@ import Loading from "components/page/Loading";
 import Header from "./components/Layout/Header";
 
 // lazy 로딩 적용
+const Admin = lazy(() => import("./components/page/Admin"));
+
 const ManageStudentInfo = lazy(() =>
   import("./components/page/ManageStudentInfo")
 );
@@ -295,6 +297,11 @@ function App() {
                       isSubject={profile?.isSubject}
                     />
                   }
+                />
+
+                <Route
+                  path="admin"
+                  element={<Admin userUid={userUid} email={user.email} />}
                 />
 
                 <Route

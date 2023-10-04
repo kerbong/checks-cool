@@ -896,6 +896,7 @@ const CheckLists = (props) => {
               <ScoreGradeInput
                 scoreGradeValue={(v) => setScoreGrade(v)}
                 closeHandler={() => setShowScoreGrade(false)}
+                title={"평가 단계"}
               />
             </Modal>
           )}

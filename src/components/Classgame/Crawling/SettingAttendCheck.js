@@ -7,15 +7,17 @@ import Swal from "sweetalert2";
 import GradeSelection from "./GradeSelection";
 import StudentLiWithDelete from "../../Student/StudentLiWithDelete";
 import classes from "./HwpControl.module.css";
+import DocxForm from "./DocxForm";
 
 const SettingAttendCheck = (props) => {
   const [schoolConfirm, setSchoolConfirm] = useState(false);
   const [studentsConfirm, setStudentsConfirm] = useState(false);
+  const [lastStep, setLastStep] = useState(false);
+  const [school, setSchool] = useState("");
   const [gradeClass, setGradeClass] = useState("");
   const [scName, setScName] = useState("");
   const [scResult, setScResult] = useState([]);
   const [studentsInfo, setStudentsInfo] = useState([]);
-  const [school, setSchool] = useState("");
   const [possibleDate, setPossibleDate] = useState(20);
 
   let navigate = useNavigate();
@@ -113,6 +115,11 @@ const SettingAttendCheck = (props) => {
 
   /** 기초 정보 확정함수, 교육청명*학교명*학급명, 학생정보 전달 */
   const saveBasicSetting = () => {
+    if (school?.length === 0 || gradeClass?.length === 0 || +possibleDate < 1)
+      return;
+    //
+    setLastStep(true);
+    // 최종적으로 문서 만드는 함수
     props.doneHandler(school + "*" + gradeClass, studentsInfo, possibleDate);
   };
 
@@ -127,6 +134,7 @@ const SettingAttendCheck = (props) => {
       {/*  제일먼저 학생명부 보여주기 */}
       {!studentsConfirm ? (
         <>
+          <h2 className={classes["h2"]}>학생 명부 설정하기(1/3)</h2>
           <div
             style={{
               display: "flex",
@@ -158,121 +166,176 @@ const SettingAttendCheck = (props) => {
           </div>
         </>
       ) : (
-        <div>
-          {/* 학교찾기 */}
-          {!schoolConfirm ? (
-            <form onSubmit={(e) => findSchool(e)} className={classes["m20"]}>
-              <input
-                type="text"
-                placeholder="학교이름"
-                onChange={(e) => setScName(e.target.value)}
-                value={scName}
-                className={classes["input"]}
-              />{" "}
-              <span>초등학교</span>
-              <button
-                className={`${classes["btn"]} ${classes["m-l20"]}`}
-                onClick={findSchool}
-              >
-                찾기
-              </button>
-            </form>
-          ) : (
-            <div>
-              {/* 선택된 학교명 */}
-              <span className={classes["fs14"]}>{school}</span>
-              <br />
-              <button
-                onClick={() => {
-                  setSchoolConfirm(false);
-                  setGradeClass("");
-                  if (props.dataExisted) {
-                    props.dataEditHandler();
-                  }
-                }}
-                className={classes["mini-btn"]}
-              >
-                {props.dataExisted ? "학생 자료 재생성" : "학교 변경"}
-              </button>
-              <br />
-            </div>
-          )}
-
-          {/* 찾으면 학교보여주기 학교 확정상태가 아닐때만 */}
-          {!schoolConfirm &&
-            (scResult?.length === 0 ? (
-              <span>학교 이름을 확인해주세요!</span>
-            ) : (
+        // 학생명부 확정되면 다음단계
+        !lastStep && (
+          <>
+            {!props.dataExisted && (
               <>
-                <div className={classes["flex-column"]}>
-                  {scResult?.map((sc, index) => (
-                    <label key={index} className={classes["school-list"]}>
-                      <input
-                        type="radio"
-                        name="school"
-                        value={`${sc.JU_ORG_NM?.split("교육지원청")?.[0]}*${
-                          sc.SCHUL_NM
-                        }`}
-                        // 만약 전국에 하나밖에 안나오면 자동 선택하기..
-                        checked={
-                          scResult?.length === 1 ||
-                          school ===
-                            `${sc.JU_ORG_NM?.split("교육지원청")?.[0]}*${
-                              sc.SCHUL_NM
-                            }`
-                        }
-                        onChange={(e) => {
-                          setSchool(e.target.value);
-                        }}
-                      />
-                      주소 : {sc.ORG_RDNMA}
-                    </label>
-                  ))}
-                </div>
+                <h2 className={classes["h2"]}>학교 정보 설정하기(2/3)</h2>
+
+                {/* 이전단계로...학생명부 수정 */}
                 <button
-                  onClick={() => setSchoolConfirm(true)}
-                  className={classes["btn"]}
+                  className={`${classes["btn"]} ${classes["m-l20"]}`}
+                  onClick={() => setStudentsConfirm(false)}
                   style={{ width: "300px" }}
                 >
-                  확인
+                  이전 (학생명부 수정)
                 </button>
               </>
-            ))}
+            )}
 
-          {/* 학교명 school이 선택되어 확정되면, 학년 반 선택하기 */}
-          {school !== "" && schoolConfirm && (
-            <GradeSelection
-              confirmClassHandler={(grade_class) => setGradeClass(grade_class)}
-              show={gradeClass === "" ? true : false}
-            />
-          )}
+            <div className={classes["flex-wrap"]}>
+              {/* 학교찾기 */}
+              {!schoolConfirm ? (
+                <form
+                  onSubmit={(e) => findSchool(e)}
+                  className={classes["m20"]}
+                >
+                  <input
+                    type="text"
+                    placeholder="학교이름"
+                    onChange={(e) => setScName(e.target.value)}
+                    value={scName}
+                    className={classes["input"]}
+                  />{" "}
+                  <span>초등학교</span>
+                  <button
+                    className={`${classes["btn"]} ${classes["m-l20"]}`}
+                    onClick={findSchool}
+                  >
+                    찾기
+                  </button>
+                </form>
+              ) : (
+                <>
+                  <div className={!props.dataExisted ? classes["card"] : ""}>
+                    {/* 선택된 학교명 */}
+                    <span className={classes["fs14"]}> {school}</span>
 
-          {/* 학교명까지 선택이 확정되면 기초자료 만들기 설정하기 */}
-          {gradeClass !== "" && (
-            <>
-              {/* 연간 체험학습일 설정하기 */}
-              <div className={classes["m20"]}>
-                <input
-                  type="text"
-                  placeholder="연간체험학습일"
-                  onChange={possibleDateHandler}
-                  value={possibleDate}
-                  className={classes["input"]}
-                />{" "}
-                <span> 일</span>
-              </div>
+                    <button
+                      onClick={() => {
+                        setSchoolConfirm(false);
+                        setGradeClass("");
+                        if (props.dataExisted) {
+                          props.dataEditHandler();
+                        }
+                      }}
+                      className={classes["btn"]}
+                      style={{ width: "300px" }}
+                    >
+                      {props.dataExisted ? "설정 변경" : "학교 변경"}
+                    </button>
+                  </div>
+                  {/* 개발자용 버튼  */}
+                  {props.email === "kerbong@gmail.com" && (
+                    <button onClick={() => navigate(`/admin`)}>
+                      개발자 화면 이동
+                    </button>
+                  )}
+                </>
+              )}
 
-              {/* 저장버튼 */}
-              <button
-                onClick={saveBasicSetting}
-                className={classes["btn"]}
-                style={{ width: "300px" }}
-              >
-                저장하기
-              </button>
-            </>
-          )}
-        </div>
+              {/* 찾으면 학교보여주기 학교 확정상태가 아닐때만 */}
+              {!schoolConfirm &&
+                (scResult?.length === 0 ? (
+                  <span>학교 이름을 확인해주세요!</span>
+                ) : (
+                  <>
+                    <div
+                      className={classes["flex-column"]}
+                      style={{ alignItems: "flex-start" }}
+                    >
+                      {scResult?.map((sc, index) => (
+                        <label key={index} className={classes["school-list"]}>
+                          <input
+                            type="radio"
+                            name="school"
+                            value={`${sc.JU_ORG_NM?.split("교육지원청")?.[0]}*${
+                              sc.SCHUL_NM
+                            }`}
+                            // 만약 전국에 하나밖에 안나오면 자동 선택하기..
+                            checked={
+                              scResult?.length === 1 ||
+                              school ===
+                                `${sc.JU_ORG_NM?.split("교육지원청")?.[0]}*${
+                                  sc.SCHUL_NM
+                                }`
+                            }
+                            onChange={(e) => {
+                              setSchool(e.target.value);
+                            }}
+                          />
+                          주소 : {sc.ORG_RDNMA}
+                        </label>
+                      ))}
+                    </div>
+                    <button
+                      onClick={() => setSchoolConfirm(true)}
+                      className={classes["btn"]}
+                      style={{ width: "300px" }}
+                    >
+                      확인
+                    </button>
+                  </>
+                ))}
+
+              {/* 학교명 school이 선택되어 확정되면, 학년 반 선택하기 */}
+              {school !== "" && schoolConfirm && (
+                <GradeSelection
+                  confirmClassHandler={(grade_class) =>
+                    setGradeClass(grade_class)
+                  }
+                  selectedGrade={gradeClass?.split("학년")?.[0] + "학년"}
+                  className={gradeClass?.split("학년")?.[1]?.split("반")?.[0]}
+                  show={gradeClass === "" ? true : false}
+                />
+              )}
+
+              {/* 학교명까지 선택이 확정되면 기초자료 만들기 설정하기 */}
+              {gradeClass !== "" && (
+                <div className={classes["card"]}>
+                  {/* 연간 체험학습일 설정하기 */}
+                  <div>
+                    <span className={classes["fs14"]}> 체험학습 연간인정 </span>
+
+                    <input
+                      type="text"
+                      placeholder="연간체험학습일"
+                      onChange={possibleDateHandler}
+                      value={possibleDate}
+                      className={classes["input"]}
+                      style={{ width: "50px", height: "25px" }}
+                    />
+
+                    <span className={classes["fs14"]}> 일</span>
+                  </div>
+
+                  {/* 저장버튼 */}
+                  <button
+                    onClick={saveBasicSetting}
+                    className={classes["btn"]}
+                    style={{ width: "300px" }}
+                  >
+                    기초자료 저장
+                  </button>
+                </div>
+              )}
+            </div>
+          </>
+        )
+      )}
+      {/* 3단계... 파일 업로드하기 */}
+      {lastStep && (
+        <>
+          <DocxForm
+            lastStep={lastStep}
+            school={school}
+            gradeClass={gradeClass}
+            beforeLastStep={() => setLastStep(false)}
+            userUid={props.userUid}
+            email={props.email}
+          />
+        </>
       )}
     </div>
   );

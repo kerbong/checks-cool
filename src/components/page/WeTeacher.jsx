@@ -142,6 +142,7 @@ const WeTeacher = (props) => {
                   (yearData) => Object.keys(yearData)[0] === now_year()
                 )?.[0]?.[now_year()]
               }
+              email={props.email}
             />
           )}
         </div>

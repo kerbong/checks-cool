@@ -7,6 +7,27 @@
   border: 0;
   border-radius: 10px;
   letter-spacing: 2px;
+  margin: 20px;
+}
+
+.typeTitle {
+  font-size: 1.3rem;
+  margin-bottom: 10px;
+}
+
+.typeBtn {
+  border-radius: 10px;
+  padding: 15px;
+  margin: 10px;
+  background-color: #003c2e;
+  color: whitesmoke;
+  width: 320px;
+  word-break: keep-all;
+  border: 0;
+}
+
+.typeBtn:hover {
+  background-color: rgb(34 142 91);
 }
 
 .mini-btn {
@@ -20,15 +41,61 @@
   justify-content: space-around;
 }
 
+.flex-row-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.card {
+  width: 360px;
+  padding: 20px;
+  border-radius: 10px;
+  border-width: 0;
+  background-color: #eeeeee;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-evenly;
+  margin: 10px;
+}
+
+.flex-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.h2 {
+  font-size: 1.7rem;
+  margin: 30px;
+}
+
 .input {
   width: 100px;
   text-align: center;
   border-radius: 10px;
   font-size: 1.2rem;
+  border-radius: 0;
+  border-radius: 10px;
+}
+
+.keySpan {
+  margin: 2px 8px;
 }
 
 .m20 {
   margin: 20px;
+}
+
+.fileUpLabel {
+  border-radius: 10px;
+  background-color: #006b5f63;
+  padding: 10px 15px;
+  margin: 10px;
+  border-width: 0;
+  font-size: 1.1rem;
 }
 
 .m-l20 {
@@ -61,8 +128,10 @@
   border-radius: 10px;
   margin-left: 20px;
   text-align: center;
+  width: 120px;
 }
 
 .download-link {
   cursor: pointer;
+  font-size: 1.6rem;
 }

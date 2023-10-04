@@ -2,14 +2,7 @@ import React, { useState, useEffect } from "react";
 
 import { dbService, storageService } from "../../../fbase";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import {
-  onSnapshot,
-  doc,
-  getDoc,
-  setDoc,
-  updateDoc,
-  arrayUnion,
-} from "firebase/firestore";
+import { onSnapshot, doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 
 import Swal from "sweetalert2";
 import { saveSvgAsPng } from "save-svg-as-png";
@@ -21,7 +14,7 @@ import { QRCodeSVG } from "qrcode.react";
 import SettingAttendCheck from "./SettingAttendCheck";
 import classes from "./HwpControl.module.css";
 
-const FOR_WHAT = ["attendAddForm", "attendReportForm", "absenceForm"];
+const FOR_WHAT = ["atAdd", "atReport", "absence"];
 
 const HwpControl = (props) => {
   const [atAddFile, setAtAddFile] = useState(null);
@@ -32,6 +25,7 @@ const HwpControl = (props) => {
   const [showQrCode, setShowQrCode] = useState(false);
   const [dataExisted, setDataExisted] = useState(false);
   const [schoolClass, setSchoolClass] = useState(false);
+  const [docsKeys, setDocsKeys] = useState({});
 
   const [templateData, setTemplateData] = useState([
     {
@@ -41,17 +35,23 @@ const HwpControl = (props) => {
   ]);
 
   useEffect(() => {
-    if (!atAddFile) {
-      downloadFile(FOR_WHAT[0]);
-    }
-    if (!atReportFile) {
-      downloadFile(FOR_WHAT[1]);
-    }
-    if (!absenceFile) {
-      downloadFile(FOR_WHAT[2]);
-    }
     // 화면 로딩 시, 파일 업로드 시 파일 다운로드
-  }, [uploadDone]);
+  }, []);
+
+  /** 양식이 done으로 확정되어 있으면! qr코드 보여주기 */
+  const checkFormUploaded = async (sc) => {
+    const doneRef = doc(dbService, "attendCheck", "00formUploaded");
+
+    const doneRef_doc = await getDoc(doneRef);
+
+    let school = sc.split("*");
+    console.log(school[1] + "*" + school[2]);
+    const is_done = doneRef_doc?.data()?.lists?.[school[1] + "*" + school[2]];
+
+    if (is_done === "done") {
+      setShowQrCode(true);
+    }
+  };
 
   //교외현장체험학습 데이터가 있었는지 확인하기
   const dataExist = async () => {
@@ -70,8 +70,10 @@ const HwpControl = (props) => {
     // 이미 저장된 게 있으면,
     if (existTeacher) {
       setSchoolClass(title);
+      //학생자료 저장됐음
       setDataExisted(true);
-      setShowQrCode(true);
+      // 양식파일 완료상태 확인
+      checkFormUploaded(title);
     }
   };
 
@@ -102,7 +104,7 @@ const HwpControl = (props) => {
     }
   };
 
-  const downloadFile = async (forWhat) => {
+  const downloadFile = async (forWhat, editVar) => {
     try {
       const fileRef = ref(
         storageService,
@@ -123,43 +125,48 @@ const HwpControl = (props) => {
         type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
       });
 
-      // 파일 내부에 있는 {학생이름} 과 같은 태그의 key값 (학생이름) 들을 모으는 과정
-      const reader = new FileReader(newFile);
-
-      reader.onerror = function (event) {
-        console.error("파일 읽기 오류:", event.target.error);
-      };
-
-      reader.onloadend = function (event) {
-        const content = event.target.result;
-        console.log(content);
-        // content를 사용하여 docxtemplater 작업 수행
-        const zip = new PizZip(content);
-        let keys = [];
-
-        const options = {
-          // This is how docxtemplater is configured by default
-          parser: function (tag) {
-            // 선생님들이 만든 키 값만 저장하기..!!
-            keys.push(tag);
-            console.log(tag);
-          },
-        };
-
-        new Docxtemplater(zip, options);
-
-        // 작업 완료 후에 keys 배열을 확인
-        // console.log(keys);
-      };
-
-      reader.readAsArrayBuffer(newFile);
-
       if (forWhat === FOR_WHAT[0]) {
         setAtAddFile(newFile);
       } else if (forWhat === FOR_WHAT[1]) {
         setAtReportFile(newFile);
       } else if (forWhat === FOR_WHAT[2]) {
         setAbsenceFile(newFile);
+      }
+
+      // 파일 내부에 있는 {학생이름} 과 같은 태그의 key값 (학생이름) 들을 모으는 과정
+
+      //만약 처음 파일을 업로드해서 다운받는, 세팅하고 있는 중이면 변수를 보여주고 설정해야함.
+      if (editVar) {
+        const reader = new FileReader(newFile);
+
+        reader.onerror = function (event) {
+          console.error("파일 읽기 오류:", event.target.error);
+        };
+
+        reader.onloadend = function (event) {
+          const content = event.target.result;
+          console.log(content);
+          // content를 사용하여 docxtemplater 작업 수행
+          const zip = new PizZip(content);
+          let keys = [];
+
+          const options = {
+            // This is how docxtemplater is configured by default
+            parser: function (tag) {
+              // 선생님들이 만든 키 값만 저장하기..!!
+              keys.push(tag);
+            },
+          };
+
+          new Docxtemplater(zip, options);
+
+          // 작업 완료 후에 keys 배열을 확인
+          let new_docsKeys = { ...docsKeys };
+          new_docsKeys[forWhat] = keys;
+          setDocsKeys(new_docsKeys);
+        };
+
+        reader.readAsArrayBuffer(newFile);
       }
     } catch (error) {
       console.log(error);
@@ -279,6 +286,10 @@ const HwpControl = (props) => {
 
     new_teacherLists = atCheckList_doc?.data()?.lists;
 
+    new_teacherLists = new_teacherLists.filter(
+      (list) => !list?.includes(props.userUid)
+    );
+
     new_teacherLists.push(props.userUid + "*" + title);
 
     if (atCheckList_doc.exists()) {
@@ -306,9 +317,7 @@ const HwpControl = (props) => {
         }
       });
 
-      // qr코드 보여주기
       setSchoolClass(title);
-      setShowQrCode(true);
     } catch (error) {
       console.log(error);
       Swal.fire(
@@ -338,10 +347,6 @@ const HwpControl = (props) => {
     <div>
       <h1>교외현장체험학습 신청 기능 개발중🔥🔥(얼마나 걸릴지는..😣)</h1>
 
-      <label>
-        <input type="file" accept=".docx" onChange={handleFileChange} />
-      </label>
-
       {/* 현재 존재하는 체험학습 신청 리스트  */}
       {/* <div>
         {templateData?.map((temp_data, index) => (
@@ -354,36 +359,11 @@ const HwpControl = (props) => {
         ))}
       </div> */}
 
-      <SettingAttendCheck
-        students={props.students}
-        isSubject={props.isSubject}
-        doneHandler={(dataTitle, studentsInfo, possibleDate) =>
-          saveAttendCheck(dataTitle, studentsInfo, possibleDate)
-        }
-        dataExisted={dataExisted}
-        dataEditHandler={() => {
-          setDataExisted(false);
-          setShowQrCode(false);
-        }}
-      />
-
       {/* qr코드 보여주기 */}
       {showQrCode && (
         <div className={classes["flex-col-center"]}>
-          <QRCodeSVG
-            value={`${schoolClass}`}
-            size={`200px`}
-            bgColor={"#ffffff"}
-            fgColor={"#000000"}
-            level={"L"}
-            id="scQr"
-            includeMargin={true}
-            onClick={downloadQR}
-          />
-          <p>
-            <span>🏫 </span>
-            <span>{schoolClass?.split("*")[2]}</span>{" "}
-            <span>{schoolClass?.split("*")[3]}</span>
+          <p style={{ fontSize: "1.6rem" }}>
+            🏫 {schoolClass?.split("*")[2]} {schoolClass?.split("*")[3]}
           </p>
           <p>
             <a
@@ -396,8 +376,41 @@ const HwpControl = (props) => {
               <i className="fa-solid fa-download"></i>
             </a>
           </p>
+
+          <QRCodeSVG
+            value={`${schoolClass}`}
+            size={`200px`}
+            bgColor={"#ffffff"}
+            fgColor={"#000000"}
+            level={"L"}
+            id="scQr"
+            includeMargin={true}
+            onClick={downloadQR}
+          />
         </div>
       )}
+
+      {!showQrCode && dataExisted && (
+        <p style={{ fontSize: "1.6rem" }}>
+          아직 양식 변경이 완료되지 않았어요!(2~3일 소요)
+        </p>
+      )}
+
+      {/* 학생명부를 보여주던가 / 이미 있으면 학교찾기 / 학교도 있으면 학교이름 */}
+      <SettingAttendCheck
+        students={props.students}
+        isSubject={props.isSubject}
+        doneHandler={(dataTitle, studentsInfo, possibleDate) =>
+          saveAttendCheck(dataTitle, studentsInfo, possibleDate)
+        }
+        dataExisted={dataExisted}
+        dataEditHandler={() => {
+          setDataExisted(false);
+          setShowQrCode(false);
+        }}
+        userUid={props.userUid}
+        email={props.email}
+      />
     </div>
   );
 };

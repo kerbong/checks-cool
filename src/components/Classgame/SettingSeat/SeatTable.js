@@ -1557,6 +1557,7 @@ const SeatTable = (props) => {
               type="text"
               placeholder={"제목"}
               defaultValue={props.title || ""}
+              style={{ borderRadius: "15px" }}
             />
 
             <Button
@@ -1571,6 +1572,7 @@ const SeatTable = (props) => {
                 saveSeatsHandler();
               }}
               className={"settingSeat-btn"}
+              style={{ borderRadius: "15px" }}
             />
             {props.title?.length > 0 && (
               <>
@@ -1798,6 +1800,7 @@ const SeatTable = (props) => {
                           name={"여학생 자리만 색칠하기"}
                           onclick={coloringGender}
                           className={"settingSeat-btn"}
+                          style={{ borderRadius: "15px" }}
                         />
                         <Button
                           name={
@@ -1807,6 +1810,7 @@ const SeatTable = (props) => {
                           }
                           onclick={changeSeeHandler}
                           className={"settingSeat-btn"}
+                          style={{ borderRadius: "15px" }}
                         />
                       </p>
                     </>
@@ -1913,6 +1917,7 @@ const SeatTable = (props) => {
                             : pickAndSeatHandler(true);
                         }}
                         className={"settingSeat-btn"}
+                        style={{ borderRadius: "15px" }}
                         name="여학생"
                       />
                       <Button
@@ -1929,6 +1934,7 @@ const SeatTable = (props) => {
                             : pickAndSeatHandler(false);
                         }}
                         className={"settingSeat-btn"}
+                        style={{ borderRadius: "15px" }}
                         name="남학생"
                       />
                       <Button
@@ -1945,6 +1951,7 @@ const SeatTable = (props) => {
                             : pickAndSeatHandler("all");
                         }}
                         className={"settingSeat-btn"}
+                        style={{ borderRadius: "15px" }}
                         name="성별랜덤"
                       />
                     </div>
@@ -1966,6 +1973,7 @@ const SeatTable = (props) => {
                             randomAllHandler("mix", "all");
                           }}
                           className={"settingSeat-btn"}
+                          style={{ borderRadius: "15px" }}
                           name="1번부터"
                         />
                         {/* 빈자리만 세팅되어 있으면.. 1번부터하면 그냥 여자쭈루루룩 남자 쭈루루루룩 넣어버리니까.. 안보이게 */}
@@ -1984,6 +1992,7 @@ const SeatTable = (props) => {
                                 randomAllHandler("gender", true);
                               }}
                               className={"settingSeat-btn"}
+                              style={{ borderRadius: "15px" }}
                               name="여자먼저"
                             />
                             <Button
@@ -1999,6 +2008,7 @@ const SeatTable = (props) => {
                                 randomAllHandler("gender", false);
                               }}
                               className={"settingSeat-btn"}
+                              style={{ borderRadius: "15px" }}
                               name="남자먼저"
                             />
                           </>
