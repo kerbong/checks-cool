@@ -28,16 +28,17 @@ const getDateHandler = (date) => {
 };
 
 const imageUrls = [
-  "미니언즈박수",
-  "강아지너야너",
-  "강아지점프",
-  "개놀람1",
-  "개놀람2",
-  "개박수",
-  "곰돌축하",
-  "양떼박수",
-  "캐릭터들예스",
-  "하이파이브새",
+  "akirambow-smile-person",
+  "celebration-happy",
+  "clapping-clap",
+  "dancing-snoopy",
+  "happy-dance",
+  "hhgf",
+  "mohamed-baby",
+  "really-really-cat",
+  "spongebob-spongebob-squarepants",
+  "waiting-still",
+  "wow-oh-my",
 ];
 
 const SeatTable = (props) => {
