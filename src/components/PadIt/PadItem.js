@@ -107,9 +107,13 @@ const PadItem = ({
     const clickEndTime = Date.now();
     const clickDuration = clickEndTime - clickStartTimeRef.current;
 
+    const clickedItem = padItems?.filter(
+      (data) => data.id === event.active.id
+    )?.[0];
+
     // Perform action for short click
-    if (clickDuration < 300) {
-      setEachItem(padItems?.filter((data) => data.id === event.active.id)?.[0]);
+    if (60 < clickDuration && clickDuration < 300) {
+      setEachItem(clickedItem);
       setShowEachItem(true);
 
       // Perform action for long click
@@ -118,6 +122,10 @@ const PadItem = ({
       setEachItem({});
       setLongClick(true);
       // setActiveId(event.active.id);
+
+      let userInfo = localStorage.getItem("padUserInfo");
+      //교사가 아닌데 내자료가 아니면 옮기지 못하도록!
+      if (!isTeacher && userInfo !== clickedItem.userInfo) return;
 
       if (event.active.id !== event.over?.id) {
         //
@@ -584,8 +592,6 @@ const PadItem = ({
   };
 
   const setItemNull = () => {};
-
-  console.log(userUid);
 
   return (
     <div>
