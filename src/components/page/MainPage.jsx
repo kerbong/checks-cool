@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import ExampleModal from "./ExampleModal";
 import byExcel from "../../assets/student/teacher-excel.gif";
-import mainImg from "../../assets/notice/1004.gif";
+import mainImg from "../../assets/notice/1010.gif";
 import dayjs from "dayjs";
 import AttendCalendar from "components/Attendance/AttendCalendar";
 import donationImg from "../../assets/notice/donation.png";
@@ -30,20 +30,20 @@ const monthEnd_text = `월말입니다! 선생님들의 소중한 정보를 다�
 ** 첵스-쿨은 선생님들의 모든 학급일지 데이터를 <br/> 엑셀파일 하나로 만들고 관리하는데 도움을 드리려고 합니다! <br/><br/> ** <b>첵스쿨 활용 팁👉</b> 을 <u>아침한마디에 공유</u>해주세요!
  `;
 
-const update_title = `자리뽑기 움짤 시즌2 📺`;
+const update_title = `패드잇 업데이트!🚡`;
 
-const update_text = `다들 행복한 추석 보내셨나요? <br/> 
-<b>자리 뽑기 움짤이 시즌2로 업데이트 되었습니다!</b><br/>
-추석에 부족했던 행복, <br/> 
+const update_text = `다들 행복한 연휴 보내셨나요? <br/> 
+<b>패드잇에 url주소 링크 기능이 추가되었습니다!</b><br/>
+주소를 복사, 붙여넣기 한 후에 한 칸을 띄우고 나머지 내용들을 입력해주세요! <br/> 
 <b>
-움짤로 채워드리겠습니다!🐻</b><br/><br/> 
+링크주소가 포함된 경우 자동으로 링크가 생성됩니다.🐻</b><br/><br/> 
 
 * 선생님들이 편하게 '기록'할 수 있는<br/>
 선생님들을 '기록'으로 보호할 수 있는<br/> 
 첵스쿨이 될 수 있도록 노력하고 있습니다.<br/> 
 함께해주셔서 감사해요!🤩<br/><br/>
 
-<b>어디서든 눈부신, 모든 선생님들을 응원합니다. 9일 얼른 오ㅏ라... </b><br/><br/> 
+<b>어디서든 눈부신, 모든 선생님들을 응원합니다.🔥🔥</b><br/><br/> 
 
 ** 접속이 어려우신 분들은 아래의 주소를 활용해주세요!<br/> https://checks-cho-ok.firebaseapp.com
 <br/><br/>
@@ -137,7 +137,7 @@ const MainPage = (props) => {
   const [showDeployNotice, setShowDeployNotice] = useState(false);
 
   useEffect(() => {
-    if (localStorage.getItem("showNotice") <= "20231008") {
+    if (localStorage.getItem("showNotice") <= "20231018") {
       setShowNotice(true);
     }
     if (
