@@ -80,21 +80,18 @@ const PadMemoAdd = ({
   /** 패드잇 내용 안에 링크주소가 있으면 링크주소로 바꿔주는 함수 */
   const converTextLink = (text, justLink) => {
     let linksIn = text?.match(/https?:\/\/[^\s]+/g);
-    console.log(linksIn);
     let convertedText = text;
 
     if (justLink && linksIn) {
       convertedText = linksIn.join("\n");
-      console.log(convertedText);
       convertedText = convertedText?.replace(
         /https?:\/\/[^\s]+/g,
         `<a href=${convertedText} target="_blank">${convertedText}</a>`
       );
-    } else if (!linksIn) {
+    } else if (justLink && !linksIn) {
       convertedText = "";
     }
 
-    console.log(convertedText);
     // linkSpanRef.current.innerHTML = convertedText;
     return convertedText;
   };
@@ -196,6 +193,7 @@ const PadMemoAdd = ({
                     }}
                   ></span>
                 )}
+                <p>* 링크주소를 붙여넣은 후에는 한 칸을 띄워주세요!</p>
               </div>
 
               {/* 파일 업로드하는 부분 */}
@@ -287,7 +285,7 @@ const PadMemoAdd = ({
                     ref={linkSpanRef}
                     style={{ wordBreak: "break-all" }}
                     dangerouslySetInnerHTML={{
-                      __html: converTextLink(data.text),
+                      __html: converTextLink(data.text, false),
                     }}
                   ></span>
                   {/* {data.text} */}
