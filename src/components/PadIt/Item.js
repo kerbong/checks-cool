@@ -59,7 +59,7 @@ const Item = forwardRef(
             {/* 구분선 */}
             <hr style={{ width: "100%", margin: "20px 5px" }} />
             {/* 패드 메모 내용 */}
-            <span>{truncatedText}</span>
+            <span style={{ wordBreak: "break-all" }}>{truncatedText}</span>
           </div>
         ) : (
           <div

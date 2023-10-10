@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 import Input from "components/Layout/Input";
 import classes from "./PadIt.module.css";
@@ -30,6 +30,8 @@ const PadMemoAdd = ({
   const [bgColor, setBgColor] = useState("#FFACAC");
   const [isEdited, setIsEdited] = useState(false);
   const [attachedFile, setAttachedFile] = useState("");
+
+  const linkSpanRef = useRef();
 
   //메모 수정할 때 props로 넘어올 nowMemo edited상황인지 세팅
   useEffect(() => {
@@ -74,6 +76,28 @@ const PadMemoAdd = ({
     if (!isEdited) return;
     document.querySelector(".modal").style.backgroundColor = bgColor;
   }, [isEdited]);
+
+  /** 패드잇 내용 안에 링크주소가 있으면 링크주소로 바꿔주는 함수 */
+  const converTextLink = (text, justLink) => {
+    let linksIn = text?.match(/https?:\/\/[^\s]+/g);
+    console.log(linksIn);
+    let convertedText = text;
+
+    if (justLink && linksIn) {
+      convertedText = linksIn.join("\n");
+      console.log(convertedText);
+      convertedText = convertedText?.replace(
+        /https?:\/\/[^\s]+/g,
+        `<a href=${convertedText} target="_blank">${convertedText}</a>`
+      );
+    } else if (!linksIn) {
+      convertedText = "";
+    }
+
+    console.log(convertedText);
+    // linkSpanRef.current.innerHTML = convertedText;
+    return convertedText;
+  };
 
   return (
     <>
@@ -163,6 +187,15 @@ const PadMemoAdd = ({
                   placeholder="내용을 입력해주세요."
                   defaultValue={data ? data.text : ""}
                 />
+                {data && (
+                  <span
+                    ref={linkSpanRef}
+                    style={{ wordBreak: "break-all" }}
+                    dangerouslySetInnerHTML={{
+                      __html: converTextLink(data.text, true),
+                    }}
+                  ></span>
+                )}
               </div>
 
               {/* 파일 업로드하는 부분 */}
@@ -250,7 +283,14 @@ const PadMemoAdd = ({
                   className={classes["margin10-wid95"]}
                   style={{ fontSize: "1.3rem", padding: "15px" }}
                 >
-                  {data.text}
+                  <span
+                    ref={linkSpanRef}
+                    style={{ wordBreak: "break-all" }}
+                    dangerouslySetInnerHTML={{
+                      __html: converTextLink(data.text),
+                    }}
+                  ></span>
+                  {/* {data.text} */}
                 </div>
                 {/* 이미지 있으면.. div */}
                 {data?.fileUrl && (

@@ -112,7 +112,7 @@ const PadItem = ({
     )?.[0];
 
     // Perform action for short click
-    if (60 < clickDuration && clickDuration < 300) {
+    if (10 < clickDuration && clickDuration < 300) {
       setEachItem(clickedItem);
       setShowEachItem(true);
 
@@ -175,6 +175,7 @@ const PadItem = ({
     //data가 존재하면 기존데이터 수정
 
     e.preventDefault();
+
     let title = e.target.title.value;
     let text = e.target.text.value;
     let option = !gridTemplate ? e.target.option.value : "";
