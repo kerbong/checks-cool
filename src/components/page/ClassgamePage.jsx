@@ -18,10 +18,10 @@ const ClassgamePage = (props) => {
   const MENU_NAME = ["자리<br/>뽑기", "뽑기", "알림장", "패드잇"];
 
   const ICONS = [
-    <i className="fa-sharp fa-solid fa-chair"></i>,
-    <i className="fa-solid fa-shuffle"></i>,
-    <i className="fa-solid fa-chalkboard"></i>,
-    <i className="fa-regular fa-copy"></i>,
+    <i className="fa-sharp fa-solid fa-chair" style={{ fontSize: "1em" }}></i>,
+    <i className="fa-solid fa-shuffle" style={{ fontSize: "1em" }}></i>,
+    <i className="fa-solid fa-chalkboard" style={{ fontSize: "1em" }}></i>,
+    <i className="fa-regular fa-copy" style={{ fontSize: "1em" }}></i>,
   ];
 
   return (
@@ -39,7 +39,11 @@ const ClassgamePage = (props) => {
               {selectedMenu === "padIt" && <>{ICONS[3]} 패드잇</>}
               {selectedMenu === "" && (
                 <>
-                  <i className="fa-solid fa-gamepad"></i> 제자랑
+                  <i
+                    className="fa-solid fa-gamepad"
+                    style={{ fontSize: "1em" }}
+                  ></i>{" "}
+                  제자랑
                 </>
               )}
             </button>

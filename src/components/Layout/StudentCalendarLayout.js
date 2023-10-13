@@ -87,7 +87,11 @@ const StudentCalendarLayout = (props) => {
   const titleDivBtns = (
     <div id="title-div">
       <button id="title-btn" onClick={() => setShowExample(true)}>
-        <i className="fa-regular fa-address-book"></i> 생기부
+        <i
+          className="fa-regular fa-calendar-days"
+          style={{ fontSize: "1em" }}
+        ></i>{" "}
+        출결기록
       </button>
 
       <div

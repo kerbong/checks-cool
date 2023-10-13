@@ -4,16 +4,20 @@ import classes from "./Doit.module.css";
 const DoingList = (props) => {
   return (
     <div className={classes["list"]}>
-      <h1>해결 중인 요청들🛠️</h1>
-
-      <li className={classes["li"]}>
-        <h3> (닉네임) 제목 : 내용 </h3>
-        <h3> 해결상태 </h3>
+      <h1 style={{ fontSize: "1.8rem" }}>해결 중인 요청들🛠️</h1>
+      <h4>* 최근 두 달 안에 개발자에게 요청한 불편, 건의 사항들만 보입니다.</h4>
+      {/* <hr style={{ margin: "15px" }} /> */}
+      <li className={classes["li-title"]} style={{ margin: "-25px 0" }}>
+        <h3> (닉네임) 제목 - 내용 </h3>
+        <h3> 상태 </h3>
       </li>
+      <hr style={{ margin: "15px" }} />
       {props.lists?.map((list) => (
         <li key={list.id + list.title} className={classes["li"]}>
           <span>
-            ({list.nickName}) {list.title} : {list.text}
+            ({list.nickName}) {list.title}
+            <br />
+            <span>- {list.text}</span>
           </span>
           <span>
             {list.result === "0"

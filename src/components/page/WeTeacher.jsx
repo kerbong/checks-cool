@@ -28,10 +28,10 @@ const WeTeacher = (props) => {
   ];
 
   const ICONS = [
-    <i className="fa-solid fa-face-meh"></i>,
-    <i className="fa-solid fa-mug-saucer"></i>,
-    <i className="fa-solid fa-thumbs-up"></i>,
-    <i className="fa-solid fa-robot"></i>,
+    <i className="fa-solid fa-face-meh" style={{ fontSize: "1em" }}></i>,
+    <i className="fa-solid fa-mug-saucer" style={{ fontSize: "1em" }}></i>,
+    <i className="fa-solid fa-thumbs-up" style={{ fontSize: "1em" }}></i>,
+    <i className="fa-solid fa-robot" style={{ fontSize: "1em" }}></i>,
   ];
 
   useEffect(() => {
@@ -57,7 +57,11 @@ const WeTeacher = (props) => {
             {/* onClick={exampleHandler}>/ */}
             {selectedMenu === "" && (
               <>
-                <i className="fa-solid fa-cookie-bite"></i> 교사랑
+                <i
+                  className="fa-solid fa-cookie-bite"
+                  style={{ fontSize: "1em" }}
+                ></i>{" "}
+                교사랑
               </>
             )}
             {selectedMenu === "simsim" && <>{ICONS[0]} 심심해요</>}
@@ -120,7 +124,7 @@ const WeTeacher = (props) => {
           </div>
         )}
 
-        <div className={classes["container-div"]}>
+        <div className={classes["container-div"]} style={{ marginTop: "-5px" }}>
           {selectedMenu === "simsim" && <Simsim userUid={props.userUid} />}
 
           {selectedMenu === "mission" && <Mission userUid={props.userUid} />}

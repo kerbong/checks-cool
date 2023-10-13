@@ -58,7 +58,7 @@ const DoInput = (props) => {
 
   return (
     <div className={classes["input-div"]}>
-      <h1>건의 / 불편 글 보내기</h1>
+      <h1 style={{ fontSize: "1.8rem" }}>건의 / 불편 글 보내기</h1>
       <br />
       <div className={classes["title"]}>
         <h2>글 제목</h2>
@@ -90,7 +90,7 @@ const DoInput = (props) => {
           }}
           onInput={(e) => handleOnInput(e, 300)}
           required
-          placeholder="예) PC에서 개별기록 저장이 안됩니다. 학생명단은 등록되어 있고, 이전에는 잘 되다가 안되네요.(300자 이내)."
+          placeholder="불편한 부분에 수정, 추가하고 싶은 기능을 설명해주세요 / 문제가 발생된 부분과 과정을 자세히 설명해주세요. (내용을 확인하고, 필요한 경우 가입하신 이메일 주소로 연락드리겠습니다.)"
         />
         <div className={classes["title"]}>
           <FileArea
@@ -102,6 +102,11 @@ const DoInput = (props) => {
           <Button
             id={"saveMeetSum-btn"}
             className={"saveSimsim-btn"}
+            style={{
+              backgroundColor: "#36c260",
+              padding: "17px 12px",
+              height: "auto",
+            }}
             onclick={submitHandler}
             icon={<>저장</>}
           />

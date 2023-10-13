@@ -54,12 +54,14 @@ select {
 /* Home Page Container */
 .homepage__container {
   max-width: 500px;
-  margin: 0 auto;
+  margin: 10px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   padding: 10px 0;
   width: 95%;
+  background-color: #f3f3f3;
+  border-radius: 15px;
 }
 
 /* ToDo App Input Box */
@@ -76,10 +78,14 @@ select {
 }
 
 .todoapp__inputbox-div {
-  width: 98%;
+  width: calc(100% - 30px);
   display: flex;
   align-items: center;
   justify-content: center;
+  background-color: white;
+  border-radius: 15px;
+  margin: 10px 15px;
+  padding: 15px 0;
 }
 .todoapp__inputbox-inp {
   flex: 1;
@@ -101,6 +107,8 @@ select {
   border-radius: 15px;
   background-color: #d695db91;
   height: 50px;
+  margin: 0 10px;
+
   width: 50px;
   font-weight: bold;
 }
@@ -123,7 +131,7 @@ select {
   color: rgba(0, 0, 0, 0.623);
   background-color: whitesmoke;
   border-width: 0;
-  font-size: 1rem;
+  font-size: 0.9rem;
   margin: 0 10px;
   border-radius: 20px;
   padding: 5px 10px;
@@ -158,10 +166,16 @@ select {
 
 /* ToDo Item List */
 .todoapp__list {
-  margin-top: 10px;
-  display: flex;
   flex-direction: column;
-  width: 98%;
+
+  width: calc(100% - 30px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: white;
+  border-radius: 15px;
+  margin: 10px 15px;
+  padding: 15px 0;
 }
 .todoapp__list-tit {
   font-weight: bold;
@@ -180,6 +194,7 @@ select {
   flex-direction: column;
   justify-content: center;
   padding: 0;
+  width: 100%;
 }
 
 /* ToDo Item */
@@ -271,6 +286,12 @@ select {
 @media screen and (min-width: 800px) {
   * {
     font-size: 1.1rem;
+  }
+  #title-div {
+    margin: 5px 20px 10px 0;
+  }
+  #title-btn {
+    margin-left: 20px;
   }
 }
 

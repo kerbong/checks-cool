@@ -18,10 +18,21 @@ const MENU_NAME = {
   freeMemo: "메모<br/>폴더",
 };
 const ICONS = {
-  budgetManage: <i className="fa-solid fa-money-check-dollar"></i>,
-  todoList: <i className="fa-regular fa-calendar-check"></i>,
-  todayTodo: <i className="fa-solid fa-clipboard-list"></i>,
-  freeMemo: <i className="fa-regular fa-folder-open"></i>,
+  budgetManage: (
+    <i
+      className="fa-solid fa-money-check-dollar"
+      style={{ fontSize: "1em" }}
+    ></i>
+  ),
+  todoList: (
+    <i className="fa-regular fa-calendar-check" style={{ fontSize: "1em" }}></i>
+  ),
+  todayTodo: (
+    <i className="fa-solid fa-clipboard-list" style={{ fontSize: "1em" }}></i>
+  ),
+  freeMemo: (
+    <i className="fa-regular fa-folder-open" style={{ fontSize: "1em" }}></i>
+  ),
 };
 
 const MemoPage = (props) => {

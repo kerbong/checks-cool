@@ -46,7 +46,9 @@ const MemoTodayTodoItemList = ({
         }
       >
         <div className="left"></div>
-        <div className="center">{title}</div>
+        <div className="center" style={{ fontSize: "1.7rem" }}>
+          {title}
+        </div>
         <div className="right">
           {/* 완료한 항목일 경우 전체삭제버튼 추가 */}
           {title === "완료한 항목" && (

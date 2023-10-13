@@ -17,7 +17,23 @@ const CheckListMemo = (props) => {
     <div>
       <div id="title-div">
         <button id="title-btn" onClick={() => setShowExample(true)}>
-          <i className="fa-regular fa-address-book"></i> 생기부
+          {showWhat === "checkLists" ? (
+            <>
+              <i
+                className="fa-regular fa-square-check"
+                style={{ fontSize: "1em" }}
+              ></i>{" "}
+              제출ox
+            </>
+          ) : (
+            <>
+              <i
+                className="fa-solid fa-clipboard-check"
+                style={{ fontSize: "1em" }}
+              ></i>{" "}
+              개별기록
+            </>
+          )}
         </button>
 
         <div id="title-func-btns">
@@ -60,7 +76,7 @@ const CheckListMemo = (props) => {
           </span>
         </div>
       </div>
-
+      {/* <hr style={{ margin: "10px" }} /> */}
       {showWhat !== "" && (
         <CheckLists
           students={props.students}

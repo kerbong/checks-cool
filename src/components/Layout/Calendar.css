@@ -164,15 +164,16 @@
 
 #title-btn {
   width: auto;
-  margin: 5px 10px;
-  font-size: 1.2em;
+  /* margin: 5px 10px; */
+  font-size: 1.4em;
   border-radius: 10px;
   border-width: 0;
   letter-spacing: 1px;
   padding: 2vh;
-  background-color: #dcc329;
+  background-color: #dcc32900;
   position: absolute;
   left: -5px;
+  font-weight: bold;
 }
 
 #title-btn.consult {

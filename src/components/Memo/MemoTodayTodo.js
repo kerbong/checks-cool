@@ -177,14 +177,13 @@ const MemoTodayTodo = (props) => {
         {/* 할 일 Item 리스트 */}
 
         <MemoTodayTodoItemList
-          title={"오늘 할 일"}
+          title={"할 일"}
           setTodoList={setTodoListHandler}
           todoList={todoList}
           checkedList={false} // (체크되지 않은) 할 일 목록
           dragEndHandler={dragEndHandler}
         />
 
-        <hr />
         {/* 완료한 Item 리스트 */}
         <MemoTodayTodoItemList
           title={"완료한 항목"}

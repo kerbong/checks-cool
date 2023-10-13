@@ -257,7 +257,8 @@ const ConsultingPage = (props) => {
       )}
       <div id="title-div">
         <button id="title-btn" onClick={() => setShowExample(true)}>
-          <i className="fa-regular fa-address-book"></i> 생기부
+          <i className="fa-regular fa-comments" style={{ fontSize: "1em" }}></i>{" "}
+          상담관리
         </button>
 
         <div

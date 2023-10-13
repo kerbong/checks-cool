@@ -632,8 +632,11 @@ const TodoPage = (props) => {
           {/* 화면 좌측 상단 타이틀 나오는 부분 */}
           <button id="title-btn" onClick={() => setShowExample(true)}>
             <>
-              <i className="fa-regular fa-calendar-check"></i>{" "}
-              {showPublicEvent ? "공용달력" : "개인달력"}
+              <i
+                className="fa-regular fa-calendar-check"
+                style={{ fontSize: "1em" }}
+              ></i>{" "}
+              {showPublicEvent ? "공용일정" : "개인일정"}
             </>
           </button>
 
