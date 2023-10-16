@@ -16,7 +16,7 @@ const AttendanceForm = (props) => {
   const [option, setOption] = useState("");
   const [inputIsShown, setInputIsShown] = useState(false);
   const [paperSubmit, setPaperSubmit] = useState(false);
-  const [isImgFile, setIsImgFile] = useState(true);
+  const [isImgFile, setIsImgFile] = useState(false);
   const [attendEvents, setAttendEvents] = useState([]);
   const [showStudent, setShowStudent] = useState(false);
   const [relatedStudent, setRelatedStudent] = useState([]);

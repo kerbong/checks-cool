@@ -45,7 +45,7 @@ const FileForm = (props) => {
         }}
         style={props.about === "padIt" ? { backgroundColor: "#687f7f" } : {}}
       >
-        {!attachedFile ? "이미지 추가" : "초기화&이미지추가"}
+        {!attachedFile ? "이미지 추가" : "초기화 & 이미지 변경"}
       </label>
       <input
         type="file"

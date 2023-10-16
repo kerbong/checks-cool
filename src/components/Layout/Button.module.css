@@ -63,6 +63,7 @@
   height: 65px;
   background-color: #85bd82;
   margin: 0;
+  font-size: 1em;
 }
 
 .consultEditBtn {
@@ -247,7 +248,7 @@
 }
 
 .sortBtn-consult {
-  background-color: #eceab0;
+  background-color: #bed0af;
 }
 
 .sortBtn-clicked {

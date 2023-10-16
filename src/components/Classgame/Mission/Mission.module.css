@@ -69,10 +69,6 @@
   text-align: center;
 }
 
-.editFileArea {
-  display: flex;
-  align-items: flex-start;
-}
 .consultDate {
   margin-left: 15px;
 }

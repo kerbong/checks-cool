@@ -70,7 +70,7 @@ const ConsultLists = (props) => {
     ) {
       return;
     } else {
-      console.log(consults);
+      // console.log(consults);
       searchYearHandler(yearGroupRef?.current?.value);
     }
   }, [consults]);
@@ -83,7 +83,7 @@ const ConsultLists = (props) => {
     ) {
       return;
     } else {
-      console.log(consults);
+      // console.log(consults);
       consultsHandler("전체학생");
     }
   }, [studentsOnConsults]);
@@ -402,9 +402,9 @@ const ConsultLists = (props) => {
   };
 
   return (
-    <>
+    <div className={classes["bg-gray"]}>
       {/* 정렬하는 부분 */}
-      <hr />
+
       <h1>상담 조회 및 수정</h1>
       <br />
       <div className={classes["sortBtnArea"]}>
@@ -483,98 +483,104 @@ const ConsultLists = (props) => {
       ) : (
         <p>* 자료가 없습니다. </p>
       )}
-      {nowOnConsult &&
-        showOnScreen?.map((consult) => (
-          <div key={consult.id}>
-            <li key={consult.id} className={classes.listArea} id={consult.id}>
-              {showEditor === consult.id ? (
-                <ConsultEdit
-                  isSubject={props.isSubject}
-                  students={students}
-                  selectOption={props.selectOption}
-                  consult={consult}
-                  cancelEditor={() => setShowEditor("")}
-                  initTextareaHeight={initTextareaHeight}
-                  addData={(data) => addDataHandler(data)}
-                />
-              ) : (
-                <div key={consult.id + "item"}>
-                  <div className={classes.nameArea}>
-                    <span className={classes.nameIcon}>
-                      <i className="fa-regular fa-id-badge"></i>
-                    </span>
-                    <p className={classes.consultDate}>
-                      {yearMonthDay(consult.id.slice(0, 10))}
-                    </p>
-                    <span className={classes.nameSpan} id={"1" + consult.id}>
-                      {`${consult.name} | ${consult.option.slice(1)}`}
-                    </span>
-                  </div>
-                  {/* 관련학생 있으면 보여주기 */}
-                  {consult?.related?.length > 0 && (
+      <div className={classes["consults-lists-div"]}>
+        {nowOnConsult &&
+          showOnScreen?.map((consult) => (
+            <div key={consult.id} className={classes["listArea-div"]}>
+              <li key={consult.id} className={classes.listArea} id={consult.id}>
+                {showEditor === consult.id ? (
+                  <ConsultEdit
+                    isSubject={props.isSubject}
+                    students={students}
+                    selectOption={props.selectOption}
+                    consult={consult}
+                    cancelEditor={() => setShowEditor("")}
+                    initTextareaHeight={initTextareaHeight}
+                    addData={(data) => addDataHandler(data)}
+                  />
+                ) : (
+                  <div key={consult.id + "item"}>
+                    <div className={classes.nameArea}>
+                      <span className={classes.nameIcon}>
+                        <i className="fa-regular fa-id-badge"></i>
+                      </span>
+                      <p className={classes.consultDate}>
+                        {yearMonthDay(consult.id.slice(0, 10))}
+                      </p>
+                      <span className={classes.nameSpan} id={"1" + consult.id}>
+                        {`${consult.name} | ${consult.option.slice(1)}`}
+                      </span>
+                    </div>
+                    {/* 관련학생 있으면 보여주기 */}
+                    {consult?.related?.length > 0 && (
+                      <>
+                        <div className={classes.noteArea}>
+                          {consult?.related?.map((std) => (
+                            <span key={std} className={classes["nameSpan"]}>
+                              {std}
+                            </span>
+                          ))}
+                        </div>
+                      </>
+                    )}
+
+                    {/* 이미지 / 녹음파일이 있으면 이미지 보여주기 */}
+                    {consult.attachedFileUrl && (
+                      <div className={classes.fileArea}>
+                        <img
+                          src={consult.attachedFileUrl}
+                          style={{ maxHeight: "470px", maxWidth: "95%" }}
+                          alt="filePreview"
+                          onError={imageOnError}
+                        />
+                        <audio
+                          controls
+                          src={consult.attachedFileUrl}
+                          onError={imageOnError}
+                        ></audio>
+                      </div>
+                    )}
+                    {/* 상담 비고 등록한 부분 있으면 보여주기 */}
+                    <hr style={{ margin: "15px" }} />
+
                     <div className={classes.noteArea}>
-                      {consult?.related?.map((std) => (
-                        <span key={std} className={classes["nameSpan"]}>
-                          {std}
-                        </span>
-                      ))}
+                      <span
+                        className={classes.noteTextArea}
+                        id={"note" + consult.id}
+                      >
+                        {consult.note ? consult.note : "'기록이 없습니다.'"}
+                      </span>
                     </div>
-                  )}
+                    <div className={classes.editDeleteArea}>
+                      <Button
+                        id={"edit" + consult.id}
+                        className="consultEditBtn"
+                        onclick={() => {
+                          editConsult(consult.id);
+                          const initHeight = document.getElementById(
+                            `note${consult.id}`
+                          ).scrollHeight;
 
-                  {/* 이미지 / 녹음파일이 있으면 이미지 보여주기 */}
-                  {consult.attachedFileUrl && (
-                    <div className={classes.fileArea}>
-                      <img
-                        src={consult.attachedFileUrl}
-                        height="400px"
-                        alt="filePreview"
-                        onError={imageOnError}
+                          setInitTextareaHeight(initHeight);
+                        }}
+                        icon={<i className="fa-solid fa-pencil"></i>}
                       />
-                      <audio
-                        controls
-                        src={consult.attachedFileUrl}
-                        onError={imageOnError}
-                      ></audio>
+                      <Button
+                        id={"delete" + consult.id}
+                        className="consultEditBtn"
+                        onclick={() => {
+                          deleteConsult(consult);
+                        }}
+                        icon={<i className="fa-solid fa-trash-can"></i>}
+                      />
                     </div>
-                  )}
-                  {/* 상담 비고 등록한 부분 있으면 보여주기 */}
-                  <div className={classes.noteArea}>
-                    <span
-                      className={classes.noteTextArea}
-                      id={"note" + consult.id}
-                    >
-                      {consult.note ? consult.note : "'기록이 없습니다.'"}
-                    </span>
                   </div>
-                  <div className={classes.editDeleteArea}>
-                    <Button
-                      id={"edit" + consult.id}
-                      className="consultEditBtn"
-                      onclick={() => {
-                        editConsult(consult.id);
-                        const initHeight = document.getElementById(
-                          `note${consult.id}`
-                        ).scrollHeight;
-
-                        setInitTextareaHeight(initHeight);
-                      }}
-                      icon={<i className="fa-solid fa-pencil"></i>}
-                    />
-                    <Button
-                      id={"delete" + consult.id}
-                      className="consultEditBtn"
-                      onclick={() => {
-                        deleteConsult(consult);
-                      }}
-                      icon={<i className="fa-solid fa-trash-can"></i>}
-                    />
-                  </div>
-                </div>
-              )}
-            </li>
-          </div>
-        ))}
-    </>
+                )}
+              </li>
+            </div>
+          ))}
+      </div>
+    </div>
   );
 };
 

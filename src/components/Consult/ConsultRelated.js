@@ -5,8 +5,6 @@ import classes from "../Attendance/AttendanceForm.module.css";
 import Button from "components/Layout/Button";
 
 const ConsultRelated = (props) => {
-  console.log(props.students);
-
   return (
     <Modal onClose={props.closeModalHandler}>
       {/* 관련학생 이름들 보여주기 */}

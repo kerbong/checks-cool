@@ -1,12 +1,15 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import classes from "./AttendanceOption.module.css";
 
 const AttendanceOption = (props) => {
-  const [option, setOption] = useState("");
+  const [option, setOption] = useState(props.selectOption?.[0]?.value || "");
+
+  useEffect(() => {
+    props.showNote(option);
+  }, [option]);
 
   const showNote = (e) => {
     setOption(e.target.id + e.target.innerText);
-    props.showNote(e.target.id + e.target.innerText);
   };
   return (
     <ul className={classes["ul"]}>

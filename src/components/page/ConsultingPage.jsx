@@ -357,7 +357,13 @@ const ConsultingPage = (props) => {
               ></i>
             </span>
           </h1>
-          {!showStudentsLists && <span>* 학생명단 펼쳐보기</span>}
+          {!showStudentsLists && (
+            <>
+              <br />
+              <span>* 학생명단 펼쳐보기</span>
+              <br />
+            </>
+          )}
           {/* 전담교사만 보이는 학급 셀렉트 */}
           {isSubject && (
             <div>
@@ -389,7 +395,7 @@ const ConsultingPage = (props) => {
               isSubject={props.isSubject}
             />
           )}
-
+          <br />
           {/* 그동안의 기록들 볼 수 있는 화면 */}
           <ConsultLists
             userUid={props.userUid}

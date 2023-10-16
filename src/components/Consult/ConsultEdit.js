@@ -182,13 +182,23 @@ const ConsultEdit = (props) => {
           }}
         />
         {/* 관련학생 있으면 보여주기 */}
-        {consult?.related?.length > 0 && (
+        {relatedStudent?.length > 0 && (
           <div className={classes.noteArea} style={{ flexWrap: "wrap" }}>
             {relatedStudent?.map((std) => (
               <span key={std} className={classes["nameSpan"]}>
                 {std}
               </span>
             ))}
+          </div>
+        )}
+
+        {/* 관련학생 없음 */}
+        {relatedStudent?.length === 0 && (
+          <div
+            className={classes.noteArea}
+            style={{ flexWrap: "wrap", width: "50%", justifyContent: "center" }}
+          >
+            <span className={classes["nameSpan"]}>* 관련 학생 없음</span>
           </div>
         )}
       </div>
@@ -252,15 +262,14 @@ const ConsultEdit = (props) => {
           }}
         />
         {attachedFileUrl && (
-          <>
+          <div className={classes["editImg-prev"]}>
             <img
               src={attachedFileUrl}
-              width="60%"
-              max-height="250px"
+              style={{ maxHeight: "250px", maxwidth: "300px" }}
               alt="filePreview"
               id="newFile"
             />
-          </>
+          </div>
         )}
       </div>
     </>

@@ -44,6 +44,7 @@ const Attendance = (props) => {
 
   //휴일 달력에 그려주기!
   useEffect(() => {
+    if (props.about !== "consulting") return;
     drawHolidayOnCal();
   }, [currentMonth, showCal]);
 

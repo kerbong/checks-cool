@@ -2,18 +2,34 @@
   list-style: none;
   display: flex;
   flex-direction: column;
-  border-bottom: 1px solid #a7c7a66c;
+  margin: 10px;
   padding: 20px;
+  border-radius: 15px;
+  background-color: white;
+}
+
+.bg-gray {
+  background-color: #eff0f0;
+  padding: 30px 0;
+}
+
+.listArea-div {
+  width: 95%;
+  max-width: 610px;
 }
 
 .nameArea {
   display: flex;
-  margin: 10px 0px;
   text-align: left;
   font-size: 1.1em;
   align-items: center;
   justify-content: flex-start;
   width: 100%;
+}
+.consults-lists-div {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
 }
 
 .fileArea {
@@ -33,6 +49,8 @@
 .nameIcon {
   color: #a3b418d4;
   font-size: 1.3em;
+  align-items: center;
+  display: flex;
 }
 
 .editDeleteArea {
@@ -60,8 +78,17 @@
 
 .editFileArea {
   display: flex;
-  align-items: flex-start;
+  align-items: stretch;
+  margin: 20px 0;
+  flex-direction: column;
 }
+
+.editImg-prev {
+  justify-content: center;
+  display: flex;
+  margin: 30px 0 0 0;
+}
+
 .consultDate {
   margin-left: 15px;
 }

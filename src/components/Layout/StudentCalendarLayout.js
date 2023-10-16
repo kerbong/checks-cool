@@ -4,15 +4,14 @@ import AttendCtxCalendar from "../Attendance/AttendCtxCalendar";
 import dayjs from "dayjs";
 import Attendance from "../Attendance/Attendance";
 import Student from "../Student/Student";
-import ExampleModal from "../page/ExampleModal";
-import calendar from "../../assets/attend/calendar.gif";
-import list from "../../assets/attend/list.gif";
-import show from "../../assets/attend/show.gif";
+// import ExampleModal from "../page/ExampleModal";
+// import calendar from "../../assets/attend/calendar.gif";
+// import list from "../../assets/attend/list.gif";
+// import show from "../../assets/attend/show.gif";
 
 const StudentCalendarLayout = (props) => {
   const [optionIsShown, setOptionShown] = useState(false);
-  const [showEachStudent, setShowEachStudent] = useState(false);
-  const [showStudentsList, setShowStudentsList] = useState(false);
+
   const [student, setStudent] = useState("");
   const [showCalendar, setShowCalendar] = useState(true);
   const [showExample, setShowExample] = useState(false);
@@ -24,11 +23,8 @@ const StudentCalendarLayout = (props) => {
 
   useEffect(() => {
     if (state?.doWhat === "addAttend" || state?.todo === "add") {
-      setAllFalse();
-      setShowCalendar(true);
-    } else if (state?.doWhat === "showAttend") {
-      setAllFalse();
-      setShowEachStudent(true);
+      // setShowCalendar(true);
+    } else {
     }
   }, [state]);
 
@@ -73,14 +69,7 @@ const StudentCalendarLayout = (props) => {
     setOptionShown(false);
   };
 
-  const setAllFalse = () => {
-    setShowCalendar(false);
-    setShowEachStudent(false);
-    setShowStudentsList(false);
-  };
-
   const showCalHandler = () => {
-    setAllFalse();
     setShowCalendar(true);
   };
 
@@ -155,10 +144,10 @@ const StudentCalendarLayout = (props) => {
 
   return (
     <>
-      {showExample && (
+      {/* {showExample && (
         <ExampleModal
           onClose={() => setShowExample(false)}
-          imgSrc={showCalendar ? calendar : showStudentsList ? list : show}
+          imgSrc={showCalendar ? calendar : show}
           text={
             <>
               <p
@@ -169,8 +158,7 @@ const StudentCalendarLayout = (props) => {
                 }}
               >
                 === {showCalendar && "출결달력"}{" "}
-                {showStudentsList && "명렬표입력"}{" "}
-                {showEachStudent && "모아보기"} 예시 ===
+                {showStudentsList && "명렬표입력"} 예시 ===
               </p>
               <p style={{ margin: "15px" }}>
                 * 화면 왼쪽 상단의 현재 페이지 타이틀을 클릭하시면 다시 보실 수
@@ -179,57 +167,55 @@ const StudentCalendarLayout = (props) => {
             </>
           }
         />
-      )}
+      )} */}
 
       {titleDivBtns}
 
       {/* 출결 달력+명렬표 에서 보여줄 버튼, 내용 */}
-      {showCalendar && (
-        <>
-          {props.students.length === 0 && (
-            <>
-              <div>학생 명단이 존재하지 않네요!</div>
-              <div>메뉴의 곰돌이를 눌러서</div>
-              <div>학생 명단을 먼저 입력해주세요!</div>
-            </>
-          )}
+      {/* {showCalendar && ( */}
+      <>
+        {props.students.length === 0 && (
+          <>
+            <div>학생 명단이 존재하지 않네요!</div>
+            <div>메뉴의 곰돌이를 눌러서</div>
+            <div>학생 명단을 먼저 입력해주세요!</div>
+          </>
+        )}
 
-          {!isSubject && (
-            <>
-              <br />
-              <h2>달력 출결기록</h2>
-            </>
-          )}
-          {/* 현재학년도 학생만 보내줌 */}
-          <AttendCtxCalendar
-            selectOption={props.selectOption}
-            about="attendance"
-            isSubject={isSubject}
-            students={nowStudents}
-            userUid={props.userUid}
-            addClicked={state?.todo === "add" ? true : false}
-          />
+        {!isSubject && (
+          <>
+            <br />
+            <h2>달력 출결기록</h2>
+          </>
+        )}
+        {/* 현재학년도 학생만 보내줌 */}
+        <AttendCtxCalendar
+          selectOption={props.selectOption}
+          about="attendance"
+          isSubject={isSubject}
+          students={nowStudents}
+          userUid={props.userUid}
+          addClicked={state?.todo === "add" ? true : false}
+        />
 
-          {!isSubject && (
-            <>
-              <br />
-              <h2>명렬표 출결기록</h2>
-              <Student students={nowStudents} showOption={showOptionHandler} />
+        {!isSubject && (
+          <>
+            <br />
+            <h2>명렬표 출결기록</h2>
+            <Student students={nowStudents} showOption={showOptionHandler} />
 
-              <p>
-                {
-                  "* 일정 기간 반복되는 출결은 학생 이름을 클릭한 후 기간을 설정하시면 쉽게 저장할 수 있어요!"
-                }
-              </p>
+            <p>
+              {"* 일정 기간 반복되는 출결은 명렬표 출결기록을 활용해보세요!"}
+            </p>
 
-              <p>
-                * 문제가 지속되시면 kerbong@gmail.com으로 알려주세요. 최대한
-                빠르게 해결해 드릴게요!
-              </p>
-            </>
-          )}
-        </>
-      )}
+            <p>
+              * 문제가 지속되시면 kerbong@gmail.com으로 알려주세요. 최대한
+              빠르게 해결해 드릴게요!
+            </p>
+          </>
+        )}
+      </>
+      {/* )} */}
 
       {/* studentsList 학생명부에서 학생 클릭하면 출결옵션 화면 나오기 */}
       {optionIsShown && !isSubject && (

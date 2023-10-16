@@ -268,19 +268,21 @@ const AttendCtxCalendar = (props) => {
 
         // 그냥 무조건 버튼 삭제하기!
       });
+
+      // console.log(drawHolidays);
+      // console.log(holidays2023);
       //휴일 그려주기
       holidays2023?.forEach((holiday) => {
         if (holiday[0] === currentMonth) {
           let holiday_queryName = holiday[1].split("*");
           let holidayTag = document.querySelectorAll(holiday_queryName[0])[0];
           if (!holidayTag) return;
-          // console.log(holidayTag.classList.contains("eventAdded"));
 
           const btn = document.createElement("button");
           btn.className = `${classes.holidayData} eventBtn`;
           btn.innerText = holiday_queryName[1];
-          holidayTag?.appendChild(btn);
-          holidayTag.style.borderRadius = "5px";
+          holidayTag.appendChild(btn);
+          holidayTag.style.borderRadius = "10px";
         }
       });
 

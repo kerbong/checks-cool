@@ -298,6 +298,7 @@ select {
 #consult_note {
   padding: 10px;
   font-size: 1.1rem;
+  margin: 20px 10px;
 }
 
 /* 자리뽑기 자리 성별 부분 css */
