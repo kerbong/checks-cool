@@ -90,7 +90,7 @@ const DoInput = (props) => {
           }}
           onInput={(e) => handleOnInput(e, 300)}
           required
-          placeholder="불편한 부분에 수정, 추가하고 싶은 기능을 설명해주세요 / 문제가 발생된 부분과 과정을 자세히 설명해주세요. (내용을 확인하고, 필요한 경우 가입하신 이메일 주소로 연락드리겠습니다.)"
+          placeholder="불편한 부분에 수정, 추가하고 싶은 기능을 설명해주세요 / 문제가 발생된 부분과 과정을 자세히 설명해주세요.  ** 필요한 경우 가입하신 이메일 주소로 연락드립니다. ** "
         />
         <div className={classes["title"]}>
           <FileArea

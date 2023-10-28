@@ -1745,7 +1745,7 @@ const MainPage = (props) => {
       {/* 단축키 설정 모달창 */}
       {makeShortCut && (
         <>
-          <Modal onClose={() => setMakeShortCut(false)}>
+          <Modal onClose={() => setMakeShortCut(false)} addStyle={"shortcut"}>
             <MainShortCut
               shortCutKey={shortCutKey}
               closeModal={() => setMakeShortCut(false)}

@@ -15,7 +15,12 @@ const AttendCalendar = (props) => {
   };
 
   const ExampleCustomInput = React.forwardRef(({ value, onClick }, ref) => (
-    <button className="custom-input" onClick={onClick} ref={ref}>
+    <button
+      className="custom-input"
+      onClick={onClick}
+      ref={ref}
+      title="날짜 선택하기"
+    >
       {value}
     </button>
   ));

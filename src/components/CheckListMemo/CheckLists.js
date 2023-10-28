@@ -108,7 +108,7 @@ const CheckLists = (props) => {
             }
             new_checkLists.push(data);
           });
-          setCheckLists([...new_checkLists]);
+          setCheckLists(new_checkLists);
           setDataDone(true);
         }
         //학년도 저장 및 체크리스트기록 저장
@@ -145,7 +145,7 @@ const CheckLists = (props) => {
             }
             new_listMemo.push(data);
           });
-          setListMemo([...new_listMemo]);
+          setListMemo(new_listMemo);
           setDataDone(true);
         }
         //학년도 저장 및 체크리스트기록 저장
@@ -254,7 +254,7 @@ const CheckLists = (props) => {
                     data.clName === nowClassName
                 );
 
-            setNowOnCheckLists(showCheckLists);
+            setNowOnCheckLists(sortList(showCheckLists));
 
             //처음 자료를 저장하는 경우
           } else {
@@ -275,7 +275,7 @@ const CheckLists = (props) => {
               checkLists_data: [new_checkItem],
             });
 
-            setNowOnCheckLists([new_checkItem]);
+            setNowOnCheckLists(sortList([new_checkItem]));
             // }
           }
 
@@ -325,7 +325,7 @@ const CheckLists = (props) => {
                     data.clName === nowClassName
                 );
 
-            setNowOnListMemo(showListMemo);
+            setNowOnListMemo(sortList(showListMemo));
 
             //처음 자료를 저장하는 경우
           } else {
@@ -335,9 +335,9 @@ const CheckLists = (props) => {
               ],
             });
 
-            setNowOnListMemo([
-              { ...new_item, yearGroup: listMemoYear.current.value },
-            ]);
+            setNowOnListMemo(
+              sortList([{ ...new_item, yearGroup: listMemoYear.current.value }])
+            );
             // }
           }
         }
@@ -409,9 +409,9 @@ const CheckLists = (props) => {
 
       new_datas = checkListsData?.filter((list) => list.id !== item.id);
 
-      setNowOnCheckLists([
-        ...nowOnCheckLists?.filter((list) => list.id !== item.id),
-      ]);
+      setNowOnCheckLists(
+        sortList([...nowOnCheckLists?.filter((list) => list.id !== item.id)])
+      );
       await setDoc(doc(dbService, "checkLists", props.userUid), {
         checkLists_data: new_datas,
       });
@@ -422,9 +422,9 @@ const CheckLists = (props) => {
       const listMemoData = listMemoSnap?.data()?.listMemo_data;
       new_datas = listMemoData?.filter((list) => list.id !== item.id);
       // setListMemo([...new_datas]);
-      setNowOnListMemo([
-        ...nowOnListMemo?.filter((list) => list.id !== item.id),
-      ]);
+      setNowOnListMemo(
+        sortList([...nowOnListMemo?.filter((list) => list.id !== item.id)])
+      );
       await setDoc(listMemoRef, {
         listMemo_data: new_datas,
       });
@@ -455,14 +455,14 @@ const CheckLists = (props) => {
       );
       //담임만 바로 보여줄 자료 세팅
       if (!isSubject) {
-        setNowOnCheckLists(list);
+        setNowOnCheckLists(sortList(list));
       }
     } else {
       let list = [...listMemo]?.filter((data) => data.yearGroup === year_group);
 
       //담임만 바로 보여줄 자료 세팅
       if (!isSubject) {
-        setNowOnListMemo(list);
+        setNowOnListMemo(sortList(list));
       }
     }
 
@@ -535,9 +535,9 @@ const CheckLists = (props) => {
 
     //보여줄 자료 세팅
     if (props.about === "checkLists") {
-      setNowOnCheckLists(list);
+      setNowOnCheckLists(sortList(list));
     } else {
-      setNowOnListMemo(list);
+      setNowOnListMemo(sortList(list));
     }
   };
 
@@ -783,7 +783,7 @@ const CheckLists = (props) => {
           <div className={classes["flex-wrap"]}>
             {/* 제출 미제출 체크리스트들 보여주기 */}
             {nowOnCheckLists &&
-              sortList(nowOnCheckLists)?.map((item) => (
+              nowOnCheckLists?.map((item) => (
                 <li
                   key={item.id + item.title}
                   id={item.id}
@@ -1031,7 +1031,7 @@ const CheckLists = (props) => {
           <div className={classes["flex-wrap"]}>
             {/* 명렬표에서 입력한 자료들도 보여주기 */}
             {nowOnListMemo &&
-              sortList(nowOnListMemo)?.map((item) => (
+              nowOnListMemo?.map((item) => (
                 <li
                   key={item.id + item.title}
                   id={item.id}

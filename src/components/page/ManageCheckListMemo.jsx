@@ -116,7 +116,6 @@ const ManageCheckListMemo = (props) => {
   }, []);
 
   useEffect(() => {
-    console.log(onStudent);
     if (onStudent !== "") {
       //담임이면
       if (!nowIsSubject) {
@@ -303,8 +302,9 @@ const ManageCheckListMemo = (props) => {
           />
           {/* 엑셀저장버튼 */}
           <Button
-            name={<span> 엑셀저장</span>}
+            name={<span> 저장</span>}
             icon={<i className="fa-solid fa-download"></i>}
+            title={"보이는 데이터를 모두 저장하기"}
             onclick={saveExcelHandler}
             className={"excelSave-button"}
           />

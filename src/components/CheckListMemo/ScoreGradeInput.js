@@ -67,8 +67,7 @@ const ScoreGradeInput = (props) => {
         <h2>{props.title} 설정하기</h2>
         <div>
           *설정하신 {props.title}를 활용하실 수 있어요!
-          <br />*{props.title}는 접속한 브라우저, 기기에만 저장됩니다. 다른
-          브라우저, 기기로 접속하신 경우 다시 입력, 저장해주세요.
+          <br />*{props.title}는 접속한 브라우저, 기기에만 저장됩니다.
         </div>
         <div className={classes["btns-div"]}>
           <div>
@@ -80,7 +79,7 @@ const ScoreGradeInput = (props) => {
             </button>
           </div>
           <button onClick={handleSave} className={classes["scoreBtn"]}>
-            Save
+            저장
           </button>
         </div>
       </div>

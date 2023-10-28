@@ -79,8 +79,9 @@
 #switch-btn {
   display: flex;
   flex-direction: column;
-  padding: 7px;
+  margin: 7px;
   color: #000000bd;
+  cursor: pointer;
   line-height: 1.5;
 }
 
@@ -170,14 +171,11 @@
   border-width: 0;
   letter-spacing: 1px;
   padding: 2vh;
-  background-color: #dcc32900;
+  background-color: inherit;
   position: absolute;
   left: -5px;
   font-weight: bold;
-}
-
-#title-btn.consult {
-  background-color: #95d532;
+  color: #000000bd;
 }
 
 #title-div {
@@ -188,24 +186,8 @@
   align-items: center;
 }
 
-#title-btn.upload {
-  background-color: #7632d591;
-}
-
-#title-btn.todo {
-  background-color: #d2877b;
-}
-
 .excel-upload-text {
   font-size: 0.6em;
-}
-
-#title-btn.mainSum {
-  background-color: #91d1dc;
-}
-
-#title-btn.title-memo {
-  background-color: #cc7bd2cc;
 }
 
 .react-datepicker__day--highlighted {

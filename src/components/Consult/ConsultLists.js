@@ -405,7 +405,7 @@ const ConsultLists = (props) => {
     <div className={classes["bg-gray"]}>
       {/* 정렬하는 부분 */}
 
-      <h1>상담 조회 및 수정</h1>
+      <h1>상담기록</h1>
       <br />
       <div className={classes["sortBtnArea"]}>
         <div className={classes["select-area"]}>
@@ -541,7 +541,7 @@ const ConsultLists = (props) => {
                       </div>
                     )}
                     {/* 상담 비고 등록한 부분 있으면 보여주기 */}
-                    <hr style={{ margin: "15px" }} />
+                    {/* <hr style={{ margin: "15px" }} /> */}
 
                     <div className={classes.noteArea}>
                       <span

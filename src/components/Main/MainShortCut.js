@@ -4,9 +4,14 @@ import Button from "components/Layout/Button";
 import Swal from "sweetalert2";
 
 const KEY_EXPLAIN = [
-  "오늘 날짜의 출결 추가",
+  "오늘 출결자료 추가",
   "제출ox 자료 추가",
-  "개별기록 자료추가",
+  "개별기록 자료 추가",
+];
+const RULE_EXPLAIN = [
+  "* 메인화면에서 단축키 사용 가능",
+  "* 숫자와 영문자만 사용 가능",
+  "* 현재 브라우저에서만 적용됨",
 ];
 
 const MainShortCut = (props) => {
@@ -71,7 +76,7 @@ const MainShortCut = (props) => {
         <span className={classes.closeBtn} onClick={props.closeModal}>
           <i className="fa-regular fa-circle-xmark"></i>
         </span>
-        <h2 className={classes["header-area"]}>현재 브라우저의 단축키</h2>
+        <h2 className={classes["header-area"]}>메인화면 바로가기 단축키</h2>
 
         {/* 단축키 3개 그려주기 */}
 
@@ -90,13 +95,16 @@ const MainShortCut = (props) => {
             />
           </p>
         ))}
-        <p
-          className={classes["existed-area"]}
-          style={{ justifyContent: "center" }}
-        >
-          * 숫자와 영문자만 사용 가능
-          <br />* 현재 브라우저에서만 적용됨
-        </p>
+        {RULE_EXPLAIN?.map((rule, i) => (
+          <p
+            className={classes["existed-area"]}
+            style={{ marginLeft: "60px" }}
+            key={i}
+          >
+            {rule}
+          </p>
+        ))}
+
         <Button
           className="checkList-button"
           name="저장"

@@ -64,9 +64,10 @@
 .memo-headerBtn {
   display: flex;
   flex-direction: column;
-  padding: 7px;
   color: #000000bd;
   line-height: 1.5;
+  cursor: pointer;
+  margin: 7px;
 }
 
 .listMemo-date {

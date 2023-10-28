@@ -351,11 +351,7 @@ const ClassTableBasic = (props) => {
       )}
       <div id="title-div">
         {/* 화면 좌상단 타이틀 */}
-        <button
-          id="title-btn"
-          className="consult"
-          onClick={() => setShowExample(true)}
-        >
+        <button id="title-btn" onClick={() => setShowExample(true)}>
           <i className="fa-solid fa-table"></i> 기초시간표
         </button>
       </div>

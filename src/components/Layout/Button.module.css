@@ -28,13 +28,14 @@
 .header-logInOut {
   white-space: pre-wrap;
   background-color: #4621123d;
-  border-radius: 8px;
+  border-radius: 24px;
   border-width: 0;
-  padding: 10px;
-
+  cursor: pointer;
   margin: 1px;
   color: azure;
   letter-spacing: -0.1em;
+  width: 30px;
+  height: 30px;
 }
 
 .big-menu:nth-child(even) {
@@ -227,6 +228,7 @@
   font-size: 1.1rem;
   margin: 5px;
   border-width: 0;
+  cursor: pointer;
 }
 
 .sortBtn,
@@ -309,6 +311,8 @@
   padding: 1vh;
   background-color: inherit;
   color: rgba(18, 2, 0, 0.951);
+  color: #00000075;
+  cursor: pointer;
 }
 
 .main-noStudentPage {
@@ -322,7 +326,7 @@
 .reset-cl-button,
 .time-pm-button {
   width: 25%;
-  height: 6vh;
+  height: 50px;
   margin: 5px 10px;
   font-size: 1rem;
   border-radius: 10px;
@@ -331,9 +335,7 @@
   padding: 0.5vh;
   background-color: #9fd9dc;
   float: right;
-}
-.reset-cl-button {
-  width: 33%;
+  cursor: pointer;
 }
 
 .excelSave-button,
@@ -392,13 +394,18 @@
 }
 
 .time-pm-button {
-  width: 50px;
+  width: 60px;
   border-radius: 25px;
 }
 
 @media screen and (min-width: 800px) {
   .down-classItem-button {
     width: 190px;
+  }
+
+  .header-logInOut {
+    width: 45px;
+    height: 45px;
   }
 }
 
@@ -413,19 +420,30 @@
 }
 .reset-cl-button {
   font-size: 1rem;
-  height: 6vh;
+  height: 55px;
   width: 50%;
 }
 
-.settingSeat {
-  width: auto;
-  margin: 15px;
+.settingSeat,
+.settingSeatSelect {
+  width: 155px;
+  margin: 10px;
   font-size: 1.5rem;
   border-radius: 10px;
   border-width: 0;
   letter-spacing: 2px;
-  padding: 25px;
+  padding: 10px;
+  height: 100px;
   background-color: #c3da9a;
+}
+
+.settingSeatSelect {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 90px;
+  align-items: flex-end;
+  cursor: pointer;
 }
 
 .settingSeat-btn,
@@ -540,15 +558,13 @@
   font-size: 0.8em;
 }
 
-.freeMemo-saveDelete {
-}
-
 .manageBtn,
 .manageBtn-clicked {
   border-width: 0;
   padding: 15px calc(20vw / 4);
   font-size: 1.2rem;
   border-radius: 10px 10px 0 0;
+  cursor: pointer;
 }
 
 .manageBtn-clicked {

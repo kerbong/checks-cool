@@ -62,6 +62,7 @@
 .events-dateMove {
   color: #00000024;
   padding: 15px;
+  cursor: pointer;
 }
 
 .events-today {

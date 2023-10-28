@@ -18,6 +18,8 @@
   flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
+  margin: 10px;
+  width: 310px;
 }
 
 .span {
@@ -39,6 +41,9 @@
   width: 90%;
   flex-direction: column;
   max-width: 400px;
+  justify-content: center;
+  display: flex;
+  align-items: center;
 }
 
 .div1 {

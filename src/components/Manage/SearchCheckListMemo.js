@@ -184,7 +184,7 @@ const SearchCheckListMemo = (props) => {
                     ? classes["list-clicked"]
                     : ""
                 }`}
-                style={{ width: "200px" }}
+                style={{ width: "200px", cursor: "pointer" }}
                 onClick={() => {
                   compareCheckListMemoHandler(memo);
                 }}

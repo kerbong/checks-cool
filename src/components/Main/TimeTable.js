@@ -50,14 +50,14 @@ const TimeTable = (props) => {
             ))}
           </select>
           <Button
-            name={"+5"}
+            name={"+5분"}
             className={"time-pm-button"}
             onclick={(e) => {
               submitHandler(e, "plus", 5);
             }}
           />
           <Button
-            name={"-5"}
+            name={"-5분"}
             className={"time-pm-button"}
             onclick={(e) => {
               submitHandler(e, "minus", 5);

@@ -129,12 +129,11 @@ const HeaderProfileBtn = (props) => {
         onclick={props.isLoggedIn && dropdownHandler}
         icon={
           props.isLoggedIn ? (
-            <i className="fa-solid fa-user"></i>
+            <i className="fa-solid fa-user fa-md"></i>
           ) : (
-            <i className="fa-regular fa-user"></i>
+            <i className="fa-regular fa-user fa-md"></i>
           )
         }
-        name={props.isLoggedIn ? "On" : "-"}
         className="header-logInOut"
       />
       {permissionChanged && (

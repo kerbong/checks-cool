@@ -182,12 +182,6 @@ const StudentCalendarLayout = (props) => {
           </>
         )}
 
-        {!isSubject && (
-          <>
-            <br />
-            <h2>달력 출결기록</h2>
-          </>
-        )}
         {/* 현재학년도 학생만 보내줌 */}
         <AttendCtxCalendar
           selectOption={props.selectOption}
@@ -201,12 +195,10 @@ const StudentCalendarLayout = (props) => {
         {!isSubject && (
           <>
             <br />
-            <h2>명렬표 출결기록</h2>
+
             <Student students={nowStudents} showOption={showOptionHandler} />
 
-            <p>
-              {"* 일정 기간 반복되는 출결은 명렬표 출결기록을 활용해보세요!"}
-            </p>
+            <p>{"* 일정 기간 반복되는 출결은 학생 이름을 클릭하세요!"}</p>
 
             <p>
               * 문제가 지속되시면 kerbong@gmail.com으로 알려주세요. 최대한

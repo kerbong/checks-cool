@@ -28,10 +28,55 @@ const WeTeacher = (props) => {
   ];
 
   const ICONS = [
-    <i className="fa-solid fa-face-meh" style={{ fontSize: "1em" }}></i>,
-    <i className="fa-solid fa-mug-saucer" style={{ fontSize: "1em" }}></i>,
-    <i className="fa-solid fa-thumbs-up" style={{ fontSize: "1em" }}></i>,
-    <i className="fa-solid fa-robot" style={{ fontSize: "1em" }}></i>,
+    <i
+      className="fa-solid fa-face-meh"
+      style={{ fontSize: "1em", color: "#000000bd" }}
+    ></i>,
+    <i
+      className="fa-solid fa-mug-saucer"
+      style={{ fontSize: "1em", color: "#000000bd" }}
+    ></i>,
+    <i
+      className="fa-solid fa-thumbs-up"
+      style={{ fontSize: "1em", color: "#000000bd" }}
+    ></i>,
+    <i
+      className="fa-solid fa-robot"
+      style={{ fontSize: "1em", color: "#000000bd" }}
+    ></i>,
+  ];
+
+  const ICONS_LEFT = [
+    <div className={classes["iconLeft"]}>
+      <i
+        className="fa-solid fa-face-meh"
+        style={{ fontSize: "1em", color: "#f2ffd8" }}
+      ></i>
+    </div>,
+    <div className={classes["iconLeft"]}>
+      <i
+        className="fa-solid fa-mug-saucer"
+        style={{ fontSize: "1em", color: "#f2ffd8" }}
+      ></i>{" "}
+    </div>,
+    <div className={classes["iconLeft"]}>
+      <i
+        className="fa-solid fa-thumbs-up"
+        style={{ fontSize: "1em", color: "#f2ffd8" }}
+      ></i>{" "}
+    </div>,
+    <div className={classes["iconLeft"]}>
+      <i
+        className="fa-solid fa-robot"
+        style={{ fontSize: "1em", color: "#f2ffd8" }}
+      ></i>{" "}
+    </div>,
+    <div className={classes["iconLeft"]}>
+      <i
+        className="fa-solid fa-people-arrows"
+        style={{ fontSize: "1em", color: "#f2ffd8" }}
+      ></i>{" "}
+    </div>,
   ];
 
   useEffect(() => {
@@ -70,7 +115,10 @@ const WeTeacher = (props) => {
             {selectedMenu === "ai" && <>{ICONS[3]} 현장체험 </>}
           </button>
 
-          <div className={classes["title-btns"]}>
+          <div
+            className={classes["title-btns"]}
+            style={selectedMenu === "" ? { visibility: "hidden" } : {}}
+          >
             {/* 메뉴 선택하는 버튼들 */}
             {SHOW_WHAT?.map((what, index) => (
               <TitleBtn
@@ -88,40 +136,46 @@ const WeTeacher = (props) => {
 
         {/* 잼잼 첫 화면 큰 녹색 버튼 모음 */}
         {selectedMenu === "" && (
-          <div className={classes["gameMenu-btn"]}>
-            <Button
-              name={"심심해요"}
-              className={"settingSeat"}
-              onclick={() => setSelectedMenu("simsim")}
-            />
-            <Button
-              name={"아침한마디"}
-              className={"settingSeat"}
-              onclick={() => setSelectedMenu("mission")}
-            />
-            <Button
-              name={"이거해요"}
-              className={"settingSeat"}
-              onclick={() => setSelectedMenu("doThis")}
-            />
-            <Button
-              name={"현장체험"}
-              className={"settingSeat"}
-              onclick={() => setSelectedMenu("ai")}
-            />
-            <Button
-              name={"분반해요"}
-              className={"settingSeat"}
-              onclick={() =>
-                window.open(
-                  "https://bit.ly/%EB%B6%84%EB%B0%98%ED%95%B4%EC%9A%94"
-                )
-              }
-            />
-            {/* <SpeechToText /> */}
-
-            <p>분반해요 주소 👉 bit.ly/분반해요</p>
-          </div>
+          <>
+            <div className={classes["gameMenu-btn"]}>
+              <Button
+                name={"심심해요"}
+                className={"settingSeatSelect"}
+                onclick={() => setSelectedMenu("simsim")}
+                icon={ICONS_LEFT[0]}
+              />
+              <Button
+                name={"아침한마디"}
+                className={"settingSeatSelect"}
+                onclick={() => setSelectedMenu("mission")}
+                icon={ICONS_LEFT[1]}
+              />
+              <Button
+                name={"이거해요"}
+                className={"settingSeatSelect"}
+                onclick={() => setSelectedMenu("doThis")}
+                icon={ICONS_LEFT[2]}
+              />
+              <Button
+                name={"현장체험"}
+                className={"settingSeatSelect"}
+                onclick={() => setSelectedMenu("ai")}
+                icon={ICONS_LEFT[3]}
+              />
+              <Button
+                name={"분반해요"}
+                className={"settingSeatSelect"}
+                onclick={() =>
+                  window.open(
+                    "https://bit.ly/%EB%B6%84%EB%B0%98%ED%95%B4%EC%9A%94"
+                  )
+                }
+                icon={ICONS_LEFT[4]}
+              />
+              {/* <SpeechToText /> */}
+            </div>
+            <p>분반해요 주소 👉 bit.ly/분반해요</p>{" "}
+          </>
         )}
 
         <div className={classes["container-div"]} style={{ marginTop: "-5px" }}>

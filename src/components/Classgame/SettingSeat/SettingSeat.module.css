@@ -104,6 +104,15 @@
 
 .gameMenu-btn {
   margin-top: 70px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.iconLeft {
+  display: flex;
+  justify-content: flex-start;
+  width: 100%;
 }
 
 .gameMenu {

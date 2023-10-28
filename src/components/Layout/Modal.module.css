@@ -63,3 +63,7 @@
     transform: translateY(0);
   }
 }
+
+.shortcut {
+  width: 420px;
+}

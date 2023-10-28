@@ -4,8 +4,8 @@ import classes from "./Doit.module.css";
 const DoingList = (props) => {
   return (
     <div className={classes["list"]}>
-      <h1 style={{ fontSize: "1.8rem" }}>해결 중인 요청들🛠️</h1>
-      <h4>* 최근 두 달 안에 개발자에게 요청한 불편, 건의 사항들만 보입니다.</h4>
+      <h1 style={{ fontSize: "1.8rem" }}>해결 중인 요청들 🛠️</h1>
+      <h4>* 최근 두 달 요청한 불편, 건의 사항들 입니다.</h4>
       {/* <hr style={{ margin: "15px" }} /> */}
       <li className={classes["li-title"]} style={{ margin: "-25px 0" }}>
         <h3> (닉네임) 제목 - 내용 </h3>
