@@ -19,31 +19,31 @@ import SimsimAdd from "./SimsimAdd";
 import SimsimContent from "./SimsimContent";
 
 const Simsim = (props) => {
-  const [simsim, setSimsim] = useState([]);
-  const [nowOnSimsim, setNowOnSimsim] = useState({});
+  const [recommend, setRecommend] = useState([]);
+  const [nowOnRecommend, setNowOnRecommend] = useState({});
   const [userInfo, setUserInfo] = useState({});
   const [addNew, setAddNew] = useState(false);
   const [like, setLike] = useState(false);
   const [hasUserInfo, setHasUserInfo] = useState(false);
   const [contentNum, setContentNum] = useState(0);
-  const [simsimLength, setSimsimLength] = useState(0);
+  const [recommendLength, setRecommendLength] = useState(0);
   const [showExplain, setShowExplain] = useState(false);
 
   let navigate = useNavigate();
 
-  const getSimsimFromDb = () => {
-    //이번달 자료 가져오기
-    let now_month = dayjs().format("YYYY-MM");
+  const getRecommendFromDb = () => {
+    //모든자료 가져오기
 
-    let simsimRef = doc(dbService, "simsim", now_month);
+    let recommendRef = doc(dbService, "recommend", "all");
 
-    setSimsim([]);
-    onSnapshot(simsimRef, (doc) => {
-      const new_simsim = [];
-      doc?.data()?.simsim_data?.forEach((data) => {
-        new_simsim.push(data);
-      });
-      setSimsim(new_simsim);
+    setRecommend([]);
+    onSnapshot(recommendRef, (doc) => {
+      let new_recommend = [];
+      if (doc?.data()?.datas) {
+        new_recommend = doc?.data()?.datas;
+      }
+
+      setRecommend(new_recommend);
     });
   };
 
@@ -64,28 +64,28 @@ const Simsim = (props) => {
   };
 
   useEffect(() => {
-    getSimsimFromDb();
+    getRecommendFromDb();
     getUserInfoFromDb();
   }, []);
 
   useEffect(() => {
-    setSimsimLength(simsim.length);
+    setRecommendLength(recommend.length);
     // setContentNum(0);
-    setNowOnSimsim(simsim[contentNum]);
-  }, [simsim]);
+    setNowOnRecommend(recommend[contentNum]);
+  }, [recommend]);
 
   useEffect(() => {
     checkSetLike();
-  }, [nowOnSimsim]);
+  }, [nowOnRecommend]);
 
   useEffect(() => {
     //simsim자료에서 다음 이전 번호로 넘김
-    if (contentNum < simsimLength && contentNum >= 0) {
-      setNowOnSimsim(simsim[contentNum]);
+    if (contentNum < recommendLength && contentNum >= 0) {
+      setNowOnRecommend(recommend[contentNum]);
     }
     //가져온 자료의 수보다 커지면 다시 -1해서 세팅
-    if (simsimLength !== 0 && contentNum >= simsimLength) {
-      setContentNum(simsimLength - 1);
+    if (recommendLength !== 0 && contentNum >= recommendLength) {
+      setContentNum(recommendLength - 1);
     }
     //-1이 되면 다시 0으로 세팅
     if (contentNum <= -1) {
@@ -101,7 +101,7 @@ const Simsim = (props) => {
 
   //like상태 불러와서 저장하기
   const checkSetLike = () => {
-    let likeOrNot = nowOnSimsim?.like?.filter(
+    let likeOrNot = nowOnRecommend?.like?.filter(
       (user) => user === props.userUid
     ).length;
 
@@ -142,15 +142,18 @@ const Simsim = (props) => {
 
   //라이크를 변경하는 함수, 값을 찾아서 업데이트
   const changeLikeHandler = async () => {
-    const nowOnRef = doc(dbService, "simsim", dayjs().format("YYYY-MM"));
+    const nowOnRef = doc(dbService, "recommend", "all");
     setLike((prev) => !prev);
 
     const getNowData = await getDoc(nowOnRef);
     //이번달 자료 중 현재 자료의 인덱스 저장하고
     let nowData_index = 0;
-    let new_simsimData = [...getNowData.data().simsim_data];
+    let new_simsimData = [...getNowData.data().datas];
     new_simsimData.forEach((data, index) => {
-      if (data.writtenId + data.id === nowOnSimsim.writtenId + nowOnSimsim.id) {
+      if (
+        data.writtenId + data.id ===
+        nowOnRecommend.writtenId + nowOnRecommend.id
+      ) {
         nowData_index = index;
       }
     });
@@ -168,7 +171,7 @@ const Simsim = (props) => {
       nowOnData_like.push(props.userUid);
     }
 
-    await updateDoc(nowOnRef, { simsim_data: new_simsimData });
+    await updateDoc(nowOnRef, { datas: new_simsimData });
   };
 
   //프로필 없는거 알려주고 이동시키기
@@ -247,7 +250,7 @@ const Simsim = (props) => {
     Swal.fire({
       icon: "success",
       title: "작성 성공",
-      text: "심심해요에 글이 성공적으로 작성되었습니다.",
+      text: "추천해요에 글이 성공적으로 작성되었습니다.",
       confirmButtonText: "확인",
       confirmButtonColor: "#85bd82",
       showDenyButton: false,
@@ -255,16 +258,16 @@ const Simsim = (props) => {
     });
 
     //firestore에 저장
-    const simsimRef = doc(dbService, "simsim", dayjs().format("YYYY-MM"));
+    const recommendRef = doc(dbService, "recommend", "all");
     //기존 자료 목록 받아오고 거기에 추가하기
 
     let existData = [new_data];
-    const simsimDoc = await getDoc(simsimRef);
-    if (simsimDoc.exists()) {
-      simsimDoc?.data()?.simsim_data.forEach((data) => existData.push(data));
+    const recommendDoc = await getDoc(recommendRef);
+    if (recommendDoc.exists()) {
+      recommendDoc?.data()?.datas.forEach((data) => existData.push(data));
     }
 
-    await setDoc(simsimRef, { simsim_data: existData });
+    await setDoc(recommendRef, { datas: existData });
 
     insteadText = "";
     descText = "";
@@ -296,8 +299,8 @@ const Simsim = (props) => {
             <SimsimContent
               changeLikeHandler={changeLikeHandler}
               like={like}
-              nowOnSimsim={nowOnSimsim}
-              key={nowOnSimsim?.id}
+              nowOnRecommend={nowOnRecommend}
+              key={nowOnRecommend?.id}
               prev={prev}
               next={next}
             />
@@ -320,7 +323,7 @@ const Simsim = (props) => {
           className={classes["explain-span"]}
           onClick={() => setShowExplain((prev) => !prev)}
         >
-          📋 심심해요 활용 안내
+          📋 추천해요 활용 안내
           <span className={classes["explain-icon"]}>
             {showExplain ? (
               <i className="fa-solid fa-chevron-up"></i>
@@ -338,14 +341,10 @@ const Simsim = (props) => {
               슬라이드 하시면 다음, 이전 내용으로 이동합니다.
             </p>
             <p className={classes["p"]}>
-              * 좋아요 버튼은 4초에 한 번만 상태 변경이 가능합니다.
+              * "추천해요" 글에는 '좋아요'만 가능합니다.
             </p>
             <p className={classes["p"]}>
-              * 자료는 월별로 저장되며 '좋아요'만 가능합니다.
-            </p>
-            <p className={classes["p"]}>
-              * 4월부터 이전 달에 좋아요를 많이 받은 게시글들을 모아서
-              보여드립니다.
+              * '좋아요' 버튼은 3초에 한 번만 상태 변경이 가능합니다.
             </p>
           </div>
         </div>

@@ -464,7 +464,8 @@
   font-weight: bold;
 }
 
-.saveSimsim-btn {
+.saveSimsim-btn,
+.saveSimsim-btn2 {
   padding: 10px;
   color: #ffffff;
   background-color: #ff6600;
@@ -476,6 +477,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.saveSimsim-btn2 {
+  letter-spacing: 10px;
+  width: 100%;
 }
 
 .switch-random-btn,

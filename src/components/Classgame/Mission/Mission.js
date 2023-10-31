@@ -12,8 +12,8 @@ import Swal from "sweetalert2";
 
 const EXPLAINS = [
   "* 오늘 작성한 글만 보여요.",
-  "* 아침 7 ~ 9 시에 글쓰기가 가능해요.",
   "* 하루 한 개의 글만 올릴 수 있어요.",
+  "* 댓글, 좋아요는 여러 개가 가능해요!",
   "* 작성한 글은 수정, 삭제가 불가능해요!",
 ];
 //   {/* <p>* 매주 월요일에는 지난주 핫미션이 나와요.</p> */}
@@ -31,19 +31,8 @@ const Mission = (props) => {
   const [userState, setUserState] = useState("");
   const [showItem, setShowItem] = useState(false);
   const [showMission, setShowMission] = useState({});
-  const [is7to9, setIs7to9] = useState(null);
 
   let navigate = useNavigate();
-
-  useEffect(() => {
-    //7-9
-    const nowHour = +new Date().toTimeString().slice(0, 2);
-    if (nowHour >= 7 && nowHour <= 8) {
-      setIs7to9(true);
-    } else {
-      setIs7to9(false);
-    }
-  }, []);
 
   //오늘 날짜의 미션자료 받아오기
   const getMissionFromDb = () => {
@@ -76,7 +65,6 @@ const Mission = (props) => {
 
   //   미션 추가 함수
   const missionAddHandler = async (titleValue, textValue) => {
-    console.log(userState);
     //프로필 없으면 먼저 저장하고 오도록..
     if (userState === undefined || !userState?.hasOwnProperty("nickName")) {
       Swal.fire({
@@ -221,14 +209,13 @@ const Mission = (props) => {
           </div>
         </div>
 
-        {/* 아침미션 입력 7~9시에만 보이기 */}
-        {is7to9 && (
-          <MissionInput
-            missionAddHandler={(title, text) => {
-              missionAddHandler(title, text);
-            }}
-          />
-        )}
+        {/* 아침미션 입력  */}
+
+        <MissionInput
+          missionAddHandler={(title, text) => {
+            missionAddHandler(title, text);
+          }}
+        />
 
         {missions?.map((mission) => (
           <Item

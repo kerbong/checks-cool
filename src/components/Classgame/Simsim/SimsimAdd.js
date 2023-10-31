@@ -5,42 +5,9 @@ import Input from "../../Layout/Input";
 import Swal from "sweetalert2";
 import Button from "../../Layout/Button";
 
-const EXAM_TEXTS = [
-  "오늘 따라 말썽인 친구가 있나요?",
-  "컨디션은 어떠세요?",
-  "교실과 화장실의 거리는 얼마나 되시나요?",
-  "점심시간은 충분하신가요?",
-  "아침은 드셨나요? 드셨다면 메뉴는? / 먹고싶었던 메뉴는?",
-  "오늘 급식표는 확인하셨나요?",
-  "오늘 가장 힘든 수업은?",
-  "오늘 가장 기대되는 수업은?",
-  "오늘 가장 하기싫은 수업은?",
-  "학교에서 심심할 때는 무얼하시나요?",
-  "오늘 저녁 메뉴는 정하셨나요?",
-  "이번 쉬는시간에는 무얼하셨어요?",
-  "신발 사이즈가 어떻게 되세요?",
-  "몇교시가 가장 좋으세요?",
-  "몇교시가 가장 싫으세요?",
-  "아침시간에는 무얼하세요?",
-  "출근 후 루틴이 있으신가요?",
-  "출근 길은 괜찮으셨나요?",
-  "최근 꽂혀있는 음악은?",
-  "쉬는시간에 음악 틀어주시나요?",
-  "퇴근하고 싶다는 생각이 간절한 때는?",
-  "손이 크신 편인가요?",
-  "손금 잘 보시나요?",
-  "지갑을 들고다니시나요?",
-  "자주 사용하는 카드는?",
-];
-
 const SimsimAdd = (props) => {
   const [attachedFile, setAttachedFile] = useState("");
-  const [addImage, setAddImage] = useState(true);
-  const [randomNum, setRandomNum] = useState(true);
-
-  useEffect(() => {
-    setRandomNum(Math.floor(Math.random() * EXAM_TEXTS.length));
-  }, []);
+  const [addImage, setAddImage] = useState(false);
 
   const errorSwal = (title, text) => {
     Swal.fire({
@@ -92,11 +59,20 @@ const SimsimAdd = (props) => {
 
   return (
     <>
-      <p className={classes["title-p"]}> {EXAM_TEXTS[randomNum]}😄 </p>
+      <p className={classes["title-p"]} style={{ marginTop: "-20px" }}>
+        {" "}
+        추천 글 작성하기 😄{" "}
+      </p>
+      <p className={classes["p"]}>
+        {" "}
+        * 첵스쿨이 가진 장,단점을 공유해주세요! <br /> * 추천/자주쓰는 기능,
+        활용방법 등을 공유해주세요!{" "}
+      </p>
+
       <form>
         <div className={classes["image-div"]}>
           <div className={classes["imageTitle-div"]}>
-            <p className={classes["title-p"]}> 메인 </p>
+            <p className={classes["title-p"]}> 주요설명 </p>
             <button
               className={classes["ImgTextChange-btn"]}
               onClick={(e) => {
@@ -105,11 +81,10 @@ const SimsimAdd = (props) => {
                 setAttachedFile("");
               }}
             >
-              <span className={classes["addImage-span"]}>
-                {addImage ? "toText" : "toImage"}
-              </span>
-
               <i className="fa-solid fa-arrows-rotate"></i>
+              <span className={classes["addImage-span"]}>
+                {addImage ? "글로 쓰기" : "이미지 첨부하기"}
+              </span>
             </button>
           </div>
           <div>
@@ -129,9 +104,9 @@ const SimsimAdd = (props) => {
                 input={{
                   type: "textarea",
                 }}
-                onInput={(e) => handleOnInput(e, 100)}
+                onInput={(e) => handleOnInput(e, 300)}
                 required
-                placeholder="100자 이내로 작성해주세요."
+                placeholder="화면 가운데에 보일 주요설명 (300자 이내) "
               />
             )}
           </div>
@@ -144,13 +119,13 @@ const SimsimAdd = (props) => {
             className={"simsim-Text"}
             type="text"
             required
-            onInput={(e) => handleOnInput(e, 30)}
-            placeholder={"30자 이내로 작성해주세요."}
+            onInput={(e) => handleOnInput(e, 100)}
+            placeholder={"프로필 아래쪽에 보일 추가설명 (100자 이내)"}
           />
         </div>
         <div className={classes["saveSimsim-div"]}>
           <Button
-            className={"saveSimsim-btn"}
+            className={"saveSimsim-btn2"}
             onclick={submitHandler}
             icon={<>저장</>}
           />

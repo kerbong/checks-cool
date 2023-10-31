@@ -42,7 +42,10 @@
 .text-div {
   display: flex;
   min-height: 70px;
-  width: 100%;
+
+  width: calc(100% - 30px);
+  justify-content: center;
+  padding: 15px;
 }
 
 .userImage-div {
@@ -56,7 +59,7 @@
 
 .insteadText-div {
   display: flex;
-  width: 100%;
+  width: 80%;
   justify-content: center;
   align-items: center;
   font-size: 1.2rem;
@@ -90,7 +93,8 @@
   right: 10px;
   font-size: 3rem;
   color: #6a64641f;
-  padding: 100px 0 100px 60px;
+  padding: 100px 0 100px 25px;
+  cursor: pointer;
 }
 
 .image-prev {
@@ -98,7 +102,8 @@
   left: 10px;
   font-size: 3rem;
   color: #6a64641f;
-  padding: 100px 60px 100px 0;
+  padding: 100px 25px 100px 0;
+  cursor: pointer;
 }
 
 .p,

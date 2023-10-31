@@ -11,20 +11,28 @@
 }
 .imageTitle-div {
   display: flex;
-  justify-content: space-between;
-  width: 95%;
+  justify-content: flex-start;
+  width: 100%;
 }
 
 .title-p {
-  font-size: 1.3rem;
+  font-size: 1.7rem;
   display: flex;
   margin: 20px;
-  width: 230px;
+  width: auto;
+  word-break: keep-all;
+}
+
+.p {
+  font-size: 1.2rem;
+  display: flex;
+  margin: 20px;
+  width: auto;
   word-break: keep-all;
 }
 
 .addImage-span {
-  margin-right: 10px;
+  margin: 0 10px;
   font-size: 1.1rem;
 }
 
@@ -32,5 +40,4 @@
   display: flex;
   justify-content: flex-end;
   margin-top: 20px;
-  margin-right: 25px;
 }

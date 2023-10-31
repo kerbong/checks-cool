@@ -1,9 +1,43 @@
-import React, { useRef } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import classes from "./Mission.module.css";
 import Button from "../../../components/Layout/Button";
 import Swal from "sweetalert2";
 
+const EXAM_TEXTS = [
+  "오늘 따라 말썽인 친구가 있나요?",
+  "컨디션은 어떠세요?",
+  "교실과 화장실의 거리는 얼마나 되시나요?",
+  "점심시간은 충분하신가요?",
+  "아침은 드셨나요? 드셨다면 메뉴는? / 먹고싶었던 메뉴는?",
+  "오늘 급식표는 확인하셨나요?",
+  "오늘 가장 힘든 수업은?",
+  "오늘 가장 기대되는 수업은?",
+  "오늘 가장 하기싫은 수업은?",
+  "학교에서 심심할 때는 무얼하시나요?",
+  "오늘 저녁 메뉴는 정하셨나요?",
+  "이번 쉬는시간에는 무얼하셨어요?",
+  "신발 사이즈가 어떻게 되세요?",
+  "몇교시가 가장 좋으세요?",
+  "몇교시가 가장 싫으세요?",
+  "아침시간에는 무얼하세요?",
+  "출근 후 루틴이 있으신가요?",
+  "출근 길은 괜찮으셨나요?",
+  "최근 꽂혀있는 음악은?",
+  "쉬는시간에 음악 틀어주시나요?",
+  "퇴근하고 싶다는 생각이 간절한 때는?",
+  "손이 크신 편인가요?",
+  "손금 잘 보시나요?",
+  "지갑을 들고다니시나요?",
+  "자주 사용하는 카드는?",
+];
+
 const MissionInput = (props) => {
+  const [randomNum, setRandomNum] = useState(true);
+
+  useEffect(() => {
+    setRandomNum(Math.floor(Math.random() * EXAM_TEXTS.length));
+  }, []);
+
   const titleRef = useRef();
   const textRef = useRef();
 
@@ -54,7 +88,7 @@ const MissionInput = (props) => {
               ref={titleRef}
               id="missionTitle-input"
               type="text"
-              placeholder="글의 제목을 입력해주세요."
+              placeholder=""
               className={classes["replyTitle-input"]}
               onInput={(e) => handleOnInput(e, 20)}
             />
@@ -65,7 +99,7 @@ const MissionInput = (props) => {
               ref={textRef}
               id="missionText-input"
               type="text"
-              placeholder="지금 떠오르는 생각이나 기분, 오늘의 컨디션 등을 나눠주세요."
+              placeholder={EXAM_TEXTS[randomNum]}
               className={classes["replyText-input"]}
               onInput={(e) => handleOnInput(e, 50)}
             />

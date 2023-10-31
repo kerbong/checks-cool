@@ -21,7 +21,7 @@ const WeTeacher = (props) => {
   const SHOW_WHAT = ["simsim", "mission", "doThis", "ai"];
 
   const MENU_NAME = [
-    "심심<br/>해요",
+    "추천<br/>해요",
     "아침<br/>한마디",
     "이거<br/>해요",
     "현장<br/>체험",
@@ -29,7 +29,7 @@ const WeTeacher = (props) => {
 
   const ICONS = [
     <i
-      className="fa-solid fa-face-meh"
+      className="fa-solid fa-star"
       style={{ fontSize: "1em", color: "#000000bd" }}
     ></i>,
     <i
@@ -42,14 +42,14 @@ const WeTeacher = (props) => {
     ></i>,
     <i
       className="fa-solid fa-robot"
-      style={{ fontSize: "1em", color: "#000000bd" }}
+      style={{ fontSize: "1em", color: "#00000033" }}
     ></i>,
   ];
 
   const ICONS_LEFT = [
     <div className={classes["iconLeft"]}>
       <i
-        className="fa-solid fa-face-meh"
+        className="fa-solid fa-star"
         style={{ fontSize: "1em", color: "#f2ffd8" }}
       ></i>
     </div>,
@@ -109,7 +109,7 @@ const WeTeacher = (props) => {
                 교사랑
               </>
             )}
-            {selectedMenu === "simsim" && <>{ICONS[0]} 심심해요</>}
+            {selectedMenu === "simsim" && <>{ICONS[0]} 추천해요</>}
             {selectedMenu === "mission" && <>{ICONS[1]} 아침한마디</>}
             {selectedMenu === "doThis" && <>{ICONS[2]} 이거해요 </>}
             {selectedMenu === "ai" && <>{ICONS[3]} 현장체험 </>}
@@ -139,7 +139,7 @@ const WeTeacher = (props) => {
           <>
             <div className={classes["gameMenu-btn"]}>
               <Button
-                name={"심심해요"}
+                name={"추천해요"}
                 className={"settingSeatSelect"}
                 onclick={() => setSelectedMenu("simsim")}
                 icon={ICONS_LEFT[0]}
