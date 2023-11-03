@@ -81,6 +81,19 @@ const CLASSLISTS = [
   "준비물",
 ];
 
+const STARTBASE = [
+  "2022-01-13 08:20",
+  "2022-01-13 09:00",
+  "2022-01-13 09:50",
+  "2022-01-13 10:40",
+  "2022-01-13 11:30",
+  "2022-01-13 12:10",
+  "2022-01-13 13:10",
+  "2022-01-13 14:00",
+  "2022-01-13 14:50",
+  "2022-01-13 15:40",
+];
+
 const MainPage = (props) => {
   const [shortCutKey, setShortCutKey] = useState(
     localStorage.getItem("shortCutKey")
@@ -105,7 +118,7 @@ const MainPage = (props) => {
     classMemo: [],
   });
   const [hideClassTable, setHideClassTable] = useState(true);
-  const [classStart, setClassStart] = useState([]);
+  const [classStart, setClassStart] = useState(STARTBASE);
   const [nowYearStd, setNowYearStd] = useState([]);
   // const [subjectYear, setSubjectYear] = useState(false);
   const [isSubject, setIsSubject] = useState(false);
@@ -523,7 +536,6 @@ const MainPage = (props) => {
     //입력한 개별날짜 시간표들
     // setClassTable([]);
     // 시작 시간 모음
-    setClassStart([]);
 
     let new_todayClassTable = {
       id: "",
@@ -674,7 +686,31 @@ const MainPage = (props) => {
       });
     });
 
-    // console.log(new_classMemo);
+    //수업 시간표용으로 만들어서 저장해두기...
+    let cttRef = doc(dbService, "classTimeTable", props.userUid);
+    let cttDoc = await getDoc(cttRef);
+    let new_cttDoc = [];
+    if (cttDoc.exists()) {
+      cttDoc.data().datas?.forEach((data) => {
+        if (data.id === new_classMemo.id) {
+          new_cttDoc.push(new_classMemo);
+        } else {
+          new_cttDoc.push(data);
+        }
+      });
+    } else {
+      new_cttDoc.push(new_classMemo);
+    }
+
+    let new_classStart = classStart.filter(
+      (c, ind) => ind < classLists?.length
+    );
+
+    await setDoc(cttRef, {
+      datas: new_cttDoc,
+      classStart: new_classStart,
+      classTitles: classLists,
+    });
 
     //다르지 않아! 기본세팅
     let isDiff = false;
@@ -1918,6 +1954,8 @@ const MainPage = (props) => {
                         classLists[index] === null
                       )
                         return null;
+
+                      // [ {index: ,time: , subject: } ]
 
                       return (
                         <ClassItem

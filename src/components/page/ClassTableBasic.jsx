@@ -289,6 +289,13 @@ const ClassTableBasic = (props) => {
           prev.pop();
           return prev;
         });
+
+        //교시시작 시간도 하나 제거함.
+        setClassStart((prev) => {
+          let new_prev = prev;
+          new_prev.pop();
+          return new_prev;
+        });
       }
 
       // 교시 추가일 경우
@@ -319,6 +326,13 @@ const ClassTableBasic = (props) => {
           }
           prev.push(new_clTimeName);
           return prev;
+        });
+
+        // 시작 시각 추가함
+        setClassStart((prev) => {
+          let new_prev = prev;
+          new_prev.push(STARTBASE[new_prev.length]);
+          return new_prev;
         });
       }
     }

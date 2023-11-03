@@ -3,6 +3,7 @@ import Button from "../Layout/Button";
 import classes from "../Classgame/SettingSeat/SettingSeat.module.css";
 import TitleBtn from "components/Memo/TitleBtn";
 
+import { useNavigate, useLocation } from "react-router-dom";
 import SettingSeat from "../Classgame/SettingSeat/SettingSeat";
 import RandomPick from "../Classgame/RandomPick/RandomPick";
 import Alarm from "components/Classgame/AlarmNotice/Alarm";
@@ -14,6 +15,8 @@ const ClassgamePage = (props) => {
   const SHOW_WHAT = ["settingSeat", "randomPick", "alarm", "padIt"];
 
   const MENU_NAME = ["자리<br/>뽑기", "뽑기", "알림장", "패드잇"];
+
+  let navigate = useNavigate();
 
   const ICONS = [
     <i
@@ -68,6 +71,12 @@ const ClassgamePage = (props) => {
     <div className={classes["iconLeft"]}>
       <i
         className="fa-solid fa-copy"
+        style={{ fontSize: "1em", color: "#f2ffd8" }}
+      ></i>
+    </div>,
+    <div className={classes["iconLeft"]}>
+      <i
+        className="fa-solid fa-hourglass-start"
         style={{ fontSize: "1em", color: "#f2ffd8" }}
       ></i>
     </div>,
@@ -127,6 +136,7 @@ const ClassgamePage = (props) => {
               <Button
                 name={"랜덤뽑기"}
                 className={"settingSeatSelect"}
+                title={"학생을 선택해서 즐겁게 상품? 벌칙? 을 정해보세요!"}
                 onclick={() => setSelectedMenu("randomPick")}
                 icon={ICONS_LEFT[1]}
               />
@@ -134,6 +144,7 @@ const ClassgamePage = (props) => {
               <Button
                 name={"타이머"}
                 className={"settingSeatSelect"}
+                title={"새창) 심플한 디자인의 사용하기 편한 웹 타이머"}
                 onclick={() =>
                   window.open(
                     "https://bit.ly/%EC%8B%AC%ED%94%8C%ED%83%80%EC%9D%B4%EB%A8%B8"
@@ -154,6 +165,9 @@ const ClassgamePage = (props) => {
               <Button
                 name={"타임캡슐"}
                 className={"settingSeatSelect"}
+                title={
+                  "새창) 기간을 정해두고 학생들과 온라인 타임캡슐을 만들어요!"
+                }
                 onclick={() =>
                   window.open(
                     "https://bit.ly/%EB%91%90%EA%B7%BC%EB%91%90%EA%B7%BC%ED%83%80%EC%9E%84%EC%BA%A1%EC%8A%90"
@@ -167,6 +181,16 @@ const ClassgamePage = (props) => {
                 className={"settingSeatSelect"}
                 onclick={() => setSelectedMenu("padIt")}
                 icon={ICONS_LEFT[5]}
+              />
+
+              <Button
+                name={"수업알리미"}
+                className={"settingSeatSelect"}
+                title={"다음 수업시간까지 남은 시간을 타이머와 함께 보여줘요"}
+                onclick={() => {
+                  navigate("/classTimeTable");
+                }}
+                icon={ICONS_LEFT[6]}
               />
             </div>
             <p>타임캡슐 주소 👉 bit.ly/두근두근타임캡슐</p>

@@ -43,6 +43,9 @@ const ClassTableBasic = lazy(() => import("./components/page/ClassTableBasic"));
 const Auth = lazy(() => import("./components/page/Auth"));
 const StudentLists = lazy(() => import("./components/page/StudentLists"));
 const PadIt = lazy(() => import("./components/page/PadIt"));
+const ClassTimeTable = lazy(() =>
+  import("./components/ClassTimeTable/ClassTimeTable")
+);
 
 function App() {
   const [init, setInit] = useState(false);
@@ -446,6 +449,11 @@ function App() {
                   }
                 />
 
+                <Route
+                  path="classTimeTable"
+                  element={<ClassTimeTable userUid={userUid} />}
+                />
+
                 <Route path="notice" element={<Notice />} />
 
                 <Route path="*" element={<Navigate replace to="/" />} />
@@ -471,6 +479,17 @@ function App() {
                   </>
                 ) : (
                   <>
+                    <Route
+                      path="padIt"
+                      element={
+                        <PadIt
+                          isStudent={isStudent}
+                          padItInfo={padItInfo}
+                          students={students}
+                        />
+                      }
+                    />
+
                     <Route
                       path="padIt"
                       element={
