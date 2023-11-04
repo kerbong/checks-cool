@@ -199,15 +199,18 @@ const SimpleTimer = (props) => {
       //   시간이 끝나면
       if (new_timeLeft < 0) {
         // 기존 타이머를 지우고
+        setIsPaused(false);
         setIsStarted(false);
         setTimeLeft(firstSetTime);
-        setIsPaused(false);
-        displayTimeLeft(firstSetTime);
+        setWholeTime(firstSetTime);
+        displayTimeLeft(firstSetTime, firstSetTime);
         clearInterval(new_timerRef);
         setTimerRef(null);
+
         return;
       }
-      if ((new_timeLeft / wholeTime) * 100 === 50 && new_timeLeft > 10) {
+      let new_wholeTime = wt ? wt : wholeTime;
+      if ((new_timeLeft / new_wholeTime) * 100 === 50 && new_timeLeft > 10) {
         let remainMS;
         if (new_timeLeft > 60) {
           let remainM = Math.floor(new_timeLeft / 60);
@@ -219,25 +222,14 @@ const SimpleTimer = (props) => {
         speech(`시간의 반이 지났어요. ${remainMS} 남았어요.`);
       } else {
         let audio = new Audio(endingAudio);
-        if (browserType === "Edge") {
-          if (new_timeLeft === 61) {
-            speech(`시간이 1분 남았어요.`);
-          } else if (new_timeLeft <= 11 && new_timeLeft > 1) {
-            speech(`${+new_timeLeft - 1}`, true);
-          } else if (new_timeLeft === 1) {
-            speech(`시간이 종료되었어요.`);
-          } else if (new_timeLeft === 0) {
-            audio.play();
-          }
-        } else {
-          if (new_timeLeft === 60) {
-            speech(`시간이 1분 남았어요.`);
-          } else if (new_timeLeft <= 10 && new_timeLeft > 0) {
-            speech(`${+new_timeLeft}`, true);
-          } else if (new_timeLeft === 0) {
-            audio.play();
-            speech(`시간이 종료되었어요.`);
-          }
+
+        if (new_timeLeft === 60) {
+          speech(`시간이 1분 남았어요.`);
+        } else if (new_timeLeft <= 10 && new_timeLeft > 0) {
+          speech(`${+new_timeLeft}`, true);
+        } else if (new_timeLeft === 0) {
+          audio.play();
+          speech(`시간이 종료되었어요.`);
         }
       }
 

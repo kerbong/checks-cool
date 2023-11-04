@@ -184,9 +184,9 @@ const ClassgamePage = (props) => {
               />
 
               <Button
-                name={"수업알리미"}
+                name={"준비타이머"}
                 className={"settingSeatSelect"}
-                title={"다음 수업시간까지 남은 시간을 타이머와 함께 보여줘요"}
+                title={"다음 수업시간까지 남은 시간, 준비할 것들을 보여줘요"}
                 onclick={() => {
                   navigate("/classTimeTable");
                 }}

@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import ExampleModal from "./ExampleModal";
 import byExcel from "../../assets/student/teacher-excel.gif";
-import mainImg from "../../assets/notice/1010.gif";
+import mainImg from "../../assets/notice/1104.gif";
 import dayjs from "dayjs";
 import AttendCalendar from "components/Attendance/AttendCalendar";
 import donationImg from "../../assets/notice/donation.png";
@@ -27,16 +27,19 @@ const deploy_text = `매일 저녁 11:00 ~ 12:30 에는 오류 수정 및 앱 �
 const monthEnd_title = `월말엔, 자료다운!`;
 const monthEnd_text = `월말입니다! 선생님들의 소중한 정보를 다운로드 해주세요!<br/>
 메인화면의 '💾 데이터 저장'을 활용해주세요!!<br/><br/>
-** 첵스-쿨은 선생님들의 모든 학급일지 데이터를 <br/> 엑셀파일 하나로 만들고 관리하는데 도움을 드리려고 합니다! <br/><br/> ** <b>첵스쿨 활용 팁👉</b> 을 <u>아침한마디에 공유</u>해주세요!
+** 첵스-쿨은 선생님들의 모든 학교 데이터를 <br/> 엑셀파일 하나로 만들고 편하게 기록, 관리하는데 도움을 드리고 싶어요! <br/><br/> ** 사용에 만족하신다면 <br/> <b>첵스쿨 활용팁, 후기를 👉</b> <u>[교사랑] - [추천해요]에 공유</u>해주세요!
  `;
 
-const update_title = `패드잇 업데이트!🚡`;
+const update_title = `준비타이머 update!`;
 
-const update_text = `다들 행복한 연휴 보내셨나요? <br/> 
-<b>패드잇에 url주소 링크 기능이 추가되었습니다!</b><br/>
-주소를 복사, 붙여넣기 한 후에 한 칸을 띄우고 나머지 내용들을 입력해주세요! <br/> 
-<b>
-링크주소가 포함된 경우 자동으로 링크가 생성됩니다.🐻</b><br/><br/> 
+const update_text = ` <br/> 
+<b>다음교시까지 남은 시간을 보여주는 내부 타이머가 추가되었어요!!</b><br/>
+1. [메인화면]에서 시간표를 저장<br/>
+2. <b>[제자랑] - [준비타이머]에 들어가서 활용한다! 
+</b><br/>* 다음 시간까지 준비할 내용을 클릭 / 직접 입력하여 설정해둘 수 있습니다!
+
+<br/><br/> 
+
 
 * 선생님들이 편하게 '기록'할 수 있는<br/>
 선생님들을 '기록'으로 보호할 수 있는<br/> 
@@ -48,8 +51,7 @@ const update_text = `다들 행복한 연휴 보내셨나요? <br/>
 ** 접속이 어려우신 분들은 아래의 주소를 활용해주세요!<br/> https://checks-cho-ok.firebaseapp.com
 <br/><br/>
 
-* 화면상단 메뉴바의 <i class="fa-solid fa-user"></i> -
-"공지사항"에 들어오시면 내용을 다시 보실 수 있어요.(업데이트 미반영시 사이트를 새로고침 해주세요!)<br/><br/>
+* 업데이트 미반영시 사이트를 새로고침 해주세요!<br/><br/>
 
 `;
 
@@ -150,7 +152,7 @@ const MainPage = (props) => {
   const [showDeployNotice, setShowDeployNotice] = useState(false);
 
   useEffect(() => {
-    if (localStorage.getItem("showNotice") <= "20231018") {
+    if (localStorage.getItem("showNotice") <= "20231111") {
       setShowNotice(true);
     }
     if (
@@ -1748,6 +1750,7 @@ const MainPage = (props) => {
             localStorage.setItem("showNotice", dayjs().format("YYYYMMDD"));
             setShowNotice(false);
           }}
+          addStyle={"notice1104"}
           imgSrc={mainImg}
           title={
             <h1

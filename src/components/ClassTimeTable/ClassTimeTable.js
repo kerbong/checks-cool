@@ -8,6 +8,7 @@ import Swal from "sweetalert2";
 import SimpleTimer from "./SimpleTimer";
 
 import classes from "./SimpleTimer.module.css";
+import TimerInput from "./TimerInput";
 
 const CLASSLISTS = [
   "아침",
@@ -37,13 +38,14 @@ const ClassTimeTable = (props) => {
   const [classSubjects, setClassSubjects] = useState([]);
 
   const [currentTime, setCurrentTime] = useState(
-    dayjs("2023-01-01 13:21:00").format("YYYY-MM-DD HH:mm:ss")
+    dayjs().format("YYYY-MM-DD HH:mm:ss")
   );
   //현재교시
-  const [nowOn, setNowOn] = useState(0);
+  const [nowOn, setNowOn] = useState(null);
   //다음교시까지 남은 초
   const [remainTime, setRemainTime] = useState(0);
   const [showLeftToNext, setShowLeftToNext] = useState(true);
+  const [subjectV, setSubjectV] = useState("");
 
   let navigate = useNavigate();
 
@@ -58,8 +60,6 @@ const ClassTimeTable = (props) => {
       classMemo: [],
     });
 
-    setClassStart([]);
-
     let new_todayClassTable = {
       id: "",
       classMemo: CLASSLISTS?.map((cl) => {
@@ -68,6 +68,7 @@ const ClassTimeTable = (props) => {
     };
 
     onSnapshot(classTableRef, (doc) => {
+      setClassStart([]);
       if (doc.exists()) {
         //교시별 시작시간 세팅하기
         setClassStart(doc?.data()?.classStart);
@@ -79,7 +80,7 @@ const ClassTimeTable = (props) => {
         doc?.data()?.datas.forEach((d) => {
           //오늘 시간표 있으면 저장해두기
           //   if (d.id === todayYyyymmdd) {
-          if (d.id === "2023-11-03") {
+          if (d.id === todayYyyymmdd) {
             setTodayClassTable(d);
             //없으면 기본값으로...?
           } else {
@@ -91,7 +92,7 @@ const ClassTimeTable = (props) => {
       } else {
         Swal.fire(
           "시간표 저장필요",
-          "메인페이지에서 시간표를 저장한 후에 [제자랑] - [수업시간표] 페이지를 활용해주세요!  ** 기초시간표를 저장해두시면 편리합니다!",
+          "메인페이지에서 시간표를 저장한 후에 [제자랑] - [준비타이머] 페이지를 활용해주세요!  ** 기초시간표를 저장해두시면 편리합니다!",
           "warning"
         );
         navigate(`/`);
@@ -114,16 +115,17 @@ const ClassTimeTable = (props) => {
 
   //현재 시각의 시간표 확인하기
   useEffect(() => {
-    if (!classSubjects) return;
+    if (classStart?.length === 0) return;
 
-    classSubjects.forEach((sub, index) => {
+    classStart.forEach((sub, index) => {
       //해당시간 시작
       let start_time = dayjs(classStart[index]).format("HH:mm:ss");
       //해당시간 끝
       let end_time = dayjs(classStart[index]).add(40, "m").format("HH:mm:ss");
       //다음시간 시작
+
       let next_time;
-      if (index + 1 === classSubjects.length) {
+      if (index + 1 === classStart.length) {
         next_time = dayjs(classStart[index]).add(41, "m").format("HH:mm:ss");
       } else {
         next_time = dayjs(classStart[index + 1]).format("HH:mm:ss");
@@ -133,13 +135,13 @@ const ClassTimeTable = (props) => {
 
       //현재 시각이 해당 교시의 시작 시간 보다 미래 && 다음 교시 시작 시간보다 과거
       if (cur_time > start_time && cur_time < next_time) {
-        setNowOn(index);
         //만약 현재 시각이  현재 교시의 시작+ 40분보다 이후이면 현재는 쉬는시간..! 다음교시 - 현재시각 => 남은 시간으로 세팅
         // if (cur_time > end_time) {
 
         // 만약 마지막 교시면.. 현재 교시 끝나는 시각 - 현재시각 남은시간 세팅
         let remain_time;
-        if (index + 1 === classSubjects.length) {
+
+        if (index + 1 === classStart.length) {
           remain_time = dayjs("2023-01-01" + end_time).diff(
             dayjs("2023-01-01" + cur_time),
             "seconds"
@@ -153,47 +155,43 @@ const ClassTimeTable = (props) => {
 
         setRemainTime(+remain_time);
 
-        //현재 수업중이면,
-        // } else {
-        //   //다음교시 시작 시간 보여주기 설정인경우
-        //   if (showLeftToNext) {
-        //     let remain_time = dayjs("2023-01-01" + end_time).diff(
-        //       dayjs("2023-01-01" + cur_time),
-        //       "seconds"
-        //     );
-        //     //다음교시 시작 시각 - 현재 시각 초 세팅
-        //     setRemainTime(remain_time);
-        //   } else {
-        //     setRemainTime(0);
-        //   }
-        // }
-
-        //
         setNowOn(index);
-        // console.log(classStart);
-        // console.log(classSubjects);
-        // console.log(classTitles);
-        // console.log("과목명", classSubjects[index]);
-        // console.log("교시 시작", classStart[index]);
-        // console.log("교시 타이틀", classTitles[index]);
+        return;
       }
     });
-  }, [classSubjects]);
+  }, [classStart]);
 
-  //   useEffect(() => {
-  //     if (remainTime === 0) return;
-  // console.log(remainTime);
-  //   }, [remainTime]);
+  const changeHandler = (e) => {
+    setSubjectV(e.target.value?.trim());
+  };
 
   return (
-    <div className={classes["div"]}>
-      <SimpleTimer remainTime={remainTime} />
-      {/* 다음교시 보여주기 */}
-      <div style={{ width: "30%" }}>
-        <h3 className={classes["h3"]}>{classTitles[nowOn]}</h3>
-        <h2 className={classes["h2"]}>{classSubjects[nowOn]}</h2>
+    <>
+      <div className={classes["div"]}>
+        <SimpleTimer remainTime={remainTime} />
+        {/* 다음교시 보여주기 */}
+        <div className={classes["nextCl"]}>
+          <h3 className={classes["h3"]}>
+            {nowOn ? classTitles[nowOn] : "다음교시"}
+          </h3>
+          <h2 className={classes["h2"]}>
+            {nowOn && classSubjects[nowOn]}
+            {(!nowOn || !classSubjects[nowOn]) && (
+              <input
+                type="text"
+                className={classes["sub-input"]}
+                placeholder="직접입력"
+                vlaue={subjectV}
+                onChange={changeHandler}
+              />
+            )}
+          </h2>
+        </div>
       </div>
-    </div>
+      <div>
+        <TimerInput />
+      </div>
+    </>
   );
 };
 

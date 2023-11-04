@@ -4,7 +4,7 @@ import classes from "./ExampleModal.module.css";
 
 const ExampleModal = (props) => {
   return (
-    <Modal onClose={props.onClose}>
+    <Modal onClose={props.onClose} addStyle={props.addStyle}>
       <span onClick={props.onClose} className={classes.xmark}>
         <i className="fa-regular fa-circle-xmark"></i>
       </span>
