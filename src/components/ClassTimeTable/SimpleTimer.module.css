@@ -27,7 +27,6 @@ button[data-setter] {
   outline: none;
   background: transparent;
   border: none;
-  font-family: "Roboto";
   font-weight: 300;
   font-size: 4vw;
   /* width: 25px;
@@ -84,7 +83,6 @@ button[data-setter]:hover {
   width: 19vw;
 }
 .display-remain-time {
-  font-family: "Roboto";
   font-weight: 800;
   font-size: 9vw;
   color: #6b6b6b;
@@ -204,7 +202,7 @@ button[data-setter]:hover {
   background-color: #6b6b6b;
   color: whitesmoke;
   font-weight: bold;
-  font-family: "Roboto";
+
   letter-spacing: 2px;
   margin: var(--margin-btn);
   font-size: var(--font-size-sm);

@@ -15,4 +15,5 @@
 .img {
   max-height: 70vh;
   max-width: 85vw;
+  width: 100%;
 }

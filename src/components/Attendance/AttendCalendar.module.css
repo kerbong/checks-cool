@@ -4,7 +4,6 @@
   height: 75vh;
   margin-left: 2vw;
   margin-top: 5px;
-  font-family: "GowunDodum";
 }
 .react-datepicker__header {
   padding-top: 0.8em;
@@ -64,7 +63,6 @@
   letter-spacing: 1px;
   padding: 2vh;
   background-color: #f5d254;
-  font-family: "GowunDodum";
 }
 
 .react-datepicker__day--disabled {

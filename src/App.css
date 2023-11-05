@@ -10,7 +10,7 @@
 }
 
 * {
-  font-family: "GowunDodum";
+  font-family: "Gowun Dodum", sans-serif;
 }
 
 html {
@@ -46,10 +46,10 @@ select {
   font-weight: 400;
 }
 
-@font-face {
+/* @font-face {
   font-family: "GowunDodum";
   src: url("./fonts/GowunDodum-Regular.ttf");
-}
+} */
 
 /* memo todo부분 css */
 /* Home Page Container */
