@@ -124,6 +124,8 @@
   flex-direction: column;
   justify-content: space-evenly;
   font-size: 1.2rem;
+  max-width: 130px;
+  background-color: #fffffff2;
 }
 
 @media screen and (min-width: 800px) {

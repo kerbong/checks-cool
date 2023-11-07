@@ -688,15 +688,12 @@ const MainPage = (props) => {
     let cttDoc = await getDoc(cttRef);
     let new_cttDoc = [];
     if (cttDoc.exists()) {
-      cttDoc.data().datas?.forEach((data) => {
-        if (data.id === new_classMemo.id) {
-          new_cttDoc.push(new_classMemo);
-        } else {
-          new_cttDoc.push(data);
-        }
-      });
-    } else {
+      new_cttDoc = cttDoc
+        ?.data()
+        ?.datas?.filter((data) => data.id !== new_classMemo.id);
       new_cttDoc.push(new_classMemo);
+    } else {
+      new_cttDoc = [new_classMemo];
     }
 
     let new_classStart = classStart.filter(

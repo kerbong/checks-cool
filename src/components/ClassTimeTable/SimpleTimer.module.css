@@ -275,3 +275,23 @@ button[data-setter]:hover {
   max-width: 400px;
   margin: 10px 15px;
 }
+
+/* .memo-show {
+  animation: slide-down 300ms ease-out forwards;
+} */
+
+.memo-show {
+  animation: slide-down 400ms ease-in-out forwards;
+  margin: 15px 0;
+}
+
+@keyframes slide-down {
+  from {
+    opacity: 0;
+    transform: translateY(1rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

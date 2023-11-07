@@ -18,9 +18,9 @@ const SimpleTimer = (props) => {
   const [countdownRate, setCountdownRate] = useState(1);
   const [browserType, setBrowserType] = useState("");
 
-  const [timeLeft, setTimeLeft] = useState(60);
-  const [firstSetTime, setFirstSetTime] = useState(60);
-  const [wholeTime, setWholeTime] = useState(60);
+  const [timeLeft, setTimeLeft] = useState(600);
+  const [firstSetTime, setFirstSetTime] = useState(600);
+  const [wholeTime, setWholeTime] = useState(600);
 
   const [isPaused, setIsPaused] = useState(false);
   const [isStarted, setIsStarted] = useState(false);

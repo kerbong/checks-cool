@@ -36,6 +36,8 @@ const ClassTimeTable = (props) => {
   const [classTitles, setClassTitles] = useState(CLASSLISTS);
   //수업 교시별 교과 목록
   const [classSubjects, setClassSubjects] = useState([]);
+  // 수업 교시별 메모 목록
+  const [classMemo, setClassMemo] = useState([]);
 
   const [currentTime, setCurrentTime] = useState(
     dayjs().format("YYYY-MM-DD HH:mm:ss")
@@ -107,9 +109,12 @@ const ClassTimeTable = (props) => {
   useEffect(() => {
     if (Object.values(todayClassTable)?.length === 0) return;
     let new_classSubjects = [];
+    let new_classMemo = [];
     todayClassTable.classMemo?.forEach((clM) => {
       new_classSubjects.push(clM.subject);
+      new_classMemo.push(clM.memo);
     });
+    setClassMemo(new_classMemo);
     setClassSubjects(new_classSubjects);
   }, [todayClassTable]);
 
@@ -156,6 +161,8 @@ const ClassTimeTable = (props) => {
         setRemainTime(+remain_time);
 
         setNowOn(index);
+
+        // setSubjectV()
         return;
       }
     });
@@ -172,11 +179,11 @@ const ClassTimeTable = (props) => {
         {/* 다음교시 보여주기 */}
         <div className={classes["nextCl"]}>
           <h3 className={classes["h3"]}>
-            {nowOn ? classTitles[nowOn] : "다음교시"}
+            {classTitles?.[nowOn + 1] || "다음교시"}
           </h3>
           <h2 className={classes["h2"]}>
-            {nowOn && classSubjects[nowOn]}
-            {(!nowOn || !classSubjects[nowOn]) && (
+            {nowOn && classSubjects?.[nowOn + 1]}
+            {(!nowOn || !classSubjects[nowOn + 1]) && (
               <input
                 type="text"
                 className={classes["sub-input"]}
@@ -189,7 +196,7 @@ const ClassTimeTable = (props) => {
         </div>
       </div>
       <div>
-        <TimerInput />
+        <TimerInput classMemo={classMemo?.[nowOn + 1]} />
       </div>
     </>
   );

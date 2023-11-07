@@ -18,6 +18,7 @@ const EXAMPLES = [
 const TimerInput = (props) => {
   const [value, setValue] = useState("");
   const [todos, setTodos] = useState([]);
+  const [showMemo, setShowMemo] = useState(false);
 
   const changeHandler = (e) => {
     const { value } = e.target;
@@ -71,7 +72,7 @@ const TimerInput = (props) => {
       {/* 에시목록 및 직접입력 부분  */}
       <div className={classes["timerInput-div"]}>
         {/* 예시목록 */}
-        <div style={{ width: "65%" }}>
+        <div style={{ width: "60%" }}>
           <div className={classes["examples"]}>
             {EXAMPLES?.map((exam, ind) => (
               <span
@@ -88,15 +89,35 @@ const TimerInput = (props) => {
         </div>
 
         {/* 직접입력부분 */}
-        <form onSubmit={submitHandler} style={{ width: "35%" }}>
-          <input
-            type="text"
-            value={value}
-            className={classes["timer-input"]}
-            onChange={changeHandler}
-            placeholder="내용을 직접 작성해주세요."
-          />
-        </form>
+        <div style={{ width: "40%" }}>
+          <form onSubmit={submitHandler}>
+            <input
+              type="text"
+              value={value}
+              className={classes["timer-input"]}
+              onChange={changeHandler}
+              placeholder="내용을 직접 입력해주세요."
+            />
+          </form>
+
+          {/* 메모 보여주기 */}
+          {props?.classMemo && (
+            <div
+              style={{ color: "gray" }}
+              onClick={() => setShowMemo((prev) => !prev)}
+            >
+              * 메모 내용 확인{" "}
+              {showMemo ? (
+                <i className="fa-solid fa-chevron-up"></i>
+              ) : (
+                <i className="fa-solid fa-chevron-down"></i>
+              )}
+            </div>
+          )}
+          {showMemo && (
+            <div className={classes["memo-show"]}>{props?.classMemo}</div>
+          )}
+        </div>
       </div>
     </div>
   );
