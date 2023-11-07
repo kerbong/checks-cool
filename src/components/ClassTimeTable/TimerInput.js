@@ -114,8 +114,11 @@ const TimerInput = (props) => {
               )}
             </div>
           )}
-          {showMemo && (
-            <div className={classes["memo-show"]}>{props?.classMemo}</div>
+          {showMemo && props?.classMemo && (
+            <div
+              className={classes["memo-show"]}
+              dangerouslySetInnerHTML={{ __html: props?.classMemo }}
+            ></div>
           )}
         </div>
       </div>

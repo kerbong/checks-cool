@@ -179,7 +179,7 @@ const ClassTimeTable = (props) => {
         {/* 다음교시 보여주기 */}
         <div className={classes["nextCl"]}>
           <h3 className={classes["h3"]}>
-            {classTitles?.[nowOn + 1] || "다음교시"}
+            {nowOn ? classTitles?.[nowOn + 1] : "다음교시"}
           </h3>
           <h2 className={classes["h2"]}>
             {nowOn && classSubjects?.[nowOn + 1]}
@@ -196,7 +196,7 @@ const ClassTimeTable = (props) => {
         </div>
       </div>
       <div>
-        <TimerInput classMemo={classMemo?.[nowOn + 1]} />
+        <TimerInput classMemo={nowOn ? classMemo?.[nowOn + 1] : null} />
       </div>
     </>
   );
