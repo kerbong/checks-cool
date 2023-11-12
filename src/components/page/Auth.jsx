@@ -413,6 +413,11 @@ const Auth = (props) => {
                 className={classes["logInOut-input"]}
               />
             </form>
+            <p>
+              ** 접속이 어려우신 분들은 아래의 주소를 활용해주세요!
+              <br /> https://checks-cho-ok.firebaseapp.com
+              <br /> https://checks-cho-ok.web.app
+            </p>
           </div>
         </>
       )}

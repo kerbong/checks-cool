@@ -8,6 +8,8 @@ import { dbService } from "../../../fbase";
 import { onSnapshot, doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import { utils, writeFile } from "xlsx";
 import holidays2023 from "holidays2023";
+import userEvent from "@testing-library/user-event";
+import AssistanceAi from "../AssistanceAi/AssistanceAi";
 
 const getDateHandler = (date, titleOrQuery) => {
   let year = date.getFullYear();
@@ -38,6 +40,18 @@ const Alarm = (props) => {
   const [todayAlarm, setTodayAlarm] = useState({});
   const [showCal, setShowCal] = useState(false);
   const [currentMonth, setCurrentMonth] = useState(dayjs().format("YYYY-MM"));
+  const [showTodayDate, setShowTodayDate] = useState(true);
+  const [tableMessage, setTableMessage] = useState("");
+  const [scheduleMessage, setScheduleMessage] = useState("");
+  const [wholeMessage, setWholeMessage] = useState("");
+
+  //해당 pc에 설정이 꺼져있는지 확인하기
+  useEffect(() => {
+    let show_state = localStorage.getItem("alarmShowTodayDate");
+    if (show_state === false || show_state === "false") {
+      setShowTodayDate(false);
+    }
+  }, []);
 
   const getAlarmFromDb = async () => {
     let alarmRef = doc(dbService, "alarm", props.userUid);
@@ -263,6 +277,115 @@ const Alarm = (props) => {
     });
   }, [currentMonth, showCal]);
 
+  /** 날짜 이동 함수, 다음날 혹은 이전 날짜로 */
+  const dayChangerHandler = (befOrNex) => {
+    if (befOrNex === "before") {
+      calDateHandler(dayjs(todayYyyymmdd).subtract(1, "day"));
+    } else if (befOrNex === "next") {
+      calDateHandler(dayjs(todayYyyymmdd).add(1, "day"));
+    }
+  };
+
+  /** 내일의 시간표 정보들 받아오기 */
+  const getClassTableFromDb = async (day) => {
+    let classTableRef = doc(dbService, "classTable", props.userUid);
+    const now_doc = await getDoc(classTableRef);
+    if (now_doc.exists()) {
+      // 저장된 각 날짜의 시간표 데이터가 있으면
+      if (now_doc?.data()?.datas) {
+        let todayClass = now_doc
+          ?.data()
+          ?.datas?.filter((data) => data.id === day);
+
+        if (todayClass?.length === 0) {
+          Swal.fire(
+            "자동생성 실패",
+            "내일 시간표가 존재하지 않아요! [메인화면] 에서 알림장을 쓰고 싶은 날짜의 다음 날 시간표를 저장해주세요!",
+            "warning"
+          );
+          return;
+        }
+
+        function removeHTMLTags(str) {
+          return str.replace(/<[^>]*>?/gm, "");
+        }
+
+        //오늘 날짜의 시간표가 있으면 메모만 모아서 저장하기
+        let new_memos = "";
+        todayClass[0]?.classMemo?.forEach((cl) => {
+          if (cl.memo?.trim()?.length === 0) return;
+          new_memos += removeHTMLTags(cl.memo) + ", ";
+        });
+        setTableMessage(new_memos);
+      }
+    } else {
+      Swal.fire(
+        "자동생성 실패",
+        "내일 시간표가 존재하지 않아요! [메인화면] 에서 알림장을 쓰고 싶은 날짜의 다음 날 시간표를 저장해주세요!",
+        "warning"
+      );
+      return;
+    }
+  };
+
+  /** 내일의 스케쥴 정보들 받아오기 */
+  const getScheduleFromDb = async (day) => {
+    let roomInfo = localStorage.getItem("todoPublicRoom");
+
+    let personalRef = doc(dbService, "todo", props.userUid);
+    let personalSnap = await getDoc(personalRef);
+    let new_memos = "";
+
+    //개인 스케쥴(달력 일정표)에 내일 데이터 있으면
+    if (personalSnap.exists()) {
+      personalSnap?.data()?.todo_data?.forEach((data) => {
+        if (data.id.slice(0, 10) !== day) return;
+        // 내일 날짜의 스케쥴이 있으면 넣어주기
+        new_memos += data.eventName;
+        if (data.note) {
+          new_memos += " " + data.note;
+        }
+        new_memos += ",";
+      });
+    }
+
+    //공용 스케쥴(달력 일정표)에 내일 데이터 있으면
+    if (roomInfo !== null) {
+      let publicRef = doc(dbService, "todo", roomInfo);
+      let publicSnap = await getDoc(publicRef);
+      if (publicSnap.exists()) {
+        publicSnap?.data()?.todo_data?.forEach((data) => {
+          if (data.id.slice(0, 10) !== day) return;
+          // 내일 날짜의 스케쥴이 있으면 넣어주기
+          new_memos += data.eventName;
+          if (data.note) {
+            new_memos += " " + data.note;
+          }
+          new_memos += ",";
+        });
+      }
+    }
+
+    setScheduleMessage(new_memos);
+  };
+
+  /** 알림장 자동으로 작성해주는 함수, 내일시간표, 내일 달력 일정 확인해서 자동으로 만들어주기 */
+  const autoWriteHandler = () => {
+    let day = dayjs(todayYyyymmdd).add(1, "day").format("YYYY-MM-DD");
+    getClassTableFromDb(day);
+  };
+
+  useEffect(() => {
+    if (!tableMessage) return;
+    let day = dayjs(todayYyyymmdd).add(1, "day").format("YYYY-MM-DD");
+    getScheduleFromDb(day);
+  }, [tableMessage]);
+
+  useEffect(() => {
+    if (!scheduleMessage) return;
+    setWholeMessage(tableMessage + ", " + scheduleMessage);
+  }, [scheduleMessage]);
+
   return (
     <div>
       {/* 잼잼 첫 화면으로 넘어가는 x 버튼 div */}
@@ -284,6 +407,14 @@ const Alarm = (props) => {
           className={classes["date"]}
           onClick={() => setShowCal((prev) => !prev)}
         >
+          {/* 왼쪽 버튼 어제로..  */}
+          <span
+            className={classes["cal-moveDay"]}
+            title="이전 날짜"
+            onClick={() => dayChangerHandler("before")}
+          >
+            <i className="fa-solid fa-chevron-left fa-lg"></i>
+          </span>
           {/* 오늘 날짜 보여주는 부분 날짜 클릭하면 달력도 나옴 */}
           <span
             className={
@@ -304,6 +435,14 @@ const Alarm = (props) => {
               />
             </span>
           </span>
+          {/* 오른쪽 버튼 내일로..  */}
+          <span
+            className={classes["cal-moveDay"]}
+            title="다음 날짜"
+            onClick={() => dayChangerHandler("next")}
+          >
+            <i className="fa-solid fa-chevron-right fa-lg"></i>
+          </span>
         </div>
 
         {/* 칠판, 칠판 설정 부분 */}
@@ -320,7 +459,13 @@ const Alarm = (props) => {
                 autoFocus: true,
               }}
               startheight={"64px"}
-              defaultValue={todayAlarm.text || ""}
+              defaultValue={
+                Object.values(todayAlarm)?.length > 0
+                  ? todayAlarm.text
+                  : showTodayDate
+                  ? titleDate
+                  : ""
+              }
               alarm={true}
               fontSize={fontSize}
               maxRowAlert={(error) => {
@@ -328,15 +473,32 @@ const Alarm = (props) => {
               }}
             />
           </div>
-          {/* 칠판 설정 */}
+          {/* 칠판 설정 버튼 모음 */}
           <div className={classes["setting"]}>
+            {/* 날짜 자동 입력 */}
+            <button
+              className={`${classes["mg-5"]} ${classes["btn"]}  ${
+                showTodayDate && classes["btn-clicked"]
+              }`}
+              onClick={() => {
+                if (showTodayDate) {
+                  setShowTodayDate(false);
+                  localStorage.setItem("alarmShowTodayDate", false);
+                } else {
+                  setShowTodayDate(true);
+                  localStorage.setItem("alarmShowTodayDate", true);
+                }
+              }}
+              title={
+                showTodayDate
+                  ? "알림장 내용에 오늘날짜 자동으로 기록하기 기능 켜짐상태 ( 현재pc )"
+                  : "알림장 내용에 오늘날짜 자동으로 기록하기 기능 꺼짐상태 ( 현재pc )"
+              }
+            >
+              {showTodayDate ? "날짜on" : "날짜off"}
+            </button>
             {!isMobile && (
               <div className={classes["fontSize-div"]}>
-                <div className={classes["mg-5"]}>
-                  글자
-                  <br />
-                  크기
-                </div>
                 {FONTSIZE.map((fs, index) => (
                   <button
                     className={`${classes["mg-5"]} ${classes["btn"]}  ${
@@ -355,36 +517,58 @@ const Alarm = (props) => {
               </div>
             )}
 
+            {/* 어제자료 불러오기 버튼 */}
             <button
               className={`${classes["mg-5"]} ${classes["btn"]}`}
               onClick={getYesterdayData}
+              title="어제 알림장 내용을 가져와서 붙입니다."
             >
               어제자료 가져오기
             </button>
+
+            {/* 수동으로 알림장 저장 버튼 */}
             <button
               className={`${classes["mg-5"]} ${classes["btn"]}`}
               onClick={saveHandler}
             >
               수동저장
             </button>
+
+            {/* 알림장 전체 자료 저장 */}
             <button
               className={`${classes["mg-5"]} ${classes["btn"]}`}
               onClick={excelSave}
+              title="현재까지 작성된 모든 알림장을 저장합니다."
             >
               전체 <br />
               엑셀저장
             </button>
+
+            {/* 현재 알림장 내용 삭제 */}
             <button
               className={`${classes["mg-5"]} ${classes["btn"]}`}
               onClick={deleteAll}
+              title="현재 알림장에 있는 모든 내용을 삭제합니다."
             >
-              전체삭제
+              내용삭제
             </button>
             <div className={classes["mg-5"]}>
               * 5초 이상 입력이 없으면 자동저장
             </div>
           </div>
         </div>
+
+        {/* 자동 알림장 써주기 */}
+        <button
+          className={`${classes["mg-5"]} ${classes["btn"]} ${
+            classes["autoWrite"]
+          }  ${showTodayDate && classes["btn-clicked"]}`}
+          onClick={autoWriteHandler}
+          title="내일의 시간표와 일정을 바탕으로 알림장을 자동으로 생성합니다.(beta)"
+        >
+          알림장 참고자료 (+beta)
+        </button>
+        <AssistanceAi message={wholeMessage} />
       </div>
     </div>
   );

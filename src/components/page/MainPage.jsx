@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import ExampleModal from "./ExampleModal";
 import byExcel from "../../assets/student/teacher-excel.gif";
-import mainImg from "../../assets/notice/1104.gif";
+import mainImg from "../../assets/notice/1112.gif";
 import dayjs from "dayjs";
 import AttendCalendar from "components/Attendance/AttendCalendar";
 import donationImg from "../../assets/notice/donation.png";
@@ -30,23 +30,20 @@ const monthEnd_text = `월말입니다! 선생님들의 소중한 정보를 다�
 ** 첵스-쿨은 선생님들의 모든 학교 데이터를 <br/> 엑셀파일 하나로 만들고 편하게 기록, 관리하는데 도움을 드리고 싶어요! <br/><br/> ** 사용에 만족하신다면 <br/> <b>첵스쿨 활용팁, 후기를 👉</b> <u>[교사랑] - [추천해요]에 공유</u>해주세요!
  `;
 
-const update_title = `준비타이머 update!`;
+const update_title = `알림장 update!`;
 
 const update_text = ` <br/> 
-<b>다음교시까지 남은 시간을 보여주는 내부 타이머가 추가되었어요!!</b><br/>
-1. [메인화면]에서 시간표를 저장<br/>
-2. <b>[제자랑] - [준비타이머]에 들어가서 활용한다! 
-</b><br/>* 다음 시간까지 준비할 내용을 클릭 / 직접 입력하여 설정해둘 수 있습니다!
+<b>알림장에 날짜기능 on/off 와<br/> 자동생성기능</b> 추가<br/><br/>
+
+1. [메인화면]에서 내일 시간표를 저장<br/>
+2. <b>[제자랑] - [알림장]에 들어가서 활용 <br/>
+</b><br/>* AI로 내일 시간표와 일정을 기준으로 알림장을 생성하며, 내용이 다소 부정확할 수 있습니다. 사용해보시고 불편이나 개선점 알려주시면 빠르게 반영하겠습니다!
 
 <br/><br/> 
 
 <b>어디서든 눈부신, 모든 선생님들을 응원합니다.🔥🔥</b><br/><br/> 
 
 * 일상의 변화, 교사의 성장 파트너 | 첵스-쿨<br/><br/>
-
-
-** 접속이 어려우신 분들은 아래의 주소를 활용해주세요!<br/> https://checks-cho-ok.firebaseapp.com
-<br/><br/>
 
 `;
 
@@ -147,7 +144,7 @@ const MainPage = (props) => {
   const [showDeployNotice, setShowDeployNotice] = useState(false);
 
   useEffect(() => {
-    if (localStorage.getItem("showNotice") <= "20231111") {
+    if (localStorage.getItem("showNotice") <= "20231119") {
       setShowNotice(true);
     }
     if (
@@ -666,6 +663,8 @@ const MainPage = (props) => {
     const classMemoRef = doc(dbService, "classTable", props.userUid);
     const now_doc = await getDoc(classMemoRef);
 
+    let isPageMoved = false;
+
     //각각의 인덱스를 기준으로 각교시 과목 이름과 메모를 저장함.
     //시간표 정보가 저장되어 있으면.. 최신으로 사용함.
     let recent_classLists = [...classLists];
@@ -676,12 +675,19 @@ const MainPage = (props) => {
       let subject = document.querySelector(`#classSubject-${item}`);
       let memo = document.querySelector(`#classMemo-${item}`);
 
+      if (!subject || !memo) {
+        isPageMoved = true;
+      }
+
       new_classMemo["classMemo"].push({
         subject: subject.value.trim(),
         // memo: memo.value.trim(),
         memo: memo.innerHTML,
       });
     });
+
+    //페이지 이동시 끝내기
+    if (isPageMoved) return;
 
     //수업 시간표용으로 만들어서 저장해두기...
     let cttRef = doc(dbService, "classTimeTable", props.userUid);
@@ -1587,6 +1593,7 @@ const MainPage = (props) => {
     writeFile(book, fileName);
   };
 
+  //단축키 작동하는 부분
   useEffect(() => {
     let year = todayYyyymmdd.slice(0, 4);
     let month = todayYyyymmdd.slice(5, 7);

@@ -1,7 +1,7 @@
 .exit-btn {
   position: absolute;
   top: 225px;
-  right: 6%;
+  right: 3%;
   padding: 10px;
   width: 50px;
   height: 50px;
@@ -55,6 +55,9 @@
 .date {
   width: auto;
   font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  height: 60px;
 }
 
 .setting {
@@ -96,4 +99,21 @@
   .setting {
     width: 105px;
   }
+}
+
+.cal-moveDay {
+  margin: 10px;
+  color: #e4e4e4;
+  font-size: x-large;
+}
+
+.cal-moveDay:hover {
+  font-size: xx-large;
+  margin: 7px;
+}
+
+.autoWrite {
+  padding: 20px;
+  border-radius: 25px;
+  font-size: 20px;
 }

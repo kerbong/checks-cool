@@ -103,7 +103,7 @@ const Input = React.forwardRef((props, ref) => {
 
     if (props.alarm) {
       //스크롤을 가장 아래로 내리기..
-      window.scrollTo(0, noteRef.current.scrollHeight);
+      window.scrollTo(0, noteRef.current.scrollHeight / 2);
       rowAlert();
 
       return;
