@@ -174,6 +174,18 @@ const ClassTimeTable = (props) => {
 
   return (
     <>
+      {/* 화면 가운데로 맞춰주는 버튼 */}
+      <div
+        className={classes["autoScrollBtn"]}
+        title="타이머가 잘 보이도록 스크롤바를 이동시킵니다."
+        onClick={() => window.scrollTo(0, 220)}
+      >
+        <i
+          className="fa-solid fa-crosshairs fa-2xl"
+          style={{ color: "#757575" }}
+        ></i>
+      </div>
+
       <div className={classes["div"]}>
         <SimpleTimer remainTime={remainTime} />
         {/* 다음교시 보여주기 */}

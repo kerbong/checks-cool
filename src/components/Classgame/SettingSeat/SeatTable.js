@@ -69,6 +69,7 @@ const SeatTable = (props) => {
   const [pickSeatAll, setPickSeatAll] = useState("");
   const [seeFromBack, setSeeFromBack] = useState(true);
   const [animation, setAnimation] = useState(true);
+  const [hideBtns, setHideBtns] = useState(false);
   const [existLists, setExistLists] = useState(false);
 
   // console.log(props.students);
@@ -1531,6 +1532,42 @@ const SeatTable = (props) => {
     nowSeatGender?.[1] === students?.filter((std) => std.woman)?.length &&
     +nowSeatGender?.[0] + +nowSeatGender?.[1] === students?.length;
 
+  /** 남은 학생들을 렌더링해주는 함수 */
+  const remainStdsRender = () => {
+    return (
+      <div className={classes["remain-student-div"]}>
+        {students?.map((stu) => {
+          return (
+            <span
+              key={stu.name}
+              className={classes["remain-student"]}
+              style={stu?.woman ? { backgroundColor: "#8c9d6c" } : {}}
+              onClick={() => {
+                //선택한 학생의 자리 배치 확인
+                if (!selectSeatCheck()) {
+                  errorSwal(
+                    `뽑힌 "${tempStudent.name}" 학생의 자리를 선택해주세요!`
+                  );
+                  return false;
+                }
+                let new_students = [...students];
+                setStudents([
+                  ...new_students?.filter(
+                    (student) => +student.num !== +stu.num
+                  ),
+                ]);
+                setTempStudent(stu);
+              }}
+              title={stu.num + "번, 클릭해서 학생 선택하기"}
+            >
+              {stu.name}
+            </span>
+          );
+        })}
+      </div>
+    );
+  };
+
   return (
     <div id={props.title || "newSeats"} style={{ display: "flex" }}>
       <div
@@ -1758,128 +1795,53 @@ const SeatTable = (props) => {
         {genderEmptySeat && (
           <>
             {/* 자리뽑기가 진짜 시작되면 보여지는 자리 위 세팅 부분 */}
-            <div className={classes["mt--25"]}>
-              {students.length > 0 ? (
-                <>
-                  남은학생 ({students.length})
-                  <div className={classes["remain-student-div"]}>
-                    {students?.map((stu) => (
-                      <span
-                        key={stu.name}
-                        className={classes["remain-student"]}
-                        onClick={() => {
-                          //선택한 학생의 자리 배치 확인
-                          if (!selectSeatCheck()) {
-                            errorSwal(
-                              `뽑힌 "${tempStudent.name}" 학생의 자리를 선택해주세요!`
-                            );
-                            return false;
-                          }
-                          let new_students = [...students];
-                          setStudents([
-                            ...new_students?.filter(
-                              (student) => +student.num !== +stu.num
-                            ),
-                          ]);
-                          setTempStudent(stu);
-                        }}
-                        title={stu.name}
-                      >
-                        {stu.num}
-                      </span>
-                    ))}
-                  </div>
-                </>
-              ) : (
-                <div className={classes["remain-student-div"]}>
-                  {props.title ? (
-                    ""
-                  ) : (
-                    <>
-                      <p>
-                        <Button
-                          name={"여학생 자리만 색칠하기"}
-                          onclick={coloringGender}
-                          className={"settingSeat-btn"}
-                          style={{ borderRadius: "15px" }}
-                        />
-                        <Button
-                          name={
-                            seeFromBack
-                              ? "교사 기준으로 보기"
-                              : "학생 기준으로 보기"
-                          }
-                          onclick={changeSeeHandler}
-                          className={"settingSeat-btn"}
-                          style={{ borderRadius: "15px" }}
-                        />
-                      </p>
-                    </>
-                  )}
-                </div>
-              )}
-            </div>
+
+            {students.length > 0 ? (
+              <div className={classes["remainStds-div"]}>
+                남은학생 ({students.length}){remainStdsRender()}
+              </div>
+            ) : (
+              <div className={classes["remain-student-div"]}>
+                {props.title ? (
+                  ""
+                ) : (
+                  <>
+                    <p>
+                      <Button
+                        name={"여학생 자리만 색칠하기"}
+                        onclick={coloringGender}
+                        className={"settingSeat-btn"}
+                        style={{ borderRadius: "15px" }}
+                      />
+                      <Button
+                        name={
+                          seeFromBack
+                            ? "교사 기준으로 보기"
+                            : "학생 기준으로 보기"
+                        }
+                        onclick={changeSeeHandler}
+                        className={"settingSeat-btn"}
+                        style={{ borderRadius: "15px" }}
+                      />
+                    </p>
+                  </>
+                )}
+              </div>
+            )}
 
             {students.length > 0 && (
               <>
                 <div className={classes["remain-student-div"]}>
-                  <div className={classes["randomPickBtn-div"]}>
-                    누구랑&nbsp;
-                    <Button
-                      id="newPairBtn"
-                      onclick={() => {
-                        setIsNewPair(true);
-                      }}
-                      className={
-                        isNewPair
-                          ? `switch-random-btn-selected`
-                          : `switch-random-btn`
-                      }
-                      name={"새로운짝"}
-                    />
-                    <Button
-                      id="newPairBtn"
-                      onclick={() => {
-                        setIsNewPair(false);
-                      }}
-                      className={
-                        !isNewPair
-                          ? `switch-random-btn-selected`
-                          : `switch-random-btn`
-                      }
-                      name={"인생랜덤"}
-                    />
-                  </div>
-
+                  {/* 움짤 on / off 켜고 끄는 버튼 */}
                   <div className={`${classes["randomPickBtn-div"]}`}>
-                    어떻게&nbsp;
-                    <Button
-                      id="justStudent"
-                      onclick={() => {
-                        setRandomJustStudent(true);
-                      }}
-                      className={
-                        randomJustStudent
-                          ? `switch-random-btn-selected`
-                          : `switch-random-btn`
+                    <li
+                      className={classes["dropdown-li-nonehover"]}
+                      title={
+                        animation
+                          ? "학생 선택 후에 나오는 움짤 숨기기"
+                          : "학생 선택 후에 나오는 움짤 보여주기"
                       }
-                      name={"학생만"}
-                    />
-                    <Button
-                      id="stuPlusSeat"
-                      onclick={() => {
-                        setRandomJustStudent(false);
-                      }}
-                      className={
-                        !randomJustStudent
-                          ? `switch-random-btn-selected`
-                          : `switch-random-btn`
-                      }
-                      name={"학생+자리"}
-                    />
-                  </div>
-                  <div className={`${classes["randomPickBtn-div"]}`}>
-                    <li className={classes["dropdown-li-nonehover"]}>
+                    >
                       움짤
                       <input type="checkbox" id="toggle" hidden />
                       <label
@@ -1898,71 +1860,101 @@ const SeatTable = (props) => {
                       </label>
                     </li>
                   </div>
+                  {/* 설정버튼들  on / off 보이기, 숨기기 버튼 */}
+                  <div className={`${classes["randomPickBtn-div"]}`}>
+                    <li
+                      className={classes["dropdown-li-nonehover"]}
+                      title={
+                        !hideBtns
+                          ? "설정, 뽑기 버튼들을 숨겨요"
+                          : "설정, 뽑기 버튼들을 보여줘요"
+                      }
+                    >
+                      버튼 숨김
+                      <input type="checkbox" id="toggle" hidden />
+                      <label
+                        htmlFor="toggle"
+                        className={
+                          !hideBtns
+                            ? `${classes["toggleSwitch"]} ${classes["active"]}`
+                            : `${classes["toggleSwitch"]}`
+                        }
+                        onClick={() => {
+                          setHideBtns((prev) => !prev);
+                        }}
+                        ref={toggleRef}
+                      >
+                        <span className={classes["toggleButton"]}></span>
+                      </label>
+                    </li>
+                  </div>
                 </div>
                 <div className={classes["remain-student-div"]}>
                   <>
-                    <div className={classes["randomPickBtn-div"]}>
-                      {!randomJustStudent && "랜덤자리 한명씩"}
-                      <Button
-                        id="randomWomanPickBtn"
-                        onclick={() => {
-                          if (!selectSeatCheck()) {
-                            errorSwal(
-                              `뽑힌 "${tempStudent.name}" 학생의 자리를 선택해주세요!`
-                            );
-                            return false;
-                          }
-
-                          randomJustStudent
-                            ? randomPickHandler(true)
-                            : pickAndSeatHandler(true);
-                        }}
-                        className={"settingSeat-btn"}
-                        style={{ borderRadius: "15px" }}
-                        name="여학생"
-                      />
-                      <Button
-                        id="randomManPickBtn"
-                        onclick={() => {
-                          if (!selectSeatCheck()) {
-                            errorSwal(
-                              `뽑힌 "${tempStudent.name}" 학생의 자리를 선택해주세요!`
-                            );
-                            return false;
-                          }
-                          randomJustStudent
-                            ? randomPickHandler(false)
-                            : pickAndSeatHandler(false);
-                        }}
-                        className={"settingSeat-btn"}
-                        style={{ borderRadius: "15px" }}
-                        name="남학생"
-                      />
-                      <Button
-                        id="randomPickBtn"
-                        onclick={() => {
-                          if (!selectSeatCheck()) {
-                            errorSwal(
-                              `뽑힌 "${tempStudent.name}" 학생의 자리를 선택해주세요!`
-                            );
-                            return false;
-                          }
-                          randomJustStudent
-                            ? randomPickHandler("all")
-                            : pickAndSeatHandler("all");
-                        }}
-                        className={"settingSeat-btn"}
-                        style={{ borderRadius: "15px" }}
-                        name="성별랜덤"
-                      />
-                    </div>
-
-                    {/* 자리까지 뽑기 버전에서만 가능한 전체 뽑기, 1번자리부터 순서대로 들어감! */}
-                    {!randomJustStudent && (
+                    {!hideBtns && (
                       <div className={classes["randomPickBtn-div"]}>
-                        한번에
+                        누구를&nbsp;
                         <Button
-                          id="randomMan_WoPickBtn"
+                          id="newPairBtn"
+                          onclick={() => {
+                            setIsNewPair(true);
+                          }}
+                          className={
+                            isNewPair
+                              ? `switch-random-btn-selected`
+                              : `switch-random-btn`
+                          }
+                          name={"새로운짝"}
+                        />
+                        <Button
+                          id="newPairBtn"
+                          onclick={() => {
+                            setIsNewPair(false);
+                          }}
+                          className={
+                            !isNewPair
+                              ? `switch-random-btn-selected`
+                              : `switch-random-btn`
+                          }
+                          name={"인생랜덤"}
+                        />
+                      </div>
+                    )}
+
+                    {!hideBtns && (
+                      <div className={`${classes["randomPickBtn-div"]}`}>
+                        어떻게&nbsp;
+                        <Button
+                          id="justStudent"
+                          onclick={() => {
+                            setRandomJustStudent(true);
+                          }}
+                          className={
+                            randomJustStudent
+                              ? `switch-random-btn-selected`
+                              : `switch-random-btn`
+                          }
+                          name={"학생만"}
+                        />
+                        <Button
+                          id="stuPlusSeat"
+                          onclick={() => {
+                            setRandomJustStudent(false);
+                          }}
+                          className={
+                            !randomJustStudent
+                              ? `switch-random-btn-selected`
+                              : `switch-random-btn`
+                          }
+                          name={"학생+자리"}
+                        />
+                      </div>
+                    )}
+                    {!hideBtns && (
+                      <div className={classes["randomPickBtn-div"]}>
+                        뽑기
+                        <Button
+                          id="randomWomanPickBtn"
                           onclick={() => {
                             if (!selectSeatCheck()) {
                               errorSwal(
@@ -1970,18 +1962,58 @@ const SeatTable = (props) => {
                               );
                               return false;
                             }
-                            setPickSeatAll("mix");
-                            randomAllHandler("mix", "all");
+
+                            randomJustStudent
+                              ? randomPickHandler(true)
+                              : pickAndSeatHandler(true);
                           }}
                           className={"settingSeat-btn"}
                           style={{ borderRadius: "15px" }}
-                          name="1번부터"
+                          title="여학생 한 명을 뽑아요"
+                          name="여학생"
                         />
-                        {/* 빈자리만 세팅되어 있으면.. 1번부터하면 그냥 여자쭈루루룩 남자 쭈루루루룩 넣어버리니까.. 안보이게 */}
-                        {!onlyEmptySeat && (
+                        <Button
+                          id="randomManPickBtn"
+                          onclick={() => {
+                            if (!selectSeatCheck()) {
+                              errorSwal(
+                                `뽑힌 "${tempStudent.name}" 학생의 자리를 선택해주세요!`
+                              );
+                              return false;
+                            }
+                            randomJustStudent
+                              ? randomPickHandler(false)
+                              : pickAndSeatHandler(false);
+                          }}
+                          className={"settingSeat-btn"}
+                          style={{ borderRadius: "15px" }}
+                          title="남학생 한 명을 뽑아요"
+                          name="남학생"
+                        />
+                        <Button
+                          id="randomPickBtn"
+                          onclick={() => {
+                            if (!selectSeatCheck()) {
+                              errorSwal(
+                                `뽑힌 "${tempStudent.name}" 학생의 자리를 선택해주세요!`
+                              );
+                              return false;
+                            }
+                            randomJustStudent
+                              ? randomPickHandler("all")
+                              : pickAndSeatHandler("all");
+                          }}
+                          className={"settingSeat-btn"}
+                          style={{ borderRadius: "15px" }}
+                          title="여학생 or 남학생 한 명을 뽑아요"
+                          name="여 / 남"
+                        />
+                        &nbsp;&nbsp;{"|"}
+                        {/* 자리까지 뽑기 버전에서만 가능한 전체 뽑기, 1번자리부터 순서대로 들어감! */}
+                        {!randomJustStudent && (
                           <>
                             <Button
-                              id="randomWo_manPickBtn"
+                              id="randomMan_WoPickBtn"
                               onclick={() => {
                                 if (!selectSeatCheck()) {
                                   errorSwal(
@@ -1989,40 +2021,55 @@ const SeatTable = (props) => {
                                   );
                                   return false;
                                 }
-                                setPickSeatAll("gender");
-                                randomAllHandler("gender", true);
+                                setPickSeatAll("mix");
+                                randomAllHandler("mix", "all");
                               }}
                               className={"settingSeat-btn"}
                               style={{ borderRadius: "15px" }}
-                              name="여자먼저"
+                              title="모든 학생을 한 번에 뽑아요!"
+                              name="한 번에"
                             />
-                            <Button
-                              id="randomAllPickBtn"
-                              onclick={() => {
-                                if (!selectSeatCheck()) {
-                                  errorSwal(
-                                    `뽑힌 "${tempStudent.name}" 학생의 자리를 선택해주세요!`
-                                  );
-                                  return false;
-                                }
-                                setPickSeatAll("gender");
-                                randomAllHandler("gender", false);
-                              }}
-                              className={"settingSeat-btn"}
-                              style={{ borderRadius: "15px" }}
-                              name="남자먼저"
-                            />
+                            {/* 빈자리만 세팅되어 있으면.. 1번부터하면 그냥 여자쭈루루룩 남자 쭈루루루룩 넣어버리니까.. 안보이게 */}
+                            {!onlyEmptySeat && (
+                              <>
+                                <Button
+                                  id="randomWo_manPickBtn"
+                                  onclick={() => {
+                                    if (!selectSeatCheck()) {
+                                      errorSwal(
+                                        `뽑힌 "${tempStudent.name}" 학생의 자리를 선택해주세요!`
+                                      );
+                                      return false;
+                                    }
+                                    setPickSeatAll("gender");
+                                    randomAllHandler("gender", true);
+                                  }}
+                                  className={"settingSeat-btn"}
+                                  style={{ borderRadius: "15px" }}
+                                  title="여학생 => 남학생 순서로 한 번에 뽑아요!"
+                                  name="여자먼저"
+                                />
+                                <Button
+                                  id="randomAllPickBtn"
+                                  onclick={() => {
+                                    if (!selectSeatCheck()) {
+                                      errorSwal(
+                                        `뽑힌 "${tempStudent.name}" 학생의 자리를 선택해주세요!`
+                                      );
+                                      return false;
+                                    }
+                                    setPickSeatAll("gender");
+                                    randomAllHandler("gender", false);
+                                  }}
+                                  className={"settingSeat-btn"}
+                                  style={{ borderRadius: "15px" }}
+                                  title="남학생 => 여학생 순서로 한 번에 뽑아요!"
+                                  name="남자먼저"
+                                />
+                              </>
+                            )}
                           </>
                         )}
-                        {/* <Button
-                        id="randomAllPickBtn"
-                        onclick={() => {
-                          setPickSeatAll("mix");
-                          randomAllHandler("mix");
-                        }}
-                        className={"settingSeat-btn"}
-                        name="아무데나"
-                      /> */}
                       </div>
                     )}
                   </>

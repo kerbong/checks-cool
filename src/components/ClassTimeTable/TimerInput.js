@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import classes from "./SimpleTimer.module.css";
 
 const EXAMPLES = [
@@ -57,22 +57,24 @@ const TimerInput = (props) => {
   return (
     <div>
       {/* 입력 또는 선택한 내용들 보여주기 */}
-      {todos?.map((todo, ind) => (
-        <span key={ind}>
-          <span
-            className={classes["todo-item"]}
-            onClick={removeTodos}
-            title={"클릭하여 제거하기"}
-          >
-            {todo}
+      <div className={classes["todos-div"]}>
+        {todos?.map((todo, ind) => (
+          <span key={ind}>
+            <span
+              className={classes["todo-item"]}
+              onClick={removeTodos}
+              title={"클릭하여 제거하기"}
+            >
+              {todo}
+            </span>
+            <span style={{ fontSize: "2rem" }}>{"/"}</span>
           </span>
-          <span style={{ fontSize: "2rem" }}>{"/"}</span>
-        </span>
-      ))}
+        ))}
+      </div>
       {/* 에시목록 및 직접입력 부분  */}
       <div className={classes["timerInput-div"]}>
         {/* 예시목록 */}
-        <div style={{ width: "60%" }}>
+        <div style={{ width: "50%" }}>
           <div className={classes["examples"]}>
             {EXAMPLES?.map((exam, ind) => (
               <span
@@ -89,7 +91,7 @@ const TimerInput = (props) => {
         </div>
 
         {/* 직접입력부분 */}
-        <div style={{ width: "40%" }}>
+        <div style={{ width: "50%" }}>
           <form onSubmit={submitHandler}>
             <input
               type="text"

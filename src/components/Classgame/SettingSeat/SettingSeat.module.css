@@ -54,7 +54,7 @@
   justify-content: center;
   align-items: center;
   color: whitesmoke;
-  background-color: #006400c4;
+  background-color: #284b1b;
   border-radius: 10px;
 }
 
@@ -86,11 +86,13 @@
 }
 
 .remain-student {
-  margin: 7px;
-  width: 22px;
-  background-color: #d4e8dc;
+  margin: 5px;
+  width: 65px;
+  background-color: #737a65;
   border-radius: 15px;
   padding: 2px;
+  cursor: pointer;
+  color: whitesmoke;
 }
 
 .remain-student-div {
@@ -100,6 +102,14 @@
   justify-content: center;
   flex-wrap: wrap;
   /* align-items: center; */
+}
+
+.remainStds-div {
+  background-color: #ebecec;
+  padding: 10px 5px;
+  margin: -20px 10px 10px 10px;
+  border-radius: 20px;
+  display: inline-block;
 }
 
 .gameMenu-btn {
@@ -204,7 +214,7 @@
   padding: 10px;
   border-radius: 20px;
   background-color: rgb(183 187 189 / 27%);
-  margin: 5px 20px;
+  margin: 5px;
   align-items: center;
 }
 
@@ -334,11 +344,11 @@
   left: 4px;
   transform: translateY(-50%);
   border-radius: 50%;
-  background: #766764;
+  background: #cdbc96;
 }
 
 .active {
-  background: #766764;
+  background: #cdbc96;
 }
 
 .active .toggleButton {

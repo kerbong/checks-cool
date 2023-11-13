@@ -10,8 +10,8 @@
   position: relative;
   overflow: hidden;
   height: 0;
-  padding-top: calc(220 / 400 * 100%);
-  width: 75%;
+  padding-top: calc(220 / 400 * 84%);
+  width: 81%;
 }
 svg {
   position: absolute;
@@ -45,14 +45,14 @@ button[data-setter]:hover {
 }
 .container {
   position: relative;
-  width: 70%;
-  margin: 0 auto;
+  width: 65%;
+  margin: 0;
   display: flex;
 }
 .setters {
   position: absolute;
   left: 16.5vw;
-  top: calc(80 / 400 * 100%);
+  top: calc(80 / 400 * 90%);
   width: 19vw;
   display: flex;
   justify-content: space-between;
@@ -74,7 +74,7 @@ button[data-setter]:hover {
 .controlls {
   position: absolute;
   left: 16.5vw;
-  top: calc(135 / 400 * 100%);
+  top: calc(135 / 400 * 83%);
   text-align: center;
   display: flex;
   justify-content: center;
@@ -113,7 +113,7 @@ button[data-setter]:hover {
 
 .btns {
   width: 18vw;
-  margin-top: 0.5vw;
+  margin-top: -1.5vw;
   display: flex;
   align-items: center;
 
@@ -212,7 +212,7 @@ button[data-setter]:hover {
   width: 100%;
   display: flex;
   align-items: center;
-  margin-top: 140px;
+  margin-top: 190px;
 }
 
 @media screen and (max-width: 700px) {
@@ -245,7 +245,13 @@ button[data-setter]:hover {
   margin: -5px 15px;
   padding: 10px;
   border-radius: 10px;
-  font-size: 2.5rem;
+  font-size: 3.5rem;
+}
+
+.todos-div {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 .todo-item:hover {
@@ -265,14 +271,14 @@ button[data-setter]:hover {
 .timerInput-div {
   display: flex;
   width: 100%;
-  margin-top: 30px;
+  margin-top: 250px;
   justify-content: center;
 }
 
 .timer-input {
-  width: 80%;
+  width: 100%;
   border-radius: 15px;
-  max-width: 400px;
+  max-width: 550px;
   margin: 10px 15px;
 }
 
@@ -294,4 +300,11 @@ button[data-setter]:hover {
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+.autoScrollBtn {
+  position: absolute;
+  right: 40px;
+  top: 265px;
+  cursor: pointer;
 }
