@@ -18,9 +18,11 @@ const ManageAttendance = (props) => {
   const [onAttendsOption, setOnAttendsOption] = useState([]);
   const [showAttendOption, setShowAttendOption] = useState("");
   const [showAttendMonth, setShowAttendMonth] = useState("");
+  const [showNoPaper, setShowNoPaper] = useState("");
   const [showDelete, setShowDelete] = useState(false);
   const [deleteChecked, setDeleteChecked] = useState([]);
   const [uploadDatas, setUploadDatas] = useState({});
+  const [attendEdit, setAttendEdit] = useState(null);
   const { state } = useLocation();
 
   const nowYear = (dataId) => {
@@ -96,7 +98,7 @@ const ManageAttendance = (props) => {
     };
 
     let new_onAttends = [];
-
+    setShowAttendOption("");
     if (onStudent !== "") {
       //담임이면
       if (!nowIsSubject) {
@@ -168,12 +170,14 @@ const ManageAttendance = (props) => {
 
   //출결 옵션을 선택하면.. 보여주는 걸 바꿔주기
   useEffect(() => {
+    setShowAttendMonth("");
+    setShowNoPaper("");
     //전체보여주는 거면.. 그냥 모두
     if (showAttendOption === "") {
       setShowOnAttends(onAttends);
     } else {
       //월별 자료와 독립적으로 세팅되어야 해서..
-      setShowAttendMonth("");
+
       let new_showOnAttends = onAttends?.filter(
         (attend) => attend.option.slice(1) === showAttendOption
       );
@@ -183,18 +187,35 @@ const ManageAttendance = (props) => {
 
   //달을 선택하면.. 보여주는 걸 바꿔주기
   useEffect(() => {
-    //전체보여주는 거면.. 그냥 모두
+    //요약 자료와 독립적으로 세팅되어야 해서..
+    setShowNoPaper("");
+    setShowAttendOption("");
+
     if (showAttendMonth === "") {
       setShowOnAttends(onAttends);
     } else {
-      //요약 자료와 독립적으로 세팅되어야 해서..
-      setShowAttendOption("");
       let new_showOnAttends = onAttends?.filter(
         (attend) => +attend.id.slice(5, 7) === showAttendMonth
       );
       setShowOnAttends(new_showOnAttends);
     }
   }, [showAttendMonth]);
+
+  //서류 미제출 학생을 선택하면.. 보여주는 걸 바꿔주기
+  useEffect(() => {
+    //설정 안되어 있으면
+    setShowAttendMonth("");
+    setShowAttendOption("");
+
+    if (showNoPaper === "") {
+      setShowOnAttends(onAttends?.filter((attend) => !attend.paper));
+    } else {
+      let new_showOnAttends = onAttends?.filter(
+        (attend) => attend.name === showNoPaper && !attend.paper
+      );
+      setShowOnAttends(new_showOnAttends);
+    }
+  }, [showNoPaper]);
 
   //선택되어 있는 학급 (전담의 경우)
   const nowClassNameHandler = (classname) => {
@@ -336,7 +357,7 @@ const ManageAttendance = (props) => {
 
       //담임이면 바로 firestore에 업로드 가능해서, 전담만 추가 조절
       const fixed_data = { attend_data: new_attends };
-      console.log(fixed_data);
+      // console.log(fixed_data);
       setUploadDatas(fixed_data);
 
       // 상태 함수도.. 수정해줘야함..! setShowOnAttends랑 setOnAttends에는 onAttends에서 deletedChecked 제외한거 넣어주고,
@@ -350,7 +371,7 @@ const ManageAttendance = (props) => {
         text: `${
           onStudent.split(" ")[1]
         } 학생의 출결 기록을 모두 삭제할까요? 삭제 후에는 기록을 복구할 수 없습니다. 신중히 선택해주세요!`,
-        confirmButtonText: "확인",
+        confirmButtonText: "삭제",
         confirmButtonColor: "#85bd82",
         denyButtonText: "취소",
         showDenyButton: true,
@@ -390,7 +411,6 @@ const ManageAttendance = (props) => {
 
   //각 listMemo클릭하면 저장해두는 함수
   const deleteCheckedHandler = (atd) => {
-    if (!showDelete) return;
     //기존에 존재하면 isExist true, 없었으면 false
 
     let isExist =
@@ -406,6 +426,47 @@ const ManageAttendance = (props) => {
       new_data?.push(atd.id);
     }
     setDeleteChecked(new_data);
+  };
+
+  //출결 수정 함수
+  const attendHandler = async (what) => {
+    // 서류 클릭했으면... 해당 자료의 서류 상태를 변경해서 저장
+    if (what === "paper") {
+      let new_attends = [...attends];
+
+      new_attends = new_attends?.map((attend) => {
+        let new_attend = attend;
+        if (attend.id === attendEdit.id) {
+          new_attend.paper = !new_attend.paper;
+        }
+        return new_attend;
+      });
+
+      const fixed_data = { attend_data: new_attends };
+      setUploadDatas(fixed_data);
+    } else if (what === "delete") {
+      Swal.fire({
+        title: "자료 삭제 확인",
+        text: "출결 자료를 정말 삭제할까요? 삭제한 자료는 복구할 수 없습니다.",
+        icon: "warning",
+        confirmButtonText: "삭제",
+        denyButtonText: "취소",
+        showDenyButton: true,
+      }).then((result) => {
+        if (result.isConfirmed) {
+          setAttendEdit(null);
+          let new_attends = [...attends];
+
+          new_attends = new_attends?.filter(
+            (attend) => attend.id !== attendEdit.id
+          );
+
+          const fixed_data = { attend_data: new_attends };
+          console.log(fixed_data);
+          setUploadDatas(fixed_data);
+        }
+      });
+    }
   };
 
   return (
@@ -493,6 +554,10 @@ const ManageAttendance = (props) => {
                       id={"attend-delete"}
                       className={"sortBtn"}
                       name={!showDelete ? "전체삭제" : "확인"}
+                      style={{
+                        backgroundColor: !showDelete ? "#da9a9a" : "#ff5a70",
+                        fontWeight: "bold",
+                      }}
                       onclick={() => {
                         !showDelete
                           ? deleteHandler("all")
@@ -504,6 +569,10 @@ const ManageAttendance = (props) => {
                       id={"attend-delete"}
                       className={"sortBtn"}
                       name={showDelete ? "취소" : "선택삭제"}
+                      style={{
+                        backgroundColor: showDelete ? "gray" : "#da9a9a",
+                        fontWeight: "bold",
+                      }}
                       onclick={() => {
                         // Swal.fire("개발중", "기능 개발중입니다...", "info");
                         //현재 삭제 가능인테 취소 누른거면.. 다시 비워둠.
@@ -537,21 +606,63 @@ const ManageAttendance = (props) => {
                       : ""
                   }`}
                   onClick={() => {
-                    deleteCheckedHandler(attend);
+                    if (!showDelete) {
+                      if (attendEdit) {
+                        setAttendEdit(null);
+                      } else {
+                        setAttendEdit(attend);
+                      }
+                    } else {
+                      deleteCheckedHandler(attend);
+                    }
                   }}
                   style={{ width: "260px", padding: "25px" }}
                 >
                   {/* 출결의 id(yyyy-mm-dd)보여줌 */}
                   <div className={classes["flex-ml-10"]}>
-                    {attend.id.slice(0, 10)}
+                    {attend.id.slice(0, 10)} {/* 서류 제출/미제출 아이콘 */}
+                    <i
+                      className="fa-solid fa-circle-check"
+                      style={
+                        attend.paper
+                          ? {
+                              color: "#ff5a71",
+                              margin: "0 10px",
+                            }
+                          : { color: "#cacaca", margin: "0 10px" }
+                      }
+                    ></i>
                   </div>
                   {/* 출결옵션 */}
                   <div className={classes["fs-13"]}>
                     {attend.option.slice(1)} | {attend.note || "-"}
                   </div>
-                  {/* 메모한 내용 */}
+                  {/* 현재 클릭된 학생이면 */}
 
-                  <div className={classes["fs-13"]}></div>
+                  <div
+                    className={`${classes["attendEdit-div"]} ${
+                      attendEdit?.id === attend.id ? classes["show"] : ""
+                    }`}
+                  >
+                    <button
+                      className={classes["attend-edit-p"]}
+                      onClick={() => {
+                        attendHandler("paper");
+                      }}
+                    >
+                      서류
+                    </button>
+                    <button
+                      className={classes["attend-edit-d"]}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        attendHandler("delete");
+                      }}
+                    >
+                      삭제
+                    </button>
+                    <button className={classes["attend-edit-c"]}>취소</button>
+                  </div>
                 </li>
               ))}
             </div>
@@ -639,52 +750,120 @@ const ManageAttendance = (props) => {
               </li>
               {/* 월별 데이터 보여주기 버튼 */}
               {onAttends?.length !== 0 && (
-                <li className={classes["bottom-content-li"]}>
-                  월별로 보기
-                  <hr className={classes["margin-15"]} />
-                  {/* 전체 월 버튼 */}
-                  <Button
-                    id={`모든 달`}
-                    className={
-                      showAttendMonth === "" ? "sortBtn-clicked" : "sortBtn"
-                    }
-                    name={`모든 달`}
-                    onclick={() => {
-                      setShowAttendMonth("");
-                    }}
-                  />
-                  {/* 자료가 있는 달만 보여줌 */}
-                  {/* 전담용은 clname으로 한번 거르고 */}
-                  {(nowIsSubject
-                    ? [
-                        ...new Set(
-                          attends
-                            ?.filter((attend) => attend?.clName === clName)
-                            ?.map((atd) => +atd.id.slice(5, 7))
-                        ),
-                      ]
-                    : [...new Set(attends?.map((atd) => +atd.id.slice(5, 7)))]
-                  )
-                    ?.sort((a, b) => (a > b ? 1 : -1))
-                    ?.map((month) => (
-                      <>
-                        {/* 월별 버튼 */}
-                        <Button
-                          key={`${month}월`}
-                          id={`${month}월`}
-                          className={
-                            showAttendMonth === month
-                              ? "sortBtn-clicked"
-                              : "sortBtn"
-                          }
-                          name={`${month}월`}
-                          onclick={() => {
-                            setShowAttendMonth(month);
-                          }}
-                        />
-                      </>
-                    ))}
-                </li>
+                <>
+                  <li className={classes["bottom-content-li"]}>
+                    월별로 보기
+                    <hr className={classes["margin-15"]} />
+                    {/* 전체 월 버튼 */}
+                    <Button
+                      id={`모든 달`}
+                      className={
+                        showAttendMonth === "" ? "sortBtn-clicked" : "sortBtn"
+                      }
+                      name={`모든 달 (${onAttends?.length})`}
+                      onclick={() => {
+                        setShowAttendMonth("");
+                      }}
+                    />
+                    {/* 자료가 있는 달만 보여줌 */}
+                    {/* 전담용은 clname으로 한번 거르고 */}
+                    {(nowIsSubject
+                      ? [
+                          ...new Set(
+                            attends
+                              ?.filter((attend) => attend?.clName === clName)
+                              ?.map((atd) => +atd.id.slice(5, 7))
+                          ),
+                        ]
+                      : [...new Set(attends?.map((atd) => +atd.id.slice(5, 7)))]
+                    )
+                      ?.sort((a, b) => (a > b ? 1 : -1))
+                      ?.map((month) => (
+                        <>
+                          {/* 월별 버튼 */}
+                          <Button
+                            key={`${month}월`}
+                            id={`${month}월`}
+                            className={
+                              showAttendMonth === month
+                                ? "sortBtn-clicked"
+                                : "sortBtn"
+                            }
+                            name={`${month}월 (${
+                              onAttends?.filter(
+                                (attend) => +attend.id.slice(5, 7) === month
+                              )?.length
+                            })`}
+                            onclick={() => {
+                              setShowAttendMonth(month);
+                            }}
+                          />
+                        </>
+                      ))}
+                  </li>
+
+                  {/* 서류 미제출학생 보기 */}
+                  <li className={classes["bottom-content-li"]}>
+                    서류 미제출
+                    <hr className={classes["margin-15"]} />
+                    {/* 전체 학생 버튼 */}
+                    <Button
+                      id={`전체학생`}
+                      className={
+                        showNoPaper === "" ? "sortBtn-clicked" : "sortBtn"
+                      }
+                      name={`전체`}
+                      onclick={() => {
+                        setShowNoPaper("");
+                      }}
+                    />
+                    {/* 서류가 없는 학생만 보여줌 */}
+                    {/* 전담용은 clname으로 한번 거르고 */}
+                    {(nowIsSubject
+                      ? [
+                          ...new Set(
+                            attends
+                              ?.filter(
+                                (attend) =>
+                                  attend?.clName === clName && !attend.paper
+                              )
+                              ?.map((atd) => atd.name)
+                          ),
+                        ]
+                      : [
+                          ...new Set(
+                            attends
+                              ?.filter((attend) => !attend.paper)
+                              ?.map((atd) => atd.name)
+                          ),
+                        ]
+                    )
+                      ?.sort((a, b) => (a > b ? 1 : -1))
+                      ?.map((name) => (
+                        <>
+                          {/* 학생이름 버튼 */}
+                          <Button
+                            key={`${name}`}
+                            id={`noPaper-${name}`}
+                            className={
+                              showNoPaper === name
+                                ? "sortBtn-clicked"
+                                : "sortBtn"
+                            }
+                            name={`${name} (${
+                              attends?.filter(
+                                (attend) =>
+                                  !attend.paper && attend.name === name
+                              )?.length
+                            })`}
+                            onclick={() => {
+                              setShowNoPaper(name);
+                            }}
+                          />
+                        </>
+                      ))}
+                  </li>
+                </>
               )}
             </div>
             <div className={classes["btns-div"]} style={{ flexWrap: "wrap" }}>
@@ -695,18 +874,62 @@ const ManageAttendance = (props) => {
                   id={attend.id}
                   className={classes["bottom-content-li"]}
                   style={{ width: "260px", padding: "25px" }}
+                  onClick={() => {
+                    if (attendEdit) {
+                      setAttendEdit(null);
+                    } else {
+                      setAttendEdit(attend);
+                    }
+                  }}
                 >
                   {/* 출결의 id(yyyy-mm-dd)보여줌 */}
                   <div className={classes["flex-ml-10"]}>
-                    {attend.id.slice(0, 10)} 🙂 {attend.name}
+                    {/* 날짜보여줌 */}
+                    {attend.id.slice(0, 10)} {/* 서류 제출/미제출 아이콘 */}
+                    <i
+                      className="fa-solid fa-circle-check"
+                      style={
+                        attend.paper
+                          ? {
+                              color: "#ff5a71",
+                              margin: "0 10px",
+                            }
+                          : { color: "#cacaca", margin: "0 10px" }
+                      }
+                    ></i>
+                    {/* 학생 이름 */}
+                    {attend.name}
                   </div>
                   {/* 출결옵션 */}
                   <div className={classes["fs-13"]}>
                     {attend.option.slice(1)} | {attend.note || "-"}
                   </div>
-                  {/* 메모한 내용 */}
+                  {/* 현재 클릭된 학생이면 */}
 
-                  <div className={classes["fs-13"]}></div>
+                  <div
+                    className={`${classes["attendEdit-div"]} ${
+                      attendEdit?.id === attend.id ? classes["show"] : ""
+                    }`}
+                  >
+                    <button
+                      className={classes["attend-edit-p"]}
+                      onClick={() => {
+                        attendHandler("paper");
+                      }}
+                    >
+                      서류
+                    </button>
+                    <button
+                      className={classes["attend-edit-d"]}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        attendHandler("delete");
+                      }}
+                    >
+                      삭제
+                    </button>
+                    <button className={classes["attend-edit-c"]}>취소</button>
+                  </div>
                 </li>
               ))}
             </div>

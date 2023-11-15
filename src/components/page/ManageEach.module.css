@@ -36,11 +36,26 @@
   margin: 20px;
   background-color: #f3feff;
   border-radius: 20px;
+  cursor: pointer;
 }
 
 .flex-ml-10 {
   display: flex;
   margin-left: 10px;
+  align-items: center;
+}
+
+.attendEdit-div {
+  visibility: hidden;
+  height: 0;
+  transition: opacity 0.5s ease-in-out;
+  opacity: 0;
+}
+
+.show {
+  visibility: visible;
+  height: auto;
+  opacity: 1;
 }
 
 .fs-13 {
@@ -117,6 +132,37 @@
 .width-max400 {
   width: 100%;
   max-width: 400px;
+}
+
+.attend-edit-p,
+.attend-edit-d,
+.attend-edit-c {
+  margin: 10px 5px -10px;
+  padding: 10px 15px;
+  border-radius: 10px;
+  border: 0;
+  background-color: #da9a9a;
+  color: black;
+  font-size: 15px;
+  font-weight: bold;
+}
+
+.attend-edit-p {
+  background-color: #ff5a70;
+}
+.attend-edit-c {
+  background-color: gray;
+  color: whitesmoke;
+}
+
+.attend-edit-d:hover {
+  background-color: #da9a9ab5;
+}
+.attend-edit-p:hover {
+  background-color: #ff5a71cc;
+}
+.attend-edit-c:hover {
+  background-color: rgba(128, 128, 128, 0.766);
 }
 
 .a-link:link {
