@@ -1,17 +1,17 @@
 {
   "files": {
     "main.css": "/checks-cool/static/css/main.b0be9a05.css",
-    "main.js": "/checks-cool/static/js/main.d70c01a7.js",
+    "main.js": "/checks-cool/static/js/main.f3f1e0c7.js",
     "static/css/793.d3c8de06.chunk.css": "/checks-cool/static/css/793.d3c8de06.chunk.css",
     "static/js/793.c36d10b7.chunk.js": "/checks-cool/static/js/793.c36d10b7.chunk.js",
-    "static/css/128.800aa26b.chunk.css": "/checks-cool/static/css/128.800aa26b.chunk.css",
-    "static/js/128.05a6a47d.chunk.js": "/checks-cool/static/js/128.05a6a47d.chunk.js",
-    "static/css/478.99724f6e.chunk.css": "/checks-cool/static/css/478.99724f6e.chunk.css",
-    "static/js/478.1a8520a1.chunk.js": "/checks-cool/static/js/478.1a8520a1.chunk.js",
-    "static/css/422.800aa26b.chunk.css": "/checks-cool/static/css/422.800aa26b.chunk.css",
-    "static/js/422.b299e99d.chunk.js": "/checks-cool/static/js/422.b299e99d.chunk.js",
-    "static/css/176.800aa26b.chunk.css": "/checks-cool/static/css/176.800aa26b.chunk.css",
-    "static/js/176.c29e6462.chunk.js": "/checks-cool/static/js/176.c29e6462.chunk.js",
+    "static/css/128.7c317a71.chunk.css": "/checks-cool/static/css/128.7c317a71.chunk.css",
+    "static/js/128.45eba4e1.chunk.js": "/checks-cool/static/js/128.45eba4e1.chunk.js",
+    "static/css/478.23867bd8.chunk.css": "/checks-cool/static/css/478.23867bd8.chunk.css",
+    "static/js/478.c96777c9.chunk.js": "/checks-cool/static/js/478.c96777c9.chunk.js",
+    "static/css/422.7c317a71.chunk.css": "/checks-cool/static/css/422.7c317a71.chunk.css",
+    "static/js/422.0945c19b.chunk.js": "/checks-cool/static/js/422.0945c19b.chunk.js",
+    "static/css/176.7c317a71.chunk.css": "/checks-cool/static/css/176.7c317a71.chunk.css",
+    "static/js/176.bbff9363.chunk.js": "/checks-cool/static/js/176.bbff9363.chunk.js",
     "static/css/974.b74be976.chunk.css": "/checks-cool/static/css/974.b74be976.chunk.css",
     "static/js/974.1ad54375.chunk.js": "/checks-cool/static/js/974.1ad54375.chunk.js",
     "static/css/480.df568c25.chunk.css": "/checks-cool/static/css/480.df568c25.chunk.css",
@@ -75,6 +75,6 @@
   },
   "entrypoints": [
     "static/css/main.b0be9a05.css",
-    "static/js/main.d70c01a7.js"
+    "static/js/main.f3f1e0c7.js"
   ]
 }
