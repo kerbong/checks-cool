@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/checks-cool/static/css/main.b0be9a05.css",
-    "main.js": "/checks-cool/static/js/main.f3f1e0c7.js",
+    "main.css": "/checks-cool/static/css/main.18c7e620.css",
+    "main.js": "/checks-cool/static/js/main.38ec03a5.js",
     "static/css/793.d3c8de06.chunk.css": "/checks-cool/static/css/793.d3c8de06.chunk.css",
     "static/js/793.c36d10b7.chunk.js": "/checks-cool/static/js/793.c36d10b7.chunk.js",
     "static/css/128.7c317a71.chunk.css": "/checks-cool/static/css/128.7c317a71.chunk.css",
@@ -16,10 +16,10 @@
     "static/js/974.1ad54375.chunk.js": "/checks-cool/static/js/974.1ad54375.chunk.js",
     "static/css/480.df568c25.chunk.css": "/checks-cool/static/css/480.df568c25.chunk.css",
     "static/js/480.e04ce8ef.chunk.js": "/checks-cool/static/js/480.e04ce8ef.chunk.js",
-    "static/css/502.2665681c.chunk.css": "/checks-cool/static/css/502.2665681c.chunk.css",
-    "static/js/502.15cb803c.chunk.js": "/checks-cool/static/js/502.15cb803c.chunk.js",
-    "static/css/755.0eea0f80.chunk.css": "/checks-cool/static/css/755.0eea0f80.chunk.css",
-    "static/js/755.5496e11b.chunk.js": "/checks-cool/static/js/755.5496e11b.chunk.js",
+    "static/css/52.8d1723cf.chunk.css": "/checks-cool/static/css/52.8d1723cf.chunk.css",
+    "static/js/52.5d97b403.chunk.js": "/checks-cool/static/js/52.5d97b403.chunk.js",
+    "static/css/755.466c24a5.chunk.css": "/checks-cool/static/css/755.466c24a5.chunk.css",
+    "static/js/755.5e194da3.chunk.js": "/checks-cool/static/js/755.5e194da3.chunk.js",
     "static/css/445.d0fbc325.chunk.css": "/checks-cool/static/css/445.d0fbc325.chunk.css",
     "static/js/445.eff0ffd6.chunk.js": "/checks-cool/static/js/445.eff0ffd6.chunk.js",
     "static/css/208.8fc42bee.chunk.css": "/checks-cool/static/css/208.8fc42bee.chunk.css",
@@ -48,7 +48,7 @@
     "static/js/615.bba2bee6.chunk.js": "/checks-cool/static/js/615.bba2bee6.chunk.js",
     "static/js/565.2e11e21b.chunk.js": "/checks-cool/static/js/565.2e11e21b.chunk.js",
     "static/js/636.2399c97a.chunk.js": "/checks-cool/static/js/636.2399c97a.chunk.js",
-    "static/js/978.751dab7b.chunk.js": "/checks-cool/static/js/978.751dab7b.chunk.js",
+    "static/js/164.4507e915.chunk.js": "/checks-cool/static/js/164.4507e915.chunk.js",
     "static/js/167.4fc45054.chunk.js": "/checks-cool/static/js/167.4fc45054.chunk.js",
     "static/js/527.1d8ce142.chunk.js": "/checks-cool/static/js/527.1d8ce142.chunk.js",
     "static/js/81.e98f3d08.chunk.js": "/checks-cool/static/js/81.e98f3d08.chunk.js",
@@ -74,7 +74,7 @@
     "index.html": "/checks-cool/index.html"
   },
   "entrypoints": [
-    "static/css/main.b0be9a05.css",
-    "static/js/main.f3f1e0c7.js"
+    "static/css/main.18c7e620.css",
+    "static/js/main.38ec03a5.js"
   ]
 }
