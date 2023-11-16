@@ -15,6 +15,7 @@ import dayjs from "dayjs";
 import Notification from "./components/Layout/Notification";
 import Loading from "components/page/Loading";
 import Header from "./components/Layout/Header";
+import ScoreBoard from "components/Classgame/ScoreBoard/ScoreBoard";
 
 // lazy 로딩 적용
 const Admin = lazy(() => import("./components/page/Admin"));
@@ -453,6 +454,8 @@ function App() {
                   path="classTimeTable"
                   element={<ClassTimeTable userUid={userUid} />}
                 />
+
+                <Route path="scoreBoard" element={<ScoreBoard />} />
 
                 <Route path="notice" element={<Notice />} />
 

@@ -7,6 +7,8 @@ import { setDoc, doc, onSnapshot } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import dayjs from "dayjs";
 import JustLists from "./JustLists";
+import PrintItems from "./PrintItems";
+import { useReactToPrint } from "react-to-print";
 
 const saveErrorSwal = (text) => {
   Swal.fire({
@@ -74,6 +76,7 @@ const SeatTable = (props) => {
 
   // console.log(props.students);
   const toggleRef = useRef();
+  const printRef = useRef();
   let navigate = useNavigate();
 
   // 자리 추가 div높이를 저장해두기
@@ -239,12 +242,14 @@ const SeatTable = (props) => {
                 (stu) => stu.name === props.seatStudents[+item - 1]
               )?.[0]?.woman && "existWoman"
             ]
-          } ${props.secretSeat?.genderEmptySeat?.[+item - 1]}`}
-          id={
+          } ${props.secretSeat?.genderEmptySeat?.[+item - 1]} ${
+            classes["print-content"]
+          }`}
+          id={`${
             props.title?.length > 0
               ? `table-${props.title}-${item}`
               : `table-${item}`
-          }
+          } ${classes["print-content"]}`}
           onClick={(e) => itemAddStudentHandler(e)}
           style={
             props.isExist && props.showJustLists
@@ -1568,6 +1573,39 @@ const SeatTable = (props) => {
     );
   };
 
+  /** 인쇄하기 함수 */
+  // const printSeat = () => {
+  // 새창에서 열기 => 새로고침 필요X
+  // let printContent = printRef.current;
+  // let windowObj = window.open(
+  //   "",
+  //   "PrintWindow",
+  //   "width=1000, height=800, top=100, left=300, toolbars=no, scrollbars=no, status=no, resizale=no"
+  // );
+
+  // windowObj.document.writeln(printContent.innerHTML);
+  // console.log(printContent.innerHTML);
+  // windowObj.document.close();
+  // windowObj.focus();
+  // windowObj.print();
+  // windowObj.close();
+
+  // document.querySelector("body").style.visibility = "hidden";
+  // printRef.current.style.visibility = "visible";
+  // document.querySelector("body").style.height = "auto";
+  // printRef.current.style.breakAfter = "avoid";
+  // window.print();
+
+  // printRef.current.style.visibility = "";
+
+  // document.querySelector("body").style.visibility = "visible";
+
+  // };
+
+  const printSeat = useReactToPrint({
+    content: () => printRef.current,
+  });
+
   return (
     <div id={props.title || "newSeats"} style={{ display: "flex" }}>
       <div
@@ -1600,6 +1638,7 @@ const SeatTable = (props) => {
 
             <Button
               name={"저장"}
+              // name={<i className="fa-regular fa-floppy-disk"></i>}
               onclick={() => {
                 if (!seeFromBack) {
                   saveErrorSwal(
@@ -1647,7 +1686,18 @@ const SeatTable = (props) => {
                 name={seeFromBack ? "교사기준" : "학생기준"}
                 onclick={changeSeeFromHandler}
                 className={"settingSeat-btn"}
-                style={{ marginBottom: seeFromBack ? "20px" : "0px" }}
+                style={{
+                  marginBottom: seeFromBack ? "20px" : "0px",
+                  marginLeft: "0",
+                }}
+              />
+              {/* 인쇄하기 버튼 */}
+              <Button
+                name={"인쇄하기"}
+                onclick={() => {
+                  printSeat();
+                }}
+                className={"settingSeat-btn"}
               />
             </div>
           </div>
@@ -1808,20 +1858,22 @@ const SeatTable = (props) => {
                   <>
                     <p>
                       <Button
-                        name={"여학생 자리만 색칠하기"}
+                        name={<>여학생 자리 칠하기</>}
                         onclick={coloringGender}
                         className={"settingSeat-btn"}
-                        style={{ borderRadius: "15px" }}
+                        style={{ borderRadius: "15px", marginBottom: "10px" }}
                       />
                       <Button
-                        name={
-                          seeFromBack
-                            ? "교사 기준으로 보기"
-                            : "학생 기준으로 보기"
-                        }
+                        name={seeFromBack ? "교사 기준" : "학생 기준"}
                         onclick={changeSeeHandler}
                         className={"settingSeat-btn"}
                         style={{ borderRadius: "15px" }}
+                      />
+                      {/* 인쇄하기 버튼 */}
+                      <Button
+                        name={"인쇄하기"}
+                        onclick={printSeat}
+                        className={"settingSeat-btn"}
                       />
                     </p>
                   </>
@@ -2088,28 +2140,17 @@ const SeatTable = (props) => {
           </>
         )}
 
-        {/* 초기세팅.. 뒤에서 볼때면 칠판이 자리 뒤에 */}
-        {seeFromBack && (
-          <div className={classes["blackboard-area"]}>
-            <span className={classes["blackboard"]}>칠 판</span>
-          </div>
-        )}
+        {/* 칠판을 포함한 자리, 인쇄용으로 컴포넌트화 시킴 */}
 
-        <div
-          className={classes[`items-container`]}
-          id={
-            props.title?.length > 0 ? `items-${props.title}-div` : "items-div"
-          }
-        >
-          {seeFromBack ? items : itemsFront}
-        </div>
-
-        {/* 교사용으로 앞에서 볼때면 칠판이 앞에 */}
-        {!seeFromBack && (
-          <div className={classes["blackboard-area"]}>
-            <span className={classes["blackboard"]}>칠 판</span>
-          </div>
-        )}
+        <PrintItems
+          title={props.title}
+          id={props.id}
+          ref={printRef}
+          items={seeFromBack ? items : itemsFront}
+          tableColumn={tableColumn}
+          tableRow={tableRow}
+          seeFromBack={seeFromBack}
+        />
       </div>
 
       {/* 기존 자료들 리스트 보여주기 */}

@@ -80,6 +80,12 @@ const ClassgamePage = (props) => {
         style={{ fontSize: "1em", color: "#f2ffd8" }}
       ></i>
     </div>,
+    <div className={classes["iconLeft"]}>
+      <i
+        className="fa-solid fa-flag-checkered"
+        style={{ fontSize: "1em", color: "#f2ffd8" }}
+      ></i>
+    </div>,
   ];
 
   return (
@@ -189,6 +195,16 @@ const ClassgamePage = (props) => {
                 title={"다음 수업시간까지 남은 시간, 준비할 것들을 보여줘요"}
                 onclick={() => {
                   navigate("/classTimeTable");
+                }}
+                icon={ICONS_LEFT[6]}
+              />
+
+              <Button
+                name={"모둠대결"}
+                className={"settingSeatSelect"}
+                title={"모둠끼리 점수 / 타이머 / 스톱워치로 대결을 해요"}
+                onclick={() => {
+                  navigate("/scoreBoard");
                 }}
                 icon={ICONS_LEFT[6]}
               />
