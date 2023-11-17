@@ -954,6 +954,9 @@ const MainPage = (props) => {
     //새로운 가상 엑셀파일 생성 담임은 하나, 전담은 반별로
     localStorage.setItem("showMonthEnd", dayjs().format("YYYYMM"));
     //========= 담임용 데이터 만들기 =========
+    function removeLeadingZeros(str) {
+      return str.replace(/^0+/, "");
+    }
     // if (!isSubject) {
     let book = utils.book_new();
     // ==========출결저장=========
@@ -964,8 +967,9 @@ const MainPage = (props) => {
         +attend.num,
         attend.name,
         +attend.id.slice(0, 4),
-        +attend.id.slice(5, 7),
-        +attend.id.slice(8, 10),
+        +removeLeadingZeros(attend.id.slice(5, 7)),
+        +removeLeadingZeros(attend.id.slice(8, 10)),
+        attend.paper ? "제출" : "미제출",
         attend.option.slice(1),
         attend?.note,
       ];
@@ -982,6 +986,7 @@ const MainPage = (props) => {
       "년",
       "월",
       "일",
+      "서류제출",
       "출결옵션",
       "메모내용",
     ];
@@ -998,6 +1003,7 @@ const MainPage = (props) => {
       { wpx: 40 },
       { wpx: 25 },
       { wpx: 25 },
+      { wpx: 60 },
       { wpx: 60 },
       { wpx: 150 },
     ];
@@ -1017,8 +1023,8 @@ const MainPage = (props) => {
         +consult.num,
         consult.name,
         +consult.id.slice(0, 4),
-        +consult.id.slice(5, 7),
-        +consult.id.slice(8, 10),
+        +removeLeadingZeros(consult.id.slice(5, 7)),
+        +removeLeadingZeros(consult.id.slice(8, 10)),
         consult.option.slice(1),
         consult?.note,
         consult?.attachedFileUrl,
@@ -1260,8 +1266,8 @@ const MainPage = (props) => {
         let data = [
           +index + 1,
           +schd.id.slice(0, 4),
-          +schd.id.slice(5, 7),
-          +schd.id.slice(8, 10),
+          +removeLeadingZeros(schd.id.slice(5, 7)),
+          +removeLeadingZeros(schd.id.slice(8, 10)),
           schd.option.slice(1),
           schd.eventName,
           schd.set ? schd.set + "(" + schd?.setNum + ")" : "",
@@ -1325,7 +1331,7 @@ const MainPage = (props) => {
         }
       }
 
-      console.log(extractedText.trim());
+      // console.log(extractedText.trim());
       return extractedText.trim();
     };
 
@@ -1338,9 +1344,9 @@ const MainPage = (props) => {
         "",
         clTable.id.slice(2, 4) +
           "년" +
-          clTable.id.slice(5, 7) +
+          removeLeadingZeros(clTable.id.slice(5, 7)) +
           "월" +
-          clTable.id.slice(8, 10) +
+          removeLeadingZeros(clTable.id.slice(8, 10)) +
           "일",
       ]);
       new_classTable_datas.push(["교시", "과목", "수업메모"]);
@@ -2302,22 +2308,21 @@ const MainPage = (props) => {
                 💾 데이터 저장 | 후원
               </div>
               <hr className={classes["main-hr"]} />
-              <p>
-                * 다운 버튼을 누르시면, 저장 버튼이 생성됩니다.(담임, 전담 모두
-                가능)
-              </p>
+              <p>* 다운 버튼을 누르시면, 저장 버튼이 생성됩니다.</p>
               <div
                 className={classes["event-title"]}
                 style={{ justifyContent: "space-evenly" }}
               >
                 <div>
-                  <Button
-                    name=" 다운"
-                    style={{ minWidth: "85px" }}
-                    icon={<i className="fa-solid fa-download"></i>}
-                    className={"show-basicClass-button"}
-                    onclick={getAllDataHandler}
-                  />
+                  {!getAllDataDone && (
+                    <Button
+                      name=" 다운"
+                      style={{ minWidth: "85px" }}
+                      icon={<i className="fa-solid fa-download"></i>}
+                      className={"show-basicClass-button"}
+                      onclick={getAllDataHandler}
+                    />
+                  )}
                   {/* 모든자료 불러오고 나면 보이는 저장버튼 */}
                   {getAllDataDone && (
                     <Button

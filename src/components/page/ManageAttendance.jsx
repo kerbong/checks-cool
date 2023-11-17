@@ -18,7 +18,7 @@ const ManageAttendance = (props) => {
   const [onAttendsOption, setOnAttendsOption] = useState([]);
   const [showAttendOption, setShowAttendOption] = useState("");
   const [showAttendMonth, setShowAttendMonth] = useState("");
-  const [showNoPaper, setShowNoPaper] = useState("");
+  const [showNoPaper, setShowNoPaper] = useState(null);
   const [showDelete, setShowDelete] = useState(false);
   const [deleteChecked, setDeleteChecked] = useState([]);
   const [uploadDatas, setUploadDatas] = useState({});
@@ -171,7 +171,7 @@ const ManageAttendance = (props) => {
   //출결 옵션을 선택하면.. 보여주는 걸 바꿔주기
   useEffect(() => {
     setShowAttendMonth("");
-    setShowNoPaper("");
+    setShowNoPaper(null);
     //전체보여주는 거면.. 그냥 모두
     if (showAttendOption === "") {
       setShowOnAttends(onAttends);
@@ -188,7 +188,7 @@ const ManageAttendance = (props) => {
   //달을 선택하면.. 보여주는 걸 바꿔주기
   useEffect(() => {
     //요약 자료와 독립적으로 세팅되어야 해서..
-    setShowNoPaper("");
+    setShowNoPaper(null);
     setShowAttendOption("");
 
     if (showAttendMonth === "") {
@@ -201,19 +201,34 @@ const ManageAttendance = (props) => {
     }
   }, [showAttendMonth]);
 
+  function sortByName(arr) {
+    return arr.sort((a, b) => {
+      if (a.name < b.name) {
+        return -1;
+      }
+      if (a.name > b.name) {
+        return 1;
+      }
+      return 0;
+    });
+  }
+
   //서류 미제출 학생을 선택하면.. 보여주는 걸 바꿔주기
   useEffect(() => {
+    if (showNoPaper === null) return;
     //설정 안되어 있으면
     setShowAttendMonth("");
     setShowAttendOption("");
 
     if (showNoPaper === "") {
-      setShowOnAttends(onAttends?.filter((attend) => !attend.paper));
+      setShowOnAttends(
+        sortByName(onAttends?.filter((attend) => !attend.paper))
+      );
     } else {
       let new_showOnAttends = onAttends?.filter(
         (attend) => attend.name === showNoPaper && !attend.paper
       );
-      setShowOnAttends(new_showOnAttends);
+      setShowOnAttends(sortByName(new_showOnAttends));
     }
   }, [showNoPaper]);
 
@@ -224,15 +239,33 @@ const ManageAttendance = (props) => {
 
   //엑셀로 저장하기 함수
   const saveExcelHandler = () => {
-    const new_datas = [];
-    attends
-      ?.sort((a, b) => (a.id.slice(0, 10) > b.id.slice(0, 10) ? 1 : -1))
-      ?.forEach((atd) => {
+    function removeLeadingZeros(str) {
+      return str.replace(/^0+/, "");
+    }
+
+    const returnSheetDatas = (arr, paper) => {
+      const new_datas = [];
+      let filtered_datas =
+        paper !== "paper"
+          ? arr?.sort((a, b) =>
+              a.id.slice(0, 10) > b.id.slice(0, 10) ? 1 : -1
+            )
+          : sortByName(
+              arr
+                ?.sort((a, b) =>
+                  a.id.slice(0, 10) > b.id.slice(0, 10) ? 1 : -1
+                )
+                ?.filter((at) => !at.paper)
+            );
+
+      filtered_datas?.forEach((atd) => {
         let data = [
           +atd.num,
           atd.name,
-          `${atd.id.slice(5, 7)}월`,
-          `${atd.id.slice(8, 10)}일`,
+          `${removeLeadingZeros(atd.id.slice(5, 7))}월`,
+          `${removeLeadingZeros(atd.id.slice(8, 10))}일`,
+
+          atd.paper ? "제출" : "미제출",
           atd.option.slice(1),
           atd.note,
         ];
@@ -242,35 +275,43 @@ const ManageAttendance = (props) => {
         new_datas.push(data);
       });
 
-    if (!nowIsSubject) {
-      new_datas.unshift([
-        "번호",
-        "이름",
-        "날짜(월)",
-        "날짜(일)",
-        "출결옵션",
-        "비고",
-      ]);
-    } else {
-      new_datas.unshift([
-        "반",
-        "번호",
-        "이름",
-        "날짜(월)",
-        "날짜(일)",
-        "출결옵션",
-        "비고",
-      ]);
-    }
+      if (!nowIsSubject) {
+        new_datas.unshift([
+          "번호",
+          "이름",
+          "날짜(월)",
+          "날짜(일)",
+          "서류제출",
+          "출결옵션",
+          "비고",
+        ]);
+      } else {
+        new_datas.unshift([
+          "반",
+          "번호",
+          "이름",
+          "날짜(월)",
+          "날짜(일)",
+          "서류제출",
+          "출결옵션",
+          "비고",
+        ]);
+      }
+      return new_datas;
+    };
+
+    const all_datas = returnSheetDatas(attends);
+
     //새로운 가상 엑셀파일 생성
     const book = utils.book_new();
-    const attend_datas = utils.aoa_to_sheet(new_datas);
+    const attend_datas = utils.aoa_to_sheet(all_datas);
     //셀의 넓이 지정
     attend_datas["!cols"] = [
       { wpx: 30 },
       { wpx: 60 },
-      { wpx: 40 },
-      { wpx: 40 },
+      { wpx: 50 },
+      { wpx: 50 },
+      { wpx: 60 },
       { wpx: 60 },
       { wpx: 100 },
     ];
@@ -280,6 +321,29 @@ const ManageAttendance = (props) => {
 
     //시트에 작성한 데이터 넣기
     utils.book_append_sheet(book, attend_datas, "출결기록");
+
+    //서류 미제출 학생만 따로 시트 만들기!!!
+
+    const no_paper_datas = returnSheetDatas(attends, "paper");
+
+    //
+    const attend_nopaper_datas = utils.aoa_to_sheet(no_paper_datas);
+    //셀의 넓이 지정
+    attend_nopaper_datas["!cols"] = [
+      { wpx: 30 },
+      { wpx: 60 },
+      { wpx: 50 },
+      { wpx: 50 },
+      { wpx: 60 },
+      { wpx: 60 },
+      { wpx: 100 },
+    ];
+    if (nowIsSubject) {
+      attend_nopaper_datas["!cols"].unshift({ wpx: 30 });
+    }
+
+    //시트에 작성한 데이터 넣기
+    utils.book_append_sheet(book, attend_nopaper_datas, "미제출");
 
     writeFile(
       book,
@@ -866,71 +930,87 @@ const ManageAttendance = (props) => {
                 </>
               )}
             </div>
-            <div className={classes["btns-div"]} style={{ flexWrap: "wrap" }}>
-              {/* 개별 출결기록 */}
-              {showOnAttends?.map((attend) => (
-                <li
-                  key={attend.id}
-                  id={attend.id}
-                  className={classes["bottom-content-li"]}
-                  style={{ width: "260px", padding: "25px" }}
-                  onClick={() => {
-                    if (attendEdit) {
-                      setAttendEdit(null);
-                    } else {
-                      setAttendEdit(attend);
-                    }
-                  }}
-                >
-                  {/* 출결의 id(yyyy-mm-dd)보여줌 */}
-                  <div className={classes["flex-ml-10"]}>
-                    {/* 날짜보여줌 */}
-                    {attend.id.slice(0, 10)} {/* 서류 제출/미제출 아이콘 */}
-                    <i
-                      className="fa-solid fa-circle-check"
-                      style={
-                        attend.paper
-                          ? {
-                              color: "#ff5a71",
-                              margin: "0 10px",
-                            }
-                          : { color: "#cacaca", margin: "0 10px" }
+            <div
+              className={classes["btns-div"]}
+              style={{
+                flexWrap: "wrap",
+                justifyContent: showNoPaper !== null ? "flex-start" : "center",
+              }}
+            >
+              {/* 학생 미선택 시 개별 출결기록 */}
+              {showOnAttends?.map((attend, index) => (
+                <>
+                  {index > 0 &&
+                    showNoPaper !== null &&
+                    showOnAttends[index - 1]?.name !== attend.name && (
+                      <div
+                        key={attend.id + "div"}
+                        style={{ flexBasis: "100%" }}
+                      ></div>
+                    )}
+                  <li
+                    key={attend.id}
+                    id={attend.id}
+                    className={classes["bottom-content-li"]}
+                    style={{ width: "260px", padding: "25px" }}
+                    onClick={() => {
+                      if (attendEdit) {
+                        setAttendEdit(null);
+                      } else {
+                        setAttendEdit(attend);
                       }
-                    ></i>
-                    {/* 학생 이름 */}
-                    {attend.name}
-                  </div>
-                  {/* 출결옵션 */}
-                  <div className={classes["fs-13"]}>
-                    {attend.option.slice(1)} | {attend.note || "-"}
-                  </div>
-                  {/* 현재 클릭된 학생이면 */}
-
-                  <div
-                    className={`${classes["attendEdit-div"]} ${
-                      attendEdit?.id === attend.id ? classes["show"] : ""
-                    }`}
+                    }}
                   >
-                    <button
-                      className={classes["attend-edit-p"]}
-                      onClick={() => {
-                        attendHandler("paper");
-                      }}
+                    {/* 출결의 id(yyyy-mm-dd)보여줌 */}
+                    <div className={classes["flex-ml-10"]}>
+                      {/* 날짜보여줌 */}
+                      {attend.id.slice(0, 10)} {/* 서류 제출/미제출 아이콘 */}
+                      <i
+                        className="fa-solid fa-circle-check"
+                        style={
+                          attend.paper
+                            ? {
+                                color: "#ff5a71",
+                                margin: "0 10px",
+                              }
+                            : { color: "#cacaca", margin: "0 10px" }
+                        }
+                      ></i>
+                      {/* 학생 이름 */}
+                      {attend.name}
+                    </div>
+                    {/* 출결옵션 */}
+                    <div className={classes["fs-13"]}>
+                      {attend.option.slice(1)} | {attend.note || "-"}
+                    </div>
+                    {/* 현재 클릭된 학생이면 */}
+
+                    <div
+                      className={`${classes["attendEdit-div"]} ${
+                        attendEdit?.id === attend.id ? classes["show"] : ""
+                      }`}
                     >
-                      서류
-                    </button>
-                    <button
-                      className={classes["attend-edit-d"]}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        attendHandler("delete");
-                      }}
-                    >
-                      삭제
-                    </button>
-                    <button className={classes["attend-edit-c"]}>취소</button>
-                  </div>
-                </li>
+                      <button
+                        className={classes["attend-edit-p"]}
+                        onClick={() => {
+                          attendHandler("paper");
+                        }}
+                      >
+                        서류
+                      </button>
+                      <button
+                        className={classes["attend-edit-d"]}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          attendHandler("delete");
+                        }}
+                      >
+                        삭제
+                      </button>
+                      <button className={classes["attend-edit-c"]}>취소</button>
+                    </div>
+                  </li>
+                </>
               ))}
             </div>
             {/* 자료 없음 표시 */}
