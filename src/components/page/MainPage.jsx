@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import ExampleModal from "./ExampleModal";
 import byExcel from "../../assets/student/teacher-excel.gif";
-import mainImg from "../../assets/notice/1112.gif";
+import mainImg from "../../assets/notice/1119.gif";
 import dayjs from "dayjs";
 import AttendCalendar from "components/Attendance/AttendCalendar";
 import donationImg from "../../assets/notice/donation.png";
@@ -30,16 +30,12 @@ const monthEnd_text = `월말입니다! 선생님들의 소중한 정보를 다�
 ** 첵스-쿨은 선생님들의 모든 학교 데이터를 <br/> 엑셀파일 하나로 만들고 편하게 기록, 관리하는데 도움을 드리고 싶어요! <br/><br/> ** 사용에 만족하신다면 <br/> <b>첵스쿨 활용팁, 후기를 👉</b> <u>[교사랑] - [추천해요]에 공유</u>해주세요!
  `;
 
-const update_title = `알림장 update!`;
+const update_title = `[조회] - [출결] update!!`;
 
 const update_text = ` <br/> 
-<b>알림장에 날짜기능 on/off 와<br/> 자동생성기능</b> 추가<br/><br/>
+[조회] - [출결] 탭에 <b> 출결 수정 기능과 <br/> 서류 미제출 학생 관련 기능이</b> 추가되었어요!<br/><br/>
 
-1. [메인화면]에서 내일 시간표를 저장<br/>
-2. <b>[제자랑] - [알림장]에 들어가서 활용 <br/>
-</b><br/>* AI로 내일 시간표와 일정을 기준으로 알림장을 생성하며, 내용이 다소 부정확할 수 있습니다. 사용해보시고 불편이나 개선점 알려주시면 빠르게 반영하겠습니다!
 
-<br/><br/> 
 
 <b>어디서든 눈부신, 모든 선생님들을 응원합니다.🔥🔥</b><br/><br/> 
 
@@ -144,7 +140,7 @@ const MainPage = (props) => {
   const [showDeployNotice, setShowDeployNotice] = useState(false);
 
   useEffect(() => {
-    if (localStorage.getItem("showNotice") <= "20231119") {
+    if (localStorage.getItem("showNotice") <= "20231126") {
       setShowNotice(true);
     }
     if (

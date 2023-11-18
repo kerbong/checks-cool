@@ -82,7 +82,7 @@ const ClassgamePage = (props) => {
     </div>,
     <div className={classes["iconLeft"]}>
       <i
-        className="fa-solid fa-flag-checkered"
+        className="fa-solid fa-medal"
         style={{ fontSize: "1em", color: "#f2ffd8" }}
       ></i>
     </div>,
@@ -206,7 +206,7 @@ const ClassgamePage = (props) => {
                 onclick={() => {
                   navigate("/scoreBoard");
                 }}
-                icon={ICONS_LEFT[6]}
+                icon={ICONS_LEFT[7]}
               />
             </div>
             <p>타임캡슐 주소 👉 bit.ly/두근두근타임캡슐</p>
