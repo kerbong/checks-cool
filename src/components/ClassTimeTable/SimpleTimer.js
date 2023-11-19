@@ -285,8 +285,18 @@ const SimpleTimer = (props) => {
   };
 
   return (
-    <div className={classes["container"]}>
-      <div className={classes["circle"]}>
+    <div
+      className={classes["container"]}
+      style={props.justTimer ? { width: "420px", marginLeft: "-60px" } : {}}
+    >
+      <div
+        className={classes["circle"]}
+        style={
+          props.justTimer
+            ? { width: "100%", paddingTop: "calc(300 / 400 * 84%)" }
+            : {}
+        }
+      >
         <svg viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg">
           <g transform="translate(110,110)">
             <circle r="100" className={classes["e-c-base"]}></circle>
@@ -314,26 +324,46 @@ const SimpleTimer = (props) => {
         </svg>
       </div>
       <div className={classes["flex-center"]}>
-        <div className={classes["setters"]}>
-          <div className={classes["minutes-set"]}>
+        <div
+          className={classes["setters"]}
+          style={
+            props.justTimer
+              ? {
+                  width: "420px",
+                  left: "-5px",
+                  justifyContent: "center",
+                  zIndex: "5",
+                }
+              : {}
+          }
+        >
+          <div
+            className={classes["minutes-set"]}
+            style={props.justTimer ? { width: "80px", margin: "0 15px" } : {}}
+          >
             {setterBtns.slice(0, 2).map((btn) => (
               <button
                 key={btn.id}
                 data-setter={btn.id}
                 title={btn.title}
                 onClick={() => handleSetterBtnClick(btn.seconds)}
+                style={props.justTimer ? { fontSize: "35px" } : {}}
               >
                 {btn.seconds > 0 ? "+" : "-"}
               </button>
             ))}
           </div>
-          <div className={classes["seconds-set"]}>
+          <div
+            className={classes["seconds-set"]}
+            style={props.justTimer ? { width: "80px", margin: "0 15px" } : {}}
+          >
             {setterBtns.slice(2).map((btn) => (
               <button
                 key={btn.id}
                 data-setter={btn.id}
                 title={btn.title}
                 onClick={() => handleSetterBtnClick(btn.seconds)}
+                style={props.justTimer ? { fontSize: "35px" } : {}}
               >
                 {btn.seconds > 0 ? "+" : "-"}
               </button>
@@ -343,40 +373,78 @@ const SimpleTimer = (props) => {
       </div>
 
       <div className={classes["flex-center"]}>
-        <div className={classes["controlls"]}>
+        <div
+          className={classes["controlls"]}
+          style={props.justTimer ? { width: "420px", left: "0px" } : {}}
+        >
           <div
             className={classes["display-remain-time"]}
             ref={displayOutputRef}
+            style={props.justTimer ? { fontSize: "80px" } : {}}
           >
             01:00
           </div>
           <div className={classes["btns"]}>
             {/* 재생 / 일시정지 버튼 */}
-            <button
-              className={
-                !isStarted
-                  ? classes["play"]
-                  : isPaused
-                  ? classes["play"]
-                  : classes["pause"]
-              }
-              ref={pauseBtnRef}
-              onClick={() => {
-                if (!isStarted) {
-                  setIsStarted(true);
-                  setIsPaused(false);
-                } else {
-                  //   console.log("일시정지 누름");
-                  setIsPaused((prev) => !prev);
+            {/* 저스트 타이머인 경우 */}
+            {props.justTimer && (
+              <button
+                className={
+                  !isStarted
+                    ? classes["justTimerPlay"]
+                    : isPaused
+                    ? classes["justTimerPlay"]
+                    : classes["justTimerPause"]
                 }
-                // isPaused = isPaused ? false : true;
-                // pauseTimer();
-              }}
-            ></button>
+                ref={pauseBtnRef}
+                onClick={() => {
+                  if (!isStarted) {
+                    setIsStarted(true);
+                    setIsPaused(false);
+                  } else {
+                    //   console.log("일시정지 누름");
+                    setIsPaused((prev) => !prev);
+                  }
+                  // isPaused = isPaused ? false : true;
+                  // pauseTimer();
+                }}
+              ></button>
+            )}
+
+            {/* 일반.. 타이머만 나오는 경우 */}
+            {!props.justTimer && (
+              <button
+                className={
+                  !isStarted
+                    ? classes["play"]
+                    : isPaused
+                    ? classes["play"]
+                    : classes["pause"]
+                }
+                ref={pauseBtnRef}
+                onClick={() => {
+                  if (!isStarted) {
+                    setIsStarted(true);
+                    setIsPaused(false);
+                  } else {
+                    //   console.log("일시정지 누름");
+                    setIsPaused((prev) => !prev);
+                  }
+                  // isPaused = isPaused ? false : true;
+                  // pauseTimer();
+                }}
+              ></button>
+            )}
+
             {/* 정지 = 리셋버튼 */}
             <button
               className={classes["reset"]}
               ref={resetBtnRef}
+              style={
+                props.justTimer
+                  ? { left: "18px", width: "25px", height: "27px" }
+                  : {}
+              }
               onClick={() => {
                 if (!isStarted) return;
 
@@ -392,12 +460,13 @@ const SimpleTimer = (props) => {
           </div>
         </div>
       </div>
-      <div className={classes["minute-btns"]}>
-        <div title="다음교시">
-          <i className={`fa-solid fa-circle-right ${classes["icon"]}`}></i>
-        </div>
+      {!props.justTimer && (
+        <div className={classes["minute-btns"]}>
+          <div title="다음교시">
+            <i className={`fa-solid fa-circle-right ${classes["icon"]}`}></i>
+          </div>
 
-        {/* <button className={classes["minute-btn"]} onClick={() => setMinute(1)}>
+          {/* <button className={classes["minute-btn"]} onClick={() => setMinute(1)}>
           {isStarted && "+ "}1분
         </button>
         <button className={classes["minute-btn"]} onClick={() => setMinute(3)}>
@@ -412,7 +481,8 @@ const SimpleTimer = (props) => {
         <button className={classes["minute-btn"]} onClick={() => setMinute(20)}>
           {isStarted && "+ "} 20분
         </button> */}
-      </div>
+        </div>
+      )}
     </div>
   );
 };

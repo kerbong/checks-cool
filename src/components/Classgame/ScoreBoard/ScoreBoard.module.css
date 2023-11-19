@@ -71,6 +71,7 @@
   font-size: 1.8rem;
   cursor: pointer;
   padding: 15px 0;
+  margin-right: 10px;
 }
 
 .score-ul {
@@ -114,13 +115,22 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  margin: 30px;
+  margin: 20px;
+
   font-size: 30px;
+}
+
+.rank-btn {
+  position: absolute;
+  top: -10px;
+  right: -7px;
+  border-radius: 15px;
+  border: 0;
 }
 
 .moveBefore {
   position: absolute;
-  top: 85px;
+  top: 75px;
   right: 15px;
   width: 50px;
   height: 50px;
@@ -162,6 +172,7 @@
 .grid-item {
   font-size: 25px;
   text-align: center;
+  word-break: break-word;
 
   border-top: 1px solid black;
   border-bottom: 1px solid black;
@@ -172,7 +183,7 @@
 }
 
 .grid-item:hover {
-  background-color: #42696aa7;
+  background-color: #42696aa7 !important;
   color: whitesmoke;
 }
 

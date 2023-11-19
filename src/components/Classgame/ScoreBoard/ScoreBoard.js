@@ -3,6 +3,8 @@ import Swal from "sweetalert2";
 
 import classes from "./ScoreBoard.module.css";
 import DynamicGrid from "./DynamicGrid";
+import SimpleTimer from "components/ClassTimeTable/SimpleTimer";
+import StopWatch from "components/ClassTimeTable/StopWatch";
 
 const WAYS = [
   {
@@ -28,7 +30,7 @@ const WAYS = [
         타이머
       </>
     ),
-    desc: "* 정해진 시간 안에 활동을 진행하는 방식",
+    desc: "* 정해진 시간 안에 활동을 진행하고 점수를 1점씩 추가하는 방식",
     id: "timer",
   },
   {
@@ -63,6 +65,8 @@ const ScoreBoard = () => {
   const [inputValue, setInputValue] = useState("");
   const [nowData, setNowData] = useState({});
   const [nowScore, setNowScore] = useState(0);
+  const [isRunning, setIsRunning] = useState(false);
+  const [nowRank, setNowRank] = useState({});
 
   /** 모둠 이름 추가하는 함수 */
   const handleChange = (event) => {
@@ -105,9 +109,17 @@ const ScoreBoard = () => {
       }
     } else if (bn === "next") {
       setSettingDone(true);
+      //local에 저장해두기
+      localStorage.setItem("scoreBoard", JSON.stringify(datas));
     }
     return;
   };
+
+  useEffect(() => {
+    let local_datas = JSON.parse(localStorage.getItem("scoreBoard"));
+    if (!local_datas) return;
+    setDatas(local_datas);
+  }, []);
 
   useEffect(() => {
     if (
@@ -133,8 +145,35 @@ const ScoreBoard = () => {
       (a, b) => sumScores(b.scores) - sumScores(a.scores)
     );
 
-    console.log(sortedDatas_ex);
-    console.log(sortedDatas);
+    // 스톱워치면... 순서를 거꾸로!! 조금 걸릴수록 1등!
+    if (scoreWay === "stopWatch") {
+      sortedDatas_ex.reverse();
+      sortedDatas.reverse();
+    }
+
+    //현재 랭킹 저장해두기 (각 모둠 위에 표시하기!)
+    let new_rank = {};
+    let lastScore = null;
+    let lastRank = 1;
+    let rank = 1;
+
+    sortedDatas?.forEach((dt, ind) => {
+      let currentScore = sumScores(dt.scores);
+      if (dt.scores?.length === 0) {
+        // 점수가 없는 경우
+        new_rank[dt.name] = sortedDatas.length; // 순위를 뒤로 미룸
+      } else {
+        // 점수가 있는 경우
+        if (currentScore !== lastScore) {
+          lastRank = rank;
+        }
+        new_rank[dt.name] = lastRank;
+        lastScore = currentScore;
+        rank += 1;
+      }
+    });
+    setNowRank(new_rank);
+
     // 1등 =>  이전  현재
 
     // 그냥 중간에 보여주는 함수면
@@ -145,8 +184,14 @@ const ScoreBoard = () => {
         ${sortedDatas
           ?.map(
             (dt, index) => `
-          <div class=${classes["rank-row"]}>
-            ${index + 1} 등 <span class=${classes["rank-item"]}>${
+          <div class=${classes["rank-row"]} style="${
+              +index >= 3 ? "margin-left: 28px" : ""
+            }">
+          ${
+            index < 3
+              ? "<i class='fa-solid fa-crown fa-sm' style={{ color: '#414141', marginRight: '5px' }}></i>"
+              : ""
+          }  ${index + 1} 등 <span class=${classes["rank-item"]}>${
               sortedDatas_ex?.[index].name
             }</span> => <span class=${classes["rank-item"]}>${dt.name}</span>
           </div>
@@ -163,8 +208,14 @@ const ScoreBoard = () => {
             ${sortedDatas
               ?.map(
                 (dt, index) => `
-              <div class=${classes["rank-row"]}>
-                ${index + 1} 등 <span class=${
+              <div class=${classes["rank-row"]} style="${
+                  +index >= 3 ? "margin-left: 28px" : ""
+                }">
+              ${
+                index < 3
+                  ? "<i class='fa-solid fa-crown fa-sm' style={{ color: '#414141', marginRight: '5px' }}></i>"
+                  : ""
+              } ${index + 1} 등 <span class=${
                   classes["rank-item"]
                 } style="font-size: ${
                   index === 0 ? "35px" : index < 3 ? "30px" : "25px"
@@ -207,38 +258,80 @@ const ScoreBoard = () => {
   /** 세팅던 상태에서 모둠을 클릭하면 보일 함수 */
   const showWayRecord = () => {
     // 스코어 방식 확인하고 그거에 따라 보여줄거 넣기
-    let returnHtml;
-    //점수추가면 + 점수 - 버튼만 만들고 저장! 버튼 만들기
-    if (scoreWay === "addScore") {
-      returnHtml = (
-        <div className={classes["flex-column-center"]}>
-          <div className={classes["flex-20vh-center"]}>
-            <span
-              className={classes["addScoreBtn"]}
-              onClick={() => setNowScore((prev) => +(prev - 1))}
-              title="1점 빼기"
+    let returnHtml = (
+      <div className={classes["flex-column-center"]}>
+        <div
+          className={classes["flex-20vh-center"]}
+          style={scoreWay !== "addScore" ? { height: "290px" } : {}}
+        >
+          {/* 점수 더하고 빼는 부분, 스톱워치에서는 안보여줌 */}
+          {scoreWay !== "stopWatch" && (
+            <div
+              className={classes["flex-20vh-center"]}
+              style={scoreWay !== "addScore" ? { width: "350px" } : {}}
             >
-              -
-            </span>
-            <span style={{ fontSize: "60px" }}>{nowScore} 점</span>
-            <span
-              className={classes["addScoreBtn"]}
-              onClick={() => setNowScore((prev) => +(prev + 1))}
-              title="1점 추가하기"
-            >
-              +
-            </span>
-          </div>
-          <button className={classes["scoreSaveBtn"]} onClick={addScoreHandler}>
-            저장
-          </button>
+              <span
+                className={classes["addScoreBtn"]}
+                onClick={() => setNowScore((prev) => +(prev - 1))}
+                title="1점 빼기"
+              >
+                -
+              </span>
+              <span style={{ fontSize: "60px" }}>{nowScore} 점</span>
+              <span
+                className={classes["addScoreBtn"]}
+                onClick={() => setNowScore((prev) => +(prev + 1))}
+                title="1점 추가하기"
+              >
+                +
+              </span>
+            </div>
+          )}
+
+          {/* //   타이머, 스톱워치 설정인 경우, 타이머 보여주기 */}
+          {scoreWay === "timer" && (
+            <SimpleTimer remainTime={120} justTimer={true} />
+          )}
+          {scoreWay === "stopWatch" && (
+            // <SimpleTimer remainTime={120} justTimer={true} />
+            <StopWatch
+              timeHandler={stopWatchTimeHandler}
+              runningHandler={(tf) => setIsRunning(tf)}
+            />
+          )}
         </div>
-      );
-    } else if (scoreWay === "timer") {
-    } else if (scoreWay === "stopWatch") {
-    }
+        {scoreWay === "stopWatch" &&
+          nowScore !== 0 &&
+          !isRunning &&
+          "* 일시정지한 시간을 저장해주세요!"}
+
+        {scoreWay === "stopWatch" &&
+          nowScore !== 0 &&
+          isRunning &&
+          "* 자료를 저장하시려면 '멈춤' => '기록저장'을 눌러주세요!"}
+        <br />
+        <br />
+        <button
+          className={classes["scoreSaveBtn"]}
+          onClick={addScoreHandler}
+          title={
+            scoreWay !== "stopWatch"
+              ? "현재 설정된 점수를 저장합니다."
+              : "화면에 보이는 일시정지한 시간을 저장합니다!"
+          }
+        >
+          {scoreWay === "stopWatch" && "기록"}저장
+        </button>
+      </div>
+    );
 
     return returnHtml;
+  };
+
+  /** 스톱워치에서 일시정지하면 받아오는 시간을 time 상태에 저장함 */
+  const stopWatchTimeHandler = (time) => {
+    if (time === 0) return;
+    setNowScore(+time);
   };
 
   return (
@@ -289,13 +382,40 @@ const ScoreBoard = () => {
               className={`${classes["data-name"]} ${
                 nowData.name === data.name ? classes["group-clicked"] : ""
               }`}
-              style={{ width: `calc(90vw / ${datas?.length})` }}
+              style={{
+                width: `calc(90vw / ${datas?.length} - 10px)`,
+                position: "relative",
+              }}
               key={ind}
               onClick={() => (!settingDone ? delDatas(data) : setNowData(data))}
               title={
                 !settingDone ? "클릭해서 제거하기" : "클릭해서 점수 기록하기"
               }
             >
+              {/* 등수 보여주는 부분 */}
+              {Object.values(nowRank)?.length > 0 && (
+                <button
+                  className={classes["rank-btn"]}
+                  style={
+                    +nowRank?.[data.name] === 1
+                      ? { backgroundColor: "#eeed63" }
+                      : +nowRank?.[data.name] === 2
+                      ? { backgroundColor: "#cccccc" }
+                      : +nowRank?.[data.name] === 3
+                      ? { backgroundColor: "#c0a985" }
+                      : {}
+                  }
+                >
+                  {+nowRank?.[data.name] < 4 && (
+                    <i
+                      className="fa-solid fa-crown fa-sm"
+                      style={{ color: "#414141", marginRight: "5px" }}
+                    ></i>
+                  )}
+                  {nowRank?.[data.name]}등
+                </button>
+              )}
+              {/* 모둠 이름 보여주기 */}
               {data.name}
             </span>
           ))}
@@ -317,7 +437,6 @@ const ScoreBoard = () => {
       )}
 
       {/* 점수 혹은 타이머 / 스톱워치 보여줄 부분 */}
-
       {settingDone && Object.values(nowData)?.length > 0 && showWayRecord()}
 
       {/* 아무 모둠도 선택하지 않았을 때 */}
@@ -366,6 +485,7 @@ const ScoreBoard = () => {
                     setExDatas();
                     setNowData({});
                     setNowScore(0);
+                    setNowRank({});
                   }
                 });
               } else {

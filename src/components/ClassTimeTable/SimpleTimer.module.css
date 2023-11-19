@@ -132,6 +132,79 @@ button[data-setter]:hover {
   border-right: 0;
   background-color: white;
 }
+
+.justTimerPlay,
+.stopWatchPlay {
+  display: block;
+  content: "";
+  position: relative;
+  top: 8px;
+  left: -17px;
+  border-top: 15px solid #ffffff;
+  border-bottom: 15px solid #ffffff;
+  border-left: 23px solid #f7958e;
+  border-right: 0;
+  background-color: white;
+}
+
+.stopWatchPlay {
+  top: 0;
+  left: 0;
+  margin-right: 45px;
+  border-top: 20px solid #ffffff;
+  border-bottom: 20px solid #ffffff;
+  border-left: 36px solid #f7958e;
+}
+
+.stopWatchReset {
+  outline: none;
+  background: transparent;
+  border: none;
+  padding: 0;
+  display: block;
+  content: "";
+  position: relative;
+
+  width: 38px;
+  height: 40px;
+  background-color: #f7958e;
+}
+
+.h1-span {
+  width: 90px;
+  font-size: 80px;
+  display: inline-block;
+}
+
+.justTimerPause,
+.stopWatchPause {
+  content: "";
+  top: 9px;
+  left: -21px;
+  width: 27px;
+  height: 28px;
+  background-color: transparent;
+  border-radius: 1px;
+  border: 7px solid #f7958e;
+  border-top: none;
+  border-bottom: none;
+  position: relative;
+  margin-right: 5px;
+}
+
+.stopWatchPause {
+  top: 0;
+  left: 0;
+  margin-right: 61px;
+  width: 33px;
+  height: 37px;
+}
+
+.h1 {
+  font-size: 80px;
+  margin: 10px;
+}
+
 .pause {
   content: "";
   top: 11px;
