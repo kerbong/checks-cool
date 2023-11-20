@@ -144,9 +144,14 @@ const RandomPick = (props) => {
   //선택된 학생 보여주는 html
   const showPickedStd = (canClick) => {
     return (
-      <>
+      <div
+        className={classes["stdsDiv"]}
+        style={canClick ? {} : { padding: "15px" }}
+      >
         {" "}
-        <h2 className={canClick && classes["fs15"]}>선택된 학생</h2>
+        <h2 className={canClick ? classes["fs15"] : {}}>
+          선택된 학생({pickedStudents?.length})
+        </h2>
         <div className={classes.div}>
           {pickedStudents &&
             pickedStudents?.map((stu) => (
@@ -158,12 +163,78 @@ const RandomPick = (props) => {
                 num={stu.num}
                 onShowOption={() => {
                   if (!canClick) return;
-                  let studentInfo = { num: +stu.num, name: stu.name };
+                  let studentInfo = {
+                    num: +stu.num,
+                    name: stu.name,
+                    woman: stu?.woman,
+                  };
                   changePickedStudents(studentInfo);
                 }}
               />
             ))}
         </div>
+      </div>
+    );
+  };
+
+  /** 그룹 선택 버튼 함수 */
+  const pickedStdBtnsHandler = (num) => {
+    // 전체선택이면
+    if (num === 0) {
+      let new_pickedStds = nowStudents
+        ?.map((stu) => {
+          return { num: +stu.num, name: stu.name, woman: stu?.woman || false };
+        })
+        ?.sort((a, b) => a.num - b.num);
+      setPickedStudents(new_pickedStds);
+      //남학생 전체
+    } else if (num === 1) {
+      let new_pickedStds = [];
+      nowStudents?.forEach((stu) => {
+        if (stu.woman) return;
+        new_pickedStds.push({
+          num: +stu.num,
+          name: stu.name,
+          woman: stu?.woman,
+        });
+      });
+      setPickedStudents(new_pickedStds?.sort((a, b) => a.num - b.num));
+      //여학생 전체
+    } else if (num === 2) {
+      let new_pickedStds = [];
+      nowStudents?.forEach((stu) => {
+        if (!stu.woman) return;
+        new_pickedStds.push({
+          num: +stu.num,
+          name: stu.name,
+          woman: stu?.woman,
+        });
+      });
+      setPickedStudents(new_pickedStds?.sort((a, b) => a.num - b.num));
+      // 모두 선택 해제
+    } else if (num === 3) {
+      setPickedStudents([]);
+    }
+  };
+
+  /** 학생 선택할 때 편하게 도울 버튼들. 전체 선택, 전체 취소, 남학생모두, 여학생모두 */
+  const showPickGroupBtns = () => {
+    let groups = ["전체 ", "남학생 ", "여학생 ", "전체취소 "];
+    // let groups_btns = [<i className="fa-solid fa-down-long"></i>, "남학생 전체", "여학생 전체", "전체취소"];
+    return (
+      <>
+        {groups?.map((gr, ind) => (
+          <button
+            key={ind}
+            className={classes["prize-btn"]}
+            style={{ backgroundColor: "#617B80" }}
+            onClick={() => pickedStdBtnsHandler(ind)}
+          >
+            {gr}
+            {ind < 3 && <i className="fa-solid fa-play fa-rotate-90"></i>}
+            {ind === 3 && <i className="fa-solid fa-eject"></i>}
+          </button>
+        ))}
       </>
     );
   };
@@ -204,7 +275,7 @@ const RandomPick = (props) => {
               </select>
             </div>
           )}
-          <h2 className={classes["fs15"]}>전체학생</h2>
+          <h2 className={classes["fs15"]}>학생 목록({nowStudents?.length})</h2>
           <div className={classes.div}>
             {nowStudents &&
               nowStudents?.map((stu) => (
@@ -215,12 +286,19 @@ const RandomPick = (props) => {
                   woman={stu.woman}
                   num={stu.num}
                   onShowOption={() => {
-                    let studentInfo = { num: +stu.num, name: stu.name };
+                    let studentInfo = {
+                      num: +stu.num,
+                      name: stu.name,
+                      woman: stu?.woman,
+                    };
                     changePickedStudents(studentInfo);
                   }}
                 />
               ))}
           </div>
+          {/* 모두 선텍 / 남학생선택 / 여학생 선택 / 모두 취소 버튼 */}
+          {showPickGroupBtns()}
+
           {/* 선택된 학생 보여주기 */}
           {showPickedStd(true)}
 

@@ -1,9 +1,17 @@
 .ways-div {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
+  justify-items: center;
 }
 
-.way-div {
+.ways-div2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  justify-items: center;
+}
+
+.way-div,
+.db-item {
   width: 80%;
   height: 40vh;
   background-color: #42696a;
@@ -17,6 +25,11 @@
   cursor: pointer;
   color: whitesmoke;
 }
+.db-item {
+  width: 180px;
+  height: 140px;
+}
+
 .data-div {
   margin-left: 5vw;
 
@@ -188,7 +201,8 @@
 }
 
 @media screen and (max-width: 800px) {
-  .ways-div {
+  .ways-div,
+  .ways-div2 {
     display: flex;
     flex-direction: column;
     align-items: center;

@@ -5,6 +5,9 @@ import classes from "./ScoreBoard.module.css";
 import DynamicGrid from "./DynamicGrid";
 import SimpleTimer from "components/ClassTimeTable/SimpleTimer";
 import StopWatch from "components/ClassTimeTable/StopWatch";
+import { doc, getDoc, setDoc } from "firebase/firestore";
+import { dbService } from "fbase";
+import dayjs from "dayjs";
 
 const WAYS = [
   {
@@ -57,7 +60,7 @@ const DATAS = [
   { name: "6모둠", scores: [] },
 ];
 
-const ScoreBoard = () => {
+const ScoreBoard = (props) => {
   const [scoreWay, setScoreWay] = useState("");
   const [datas, setDatas] = useState(DATAS);
   const [exDatas, setExDatas] = useState();
@@ -67,6 +70,9 @@ const ScoreBoard = () => {
   const [nowScore, setNowScore] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
   const [nowRank, setNowRank] = useState({});
+  const [init, setInit] = useState("");
+  const [dbDatas, setDbDatas] = useState([]);
+  const [exTitle, setExTitle] = useState("");
 
   /** 모둠 이름 추가하는 함수 */
   const handleChange = (event) => {
@@ -102,10 +108,19 @@ const ScoreBoard = () => {
   /** 이전 혹은 다음으로 이동하는 함수 */
   const moveTo = (bn) => {
     if (bn === "before") {
-      if (scoreWay !== "") {
-        setScoreWay("");
-      } else {
+      // 과거의 자료를 이어하던거면.. 자료 목록으로!
+      if (init === "ex" && settingDone) {
         setSettingDone(false);
+        setScoreWay("");
+        setDatas(DATAS);
+        setExDatas();
+        setExTitle("");
+      } else if (scoreWay !== "") {
+        setScoreWay("");
+      } else if (settingDone) {
+        setSettingDone(false);
+      } else {
+        setInit("");
       }
     } else if (bn === "next") {
       setSettingDone(true);
@@ -133,22 +148,26 @@ const ScoreBoard = () => {
 
   /** 랭킹 보여주는 함수! */
   const showRank = (finished) => {
+    // 아직 자료가 없는데 끝내기 누르면 작동안함
+    // console.log()
+    if (finished && !exDatas) return;
+
     function sumScores(arr) {
       return arr.reduce((total, current) => total + current, 0);
     }
 
-    const sortedDatas_ex = [...exDatas].sort(
+    const sortedDatas_ex = [...exDatas]?.sort(
       (a, b) => sumScores(b.scores) - sumScores(a.scores)
     );
 
-    const sortedDatas = [...datas].sort(
+    const sortedDatas = [...datas]?.sort(
       (a, b) => sumScores(b.scores) - sumScores(a.scores)
     );
 
     // 스톱워치면... 순서를 거꾸로!! 조금 걸릴수록 1등!
     if (scoreWay === "stopWatch") {
-      sortedDatas_ex.reverse();
-      sortedDatas.reverse();
+      sortedDatas_ex?.reverse();
+      sortedDatas?.reverse();
     }
 
     //현재 랭킹 저장해두기 (각 모둠 위에 표시하기!)
@@ -227,12 +246,78 @@ const ScoreBoard = () => {
               .join("")}
           </div>`,
         icon: "success",
+        confirmButtonText: "저장하기",
+        showDenyButton: true,
+        denyButtonText: "끝내기",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          // 저장하기 누르면 보일.. 제목 설정함수
+          Swal.fire({
+            title: "제목을 입력해주세요",
+            html: "* 제목과 날짜가 모두 같으면 덮어쓰기 됩니다.<br/>* 저장하면 확인 / 이어하기 가 가능합니다.",
+            input: "text",
+            inputAttributes: {
+              autocapitalize: "off",
+            },
+            inputValue: exTitle || "",
+            showDenyButton: true,
+            denyButtonText: "취소",
+            confirmButtonText: "저장",
+            showLoaderOnConfirm: true,
+            preConfirm: async (title) => {
+              let ref = doc(dbService, "scoreBoard", props.userUid);
+
+              let new_data = {
+                id: dayjs().format("YYYY-MM-DD"),
+                title: title,
+                datas: datas,
+                scoreWay: scoreWay,
+              };
+
+              let nowDoc = await getDoc(ref);
+              let new_datas = [];
+              if (nowDoc.exists()) {
+                let matchingData = false;
+                // 같은 데이터가 있는지 확인하고 있으면 바꿔주기
+                nowDoc?.data()?.datas?.forEach((dt) => {
+                  let new_dt = dt;
+                  if (dt.id === new_data.id && dt.title === new_data.title) {
+                    new_dt = new_data;
+                    matchingData = true;
+                  }
+                  new_datas.push(new_dt);
+                });
+                // 만약 같은 데이터가 없었다면 추가하기
+                if (!matchingData) {
+                  new_datas.push(new_data);
+                }
+                // 데이터 존재하지 않으면
+              } else {
+                new_datas = [new_data];
+              }
+              await setDoc(ref, { datas: new_datas });
+            },
+            allowOutsideClick: () => !Swal.isLoading(),
+          }).then((result) => {
+            if (result.isConfirmed) {
+              Swal.fire({
+                title: "저장완료",
+                text: "오늘 날짜와 이름으로 저장되었습니다!",
+                timer: 3000,
+              });
+            }
+          });
+        }
       });
     }
   };
 
   /** 점수추가하기 저장버튼 눌렀을 때, nowScore를 nowData 모둠에 추가함 */
   const addScoreHandler = () => {
+    // console.log(isRunning);
+    // 스톱워치 설정에서 시간이 가고 있으면.. 실행안됨
+    if (scoreWay === "stopWatch" && isRunning) return;
+
     let new_datas = [...datas];
     setExDatas(datas);
     let new_data = { ...nowData };
@@ -300,15 +385,7 @@ const ScoreBoard = () => {
             />
           )}
         </div>
-        {scoreWay === "stopWatch" &&
-          nowScore !== 0 &&
-          !isRunning &&
-          "* 일시정지한 시간을 저장해주세요!"}
 
-        {scoreWay === "stopWatch" &&
-          nowScore !== 0 &&
-          isRunning &&
-          "* 자료를 저장하시려면 '멈춤' => '기록저장'을 눌러주세요!"}
         <br />
         <br />
         <button
@@ -334,6 +411,21 @@ const ScoreBoard = () => {
     setNowScore(+time);
   };
 
+  /** 저장된 스코어보드 데이터 목록 받아오는 함수 */
+  const getScoreBoardData = async () => {
+    const ref = doc(dbService, "scoreBoard", props.userUid);
+    const now_doc = await getDoc(ref);
+    if (now_doc.exists()) {
+      setDbDatas(now_doc?.data()?.datas);
+    }
+  };
+
+  //   init 상태가 기존자료가 되면 목록 받아오기
+  useEffect(() => {
+    if (init !== "ex") return;
+    getScoreBoardData();
+  }, [init]);
+
   return (
     <>
       <div id="title-div">
@@ -342,6 +434,55 @@ const ScoreBoard = () => {
           모둠대결! (개발중)
         </button>
       </div>
+
+      {/* 처음화면. 새로운 자료 만들기 or 기존 자료 목록보기 */}
+      {init === "" && (
+        <div className={classes["ways-div2"]}>
+          {/* 새로운 자료 */}
+          <div onClick={() => setInit("new")} className={classes["way-div"]}>
+            <span className={classes["way-name"]}>
+              <i
+                className="fa-solid fa-circle-plus"
+                style={{ marginRight: "10px" }}
+              ></i>
+              {"새로 시작하기"}
+            </span>
+          </div>
+          {/* 기존 자료 */}
+          <div onClick={() => setInit("ex")} className={classes["way-div"]}>
+            <span className={classes["way-name"]}>
+              <i
+                className="fa-regular fa-folder-open"
+                style={{ marginRight: "10px" }}
+              ></i>
+              {"기존 자료 이어하기"}
+            </span>
+          </div>
+        </div>
+      )}
+
+      {/* 기존 자료 목록보여주기 */}
+      {init === "ex" && !settingDone && (
+        <div className={classes["data-div"]}>
+          {dbDatas?.map((dbDt, ind) => (
+            <div
+              key={ind}
+              className={classes["db-item"]}
+              onClick={() => {
+                setExDatas(dbDt.datas);
+                setSettingDone(true);
+                setScoreWay(dbDt.scoreWay);
+                setDatas(dbDt.datas);
+                setExTitle(dbDt.title);
+              }}
+            >
+              <p style={{ margin: "5px" }}>{dbDt.id}</p>
+              <p style={{ fontSize: "25px" }}>{dbDt.title}</p>
+            </div>
+          ))}
+        </div>
+      )}
+
       {/* 점수 측정방식 선택하기 */}
       {scoreWay === "" && settingDone && (
         <div className={classes["ways-div"]}>
@@ -358,9 +499,13 @@ const ScoreBoard = () => {
         </div>
       )}
 
-      {/* 모둠 이름, 수 설정하기 */}
-      {scoreWay === "" && !settingDone && (
+      {/* 모둠 이름, 수 설정하기, 방식 없고, 설정 안됨, 새로운 자료일 경우 보여주기 */}
+      {scoreWay === "" && !settingDone && init === "new" && (
         <>
+          <h1 style={{ fontSize: "30px" }}>모둠 구성하기</h1>
+          <p>* 추가하기) 모둠 이름을 아래에 입력하기</p>
+          <p>* 제거하기) 모둠 목록에서 이름을 클릭하기</p>
+
           {/* 모둠 추가하기 */}
           <form onSubmit={submitHandler} className={classes["data-div"]}>
             <input
@@ -374,56 +519,71 @@ const ScoreBoard = () => {
         </>
       )}
 
-      {/* 입력된 모둠들 보여주기 */}
-      {!(settingDone && scoreWay === "") && (
-        <div className={classes["data-div"]}>
-          {datas?.map((data, ind) => (
-            <span
-              className={`${classes["data-name"]} ${
-                nowData.name === data.name ? classes["group-clicked"] : ""
-              }`}
-              style={{
-                width: `calc(90vw / ${datas?.length} - 10px)`,
-                position: "relative",
-              }}
-              key={ind}
-              onClick={() => (!settingDone ? delDatas(data) : setNowData(data))}
-              title={
-                !settingDone ? "클릭해서 제거하기" : "클릭해서 점수 기록하기"
-              }
-            >
-              {/* 등수 보여주는 부분 */}
-              {Object.values(nowRank)?.length > 0 && (
-                <button
-                  className={classes["rank-btn"]}
-                  style={
-                    +nowRank?.[data.name] === 1
-                      ? { backgroundColor: "#eeed63" }
-                      : +nowRank?.[data.name] === 2
-                      ? { backgroundColor: "#cccccc" }
-                      : +nowRank?.[data.name] === 3
-                      ? { backgroundColor: "#c0a985" }
-                      : {}
-                  }
-                >
-                  {+nowRank?.[data.name] < 4 && (
-                    <i
-                      className="fa-solid fa-crown fa-sm"
-                      style={{ color: "#414141", marginRight: "5px" }}
-                    ></i>
-                  )}
-                  {nowRank?.[data.name]}등
-                </button>
-              )}
-              {/* 모둠 이름 보여주기 */}
-              {data.name}
-            </span>
-          ))}
-        </div>
-      )}
-      {/* 현재까지 모둠의 점수 현황 보여주는 부분 */}
+      {/* 입력된 모둠 이름 보여주기 */}
+      {!(settingDone && scoreWay === "") &&
+        !(init === "ex" && !settingDone) &&
+        init !== "" && (
+          <div
+            className={classes["data-div"]}
+            style={settingDone && scoreWay !== "" ? { marginTop: "30px" } : {}}
+          >
+            {datas?.map((data, ind) => (
+              <span
+                className={`${classes["data-name"]} ${
+                  nowData.name === data.name ? classes["group-clicked"] : ""
+                }`}
+                style={{
+                  width: `calc(90vw / ${datas?.length} - 10px)`,
+                  position: "relative",
+                }}
+                key={ind}
+                onClick={() =>
+                  !settingDone
+                    ? delDatas(data)
+                    : nowData.name !== data.name
+                    ? setNowData(data)
+                    : setNowData({})
+                }
+                title={
+                  !settingDone
+                    ? "클릭해서 제거하기"
+                    : nowData.name !== data.name
+                    ? "클릭해서 점수 기록하기"
+                    : "모둠 선택 취소하기"
+                }
+              >
+                {/* 등수 보여주는 부분 */}
+                {Object.values(nowRank)?.length > 0 && (
+                  <button
+                    className={classes["rank-btn"]}
+                    style={
+                      +nowRank?.[data.name] === 1
+                        ? { backgroundColor: "#eeed63" }
+                        : +nowRank?.[data.name] === 2
+                        ? { backgroundColor: "#cccccc" }
+                        : +nowRank?.[data.name] === 3
+                        ? { backgroundColor: "#c0a985" }
+                        : {}
+                    }
+                  >
+                    {+nowRank?.[data.name] < 4 && (
+                      <i
+                        className="fa-solid fa-crown fa-sm"
+                        style={{ color: "#414141", marginRight: "5px" }}
+                      ></i>
+                    )}
+                    {nowRank?.[data.name]}등
+                  </button>
+                )}
+                {/* 모둠 이름 보여주기 */}
+                {data.name}
+              </span>
+            ))}
+          </div>
+        )}
 
-      {scoreWay !== "" && settingDone && (
+      {/* 현재까지 모둠의 점수 현황 보여주는 부분 */}
+      {scoreWay !== "" && settingDone && init !== "" && (
         <div className={classes["data-div"]}>
           <DynamicGrid
             rows={datas?.reduce((max, current) => {
@@ -436,11 +596,16 @@ const ScoreBoard = () => {
         </div>
       )}
 
-      {/* 점수 혹은 타이머 / 스톱워치 보여줄 부분 */}
-      {settingDone && Object.values(nowData)?.length > 0 && showWayRecord()}
+      {/* 모둠 세팅이 끝나면 점수 혹은 타이머 / 스톱워치 보여줄 부분 */}
+      {settingDone &&
+        init !== "" &&
+        Object.values(nowData)?.length > 0 &&
+        showWayRecord()}
 
+      {/* 실제 활동 화면 */}
       {/* 아무 모둠도 선택하지 않았을 때 */}
       {scoreWay !== "" &&
+        init !== "" &&
         settingDone &&
         Object.values(nowData)?.length === 0 && (
           <>
@@ -461,10 +626,12 @@ const ScoreBoard = () => {
 
       {/* 이전, 다음버튼들 */}
       <div>
-        {settingDone && (
+        {init !== "" && (
           <button
             className={
-              !settingDone ? classes["moveBtn"] : classes["moveBefore"]
+              settingDone || init === "ex"
+                ? classes["moveBefore"]
+                : classes["moveBtn"]
             }
             onClick={() => {
               if (scoreWay !== "") {
@@ -486,26 +653,36 @@ const ScoreBoard = () => {
                     setNowData({});
                     setNowScore(0);
                     setNowRank({});
+                    setExTitle("");
                   }
                 });
+              } else if (init === "ex" && !settingDone) {
+                setInit("");
               } else {
                 moveTo("before");
               }
             }}
             title={"이전화면"}
           >
-            {!settingDone ? (
-              "이전"
-            ) : (
+            {settingDone || init === "ex" ? (
               <i className="fa-solid fa-share fa-rotate-180"></i>
+            ) : (
+              "이전"
             )}
           </button>
         )}
-        {!settingDone && Object.values(datas)?.length > 0 && (
-          <button className={classes["moveBtn"]} onClick={() => moveTo("next")}>
-            다음
-          </button>
-        )}
+        {!settingDone &&
+          init !== "" &&
+          init !== "ex" &&
+          Object.values(datas)?.length > 0 && (
+            <button
+              className={classes["moveBtn"]}
+              onClick={() => moveTo("next")}
+              title="모둠 대결 방식 선택화면으로 이동하기"
+            >
+              다음
+            </button>
+          )}
       </div>
     </>
   );

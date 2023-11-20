@@ -455,7 +455,10 @@ function App() {
                   element={<ClassTimeTable userUid={userUid} />}
                 />
 
-                <Route path="scoreBoard" element={<ScoreBoard />} />
+                <Route
+                  path="scoreBoard"
+                  element={<ScoreBoard userUid={userUid} />}
+                />
 
                 <Route path="notice" element={<Notice />} />
 

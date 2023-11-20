@@ -7,10 +7,12 @@ function DynamicGrid(props) {
   const [grid, setGrid] = useState([]);
 
   useEffect(() => {
+    // console.log(props.rows);
     setRows(props.rows);
   }, [props.rows]);
 
   useEffect(() => {
+    // console.log(props.columns);
     setColumns(props.columns);
   }, [props.columns]);
 
@@ -20,7 +22,7 @@ function DynamicGrid(props) {
 
     let totalSeconds;
     if (total) {
-      totalSeconds = arr.reduce((total, current) => total + current, 0);
+      totalSeconds = arr?.reduce((total, current) => total + current, 0);
     } else {
       totalSeconds = arr;
     }

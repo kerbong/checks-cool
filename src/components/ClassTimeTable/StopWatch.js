@@ -7,14 +7,17 @@ const StopWatch = (props) => {
   const intervalRef = useRef(null);
 
   const startStopWatch = () => {
+    //멈춰 있다가... 다시 시작을 누르면!
     if (!isRunning) {
       props.runningHandler(true);
       setIsRunning(true);
       intervalRef.current = setInterval(() => {
         setTime((prevTime) => prevTime + 1);
       }, 10);
+      //시간이 가고 있다가... 멈춤을 누르면!
     } else {
       props.runningHandler(false);
+
       props.timeHandler(time);
       setIsRunning(false);
       clearInterval(intervalRef.current);
@@ -43,6 +46,7 @@ const StopWatch = (props) => {
           className={
             isRunning ? classes["stopWatchPause"] : classes["stopWatchPlay"]
           }
+          title={isRunning ? "일시정지" : "이어하기"}
           onClick={startStopWatch}
         ></button>
         <button
@@ -51,6 +55,12 @@ const StopWatch = (props) => {
           title="정지하고 시간 초기화하기"
         ></button>{" "}
       </div>
+      <br />
+      {isRunning
+        ? "* 자료를 저장하시려면 '일시정지' => '기록저장'을 눌러주세요!"
+        : time !== 0
+        ? "* '기록저장' 으로 현재 시간 저장하기!"
+        : ""}
     </div>
   );
 };
