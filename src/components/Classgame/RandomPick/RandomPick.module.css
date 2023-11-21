@@ -4,7 +4,7 @@
   align-content: space-around;
   flex-wrap: wrap;
   max-width: 85vw;
-  margin: 20px 0px;
+  margin: 20px;
   align-items: center;
 }
 
@@ -28,9 +28,8 @@
 .prize-btn,
 .optionDone-btn,
 .playBtn-disabled,
-.playBtn,
-.addBtn {
-  margin: 5px 5px;
+.playBtn {
+  margin: 5px;
   background-color: #105761;
   width: auto;
   height: auto;
@@ -41,17 +40,53 @@
   border-width: 0;
 }
 
+.prize-btn {
+  position: relative;
+  margin: 10px 25px;
+  background-color: #dc89a7;
+  color: black;
+  border-radius: 40px;
+  cursor: default;
+}
+
+.addBtn,
+.delBtn {
+  position: absolute;
+  width: 7px;
+  top: -20px;
+  height: 7px;
+  border-radius: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
+  padding: 15px;
+  font-size: 25px;
+  border-radius: 25px;
+  color: whitesmoke;
+  border-width: 0;
+  background-color: #105761;
+  cursor: pointer;
+}
+
 .addBtn {
-  width: 60px;
-  font-size: 1.7rem;
-  padding: 0;
-  height: 60px;
-  border-radius: 20px;
+  left: -13px;
+}
+
+.delBtn {
+  right: -13px;
+}
+
+.addBtn:hover,
+.delBtn:hover {
+  background-color: #007a77;
 }
 
 .optionDone-btn {
   margin: 40px;
   font-size: 1.7rem;
+  width: 80%;
+  max-width: 800px;
   padding: 20px;
 }
 
@@ -102,23 +137,38 @@
   padding: 20px;
   border-radius: 20px;
   border-width: 0;
-  background-color: gainsboro;
+  background-color: #f2f2f2;
   margin: 15px;
 }
 
 .resultStd {
   width: 35%;
+  max-width: 385px;
 }
 
 .resultPrize {
-  width: 50%;
+  width: 65%;
 }
 
 .stdsDiv {
   border-radius: 20px;
   background-color: #f2f2f2;
   padding: 10px 0;
-  margin: 5px;
+  margin: 30px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.capture {
+  position: absolute;
+  right: 20px;
+  cursor: pointer;
+  color: #585858;
+}
+
+.capture:hover {
+  color: #105761;
 }
 
 @media screen and (max-width: 700px) {
@@ -143,5 +193,41 @@
   }
   100% {
     transform: translateX(0);
+  }
+}
+.way-div,
+.db-item {
+  width: 80%;
+  height: 40vh;
+  background-color: #105761;
+  margin: 10px;
+  padding: 20px;
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: whitesmoke;
+}
+
+.way-name {
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+}
+
+.ways-div2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  justify-items: center;
+}
+
+@media screen and (max-width: 800px) {
+  .ways-div2 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
   }
 }

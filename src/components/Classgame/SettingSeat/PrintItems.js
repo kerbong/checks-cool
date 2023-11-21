@@ -13,7 +13,7 @@ const PrintItems = React.forwardRef((props, ref) => {
   }, []);
 
   return (
-    <div ref={ref} className={classes[`items-all`]}>
+    <div ref={ref} className={classes[`items-all`]} id="capture">
       {/* 있으면 제목 적어주기 */}
 
       <div className={classes["print-title"]}>{props?.title}</div>

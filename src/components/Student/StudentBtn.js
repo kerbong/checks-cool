@@ -13,6 +13,7 @@ const StudentBtn = (props) => {
         onClick={(e) => {
           props.onShowOption(e);
         }}
+        title={props?.title}
       >
         {props.num} {props.name}
       </button>

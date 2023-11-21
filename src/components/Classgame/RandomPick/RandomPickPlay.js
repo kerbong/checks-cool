@@ -3,6 +3,7 @@ import classes from "./RandomPick.module.css";
 
 import Swal from "sweetalert2";
 import StudentBtn from "components/Student/StudentBtn";
+import html2canvas from "html2canvas";
 
 const RandomPickPlay = (props) => {
   const [winners, setWinners] = useState([]);
@@ -21,11 +22,12 @@ const RandomPickPlay = (props) => {
     setUsers(new_users);
   }, [props.users]);
 
+  /** 선택 학생수보다 상목록의 수가 적을 경우에만 실행! */
   const handleDraw = () => {
     setIsDrawing(true);
     setTimeout(() => {
       const shuffledUsers = shuffleArray(users);
-      const numWinners = Math.min(shuffledUsers.length, props.pickStdNum); // 최대 3명까지 당첨
+      const numWinners = prizes?.length; // 최대 3명까지 당첨
       const selectedWinners = shuffledUsers.slice(0, numWinners);
       setWinners(selectedWinners);
       let title = selectedWinners
@@ -53,23 +55,50 @@ const RandomPickPlay = (props) => {
   const handleMatch = () => {
     setIsMatching(true);
     setTimeout(() => {
-      const shuffledPrizes = shuffleArray(prizes);
-      const matched = winners.map((winner, index) => ({
-        winner,
-        prize: shuffledPrizes[index] || "꽝💣",
-      }));
-      setMatchedWinners(matched);
-      let title = matched
-        .map(
-          (win) =>
-            `<div style="margin: 5px 20px; font-size: 1.8rem;">${
-              win.winner + " 👉 " + win.prize
-            }</div>`
-        )
-        .join("");
+      let title;
+      // 품목 뽑기인 경우
+      if (props.init !== "order") {
+        const shuffledPrizes = shuffleArray(prizes);
+        const matched_winners =
+          winners?.length > 0
+            ? winners
+            : shuffleArray(users).slice(0, prizes?.length);
+
+        const matched = matched_winners?.map((winner, index) => ({
+          winner,
+          prize: shuffledPrizes[index] || "꽝💣",
+        }));
+        setMatchedWinners(matched);
+        title = matched
+          .map(
+            (win) =>
+              `<div style="margin: 5px 20px; font-size: 1.8rem;">${
+                win.winner + " 👉 " + win.prize
+              }</div>`
+          )
+          .join("");
+        // 순서뽑기인 경우
+      } else {
+        const matched_winners = shuffleArray(users).slice(0, users?.length);
+
+        const matched = matched_winners?.map((winner, index) => ({
+          winner: winner?.split(" ")[1],
+          prize: index + 1,
+        }));
+        setMatchedWinners(matched);
+        title = matched
+          .map(
+            (win) =>
+              `<span style="margin: 5px 25px; font-size: 1.8rem; padding: 0 8px; width: auto">${
+                win.prize + ") " + win.winner
+              }</span>`
+          )
+          .join("");
+      }
+
       Swal.fire({
-        title: `${title}`,
-        width: 800,
+        title: `<div style="display: flex; flex-wrap: wrap">${title}</div>`,
+        width: 1200,
         padding: "3em",
         color: "#312b76",
         background: `#fff`,
@@ -78,7 +107,7 @@ const RandomPickPlay = (props) => {
               left top
               no-repeat
             `,
-        timer: 10000,
+        timer: 20000,
       });
     }, 3000);
   };
@@ -92,72 +121,184 @@ const RandomPickPlay = (props) => {
     return shuffled;
   };
 
+  /** 캡처함수 */
+  const captureHandler = () => {
+    const section = document.getElementById("capture");
+    if (!section) {
+      return console.log("캡처 실패, 영역이 존재하지 않음");
+    }
+    html2canvas(section).then((canvas) => {
+      const link = document.createElement("a");
+      document.body.appendChild(link);
+      link.href = canvas.toDataURL("image/png");
+      link.download = "뽑기 결과 캡처.png";
+      link.click();
+      document.body.removeChild(link);
+    });
+  };
+
   return (
-    <div>
-      <button
-        onClick={!isDrawing ? handleDraw : undefined}
-        disabled={isDrawing || isMatching}
-        className={isDrawing ? classes["playBtn-disabled"] : classes["playBtn"]}
-      >
-        {isDrawing ? "추첨 중..." : "추첨하기"}
-      </button>
-      {winners.length > 0 && (
+    <div style={{ width: "100%" }}>
+      {/* 순서뽑기 부분 로직 */}
+      {props.init === "order" && (
         <div
           className={classes["div"]}
-          style={{ width: "95vw", alignItems: "normal" }}
+          style={{ maxWidth: "100%", alignItems: "normal" }}
         >
-          <div className={classes["resultStd"]}>
-            <h2 className={classes["fs15"]}>당첨자 🎉</h2>
-            <div
-              className={`${classes["results"]} ${
-                isDrawing ? `${classes["animate"]}` : ""
-              }`}
-            >
-              {winners.map((winner, index) => (
-                <StudentBtn
-                  className={"checklist-student"}
-                  name={winner.split(" ")[1]}
-                  key={index}
-                  woman={
-                    props.users?.filter(
-                      (user) => user.name === winner.split(" ")[1]
-                    )?.[0]?.woman
-                  }
-                  num={winner.split(" ")[0]}
-                />
-                // <span key={index} className={classes["prize-btn"]}>
-                //   {winner}
-                // </span>
-              ))}
-            </div>
-
+          {matchedWinners.length === 0 && (
             <button
-              onClick={!isMatching ? handleMatch : undefined}
-              disabled={winners?.length === 0}
+              onClick={() => {
+                if (!isMatching) {
+                  handleMatch();
+                }
+              }}
               className={
-                isMatching ? classes["playBtn-disabled"] : classes["playBtn"]
+                isMatching
+                  ? classes["playBtn-disabled"]
+                  : classes["optionDone-btn"]
               }
             >
-              {isMatching ? "매칭 중..." : "매칭하기"}
+              {isMatching ? "순서 뽑기 중..." : "순서 뽑기"}
             </button>
-          </div>
+          )}
           {matchedWinners.length > 0 && (
-            <div className={classes["resultPrize"]}>
-              <h2 className={classes["fs15"]}>당첨 결과 🎊</h2>
+            <div className={classes["resultPrize"]} id="capture">
+              <h2 className={classes["fs15"]} style={{ position: "relative" }}>
+                순서 뽑기 결과 🎊{/* 캡처 버튼 만들기 */}
+                <span
+                  title="뽑기 결과 캡처하기"
+                  className={classes["capture"]}
+                  onClick={captureHandler}
+                >
+                  <i className="fa-regular fa-images fa-xl"></i>
+                </span>
+              </h2>
               <div
                 className={`${classes["results"]} ${
                   isMatching ? `${classes["animate"]}` : ""
                 }`}
               >
                 {matchedWinners.map(({ winner, prize }, index) => (
-                  <span key={index} className={classes["prize-btn"]}>
-                    {winner} 👉 {prize}
+                  <span
+                    key={index}
+                    className={classes["prize-btn"]}
+                    style={{ margin: "10px 5px" }}
+                  >
+                    {prize + ") " + winner}
                   </span>
                 ))}
               </div>
             </div>
           )}
         </div>
+      )}
+
+      {/* 상보다 사람이 많으면, 사람 추첨하기 */}
+      {props.init === "something" &&
+        prizes.length < users?.length &&
+        winners?.length === 0 && (
+          <button
+            onClick={!isDrawing ? handleDraw : undefined}
+            disabled={isDrawing || isMatching}
+            className={
+              isDrawing ? classes["playBtn-disabled"] : classes["playBtn"]
+            }
+          >
+            {isDrawing ? "학생 뽑는 중..." : "당첨될 학생 뽑기"}
+          </button>
+        )}
+
+      {/* 최종 품목 뽑기 */}
+      {props.init === "something" &&
+        (prizes.length === users?.length || winners.length > 0) && (
+          <div
+            className={classes["div"]}
+            style={{ maxWidth: "100%", alignItems: "normal" }}
+          >
+            {winners.length > 0 && (
+              <div className={classes["resultStd"]}>
+                <h2 className={classes["fs15"]}>당첨자 🎉</h2>
+                <div
+                  className={`${classes["results"]} ${
+                    isDrawing ? `${classes["animate"]}` : ""
+                  }`}
+                >
+                  {winners.map((winner, index) => (
+                    <StudentBtn
+                      className={"checklist-student"}
+                      name={winner.split(" ")[1]}
+                      key={index}
+                      woman={
+                        props.users?.filter(
+                          (user) => user.name === winner.split(" ")[1]
+                        )?.[0]?.woman
+                      }
+                      num={winner.split(" ")[0]}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
+            {matchedWinners.length === 0 && (
+              <button
+                onClick={() => {
+                  if (!isMatching) {
+                    handleMatch();
+                  }
+                }}
+                className={
+                  isMatching
+                    ? classes["playBtn-disabled"]
+                    : classes["optionDone-btn"]
+                }
+              >
+                {isMatching ? "품목 뽑기 중..." : "품목 뽑기"}
+              </button>
+            )}
+            {matchedWinners.length > 0 && (
+              <div className={classes["resultPrize"]} id="capture">
+                <h2
+                  className={classes["fs15"]}
+                  style={{ position: "relative" }}
+                >
+                  뽑기 결과 🎊
+                  {/* 캡처 버튼 만들기 */}
+                  <span
+                    title="뽑기 결과 캡처하기"
+                    className={classes["capture"]}
+                    onClick={captureHandler}
+                  >
+                    <i className="fa-regular fa-images fa-xl"></i>
+                  </span>
+                </h2>
+                <div
+                  className={`${classes["results"]} ${
+                    isMatching ? `${classes["animate"]}` : ""
+                  }`}
+                >
+                  {matchedWinners.map(({ winner, prize }, index) => (
+                    <span
+                      key={index}
+                      className={classes["prize-btn"]}
+                      style={{ margin: "10px 5px" }}
+                    >
+                      {winner} 👉 {prize}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+      {/* 최종 품목 뽑은 후, 처음화면으로 돌아가기 버튼 */}
+      {matchedWinners.length > 0 && (
+        <button
+          className={classes["optionDone-btn"]}
+          onClick={() => props.backToBasic()}
+        >
+          처음으로 돌아가기
+        </button>
       )}
     </div>
   );

@@ -9,6 +9,7 @@ import dayjs from "dayjs";
 import JustLists from "./JustLists";
 import PrintItems from "./PrintItems";
 import { useReactToPrint } from "react-to-print";
+import html2canvas from "html2canvas";
 
 const saveErrorSwal = (text) => {
   Swal.fire({
@@ -1573,38 +1574,25 @@ const SeatTable = (props) => {
     );
   };
 
-  /** 인쇄하기 함수 */
-  // const printSeat = () => {
-  // 새창에서 열기 => 새로고침 필요X
-  // let printContent = printRef.current;
-  // let windowObj = window.open(
-  //   "",
-  //   "PrintWindow",
-  //   "width=1000, height=800, top=100, left=300, toolbars=no, scrollbars=no, status=no, resizale=no"
-  // );
-
-  // windowObj.document.writeln(printContent.innerHTML);
-  // console.log(printContent.innerHTML);
-  // windowObj.document.close();
-  // windowObj.focus();
-  // windowObj.print();
-  // windowObj.close();
-
-  // document.querySelector("body").style.visibility = "hidden";
-  // printRef.current.style.visibility = "visible";
-  // document.querySelector("body").style.height = "auto";
-  // printRef.current.style.breakAfter = "avoid";
-  // window.print();
-
-  // printRef.current.style.visibility = "";
-
-  // document.querySelector("body").style.visibility = "visible";
-
-  // };
-
   const printSeat = useReactToPrint({
     content: () => printRef.current,
   });
+
+  /** 캡처함수 */
+  const captureHandler = () => {
+    const section = document.getElementById("capture");
+    if (!section) {
+      return console.log("캡처 실패, 영역이 존재하지 않음");
+    }
+    html2canvas(section).then((canvas) => {
+      const link = document.createElement("a");
+      document.body.appendChild(link);
+      link.href = canvas.toDataURL("image/png");
+      link.download = `(자리뽑기) ${props.title || ""}.png`;
+      link.click();
+      document.body.removeChild(link);
+    });
+  };
 
   return (
     <div id={props.title || "newSeats"} style={{ display: "flex" }}>
@@ -1693,10 +1681,16 @@ const SeatTable = (props) => {
               />
               {/* 인쇄하기 버튼 */}
               <Button
-                name={"인쇄하기"}
+                name={"인쇄"}
                 onclick={() => {
                   printSeat();
                 }}
+                className={"settingSeat-btn"}
+              />
+              {/* 캡처하기 버튼 */}
+              <Button
+                name={"캡처"}
+                onclick={captureHandler}
                 className={"settingSeat-btn"}
               />
             </div>

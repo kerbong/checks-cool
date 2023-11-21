@@ -26,6 +26,7 @@
     "fs": "^0.0.1-security",
     "gapi-script": "^1.2.0",
     "google-auth-library": "^8.7.0",
+    "html2canvas": "^1.4.1",
     "http-proxy-middleware": "^2.0.6",
     "https-browserify": "^1.0.0",
     "loader-utils": "^3.2.1",
