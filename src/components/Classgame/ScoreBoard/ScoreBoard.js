@@ -431,7 +431,7 @@ const ScoreBoard = (props) => {
       <div id="title-div">
         <button id="title-btn">
           <i className="fa-solid fa-medal" style={{ fontSize: "1em" }}></i>{" "}
-          모둠대결! (개발중)
+          모둠대결!
         </button>
       </div>
 

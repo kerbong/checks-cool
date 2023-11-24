@@ -250,7 +250,7 @@ const SeatTable = (props) => {
             props.title?.length > 0
               ? `table-${props.title}-${item}`
               : `table-${item}`
-          } ${classes["print-content"]}`}
+          }`}
           onClick={(e) => itemAddStudentHandler(e)}
           style={
             props.isExist && props.showJustLists
@@ -1248,6 +1248,7 @@ const SeatTable = (props) => {
           firstSeat = getLeftFirstSeat(!isWoman);
         }
       }
+
       //가장 앞자리 골라서 이름 넣기
       //비밀자료 index+1에서 해당 값이 가장 앞자리의 innerText에..
       props.secretSeat?.students?.forEach((stdNameOrNum, index) => {

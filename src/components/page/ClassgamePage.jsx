@@ -86,6 +86,12 @@ const ClassgamePage = (props) => {
         style={{ fontSize: "1em", color: "#f2ffd8" }}
       ></i>
     </div>,
+    <div className={classes["iconLeft"]}>
+      <i
+        className="fa-solid fa-dice"
+        style={{ fontSize: "1em", color: "#f2ffd8" }}
+      ></i>
+    </div>,
   ];
 
   return (
@@ -137,16 +143,27 @@ const ClassgamePage = (props) => {
                 className={"settingSeatSelect"}
                 onclick={() => setSelectedMenu("settingSeat")}
                 icon={ICONS_LEFT[0]}
+                title="움짤로 즐겁게 뽑기 과정을 즐기는, 모든 기능을 포함한 자리뽑기!"
               />
 
               <Button
                 name={"랜덤뽑기"}
                 className={"settingSeatSelect"}
-                title={"학생을 선택해서 즐겁게 상품? 벌칙? 을 정해보세요!"}
+                title={
+                  "학생을 선택해서 상품? 벌칙? 을 정하기 / 줄세우기 등 순서정하기"
+                }
                 onclick={() => setSelectedMenu("randomPick")}
                 icon={ICONS_LEFT[1]}
               />
-
+              <Button
+                name={"주사위뽑기"}
+                className={"settingSeatSelect"}
+                title={"손바닥, 손등 뽑기와 주사위 뽑기가 가능해요"}
+                onclick={() => {
+                  navigate("/simpleRandom");
+                }}
+                icon={ICONS_LEFT[8]}
+              />
               <Button
                 name={"타이머"}
                 className={"settingSeatSelect"}
@@ -165,6 +182,7 @@ const ClassgamePage = (props) => {
                 onclick={() => {
                   setSelectedMenu("alarm");
                 }}
+                title="자동저장이 가능한 보기 편한 칠판형태의 알림장"
                 icon={ICONS_LEFT[3]}
               />
 
@@ -187,6 +205,7 @@ const ClassgamePage = (props) => {
                 className={"settingSeatSelect"}
                 onclick={() => setSelectedMenu("padIt")}
                 icon={ICONS_LEFT[5]}
+                title="과제제출 / 토론 등에 활용할 수 있어요"
               />
 
               <Button
@@ -202,7 +221,7 @@ const ClassgamePage = (props) => {
               <Button
                 name={"모둠대결"}
                 className={"settingSeatSelect"}
-                title={"모둠끼리 점수 / 타이머 / 스톱워치로 대결을 해요"}
+                title={"모둠끼리 ( 점수 / 타이머 / 스톱워치 ) 로 대결을 해요"}
                 onclick={() => {
                   navigate("/scoreBoard");
                 }}

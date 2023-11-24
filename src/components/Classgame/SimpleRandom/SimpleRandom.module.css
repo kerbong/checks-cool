@@ -1,0 +1,94 @@
+.div {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: auto;
+}
+
+button {
+  padding: 20px;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.img {
+  width: 400px;
+  height: 300px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.diceNum-div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+canvas {
+  width: 700px;
+  height: 450px;
+}
+
+a {
+  text-decoration: none;
+  color: black;
+  margin-left: 1em;
+}
+
+a img.icon {
+  display: inline-block;
+  height: 1em;
+  margin: 0 0 -0.1em 0.3em;
+}
+
+.diceAddBtn {
+  width: 45px;
+  height: 45px;
+  border-radius: 25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  margin: 0 15px;
+  background-color: #b1d21e;
+}
+
+.roll-btn,
+.switch-btn {
+  padding: 20px 40px;
+
+  background-color: #b1d21e;
+  border: 0;
+  margin: 30px 60px;
+  border-radius: 30px;
+}
+
+.roll-btn {
+  font-size: 30px;
+}
+
+.switch-btn {
+  margin: 10px;
+
+  padding: 10px 15px;
+}
+.score {
+  font-size: 60px;
+  font-weight: bold;
+}
+
+.switch-btns {
+  background-color: #a6c51b;
+  border: 0;
+  margin: 30px 60px;
+  border-radius: 30px;
+}
+
+.flex-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}

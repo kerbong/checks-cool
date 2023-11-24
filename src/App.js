@@ -15,10 +15,15 @@ import dayjs from "dayjs";
 import Notification from "./components/Layout/Notification";
 import Loading from "components/page/Loading";
 import Header from "./components/Layout/Header";
-import ScoreBoard from "components/Classgame/ScoreBoard/ScoreBoard";
 
 // lazy 로딩 적용
 const Admin = lazy(() => import("./components/page/Admin"));
+const ScoreBoard = lazy(() =>
+  import("./components/Classgame/ScoreBoard/ScoreBoard")
+);
+const SimpleRandom = lazy(() =>
+  import("./components/Classgame/SimpleRandom/SimpleRandom")
+);
 
 const ManageStudentInfo = lazy(() =>
   import("./components/page/ManageStudentInfo")
@@ -458,6 +463,11 @@ function App() {
                 <Route
                   path="scoreBoard"
                   element={<ScoreBoard userUid={userUid} />}
+                />
+
+                <Route
+                  path="simpleRandom"
+                  element={<SimpleRandom userUid={userUid} />}
                 />
 
                 <Route path="notice" element={<Notice />} />
