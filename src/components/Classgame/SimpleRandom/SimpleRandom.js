@@ -68,7 +68,7 @@ function SimpleRandom() {
                 }
           }
         >
-          엎어라 뒤짚어라!
+          엎어라 뒤집어라!
         </button>
         <button
           onClick={() => setShowHand(false)}
@@ -124,17 +124,32 @@ function SimpleRandom() {
             style={{ color: "lightgray", cursor: "pointer" }}
             onClick={() => setShowResource((prev) => !prev)}
           >
-            이미지출처
+            이미지출처 및 참고
             <span
               style={showResource ? { display: "inline" } : { display: "none" }}
             >
               {" "}
-              {" => "}
-              <a href="https://kr.freepik.com/free-vector/playing-dice-3d-realistic-vector-white-cube-with-different-number-of-dots-from-1-to-6-for-casino-game-or-gambling-concept-six-sided-spot-dies-poker-and-backgammon-falling-craps-to-try-luck_73605796.htm#query=%EC%A3%BC%EC%82%AC%EC%9C%84&position=7&from_view=search&track=sph&uuid=12bd53d1-6223-4384-83e3-f282122f133d">
-                주사위 이미지: 작가 upklyak
-              </a>{" "}
-              출처 Freepik{" "}
+              <br />
+              Copyright (c) 2023 by Ksenia Kondrashova
+              (https://codepen.io/ksenia-k/pen/QWZVvxm) Permission is hereby
+              granted, free of charge, to any person obtaining a copy of this
+              software and associated documentation files (the "Software"), to
+              deal in the Software without restriction, including without
+              limitation the rights to use, copy, modify, merge, publish,
+              distribute, sublicense, and/or sell copies of the Software, and to
+              permit persons to whom the Software is furnished to do so, subject
+              to the following conditions: The above copyright notice and this
+              permission notice shall be included in all copies or substantial
+              portions of the Software. THE SOFTWARE IS PROVIDED "AS IS",
+              WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
+              NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+              PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+              AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+              OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+              OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
+              OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
             </span>
+            <br />
             <span
               style={showResource ? { display: "inline" } : { display: "none" }}
             >

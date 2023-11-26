@@ -152,6 +152,7 @@ const ClassgamePage = (props) => {
                 title={
                   "학생을 선택해서 상품? 벌칙? 을 정하기 / 줄세우기 등 순서정하기"
                 }
+                style={{ backgroundColor: "#9ad237" }}
                 onclick={() => setSelectedMenu("randomPick")}
                 icon={ICONS_LEFT[1]}
               />
@@ -162,6 +163,7 @@ const ClassgamePage = (props) => {
                 onclick={() => {
                   navigate("/simpleRandom");
                 }}
+                style={{ backgroundColor: "#9ad237" }}
                 icon={ICONS_LEFT[8]}
               />
               <Button
@@ -226,6 +228,7 @@ const ClassgamePage = (props) => {
                   navigate("/scoreBoard");
                 }}
                 icon={ICONS_LEFT[7]}
+                style={{ backgroundColor: "#9ad237" }}
               />
             </div>
             <p>타임캡슐 주소 👉 bit.ly/두근두근타임캡슐</p>
