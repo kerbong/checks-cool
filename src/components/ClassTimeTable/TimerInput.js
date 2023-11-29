@@ -1,5 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import classes from "./SimpleTimer.module.css";
+
+import dayjs from "dayjs";
+import { doc, getDoc } from "firebase/firestore";
+import { dbService } from "fbase";
 
 const EXAMPLES = [
   "화장실 다녀오기",
@@ -19,6 +23,8 @@ const TimerInput = (props) => {
   const [value, setValue] = useState("");
   const [todos, setTodos] = useState([]);
   const [showMemo, setShowMemo] = useState(false);
+  //제출 미제출 자료들
+  const [checkLists, setCheckLists] = useState([]);
 
   const changeHandler = (e) => {
     const { value } = e.target;
@@ -53,6 +59,53 @@ const TimerInput = (props) => {
 
     setTodos(new_todos);
   };
+
+  //지난 7일 구하기..
+  const last7days = (today, pastFuture) => {
+    let now_date = dayjs(today);
+    let new_7days = [];
+    if (pastFuture === "past") {
+      for (let i = 0; i < 8; i++) {
+        new_7days.push(now_date.subtract(i, "d").format("YYYY-MM-DD"));
+      }
+    } else {
+      for (let i = 0; i < 8; i++) {
+        new_7days.push(now_date.add(i, "d").format("YYYY-MM-DD"));
+      }
+    }
+
+    return new_7days;
+  };
+
+  //제출 미제출 자료들 받아와서.. 저장
+  const getCheckListsFromDb = async () => {
+    let checkListsRef = doc(dbService, "checkLists", props.userUid);
+    setCheckLists([]);
+    let checkListsSnap = await getDoc(checkListsRef);
+
+    // onSnapshot(checkListsRef, (doc) => {
+    const new_checkLists = [];
+
+    let before7days = last7days(props?.todayYyyymmdd, "past");
+
+    checkListsSnap?.data()?.checkLists_data?.forEach((data) => {
+      //모든 데이터 저장용 자료로 만들기, 보고있는 날짜 기준으로 올해 자료만 뽑아주기
+
+      if (before7days?.includes(data.id.slice(0, 10))) {
+        new_checkLists.push(data);
+      }
+    });
+
+    setCheckLists([...new_checkLists]);
+    // });
+  };
+
+  useEffect(() => {
+    //다음교시가 1교시 혹은 자료가 없는경우, 혹은 교시가 아닌경우
+    // if (props.classTitle.includes("1교시") || !props.classTitle.includes("교시") || props.classTitle === "") {
+    getCheckListsFromDb();
+    // }
+  }, []);
 
   return (
     <div>
@@ -98,7 +151,7 @@ const TimerInput = (props) => {
               value={value}
               className={classes["timer-input"]}
               onChange={changeHandler}
-              placeholder="내용을 직접 입력해주세요."
+              placeholder="준비할 내용을 직접 입력해주세요."
             />
           </form>
 
@@ -116,11 +169,41 @@ const TimerInput = (props) => {
               )}
             </div>
           )}
+          {/* 메모가 있으면.. 메모보여주기 */}
           {showMemo && props?.classMemo && (
             <div
               className={classes["memo-show"]}
               dangerouslySetInnerHTML={{ __html: props?.classMemo }}
             ></div>
+          )}
+          {/* 제출 / 미제출 학생 있어도 보여주기 */}
+
+          {checkLists?.length > 0 && (
+            <div className={classes["check-div"]}>
+              {checkLists?.map(
+                (event) =>
+                  event.unSubmitStudents.length !== 0 && (
+                    <li key={event.id} className={classes["check-li"]}>
+                      <span className={classes["check-title"]}>
+                        {/* 제출 제목 및 미제출자 수 */}
+                        {event.title} ({event.unSubmitStudents.length}) 미제출
+                      </span>
+                      <span>
+                        {" "}
+                        {event.unSubmitStudents?.map((stu) => (
+                          <span
+                            key={stu.num + stu.name}
+                            className={classes["check-std"]}
+                          >
+                            {/* 미제출자 이름 보여주기 */}
+                            {`${stu.name}`}
+                          </span>
+                        )) || ""}
+                      </span>
+                    </li>
+                  )
+              )}
+            </div>
           )}
         </div>
       </div>

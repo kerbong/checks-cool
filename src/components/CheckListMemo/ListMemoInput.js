@@ -137,9 +137,9 @@ const ListMemoInput = (props) => {
 
     // 수동저장이면...
     if (!auto) {
+      props.saveItemHandler(new_memo);
       props.onClose();
       props.setItemNull();
-      props.saveItemHandler(new_memo);
       localStorage.removeItem("listId");
     } else {
       props.saveItemHandler(new_memo, auto);

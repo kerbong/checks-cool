@@ -225,9 +225,9 @@ const CheckInput = (props) => {
 
     // 수동저장이면...
     if (!auto) {
+      props.saveItemHandler(new_checkItem);
       props.onClose();
       props.setItemNull();
-      props.saveItemHandler(new_checkItem);
       localStorage.removeItem("itemId");
     } else {
       localStorage.setItem("itemId", item_id);

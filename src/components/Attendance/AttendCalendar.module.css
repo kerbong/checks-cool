@@ -72,3 +72,12 @@
 .custom-input {
   height: 20px;
 }
+
+.react-datepicker__month-read-view--selected-month,
+.react-datepicker__year-read-view--selected-year {
+  visibility: visible;
+}
+
+.react-datepicker-popper[data-placement^="bottom"] {
+  width: 55%;
+}

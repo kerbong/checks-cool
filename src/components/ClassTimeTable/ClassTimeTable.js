@@ -46,7 +46,7 @@ const ClassTimeTable = (props) => {
   const [nowOn, setNowOn] = useState(null);
   //다음교시까지 남은 초
   const [remainTime, setRemainTime] = useState(0);
-  const [showLeftToNext, setShowLeftToNext] = useState(true);
+
   const [subjectV, setSubjectV] = useState("");
 
   let navigate = useNavigate();
@@ -208,7 +208,12 @@ const ClassTimeTable = (props) => {
         </div>
       </div>
       <div>
-        <TimerInput classMemo={nowOn ? classMemo?.[nowOn + 1] : null} />
+        <TimerInput
+          classMemo={nowOn ? classMemo?.[nowOn + 1] : null}
+          userUid={props.userUid}
+          classTitle={classTitles?.[nowOn + 1] || ""}
+          todayYyyymmdd={todayYyyymmdd}
+        />
       </div>
     </>
   );

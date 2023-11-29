@@ -188,8 +188,23 @@ const CheckLists = (props) => {
     }
   }, [dataYears]);
 
+  /** 학년도를 반환하는 함수 */
+  const returnDate = () => {
+    const now_date = document.querySelector(".custom-input").innerText;
+
+    const year = now_date.split(" ")[0].replace("년", "");
+    const month = now_date.split(" ")[1].replace("월", "");
+
+    if (parseInt(month) < 3) {
+      return "20" + String(parseInt(year) - 1).padStart(2, "0");
+    } else {
+      return "20" + year;
+    }
+  };
+
   const saveItemHandler = async (new_item, auto) => {
     //자료 저장할 떄 실제로 실행되는 함수
+    const screen_nowYear = returnDate();
 
     const dataSaved = async (newOrSame) => {
       const saveLogic = async () => {
@@ -204,7 +219,7 @@ const CheckLists = (props) => {
             // if (checkLists?.length > 0) {
             upload_item = {
               ...new_item,
-              yearGroup: checkListsYear.current.value,
+              yearGroup: screen_nowYear,
             };
             let new_datas = [...datas];
             let data_index = undefined;
@@ -247,7 +262,9 @@ const CheckLists = (props) => {
 
             // 전담이면.. 학급의 자료만 보여주기!
             let showCheckLists = !isSubject
-              ? [...new_datas]
+              ? [...new_datas]?.filter(
+                  (data) => data.yearGroup === checkListsYear.current.value
+                )
               : [...new_datas]?.filter(
                   (data) =>
                     data.yearGroup === checkListsYear.current.value &&
@@ -260,7 +277,7 @@ const CheckLists = (props) => {
           } else {
             let new_checkItem = {
               ...new_item,
-              yearGroup: checkListsYear.current.value,
+              yearGroup: screen_nowYear,
             };
             // 만약 자동저장일 경우, 모달창이 띄워져 있는데 setItem해줘야.. 미제출 학생 목록이 저장된 데이터로 바뀜.
 
@@ -275,7 +292,9 @@ const CheckLists = (props) => {
               checkLists_data: [new_checkItem],
             });
 
-            setNowOnCheckLists(sortList([new_checkItem]));
+            if (screen_nowYear === checkListsYear.current.value) {
+              setNowOnCheckLists(sortList([new_checkItem]));
+            }
             // }
           }
 
@@ -285,7 +304,7 @@ const CheckLists = (props) => {
           if (datas?.length > 0) {
             upload_item = {
               ...new_item,
-              yearGroup: listMemoYear.current.value,
+              yearGroup: screen_nowYear,
             };
             let new_datas = [...datas];
             let data_index = undefined;
@@ -318,7 +337,9 @@ const CheckLists = (props) => {
 
             // 전담이면.. 학급의 자료만 보여주기!
             let showListMemo = !isSubject
-              ? [...new_datas]
+              ? [...new_datas]?.filter(
+                  (data) => data.yearGroup === checkListsYear.current.value
+                )
               : [...new_datas]?.filter(
                   (data) =>
                     data.yearGroup === listMemoYear.current.value &&
@@ -330,14 +351,15 @@ const CheckLists = (props) => {
             //처음 자료를 저장하는 경우
           } else {
             await setDoc(firestoreRef, {
-              listMemo_data: [
-                { ...new_item, yearGroup: listMemoYear.current.value },
-              ],
+              listMemo_data: [{ ...new_item, yearGroup: screen_nowYear }],
             });
 
-            setNowOnListMemo(
-              sortList([{ ...new_item, yearGroup: listMemoYear.current.value }])
-            );
+            if (screen_nowYear === listMemoYear.current.value) {
+              setNowOnListMemo(
+                sortList([{ ...new_item, yearGroup: screen_nowYear }])
+              );
+            }
+
             // }
           }
         }
@@ -823,16 +845,17 @@ const CheckLists = (props) => {
                   </p>
                   <div className={classes.unsubmitArea}>
                     {except_gone_stds(item.unSubmitStudents)?.map((stu) => (
-                      <Button
-                        key={item.id + stu.num}
-                        name={stu.name}
-                        id={item.title + stu.num}
-                        className={
-                          stu?.woman
-                            ? "checkList-button"
-                            : "checkList-button-man"
-                        }
-                      />
+                      <span key={item.id + stu.num}>
+                        <Button
+                          name={stu.name}
+                          id={item.title + stu.num}
+                          className={
+                            stu?.woman
+                              ? "checkList-button"
+                              : "checkList-button-man"
+                          }
+                        />
+                      </span>
                     ))}
                   </div>
                 </li>

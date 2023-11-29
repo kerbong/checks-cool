@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState, useCallback } from "react";
 import PropTypes from "prop-types";
 import Swal from "sweetalert2";
 
-const MemoTodayTodoItem = ({ todoItem, todoList, setTodoList }) => {
+const MemoTodayTodoItem = ({ todoItem, todoList, setTodoList, mykey }) => {
   const [edited, setEdited] = useState(false);
   const [newText, setNewTest] = useState(todoItem.text);
   const [emergency, setEmergency] = useState(todoItem.emg || false);
@@ -27,11 +27,13 @@ const MemoTodayTodoItem = ({ todoItem, todoList, setTodoList }) => {
   }, []);
 
   const onChangeCheckbox = () => {
-    const nextTodoList = todoList?.map((item) => ({
-      ...item,
-      // id 값이 같은 항목의 checked 값을 Toggle 함
-      checked: item.id === todoItem.id ? !item.checked : item.checked,
-    }));
+    const nextTodoList = todoList?.reduce((acc, item) => {
+      const newItem = {
+        ...item,
+        checked: item.id === todoItem.id ? !item.checked : item.checked,
+      };
+      return [...acc, newItem];
+    }, []);
 
     setTodoList(nextTodoList);
   };
@@ -52,11 +54,14 @@ const MemoTodayTodoItem = ({ todoItem, todoList, setTodoList }) => {
 
   //수정할 때 저장버튼 함수
   const onClickSubmitButton = (e) => {
-    const nextTodoList = todoList?.map((item) => ({
-      ...item,
-      text: item.id === todoItem.id ? newText : item.text,
-      emg: item.id === todoItem.id ? emergency : item.emg || false, // 새로운 아이템 내용을 넣어줌
-    }));
+    const nextTodoList = todoList?.reduce((acc, item) => {
+      const newItem = {
+        ...item,
+        text: item.id === todoItem.id ? newText : item.text,
+        emg: item.id === todoItem.id ? emergency : item.emg || false,
+      };
+      return [...acc, newItem];
+    }, []);
     setTodoList(nextTodoList);
     setEdited(false);
   };
@@ -112,7 +117,7 @@ const MemoTodayTodoItem = ({ todoItem, todoList, setTodoList }) => {
   }, [edited]);
 
   return (
-    <div className="todoapp__item" id={`item-${todoItem.id}`}>
+    <div className="todoapp__item" id={`item-${todoItem.id}`} key={mykey}>
       {/* 아이템 완료 체크 / 체크 해제를 위한 체크박스 */}
       <input
         id={`todoapp_checkbox${todoItem.id}`}

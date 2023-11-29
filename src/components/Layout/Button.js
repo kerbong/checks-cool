@@ -11,19 +11,17 @@ const Button = (props) => {
   }
 
   return (
-    <>
-      <button
-        id={props.id}
-        className={classes[props.className]}
-        onClick={clickHandler}
-        style={props.style}
-        title={props.title}
-        key={props.key}
-      >
-        {props.icon}
-        {props.name}
-      </button>
-    </>
+    <button
+      id={props.id}
+      className={classes[props.className]}
+      onClick={clickHandler}
+      style={props.style}
+      title={props.title}
+      key={props.key}
+    >
+      {props.icon}
+      {props.name}
+    </button>
   );
 };
 

@@ -38,7 +38,7 @@ const MemoTodayTodoItemList = ({
   return (
     <div className="todoapp__list">
       {/* props로 부터 title 값을 전달 받음 */}
-      <p
+      <div
         className={
           title !== "완료한 항목"
             ? "todoapp__list-tit"
@@ -60,7 +60,7 @@ const MemoTodayTodoItemList = ({
             </button>
           )}
         </div>
-      </p>
+      </div>
 
       {!checkedList && (
         // {/* 드래그 앤 드롭으로 순서 변경가능 */}
@@ -92,7 +92,7 @@ const MemoTodayTodoItemList = ({
                           >
                             {/* // map을 이용하여 ToDoItem을 출력 */}
                             <MemoTodayTodoItem
-                              key={todoItem.id + todoItem.text}
+                              mykey={todoItem.id + todoItem.text}
                               todoItem={todoItem}
                               todoList={todoList}
                               setTodoList={setTodoList}
@@ -117,15 +117,13 @@ const MemoTodayTodoItemList = ({
               if (checkedList !== todoItem.checked) return null;
 
               return (
-                <>
-                  {/* // map을 이용하여 ToDoItem을 출력 */}
-                  <MemoTodayTodoItem
-                    key={todoItem.id + todoItem.text}
-                    todoItem={todoItem}
-                    todoList={todoList}
-                    setTodoList={setTodoList}
-                  />
-                </>
+                //  map을 이용하여 ToDoItem을 출력 *
+                <MemoTodayTodoItem
+                  mykey={todoItem.id}
+                  todoItem={todoItem}
+                  todoList={todoList}
+                  setTodoList={setTodoList}
+                />
               );
             })}
         </ul>

@@ -288,6 +288,27 @@ button[data-setter]:hover {
   margin-top: 190px;
 }
 
+.check-div {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.check-li {
+  list-style: none;
+  margin: 15px;
+}
+
+.check-title {
+  border-radius: 10px;
+  padding: 10px;
+  background-color: beige;
+}
+
+.check-std {
+  margin: 0 5px;
+}
+
 @media screen and (max-width: 700px) {
   .icon {
     font-size: 3rem;

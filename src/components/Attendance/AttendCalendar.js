@@ -71,6 +71,8 @@ const AttendCalendar = (props) => {
         filterDate={isWeekday}
         startDate={startDate}
         showMonthDropdown
+        showYearDropdown
+        scrollableYearDropdown
         onMonthChange={onMonthChange}
         dateFormatCalendar="yyyy년 "
         endDate={
