@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 
-import { dbService } from "../../fbase";
-import { getDoc, doc, onSnapshot } from "firebase/firestore";
+import { dbService, storageService } from "../../fbase";
+import { getDoc, doc, onSnapshot, setDoc, deleteDoc } from "firebase/firestore";
 import { QRCodeSVG } from "qrcode.react";
 import Swal from "sweetalert2";
 
@@ -9,6 +9,7 @@ import DateComparison from "components/Layout/DateComparison";
 import classes from "./PadIt.module.css";
 import PadItem from "./PadItem";
 import Modal from "components/Layout/Modal";
+import { deleteObject, ref } from "firebase/storage";
 
 const PadList = (props) => {
   const [padDatas, setPadDatas] = useState([]);
@@ -81,6 +82,56 @@ const PadList = (props) => {
     });
   };
 
+  /** 방 이름 목록에서 지우기 */
+  const deleteRoomNames = async (room) => {
+    const roomNameRef = doc(dbService, "padIt", "roomNames");
+    const roomDoc = await getDoc(roomNameRef);
+    const new_doc = roomDoc.data()?.datas?.filter((name) => name !== room);
+    // console.log(new_doc);
+    await setDoc(roomNameRef, { datas: new_doc });
+  };
+  /** 해당 유저의 도큐먼트에서 방 이름 지우기 */
+  const deleteInUserDoc = async (room) => {
+    const roomNameRef = doc(dbService, "padIt", props.userUid);
+    const roomDoc = await getDoc(roomNameRef);
+    const new_doc = roomDoc.data()?.datas?.filter((name) => name !== room);
+    await setDoc(roomNameRef, { datas: new_doc });
+  };
+  /** 해당 룸 도큐먼트 데이터에서 업로드된 파일 있는지 확인해서 지운후, 해당 도큐먼트도 지우기 */
+  const deleteDocument = async (room) => {
+    const roomNameRef = doc(dbService, "padIt", room);
+    const roomDoc = await getDoc(roomNameRef);
+    roomDoc.data()?.datas?.forEach(async (data) => {
+      if (data?.fileUrl && data?.fileUrl !== "") {
+        await deleteObject(ref(storageService, data?.fileUrl));
+      }
+    });
+
+    await deleteDoc(roomNameRef);
+  };
+
+  /** 패드잇 아이템 삭제 함수 */
+  const delHandler = (room) => {
+    // console.log(room);
+    Swal.fire({
+      icon: "warning",
+      title: "패드 삭제",
+      text: "패드와 관련 데이터(업로드한 사진, 글 등)를 정말 삭제할까요?",
+      confirmButtonText: "삭제",
+      showDenyButton: true,
+      denyButtonText: "취소",
+      confirmButtonColor: "#85bd82",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        deleteRoomNames(room);
+        deleteInUserDoc(room);
+        deleteDocument(room);
+      } else {
+        return;
+      }
+    });
+  };
+
   return (
     <div>
       {showQrCode && (
@@ -126,9 +177,17 @@ const PadList = (props) => {
                   <span className={classes["date"]}>
                     <DateComparison date={room.slice(0, 10)} />
                   </span>
+                  {/* 삭제버튼 */}
+                  <button
+                    onClick={() => delHandler(room)}
+                    className={classes["del-btn"]}
+                  >
+                    삭제
+                  </button>
+
                   {/* 구분선 */}
                   <hr style={{ width: "90%", margin: "20px 5px" }} />
-                  {/* 입장 / qr코드 확인 버튼 div */}
+                  {/* 입장 / qr코드 확인 / 삭제 버튼 div */}
                   <div className={classes["flex-around-80"]}>
                     <button
                       onClick={() => getRoomData(room)}

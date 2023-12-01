@@ -144,12 +144,16 @@ const GoneStd = ({ student, closeModal, userUid, isSubject, nowClassName }) => {
       </span>
 
       {/* 글자크기 설정하기 */}
-      <h2 style={{ fontSize: "1.7rem" }}> 전학생 관리</h2>
+      <h2 style={{ fontSize: "1.7rem" }}> 전출학생 관리</h2>
+      <p>
+        * 전출 학생만을 위한 관리페이지 입니다. * 전입 학생을 추가는 학생 등록을
+        이용해주세요.
+      </p>
 
       {/* 전체 전학생 */}
       <h3 style={{ fontSize: "1.5rem" }} className={classes["flex--cen-100"]}>
         <hr style={{ width: "20%" }} />
-        등록된 전학생
+        등록된 전출학생
         <hr style={{ width: "20%" }} />
       </h3>
 
@@ -179,7 +183,7 @@ const GoneStd = ({ student, closeModal, userUid, isSubject, nowClassName }) => {
       {/* 선택된 학생 */}
       <h3 style={{ fontSize: "1.5rem" }} className={classes["flex--cen-100"]}>
         <hr style={{ width: "20%" }} />
-        선택된 전학생
+        선택된 전출학생
         <hr style={{ width: "20%" }} />
       </h3>
 

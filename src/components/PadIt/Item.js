@@ -59,7 +59,13 @@ const Item = forwardRef(
             {/* 구분선 */}
             <hr style={{ width: "100%", margin: "20px 5px" }} />
             {/* 패드 메모 내용 */}
-            <span style={{ wordBreak: "break-all" }}>{truncatedText}</span>
+            <span style={{ wordBreak: "break-all" }}>
+              {!data?.lock ||
+              isTeacher ||
+              data.userInfo === localStorage.getItem("padUserInfo")
+                ? truncatedText
+                : "비밀글(선생님과 작성한 학생만 볼 수 있어요.)"}
+            </span>
           </div>
         ) : (
           <div

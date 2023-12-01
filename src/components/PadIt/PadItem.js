@@ -113,6 +113,13 @@ const PadItem = ({
 
     // Perform action for short click
     if (10 < clickDuration && clickDuration < 300) {
+      // 비밀글인데 교사가 아니고 내가 쓴 글도 아니면 내용 확인 불가!
+      if (
+        clickedItem?.lock &&
+        !isTeacher &&
+        clickedItem.userInfo !== localStorage.getItem("padUserInfo")
+      )
+        return;
       setEachItem(clickedItem);
       setShowEachItem(true);
 
@@ -170,6 +177,16 @@ const PadItem = ({
     await deleteObject(ref(storageService, file));
   };
 
+  /** 비밀글 변경함수 */
+  const lockHandler = (data) => {
+    let new_padDatas = [...padItems];
+    let data_index = new_padDatas.findIndex((item) => item.id === data.id);
+    new_padDatas.splice(data_index, 1, data);
+
+    setPadItems(new_padDatas);
+    padDatasHandler(new_padDatas, sectionNames);
+  };
+
   const addMemoHandler = async (e, bgColor, file, data) => {
     //패드 추가 또는 접속 함수(검증까지)
     //data가 존재하면 기존데이터 수정
@@ -223,6 +240,7 @@ const PadItem = ({
         grid,
         id: data.id,
         fileUrl: url,
+        lock: data?.lock || false,
       };
 
       new_padDatas = [...padItems];
@@ -250,6 +268,7 @@ const PadItem = ({
         grid,
         id: String(padItems.length),
         fileUrl: url,
+        lock: data?.lock || false,
         // 0은 기본 flex wrap 의미. 나머지 문자 찬성, 혹은 반대 같은 분류로 저장되면 grid 속성 의미
       };
       setShowNewMemo(false);
@@ -620,6 +639,7 @@ const PadItem = ({
             gridTemplate={gridTemplate}
             sectionNames={sectionNames}
             isSaving={isSaving}
+            lockHandler={lockHandler}
           />
         </Modal>
       )}

@@ -195,6 +195,16 @@ const PadAdd = (props) => {
               }
               className={classes["minwid-250"]}
               autoFocus
+              onKeyDown={(event) => {
+                if (event.key === " ") {
+                  Swal.fire(
+                    "띄어쓰기 불가",
+                    "방이름에 띄어쓰기를 사용할 수 없습니다.",
+                    "warning"
+                  );
+                  event.preventDefault();
+                }
+              }}
             />
           </div>
           {props.isTeacher && (
@@ -225,6 +235,16 @@ const PadAdd = (props) => {
                   : "비밀번호를 입력하세요."
               }
               className={classes["minwid-250"]}
+              onKeyDown={(event) => {
+                if (event.key === " ") {
+                  Swal.fire(
+                    "띄어쓰기 불가",
+                    "비밀번호에 띄어쓰기를 사용할 수 없습니다.",
+                    "warning"
+                  );
+                  event.preventDefault();
+                }
+              }}
             />
           </div>
           {/* 제출ox 연동버튼 */}

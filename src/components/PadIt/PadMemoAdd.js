@@ -26,10 +26,12 @@ const PadMemoAdd = ({
   gridTemplate,
   sectionNames,
   isSaving,
+  lockHandler,
 }) => {
   const [bgColor, setBgColor] = useState("#FFACAC");
   const [isEdited, setIsEdited] = useState(false);
   const [attachedFile, setAttachedFile] = useState("");
+  const [lock, setLock] = useState(data?.lock || false);
 
   const linkSpanRef = useRef();
 
@@ -96,12 +98,19 @@ const PadMemoAdd = ({
     return convertedText;
   };
 
+  useEffect(() => {
+    if (isEdited) {
+      // 원본자료의 lock상태 변경하기
+      lockHandler({ ...data, lock: lock });
+    }
+  }, [lock]);
+
   return (
     <>
       <div>
         <span
           className={classes.closeBtn}
-          style={{ display: "flex", justifyContent: "flex-end" }}
+          style={{ display: "flex", justifyContent: "flex-end", right: "0px" }}
           onClick={() => {
             onClose();
           }}
@@ -251,6 +260,24 @@ const PadMemoAdd = ({
                     }}
                   />
                 )}
+
+                {/* 비밀글 버튼 */}
+                <button
+                  // name="lockSwitch"
+
+                  title={lock ? "공개로 바꾸기" : "비밀로 바꾸기"}
+                  className={classes["li-btn"]}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setLock((prev) => !prev);
+                  }}
+                >
+                  {lock ? (
+                    <i className="fa-solid fa-lock"></i>
+                  ) : (
+                    <i className="fa-solid fa-lock-open"></i>
+                  )}
+                </button>
                 {/* 메모추가버튼 */}
                 <input
                   type="submit"

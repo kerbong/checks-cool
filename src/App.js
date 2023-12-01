@@ -506,7 +506,7 @@ function App() {
                       }
                     />
 
-                    <Route
+                    {/* <Route
                       path="padIt"
                       element={
                         <PadIt
@@ -515,7 +515,7 @@ function App() {
                           students={students}
                         />
                       }
-                    />
+                    /> */}
 
                     <Route
                       path="/*"
