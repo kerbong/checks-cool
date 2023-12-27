@@ -12,6 +12,8 @@
   margin: 20px 0;
   align-items: center;
   justify-content: center;
+  height: auto;
+  min-height: 300px;
 }
 
 .user-like-div {

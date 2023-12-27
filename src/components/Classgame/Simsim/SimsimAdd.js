@@ -59,20 +59,22 @@ const SimsimAdd = (props) => {
 
   return (
     <>
-      <p className={classes["title-p"]} style={{ marginTop: "-20px" }}>
-        {" "}
-        추천 글 작성하기 😄{" "}
-      </p>
       <p className={classes["p"]}>
         {" "}
-        * 첵스쿨이 가진 장,단점을 공유해주세요! <br /> * 추천/자주쓰는 기능,
-        활용방법 등을 공유해주세요!{" "}
+        ✅ <b className={classes["b"]}>자주쓰는 기능, 활용 Tip</b> 을 다른
+        선생님에게 알려주세요~
+        <br /> <br />✅ 교사로서 일상의 변화, 혹은 성장을 위해{" "}
+        <b className={classes["b"]}>첵스쿨에 바라는 점</b>이 있다면?
       </p>
+      <br />
 
-      <form>
+      <form className={classes["form"]}>
         <div className={classes["image-div"]}>
           <div className={classes["imageTitle-div"]}>
-            <p className={classes["title-p"]}> 주요설명 </p>
+            <p className={classes["title-p"]}>
+              {" "}
+              {!addImage ? "글로 설명하기" : "이미지로 설명하기"}{" "}
+            </p>
             <button
               className={classes["ImgTextChange-btn"]}
               onClick={(e) => {
@@ -83,10 +85,11 @@ const SimsimAdd = (props) => {
             >
               <i className="fa-solid fa-arrows-rotate"></i>
               <span className={classes["addImage-span"]}>
-                {addImage ? "글로 쓰기" : "이미지 첨부하기"}
+                {addImage ? "글로.." : "이미지로.."}
               </span>
             </button>
           </div>
+
           <div>
             {addImage ? (
               <FileArea
@@ -104,14 +107,15 @@ const SimsimAdd = (props) => {
                 input={{
                   type: "textarea",
                 }}
-                onInput={(e) => handleOnInput(e, 300)}
+                onInput={(e) => handleOnInput(e, 1000)}
                 required
-                placeholder="화면 가운데에 보일 주요설명 (300자 이내) "
+                placeholder="화면 가운데에 보일 주요설명 "
               />
             )}
           </div>
         </div>
 
+        <hr />
         <div className={classes["descText-div"]}>
           <p className={classes["title-p"]}> 추가설명 </p>
           <Input
@@ -119,15 +123,15 @@ const SimsimAdd = (props) => {
             className={"simsim-Text"}
             type="text"
             required
-            onInput={(e) => handleOnInput(e, 100)}
-            placeholder={"프로필 아래쪽에 보일 추가설명 (100자 이내)"}
+            onInput={(e) => handleOnInput(e, 1000)}
+            placeholder={"프로필 아래쪽에 보일 추가설명"}
           />
         </div>
         <div className={classes["saveSimsim-div"]}>
           <Button
             className={"saveSimsim-btn2"}
             onclick={submitHandler}
-            icon={<>저장</>}
+            icon={<>글쓰기</>}
           />
         </div>
       </form>

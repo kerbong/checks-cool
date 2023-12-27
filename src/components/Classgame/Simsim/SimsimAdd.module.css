@@ -4,6 +4,18 @@
   font-size: 1.3rem;
 }
 
+.ImgTextChange-btn:hover {
+  padding: 10px;
+  border-radius: 15px;
+  background-color: #ff660096;
+}
+
+.form {
+  background-color: #eaeaea;
+  padding: 25px;
+  border-radius: 20px;
+}
+
 .image-div {
   display: flex;
   flex-direction: column;
@@ -13,6 +25,7 @@
   display: flex;
   justify-content: flex-start;
   width: 100%;
+  align-items: center;
 }
 
 .title-p {
@@ -24,11 +37,13 @@
 }
 
 .p {
-  font-size: 1.2rem;
-  display: flex;
-  margin: 20px;
-  width: auto;
+  margin-top: -20px;
   word-break: keep-all;
+  font-size: 1.2rem;
+}
+
+.b {
+  font-size: 1.5rem;
 }
 
 .addImage-span {

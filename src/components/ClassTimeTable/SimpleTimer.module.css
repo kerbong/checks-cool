@@ -29,10 +29,9 @@ button[data-setter] {
   border: none;
   font-weight: 300;
   font-size: 4vw;
-  /* width: 25px;
-  height: 30px; */
   color: #f7958e;
   cursor: pointer;
+  z-index: 20;
 }
 button[data-setter]:hover {
   opacity: 0.5;
@@ -350,6 +349,7 @@ button[data-setter]:hover {
 
 .todo-item:hover {
   background-color: lightgray;
+  cursor: pointer;
 }
 
 .examples {

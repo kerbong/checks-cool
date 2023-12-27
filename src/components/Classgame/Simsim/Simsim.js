@@ -132,6 +132,8 @@ const Simsim = (props) => {
     end_y = e.changedTouches[0].pageY;
     //x축 이동이 y축 이동보다 많은 경우에만 넘기기로 인식
     if (Math.abs(start_y - end_y) < Math.abs(start_x - end_x)) {
+      //x축 이동이 적어도... 90픽셀보다는 커야지..
+      if (Math.abs(start_x - end_x) < 90) return;
       if (start_x > end_x) {
         next();
       } else {

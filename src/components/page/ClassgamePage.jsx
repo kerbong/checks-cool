@@ -157,13 +157,17 @@ const ClassgamePage = (props) => {
                 icon={ICONS_LEFT[1]}
               />
               <Button
-                name={"주사위뽑기"}
+                name={"데덴찌/주사위 던지기"}
                 className={"settingSeatSelect"}
-                title={"손바닥, 손등 뽑기와 주사위 뽑기가 가능해요"}
+                title={"엎어라 뒤집어라 뽑기 /  주사위 뽑기가 가능해요"}
                 onclick={() => {
                   navigate("/simpleRandom");
                 }}
-                style={{ backgroundColor: "#9ad237" }}
+                style={{
+                  backgroundColor: "#9ad237",
+                  fontSize: "1.2rem",
+                  wordBreak: "keep-all",
+                }}
                 icon={ICONS_LEFT[8]}
               />
               <Button

@@ -11,10 +11,10 @@ import MissionInput from "./MissionInput";
 import Swal from "sweetalert2";
 
 const EXPLAINS = [
-  "* 오늘 작성한 글만 보여요.",
   "* 하루 한 개의 글만 올릴 수 있어요.",
-  "* 댓글, 좋아요는 여러 개가 가능해요!",
-  "* 작성한 글은 수정, 삭제가 불가능해요!",
+  "* 작성한 글은 수정, 삭제가 불가능해요.",
+  "* 작성한 글은 내일이면 사라져요!",
+  "* 댓글, 좋아요는 무제한~",
 ];
 //   {/* <p>* 매주 월요일에는 지난주 핫미션이 나와요.</p> */}
 
@@ -186,7 +186,10 @@ const Mission = (props) => {
           </Modal>
         )}
 
-        <h1 className={classes.h1}>🌞 오늘의 아침한마디 </h1>
+        <h1 className={classes.h1}>🌞 오늘의 다-짐 </h1>
+        <p>
+          ✅ 오늘의 <b> 목표 / 다짐 / 생각</b> 등을 나눠주세요~
+        </p>
         <span onClick={() => setExplainOn((prev) => !prev)}>
           * 사용설명서
           <span className={classes.h1Span}>
