@@ -51,12 +51,15 @@ const SimsimContent = (props) => {
           <img className={classes["userImage-img"]} alt="" src={props.image} />
         </div>
         {/* 글쓴이정보 */}
-        <div className={classes["user-div"]}>
+        <div
+          className={classes["user-div"]}
+          style={{ width: "calc(100% - 80px)" }}
+        >
           <div className={classes["nickName-div"]}>
             {props.nowOnRecommend?.nickName}
             {!props.nowOnRecommend && "저기요!"}
           </div>
-          <div className={classes["stateMessage-div"]}>
+          <div className={classes["stateMessage-div"]} style={{ width: "75%" }}>
             {props.nowOnRecommend?.stateMessage}
             {!props.nowOnRecommend && "거기 누구 계신가요??"}
           </div>

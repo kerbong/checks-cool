@@ -192,7 +192,7 @@ const AttendanceForm = (props) => {
   const handleOnInput = (e) => {
     let maxlength;
     if (props.about === "consulting") {
-      maxlength = 500;
+      maxlength = 1500;
     } else if (props.about === "attendance") {
       maxlength = 30;
     }

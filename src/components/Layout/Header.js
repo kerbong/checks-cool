@@ -43,6 +43,7 @@ const Header = (props) => {
             alt=""
             className={classes.logoImg}
             onClick={() => navigate("/")}
+            style={{ cursor: "pointer" }}
           />
         </h2>
         <ul className={classes["menu-lists"]} id="menu-lists">

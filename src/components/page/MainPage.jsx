@@ -10,7 +10,7 @@ import Swal from "sweetalert2";
 import ExampleModal from "./ExampleModal";
 import byExcel from "../../assets/student/teacher-excel.gif";
 
-import mainImg from "../../assets/notice/1221.jpg";
+import mainImg from "../../assets/notice/240113.png";
 
 import dayjs from "dayjs";
 import AttendCalendar from "components/Attendance/AttendCalendar";
@@ -34,43 +34,63 @@ const monthEnd_text = `월말입니다! 선생님들의 소중한 정보를 다�
 ** 첵스쿨 사용에 만족하신다면 <br/> <b>첵스쿨 활용팁, 후기를 👉</b> <u>[교사랑] - [추천해요]에 공유</u>해주세요!
  `;
 
-const update_title = `🎁크리스마스 & 연말 커피쿠폰 이벤트! (~ 24/1/5) 🎇`;
+const update_title = `☕이벤트 종료! 업데이트 예정🎇`;
 
 const update_text = ` <br/> 
-=== 첵스쿨의 온전한 서비스 첫해, 2023년 정산 ===<br/>
-하루 평균 이용자 수 <b>170명</b> 내외<br/> 
-하루 최대(월말) 이용자 수 <b>310명</b> 내외<br/>
-올 한해 [이거해요] 요청 및 반영사항 <b>116개</b><br/>
-총 후원 금액 12만원<br/>
-혼자 운영하는 미흡한 서비스 임에도 많은 사용과 격려, 참여해 주셔서 감사합니다.☺️  <br/>
-이에 보답하고자... 이벤트를 준비했습니다!<br/><br/>
-🎁크리스마스 & 연말 커피쿠폰 이벤트!!🎇 <br/>  
-올 한해, 첵스쿨을 아껴주신 선생님들께 첵스쿨이 보답합니다.<br/> 
-<b> [교사랑] - [추천해요] 에 후기를 올려주세요! (~ 24/1/5) </b> 
-(후기나 관련 의견이 부족하면...생각했던 쿠폰 개수가 소진될 때까지 진행합니다! 얼른 쓰세요!🥲)
+<b>=== ☕이벤트 종료!! ===</b>
+<br/><br/>
+우리 점잖고 부끄럼 많으신 첵스쿨 선생님들..
+<br/> 
+에 맞게, 원래 예정과는 다르게 조건을 바꾸어<br/> 
+ 총 15분의 선생님께 ☕커피쿠폰을 보내드렸어요!
+<br/>
+<b>꼭!!!!!! 이메일을 확인하시고,<br/>
+ 기간(~1/17) 안에 쿠폰을 등록해주세요!</b>
+<br/>
+<br/>
+<b>추천해요 후기 남겨주신😍, 4분 </b>(호칭은 생략할게요!)
+<br/>
+꾀돌이 / 최강여신쌤 / 평화 / 희진
+<br/>
+<br/>
+<b>첵스쿨 대표 기능의 데이터 최강자🤓 8분</b>
+<br/>
+네세동 gre********@gmail.com / 바로쌤 tcc*****@gmail.com / 반짝이 muk*********@naver.com / 슨생님 hel*****@gmail.com / 하늘구름 hsl******@naver.com / 나그리고나 hhl*****@gmail.com / 김피쓰 pea*******@sen.go.kr / 알록달록 200********@gmail.com / 
+<br/>
+<br/>
+<b>갑진년 시작부터 좋은, 랜덤 당첨😎 3분!!</b>
+<br/>
+toasty duc******@gmail.com / 율 sdd*******@soline20.sen.go.kr / 브라우니 pat*****@naver.com
+<br/><br/>
+<b>모두모두 축하드리고...감사합니다!<br/>
+ 꼭!!!!!! 이메일을 확인하셔서 <br/>
+ 기간(~1/17)내에 ☕쿠폰을 등록해주세요!!!!! </b>
+<br/>
+<br/><br/>
+<b>===== 24년도 업데이트 예정 =====</b>
+<br/><br/>
 
-<br/> <br/> 
-1.<br/> 
-<b>자주쓰는 기능, 활용 Tip, 좋았던 점, 바라는 점 등 사용의 전반적인 경험</b>을 기록해주세요! 사용후기 중에 랜덤으로 <b>5분</b>에게 쿠폰을 보내드립니다! <br/><br/>
-
-2. <br/>
-<b>야너두?? 같은 학교에서 2명 이상</b> 쓰신다면?! kerbong@gmail.com으로  <br/>
-학교이름 + 사용하시는 선생님들의 이메일 주소를 보내주세요! 두 분의 사용 데이터가 가장 많은, <b>2개의 학교</b>를 선정하여 모든 선생님들께 쿠폰을 보내드립니다! <br/><br/>
-
-3. <br/>
-첵스쿨 최상위 랭커!!!🥇🥈🥉 <br/> 
-<b> 12월 22일(금) 기준으로 가장 많은 데이터</b>를 자랑하는 선생님 <b>3분</b>을 선정하여 쿠폰을 보내드립니다!<br/><br/>
+1. 모바일 활용 기능 업데이트(고민중..)<br/>
+카메라 기능, 대화기능을 활용한 <br/> 
+빠르고 손쉬운 데이터 저장 방법을 고민하고 있습니다.
+<br/>
+<br/>
+2. 사용 설명서 업데이트<br/>
+로그인 버튼 => 공지사항"을 대신하여 <br/> 
+각 기능별 사용 설명서를 담은 페이지를 구성하려고 합니다.  
+<br/>
+<br/>
+유능하고 여유로운 선생님들이 되실 수 있도록, 새해에도 꾸준한 업데이트 / 관리로 함께 하겠습니다!!!!
+<br/><br/>
 
 ** <br/>
-<b> [교사랑] - [패드잇]
-비밀글 기능이 추가</b>되었습니다! 비밀글로 설정하면, 선생님과 본인만 내용을 확인할 수 있습니다~ <br/> 
-아울러, <b>패드잇 접속 오류문제가 수정</b>되었습니다. <br/><br/>
+ 전보할 때 <b>정보의 불균형을 없애고 좋은 지역/학교에 대한 정보를 나누려고 만든, 새로운 사이트(스-포)</b>도 운영중입니다! 많은관심 부탁드려요!!<br/> https://school-info-ok.web.app/ 
+ <br/><br/>
 
-**<br/> 학기말 분반프로그램(https://bit.ly/분반해요) <br/> 타임캡슐 (https://bit.ly/두근두근타임캡슐) 도 많관부!🫡 <br/><br/>
 
-<b>어디서든 눈부신, 모든 선생님들의 학기말을 응원합니다.🔥🔥</b><br/><br/> 
+<b>새해에도 즐겁고 행복한 일들만 가득하시길!!!🔥🔥</b><br/><br/> 
 
-* 일상의 변화, 교사의 성장 파트너 | 첵스-쿨<br/><br/>
+* 유능하고 여유로운 교사의 비밀노트 | 첵스-쿨<br/><br/>
 
 `;
 
@@ -169,9 +189,10 @@ const MainPage = (props) => {
   const [showNotice, setShowNotice] = useState(false);
   const [showMonthEnd, setShowMonthEnd] = useState(false);
   const [showDeployNotice, setShowDeployNotice] = useState(false);
+  const [beforeYmd, setBeforeYmd] = useState(dayjs().format("YYYY-MM-DD"));
 
   useEffect(() => {
-    if (localStorage.getItem("showNotice") <= "20240105") {
+    if (localStorage.getItem("showNotice") <= "20240126") {
       setShowNotice(true);
     }
     if (
@@ -220,8 +241,9 @@ const MainPage = (props) => {
     }
   }, []);
 
-  //올해 자료인지 판단하는 함수
+  //올해 자료인지 판단하는 함수, 첫번째 인자는 날짜 2023-03-06
   const isWithinSchoolYear = (date) => {
+    //nowYear 자체가.. 현재 메인화면에서 클릭한, 날짜를 기준으로 학년도를 구하는거라, 그걸 바꿔서 저장하면 됨.
     const schoolYearStart = dayjs(nowYear() + "-03-01");
     const schoolYearEnd = schoolYearStart.add(1, "year").subtract(1, "day");
 
@@ -277,6 +299,7 @@ const MainPage = (props) => {
     } else if (tomoOrYester === "yesterday") {
       tOrY = new Date(now.setDate(now.getDate() - 1));
     }
+    setBeforeYmd(todayYyyymmdd);
     setTodayYyyymmdd(getDateHandler(tOrY, "query"));
     setTitleDate(getDateHandler(tOrY, "title"));
   };
@@ -301,7 +324,7 @@ const MainPage = (props) => {
   const calDateHandler = (date) => {
     let weekd = dayjs(date).format("d");
     let weekDays = ["일", "월", "화", "수", "목", "금", "토"];
-
+    setBeforeYmd(todayYyyymmdd);
     setTodayYyyymmdd(dayjs(date).format("YYYY-MM-DD"));
     setTitleDate(dayjs(date).format(`YYYY년 MM월 DD일(${weekDays[weekd]})`));
   };
@@ -316,41 +339,19 @@ const MainPage = (props) => {
     // onSnapshot(attendRef, (doc) => {
     let attendSnap = await getDoc(attendRef);
     let new_attends = [];
-    if (isSubject) {
-      // doc?.data()?.attend_data?.forEach((cl) => {
-      attendSnap?.data()?.attend_data?.forEach((cl) => {
-        let attends = [];
-        // new_attends.push(...Object.values(cl));
-        Object.values(cl).forEach((atd) => {
-          attends.push(...atd);
-        });
-        let new_data = [];
-        attends?.forEach((atd) => {
-          //모든 데이터 저장용 자료로 만들기, 보고있는 날짜 기준으로 올해 자료만 뽑아주기
-          if (isWithinSchoolYear(atd?.id?.slice(0, 10))) {
-            new_nowYearAttends.push({ ...atd, cl: Object.keys(cl)[0] });
-          }
-          // console.log(atd);
-          if (atd?.id?.slice(0, 10) === todayYyyymmdd) {
-            new_data.push({ ...atd, cl: Object.keys(cl)[0] });
-          }
-        });
-        new_attends.push(...new_data);
-      });
-      // 담임이면
-    } else {
-      // doc?.data()?.attend_data?.forEach((data) => {
-      attendSnap?.data()?.attend_data?.forEach((data) => {
-        //모든 데이터 저장용 자료로 만들기, 보고있는 날짜 기준으로 올해 자료만 뽑아주기
-        if (isWithinSchoolYear(data?.id?.slice(0, 10))) {
-          new_nowYearAttends.push(data);
-        }
 
-        if (data?.id?.slice(0, 10) === todayYyyymmdd) {
-          new_attends.push(data);
-        }
-      });
-    }
+    // doc?.data()?.attend_data?.forEach((data) => {
+    attendSnap?.data()?.attend_data?.forEach((data) => {
+      //모든 데이터 저장용 자료로 만들기, 보고있는 날짜 기준으로 올해 자료만 뽑아주기
+      if (isWithinSchoolYear(data?.id?.slice(0, 10))) {
+        new_nowYearAttends.push(data);
+      }
+
+      if (data?.id?.slice(0, 10) === todayYyyymmdd) {
+        new_attends.push(data);
+      }
+    });
+
     //데이터용 올해자료 저장
     setNowYearAttends(new_nowYearAttends);
     setAttendEvents([...new_attends]);
@@ -707,9 +708,9 @@ const MainPage = (props) => {
       }
 
       new_classMemo["classMemo"].push({
-        subject: subject.value.trim(),
+        subject: subject?.value?.trim(),
         // memo: memo.value.trim(),
-        memo: memo.innerHTML,
+        memo: memo?.innerHTML,
       });
     });
 
@@ -801,7 +802,6 @@ const MainPage = (props) => {
 
     const new_classData = { datas: new_classTable };
 
-    // console.log("수정 저장됨");
     setClassTable(new_classTable);
 
     if (now_doc.exists()) {
@@ -856,12 +856,11 @@ const MainPage = (props) => {
 
   //시간표 반응 없는 10초마다 저장시키기
   useEffect(() => {
-    let ulTextareas = document.querySelector(".ul-textareas");
+    let ulTextareas = document.querySelector("#ul-textareas");
     let timer;
     const checkInput = () => {
       clearTimeout(timer);
       timer = setTimeout(() => {
-        // console.log("자동저장");
         saveClassMemoHandler(true);
       }, 10000);
     };
@@ -1100,6 +1099,11 @@ const MainPage = (props) => {
 
     // ==========제출 미제출 저장=========
 
+    //학생을 선택한 날짜의 학년도 학생들로 새롭게 설정하고...
+    let new_nowYearStd = props.students?.filter(
+      (yearStd) => Object.keys(yearStd)[0] === nowYear()
+    )?.[0]?.[nowYear()];
+
     const new_checkLists_datas = [];
     const new_listMemo_datas = [];
     // 학생 이름을 세로에 쭉 써주고, 오른쪽으로 체크리스트 값들을 넣어주기
@@ -1132,7 +1136,7 @@ const MainPage = (props) => {
         listMemo_data_cols.push({ wpx: 100 });
       });
 
-      nowYearStd?.forEach((std) => {
+      new_nowYearStd?.forEach((std) => {
         //제출 미제출 데이터 만들기
         let check_data = [+std.num, std.name];
         nowYearCheckLists?.forEach((check) => {
@@ -1186,7 +1190,7 @@ const MainPage = (props) => {
       //학급의 데이터 돌리기 다끝나면 전체 new_checkLists_datas에 다 넣어주기
 
       //반별로 작업하기
-      nowYearStd?.forEach((clObj) => {
+      new_nowYearStd?.forEach((clObj) => {
         let check_data_title = ["반", "번호", "이름"];
         let check_data_id = ["", "", "날짜"];
         let check_data_cols = [{ wpx: 50 }, { wpx: 30 }, { wpx: 50 }];
@@ -1626,6 +1630,19 @@ const MainPage = (props) => {
     writeFile(book, fileName);
   };
 
+  // 현재 자료 다운 받은 상태, 날짜를 바꿨는데 이전 날짜와 년도가 달라진 경우 다시 getAllDataDone을 false로 바꾸기
+  useEffect(() => {
+    if (!getAllDataDone) return;
+    const dataYear = (date) => {
+      return +dayjs(date).format("MM") <= 2
+        ? String(+dayjs(date).format("YYYY") - 1)
+        : dayjs(date).format("YYYY");
+    };
+    if (dataYear(todayYyyymmdd) !== dataYear(beforeYmd)) {
+      setGetAllDataDone(false);
+    }
+  }, [todayYyyymmdd]);
+
   //단축키 작동하는 부분
   useEffect(() => {
     let year = todayYyyymmdd.slice(0, 4);
@@ -1870,6 +1887,7 @@ const MainPage = (props) => {
           <Button
             name={" 오늘로"}
             onclick={() => {
+              setBeforeYmd(todayYyyymmdd);
               setTodayYyyymmdd(getDateHandler(new Date()));
               setTitleDate(getDateHandler(new Date(), "title"));
             }}
@@ -1971,7 +1989,10 @@ const MainPage = (props) => {
               titleDate.slice(-2, -1) !== "일" ? (
                 <>
                   * 수정, 변경 10초 후 자동저장
-                  <ul className={`${classes["ul-section"]} ul-textareas`}>
+                  <ul
+                    className={`${classes["ul-section"]}`}
+                    id={`ul-textareas`}
+                  >
                     {/* todayClassTable로 렌더링 */}
                     {todayClassTable?.classMemo?.map((clInfo, index) => {
                       // 만약..기초시간표 변경으로.. 해당 교시가 사라졌다면.. 보여주지 않기
@@ -2334,13 +2355,16 @@ const MainPage = (props) => {
               >
                 <div>
                   {!getAllDataDone && (
-                    <Button
-                      name=" 다운"
-                      style={{ minWidth: "85px" }}
-                      icon={<i className="fa-solid fa-download"></i>}
-                      className={"show-basicClass-button"}
-                      onclick={getAllDataHandler}
-                    />
+                    <>
+                      <Button
+                        name=" 다운"
+                        style={{ minWidth: "85px" }}
+                        icon={<i className="fa-solid fa-download"></i>}
+                        className={"show-basicClass-button"}
+                        onclick={getAllDataHandler}
+                        title="학년도(현재날짜 기준)의 모든 데이터가 저장됩니다."
+                      />
+                    </>
                   )}
                   {/* 모든자료 불러오고 나면 보이는 저장버튼 */}
                   {getAllDataDone && (
