@@ -15,7 +15,8 @@ const AttendanceForm = (props) => {
   const [attachedFile, setAttachedFile] = useState("");
   const [option, setOption] = useState("");
   const [inputIsShown, setInputIsShown] = useState(false);
-  const [paperSubmit, setPaperSubmit] = useState(false);
+  const [requestSubmit, setRequestSubmit] = useState(false);
+  const [reportSubmit, setReportSubmit] = useState(false);
   const [isImgFile, setIsImgFile] = useState(false);
   const [attendEvents, setAttendEvents] = useState([]);
   const [showStudent, setShowStudent] = useState(false);
@@ -129,7 +130,8 @@ const AttendanceForm = (props) => {
         name: studentInfo[1],
         option: option,
         note: inputValue,
-        paper: paperSubmit,
+        request: requestSubmit,
+        report: reportSubmit,
       };
 
       //주말 제외한 날짜만 모아두기
@@ -349,21 +351,30 @@ const AttendanceForm = (props) => {
           >
             {/* 학생서류 제출했는지 체크하는 버튼 */}
             {props.about === "attendance" && (
-              <Button
-                className={
-                  paperSubmit ? "paperSub-btn-clicked" : "paperSub-btn"
-                }
-                onclick={(e) => {
-                  e.preventDefault();
-                  setPaperSubmit((prev) => !prev);
-                }}
-                name={"서류"}
-                icon={
-                  <span>
-                    <i className="fa-solid fa-circle-check"></i>
-                  </span>
-                }
-              />
+              <>
+                <Button
+                  className={
+                    requestSubmit ? "paperSub-btn-clicked" : "paperSub-btn"
+                  }
+                  onclick={(e) => {
+                    e.preventDefault();
+                    setRequestSubmit((prev) => !prev);
+                  }}
+                  title="신청서"
+                  name={"신청서"}
+                />
+                <Button
+                  className={
+                    reportSubmit ? "paperSub-btn-clicked" : "paperSub-btn"
+                  }
+                  onclick={(e) => {
+                    e.preventDefault();
+                    setReportSubmit((prev) => !prev);
+                  }}
+                  title="보고서"
+                  name={"보고서"}
+                />
+              </>
             )}
 
             <Input

@@ -15,6 +15,8 @@ const EventItem = (props) => {
   const [eventId, setEventId] = useState(keyId);
   const [selectValue, setSelectValue] = useState(option);
   const [paperSubmit, setPaperSubmit] = useState(item?.paper || false);
+  const [requestSubmit, setRequestSubmit] = useState(item?.request || false);
+  const [reportSubmit, setReportSubmit] = useState(item?.report || false);
 
   const noteRef = useRef(null);
   const eventNameRef = useRef(null);
@@ -61,7 +63,12 @@ const EventItem = (props) => {
   const saveHandler = () => {
     let new_item = { ...item };
     if (props.about === "attendance") {
-      new_item["paper"] = paperSubmit;
+      if (item?.paper === undefined) {
+        new_item["request"] = requestSubmit;
+        new_item["report"] = reportSubmit;
+      } else {
+        new_item["paper"] = paperSubmit;
+      }
     }
     console.log(optionRef.current.value);
     if (props.about.slice(0, 4) === "todo") {
@@ -138,24 +145,82 @@ const EventItem = (props) => {
                       }
                     />
                   )}
-                  {/*  수정상태에서는 다 보여줌 체크표시 보여주고 */}
-                  {props.fixIsShown === shownId && (
-                    <Button
-                      className={
-                        paperSubmit ? "paperSub-btn-clicked" : "paperSub-btn"
-                      }
-                      onclick={() => {
-                        if (props.fixIsShown !== shownId) return;
-                        setPaperSubmit((prev) => !prev);
-                      }}
-                      name={"서류"}
-                      icon={
-                        <span>
-                          <i className="fa-solid fa-circle-check"></i>
-                        </span>
-                      }
-                    />
-                  )}
+                  {props.fixIsShown !== shownId &&
+                    item?.paper === undefined && (
+                      <>
+                        <Button
+                          className={
+                            requestSubmit
+                              ? "reqRepSub-btn-s-clicked"
+                              : "reqRepSub-btn-s"
+                          }
+                          name={"신"}
+                          style={{ marginLeft: "10px", cursor: "auto" }}
+                        />
+                        <Button
+                          className={
+                            reportSubmit
+                              ? "reqRepSub-btn-s-clicked"
+                              : "reqRepSub-btn-s"
+                          }
+                          style={{ cursor: "auto" }}
+                          name={"보"}
+                        />
+                      </>
+                    )}
+
+                  {/*  수정상태에서는 다 보여줌 paper 속성있는, 2023버전이면 체크표시 보여주고 */}
+                  {props.fixIsShown === shownId &&
+                    item?.paper !== undefined && (
+                      <Button
+                        className={
+                          paperSubmit ? "paperSub-btn-clicked" : "paperSub-btn"
+                        }
+                        onclick={() => {
+                          if (props.fixIsShown !== shownId) return;
+                          setPaperSubmit((prev) => !prev);
+                        }}
+                        name={"서류"}
+                        icon={
+                          <span>
+                            <i className="fa-solid fa-circle-check"></i>
+                          </span>
+                        }
+                      />
+                    )}
+
+                  {/*  수정상태에서는 다 보여줌 paper 속성없는, 2024 이후 버전이면 */}
+                  {props.fixIsShown === shownId &&
+                    item?.paper === undefined && (
+                      <>
+                        <Button
+                          className={
+                            requestSubmit
+                              ? "paperSub-btn-clicked"
+                              : "paperSub-btn"
+                          }
+                          onclick={() => {
+                            if (props.fixIsShown !== shownId) return;
+                            setRequestSubmit((prev) => !prev);
+                          }}
+                          style={{ width: "auto", letterSpacing: "-1px" }}
+                          name={"신청서"}
+                        />
+                        <Button
+                          className={
+                            reportSubmit
+                              ? "paperSub-btn-clicked"
+                              : "paperSub-btn"
+                          }
+                          onclick={() => {
+                            if (props.fixIsShown !== shownId) return;
+                            setReportSubmit((prev) => !prev);
+                          }}
+                          style={{ width: "auto", letterSpacing: "-1px" }}
+                          name={"보고서"}
+                        />
+                      </>
+                    )}
                 </>
               )}
             </h2>
@@ -261,6 +326,10 @@ const EventItem = (props) => {
                       props.removeCheckSwal(item);
                     }
                   : function () {
+                      // 신청서,보고서, 서류부분.. 초기화
+                      setPaperSubmit(item?.paper || false);
+                      setRequestSubmit(item?.request || false);
+                      setReportSubmit(item?.report || false);
                       props.setFixIsShown("0");
                       setSelectValue("");
                     }

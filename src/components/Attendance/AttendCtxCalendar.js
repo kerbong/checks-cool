@@ -327,6 +327,21 @@ const AttendCtxCalendar = (props) => {
               btn.appendChild(checkedI);
             }
 
+            //2024업데이트 버전.. 신청서 보고서 옵션 있으면 체크버튼 추가
+            if (data?.request) {
+              let checkedBtn = document.createElement("button");
+              checkedBtn.className = `${classes.paperOn}`;
+              checkedBtn.innerText = "신";
+              btn.appendChild(checkedBtn);
+            }
+
+            if (data?.report) {
+              let reportBtn = document.createElement("button");
+              reportBtn.className = `${classes.paperOn}`;
+              reportBtn.innerText = "보";
+              btn.appendChild(reportBtn);
+            }
+
             if (yyyy_mm_dd.slice(0, 7) === currentMonth) {
               eventTag.style.backgroundColor = "#d38c85";
             } else {

@@ -586,9 +586,11 @@
 .paperSub-btn-clicked,
 .paperSub-btn,
 .paperSub-btn-s,
-.paperSub-btn-s-clicked {
+.paperSub-btn-s-clicked,
+.reqRepSub-btn-s-clicked,
+.reqRepSub-btn-s {
   color: rgba(0, 0, 0, 0.623);
-  background-color: whitesmoke;
+  background-color: #dbdbdb;
   border-width: 0;
   font-size: 0.8rem;
   margin: 0px 5px;
@@ -603,7 +605,7 @@
 }
 
 .paperSub-btn-clicked {
-  color: whitesmoke;
+  color: white;
   background-color: rgb(255 90 113);
 }
 
@@ -614,4 +616,15 @@
 }
 .paperSub-btn-s-clicked {
   color: rgb(255 90 113);
+}
+
+.reqRepSub-btn-s {
+  width: 30px;
+  background-color: #dbdbdb;
+}
+
+.reqRepSub-btn-s-clicked {
+  width: 30px;
+  background-color: rgb(255 90 113);
+  color: white;
 }

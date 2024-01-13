@@ -16,7 +16,8 @@ const EventInput = (props) => {
   const [student, setStudent] = useState("");
   const [showStudent, setShowStudent] = useState(false);
   const [reserveAlarm, setReserveAlarm] = useState(false);
-  const [paperSubmit, setPaperSubmit] = useState(false);
+  const [requestSubmit, setRequestSubmit] = useState(false);
+  const [reportSubmit, setReportSubmit] = useState(false);
   const [optionsSet, setOptionsSet] = useState([]);
   const [todoDate, setTodoDate] = useState(new Date());
   const [showCal, setShowCal] = useState(false);
@@ -206,7 +207,8 @@ const EventInput = (props) => {
 
       //출결에는 서류 제출부분 추가해서 보냄.
       if (props.about === "attendance") {
-        new_data["paper"] = paperSubmit;
+        new_data["request"] = requestSubmit;
+        new_data["report"] = reportSubmit;
       }
       // if (props.about.slice(0, 4) === "todo") {
       //   showNotification(todo_eventName);
@@ -272,17 +274,25 @@ const EventInput = (props) => {
                 {/* 학생서류 제출했는지 체크하는 버튼 */}
                 <Button
                   className={
-                    paperSubmit ? "paperSub-btn-clicked" : "paperSub-btn"
+                    requestSubmit ? "paperSub-btn-clicked" : "paperSub-btn"
                   }
-                  onclick={() => {
-                    setPaperSubmit((prev) => !prev);
+                  onclick={(e) => {
+                    e.preventDefault();
+                    setRequestSubmit((prev) => !prev);
                   }}
-                  name={"서류"}
-                  icon={
-                    <span>
-                      <i className="fa-solid fa-circle-check"></i>
-                    </span>
+                  title="신청서"
+                  name={"신청서"}
+                />
+                <Button
+                  className={
+                    reportSubmit ? "paperSub-btn-clicked" : "paperSub-btn"
                   }
+                  onclick={(e) => {
+                    e.preventDefault();
+                    setReportSubmit((prev) => !prev);
+                  }}
+                  title="보고서"
+                  name={"보고서"}
                 />
                 {/* 학생 선택버튼 부분 */}
                 <Button

@@ -19,6 +19,7 @@ const ManageAttendance = (props) => {
   const [showAttendOption, setShowAttendOption] = useState("");
   const [showAttendMonth, setShowAttendMonth] = useState("");
   const [showNoPaper, setShowNoPaper] = useState(null);
+
   const [showDelete, setShowDelete] = useState(false);
   const [deleteChecked, setDeleteChecked] = useState([]);
   const [uploadDatas, setUploadDatas] = useState({});
@@ -213,6 +214,30 @@ const ManageAttendance = (props) => {
     });
   }
 
+  //서류 미제출 학생 걸러서 반환하는 함수
+  const noPaperRequestStd = (arr, isOneCl) => {
+    return arr?.filter((attend) => {
+      if (isOneCl === "one" && showNoPaper !== attend.name) return false;
+
+      if (isOneCl === "cl" && attend?.clName !== clName) return false;
+
+      let showOn = false;
+      // paper속성이 있는데 false인 경우,
+      if (attend?.paper !== undefined) {
+        if (!attend?.paper) {
+          showOn = true;
+        }
+        // paper속성이 없는데 report 또는 request가 false인 경우
+      } else {
+        if (!attend?.request || !attend?.report) {
+          showOn = true;
+        }
+      }
+
+      return showOn;
+    });
+  };
+
   //서류 미제출 학생을 선택하면.. 보여주는 걸 바꿔주기
   useEffect(() => {
     if (showNoPaper === null) return;
@@ -220,16 +245,17 @@ const ManageAttendance = (props) => {
     setShowAttendMonth("");
     setShowAttendOption("");
 
-    if (showNoPaper === "") {
-      setShowOnAttends(
-        sortByName(onAttends?.filter((attend) => !attend.paper))
-      );
+    //서류 미제출 학생만 걸러내기
+    let new_showOnAttends;
+
+    //특정학생만 보여주기 이면..
+    if (showNoPaper !== "") {
+      new_showOnAttends = noPaperRequestStd(onAttends, "one");
     } else {
-      let new_showOnAttends = onAttends?.filter(
-        (attend) => attend.name === showNoPaper && !attend.paper
-      );
-      setShowOnAttends(sortByName(new_showOnAttends));
+      new_showOnAttends = noPaperRequestStd(onAttends);
     }
+
+    setShowOnAttends(sortByName(new_showOnAttends));
   }, [showNoPaper]);
 
   //선택되어 있는 학급 (전담의 경우)
@@ -250,12 +276,13 @@ const ManageAttendance = (props) => {
           ? arr?.sort((a, b) =>
               a.id.slice(0, 10) > b.id.slice(0, 10) ? 1 : -1
             )
-          : sortByName(
-              arr
-                ?.sort((a, b) =>
+          : // 미제출 학생들만 모으는 거면
+            sortByName(
+              noPaperRequestStd(
+                arr?.sort((a, b) =>
                   a.id.slice(0, 10) > b.id.slice(0, 10) ? 1 : -1
                 )
-                ?.filter((at) => !at.paper)
+              )
             );
 
       filtered_datas?.forEach((atd) => {
@@ -265,7 +292,9 @@ const ManageAttendance = (props) => {
           `${removeLeadingZeros(atd.id.slice(5, 7))}월`,
           `${removeLeadingZeros(atd.id.slice(8, 10))}일`,
 
-          atd.paper ? "제출" : "미제출",
+          atd?.paper === undefined ? "-" : atd?.paper ? "제출" : "미제출",
+          atd?.request === undefined ? "-" : atd?.request ? "제출" : "미제출",
+          atd?.report === undefined ? "-" : atd?.report ? "제출" : "미제출",
           atd.option.slice(1),
           atd.note,
         ];
@@ -282,6 +311,8 @@ const ManageAttendance = (props) => {
           "날짜(월)",
           "날짜(일)",
           "서류제출",
+          "신청서제출",
+          "보고서제출",
           "출결옵션",
           "비고",
         ]);
@@ -293,6 +324,8 @@ const ManageAttendance = (props) => {
           "날짜(월)",
           "날짜(일)",
           "서류제출",
+          "신청서제출",
+          "보고서제출",
           "출결옵션",
           "비고",
         ]);
@@ -311,6 +344,8 @@ const ManageAttendance = (props) => {
       { wpx: 60 },
       { wpx: 50 },
       { wpx: 50 },
+      { wpx: 60 },
+      { wpx: 60 },
       { wpx: 60 },
       { wpx: 60 },
       { wpx: 100 },
@@ -495,13 +530,13 @@ const ManageAttendance = (props) => {
   //출결 수정 함수
   const attendHandler = async (what) => {
     // 서류 클릭했으면... 해당 자료의 서류 상태를 변경해서 저장
-    if (what === "paper") {
+    if (what !== "delete") {
       let new_attends = [...attends];
 
       new_attends = new_attends?.map((attend) => {
         let new_attend = attend;
         if (attend.id === attendEdit.id) {
-          new_attend.paper = !new_attend.paper;
+          new_attend[what] = !new_attend?.[what];
         }
         return new_attend;
       });
@@ -684,18 +719,44 @@ const ManageAttendance = (props) => {
                 >
                   {/* 출결의 id(yyyy-mm-dd)보여줌 */}
                   <div className={classes["flex-ml-10"]}>
-                    {attend.id.slice(0, 10)} {/* 서류 제출/미제출 아이콘 */}
-                    <i
-                      className="fa-solid fa-circle-check"
-                      style={
-                        attend.paper
-                          ? {
-                              color: "#ff5a71",
-                              margin: "0 10px",
-                            }
-                          : { color: "#cacaca", margin: "0 10px" }
-                      }
-                    ></i>
+                    {attend.id.slice(0, 10)}
+                    {/* 서류 제출/미제출 아이콘 */}
+                    {attend?.paper !== undefined && (
+                      <i
+                        className="fa-solid fa-circle-check"
+                        style={
+                          attend.paper
+                            ? {
+                                color: "#ff5a71",
+                                margin: "0 10px",
+                              }
+                            : { color: "#cacaca", margin: "0 10px" }
+                        }
+                      ></i>
+                    )}
+                    {/* request 신청서  */}
+                    {attend?.request !== undefined && (
+                      <Button
+                        className={
+                          attend?.request
+                            ? "paperSub-btn-clicked"
+                            : "paperSub-btn"
+                        }
+                        name={"신"}
+                      />
+                    )}
+
+                    {/* report 보고서  */}
+                    {attend?.report !== undefined && (
+                      <Button
+                        className={
+                          attend?.report
+                            ? "paperSub-btn-clicked"
+                            : "paperSub-btn"
+                        }
+                        name={"보"}
+                      />
+                    )}
                   </div>
                   {/* 출결옵션 */}
                   <div className={classes["fs-13"]}>
@@ -708,14 +769,39 @@ const ManageAttendance = (props) => {
                       attendEdit?.id === attend.id ? classes["show"] : ""
                     }`}
                   >
-                    <button
-                      className={classes["attend-edit-p"]}
-                      onClick={() => {
-                        attendHandler("paper");
-                      }}
-                    >
-                      서류
-                    </button>
+                    {/* paper속성 있으면 */}
+                    {attend?.paper !== undefined && (
+                      <button
+                        className={classes["attend-edit-p"]}
+                        onClick={() => {
+                          attendHandler("paper");
+                        }}
+                      >
+                        서류
+                      </button>
+                    )}
+                    {/* request속성 있으면 */}
+                    {attend?.request !== undefined && (
+                      <button
+                        className={classes["attend-edit-p"]}
+                        onClick={() => {
+                          attendHandler("request");
+                        }}
+                      >
+                        신청서
+                      </button>
+                    )}
+                    {/* report속성 있으면 */}
+                    {attend?.report !== undefined && (
+                      <button
+                        className={classes["attend-edit-p"]}
+                        onClick={() => {
+                          attendHandler("report");
+                        }}
+                      >
+                        보고서
+                      </button>
+                    )}
                     <button
                       className={classes["attend-edit-d"]}
                       onClick={(e) => {
@@ -886,19 +972,14 @@ const ManageAttendance = (props) => {
                     {(nowIsSubject
                       ? [
                           ...new Set(
-                            attends
-                              ?.filter(
-                                (attend) =>
-                                  attend?.clName === clName && !attend.paper
-                              )
-                              ?.map((atd) => atd.name)
+                            noPaperRequestStd(attends, "cl")?.map(
+                              (atd) => atd.name
+                            )
                           ),
                         ]
                       : [
                           ...new Set(
-                            attends
-                              ?.filter((attend) => !attend.paper)
-                              ?.map((atd) => atd.name)
+                            noPaperRequestStd(attends)?.map((atd) => atd.name)
                           ),
                         ]
                     )
@@ -964,20 +1045,47 @@ const ManageAttendance = (props) => {
                     {/* 출결의 id(yyyy-mm-dd)보여줌 */}
                     <div className={classes["flex-ml-10"]}>
                       {/* 날짜보여줌 */}
-                      {attend.id.slice(0, 10)} {/* 서류 제출/미제출 아이콘 */}
-                      <i
-                        className="fa-solid fa-circle-check"
-                        style={
-                          attend.paper
-                            ? {
-                                color: "#ff5a71",
-                                margin: "0 10px",
-                              }
-                            : { color: "#cacaca", margin: "0 10px" }
-                        }
-                      ></i>
+                      {attend.id.slice(0, 10)}
+                      &nbsp;&nbsp;
                       {/* 학생 이름 */}
                       {attend.name}
+                      {/* 서류 제출/미제출 아이콘 */}
+                      {attend?.paper !== undefined && (
+                        <i
+                          className="fa-solid fa-circle-check"
+                          style={
+                            attend.paper
+                              ? {
+                                  color: "#ff5a71",
+                                  margin: "0 10px",
+                                }
+                              : { color: "#cacaca", margin: "0 10px" }
+                          }
+                        ></i>
+                      )}
+                      {/* request 신청서  */}
+                      {attend?.request !== undefined && (
+                        <Button
+                          className={
+                            attend?.request
+                              ? "reqRepSub-btn-s-clicked"
+                              : "reqRepSub-btn-s"
+                          }
+                          name={"신"}
+                          style={{ marginLeft: "10px" }}
+                        />
+                      )}
+                      {/* report 보고서  */}
+                      {attend?.report !== undefined && (
+                        <Button
+                          className={
+                            attend?.report
+                              ? "reqRepSub-btn-s-clicked"
+                              : "reqRepSub-btn-s"
+                          }
+                          name={"보"}
+                        />
+                      )}
                     </div>
                     {/* 출결옵션 */}
                     <div className={classes["fs-13"]}>
@@ -990,14 +1098,39 @@ const ManageAttendance = (props) => {
                         attendEdit?.id === attend.id ? classes["show"] : ""
                       }`}
                     >
-                      <button
-                        className={classes["attend-edit-p"]}
-                        onClick={() => {
-                          attendHandler("paper");
-                        }}
-                      >
-                        서류
-                      </button>
+                      {/* paper속성 있으면 */}
+                      {attend?.paper !== undefined && (
+                        <button
+                          className={classes["attend-edit-p"]}
+                          onClick={() => {
+                            attendHandler("paper");
+                          }}
+                        >
+                          서류
+                        </button>
+                      )}
+                      {/* request속성 있으면 */}
+                      {attend?.request !== undefined && (
+                        <button
+                          className={classes["attend-edit-p"]}
+                          onClick={() => {
+                            attendHandler("request");
+                          }}
+                        >
+                          신청서
+                        </button>
+                      )}
+                      {/* report속성 있으면 */}
+                      {attend?.report !== undefined && (
+                        <button
+                          className={classes["attend-edit-p"]}
+                          onClick={() => {
+                            attendHandler("report");
+                          }}
+                        >
+                          보고서
+                        </button>
+                      )}
                       <button
                         className={classes["attend-edit-d"]}
                         onClick={(e) => {

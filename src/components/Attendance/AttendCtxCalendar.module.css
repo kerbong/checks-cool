@@ -17,6 +17,18 @@
   margin: 0 3px;
 }
 
+.paperOn {
+  padding: 1px 3px;
+  background-color: white;
+  color: #56423c;
+  border-radius: 5px;
+  font-size: 0.8em;
+  border: 0;
+  font-weight: bold;
+  vertical-align: top;
+  margin-left: 3px;
+}
+
 @media screen and (min-width: 1200px) {
   .showOptionCal {
     display: inline-block;

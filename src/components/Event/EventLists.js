@@ -191,8 +191,17 @@ const EventLists = (props) => {
       id: item.id,
       option: optionValue,
       note: noteValue,
-      paper: item.paper,
     };
+
+    if (item?.paper !== undefined) {
+      fixed_data.paper = item.paper;
+    }
+    if (item?.request !== undefined) {
+      fixed_data.request = item.request;
+    }
+    if (item?.report !== undefined) {
+      fixed_data.report = item.report;
+    }
 
     // console.log(fixed_data);
 

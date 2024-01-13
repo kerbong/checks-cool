@@ -995,7 +995,13 @@ const MainPage = (props) => {
         +attend.id.slice(0, 4),
         +removeLeadingZeros(attend.id.slice(5, 7)),
         +removeLeadingZeros(attend.id.slice(8, 10)),
-        attend.paper ? "제출" : "미제출",
+        attend?.paper === undefined ? "-" : attend?.paper ? "제출" : "미제출",
+        attend?.request === undefined
+          ? "-"
+          : attend?.request
+          ? "제출"
+          : "미제출",
+        attend?.report === undefined ? "-" : attend?.report ? "제출" : "미제출",
         attend.option.slice(1),
         attend?.note,
       ];
@@ -1013,6 +1019,8 @@ const MainPage = (props) => {
       "월",
       "일",
       "서류제출",
+      "신청서",
+      "보고서",
       "출결옵션",
       "메모내용",
     ];
@@ -1029,6 +1037,8 @@ const MainPage = (props) => {
       { wpx: 40 },
       { wpx: 25 },
       { wpx: 25 },
+      { wpx: 60 },
+      { wpx: 60 },
       { wpx: 60 },
       { wpx: 60 },
       { wpx: 150 },
@@ -2369,8 +2379,13 @@ const MainPage = (props) => {
                   {/* 모든자료 불러오고 나면 보이는 저장버튼 */}
                   {getAllDataDone && (
                     <Button
-                      name=" 저장"
-                      style={{ minWidth: "85px" }}
+                      name={` ${nowYear()}학년도 자료저장`}
+                      style={{
+                        width: "auto",
+                        height: "auto",
+                        padding: "15px",
+                        wordBreak: "keep-all",
+                      }}
                       icon={<i className="fa-regular fa-floppy-disk"></i>}
                       className={"show-basicClass-button"}
                       onclick={allDataExcelSaveHandler}
