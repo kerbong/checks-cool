@@ -52,6 +52,7 @@ const PadIt = lazy(() => import("./components/page/PadIt"));
 const ClassTimeTable = lazy(() =>
   import("./components/ClassTimeTable/ClassTimeTable")
 );
+const MobileMain = lazy(() => import("./components/page/MobileMain"));
 
 function App() {
   const [init, setInit] = useState(false);
@@ -65,6 +66,7 @@ function App() {
   const [nowToken, setNowToken] = useState("");
   const [isStudent, setIsStudent] = useState(false);
   const [padItInfo, setPadItInfo] = useState({});
+  const [isMobile, setIsMobile] = useState(false);
 
   let navigate = useNavigate();
 
@@ -257,6 +259,15 @@ function App() {
     }
   }, []);
 
+  //모바일 상황이면.. 먼저 mobileMain보여주기
+  useEffect(() => {
+    const mobile = /iPhone|iPad|iPod|Android/i.test(window.navigator.userAgent);
+
+    if (mobile) {
+      setIsMobile(true);
+    }
+  }, []);
+
   return (
     <div>
       <div className={menuOnHead ? "App" : "App-bottom"}>
@@ -294,19 +305,45 @@ function App() {
             )?.length !== 0 &&
             isLoggedIn ? (
               <>
+                {/* 모바일이면.. 초기화면이 mobileMain이 되도록. */}
+
                 <Route
                   index
                   path=""
                   element={
-                    <MainPage
-                      userUid={userUid}
-                      showMainExample={showMainExample}
-                      students={students}
-                      setShowMainExample={() => setShowMainExample(false)}
-                      isSubject={profile?.isSubject}
-                    />
+                    !isMobile ? (
+                      <MainPage
+                        userUid={userUid}
+                        showMainExample={showMainExample}
+                        students={students}
+                        setShowMainExample={() => setShowMainExample(false)}
+                        isSubject={profile?.isSubject}
+                      />
+                    ) : (
+                      <MobileMain
+                        userUid={userUid}
+                        email={user.email}
+                        students={students}
+                        isSubject={profile.isSubject || []}
+                      />
+                    )
                   }
                 />
+
+                {isMobile && (
+                  <Route
+                    path="main"
+                    element={
+                      <MainPage
+                        userUid={userUid}
+                        showMainExample={showMainExample}
+                        students={students}
+                        setShowMainExample={() => setShowMainExample(false)}
+                        isSubject={profile?.isSubject}
+                      />
+                    }
+                  />
+                )}
 
                 <Route
                   path="admin"

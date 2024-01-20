@@ -142,3 +142,11 @@ input {
   background-color: #ddddddba;
   border-radius: 10px;
 }
+
+.gptResult-input {
+  width: 85%;
+  border-radius: 10px;
+  margin: 10px 0;
+  padding: 10px;
+  font-size: 1em;
+}

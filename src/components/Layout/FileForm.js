@@ -9,7 +9,7 @@ const FileForm = (props) => {
     try {
       const options = {
         maxSizeMb: 1,
-        maxWidthOrHeight: 900,
+        maxWidthOrHeight: 1000,
       };
       return await imageCompression(image, options);
     } catch (e) {

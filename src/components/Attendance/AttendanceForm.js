@@ -10,6 +10,7 @@ import ConsultRelated from "components/Consult/ConsultRelated";
 import { dbService } from "../../fbase";
 import { onSnapshot, setDoc, doc, getDoc } from "firebase/firestore";
 import AudioRecord from "components/Consult/AudioRecord";
+import dayjs from "dayjs";
 
 const AttendanceForm = (props) => {
   const [attachedFile, setAttachedFile] = useState("");
@@ -141,7 +142,8 @@ const AttendanceForm = (props) => {
       //날짜가 하루일 때를 분리하지 않으면 아마도.. 얕은 복사라 start와 end가 모두 1일씩 같이 늘어나서 while문이 무한실행
       if (start === end) {
         let selectDate = getToday(start);
-        new_data_id = selectDate + studentInfo[0];
+        new_data_id =
+          selectDate + studentInfo[0] + " " + dayjs().format("HH:mm");
         weekDayEvents.push(new_data_id);
       } else {
         while (curDate <= end) {
@@ -150,7 +152,8 @@ const AttendanceForm = (props) => {
             curDate.setDate(curDate.getDate() + 1);
           } else {
             let selectDate = getToday(curDate);
-            new_data_id = selectDate + studentInfo[0];
+            new_data_id =
+              selectDate + studentInfo[0] + " " + dayjs().format("HH:mm");
             weekDayEvents.push(new_data_id);
 
             curDate.setDate(curDate.getDate() + 1);

@@ -5,8 +5,9 @@ import holidays2023 from "holidays2023";
 import EventLists from "../Event/EventLists";
 import classes from "./AttendCtxCalendar.module.css";
 
-import { dbService } from "../../fbase";
+import { dbService, storageService } from "../../fbase";
 import { onSnapshot, setDoc, doc, updateDoc } from "firebase/firestore";
+import { deleteObject, listAll, ref } from "firebase/storage";
 
 const thisMonth = () => {
   let today = new Date();
@@ -466,6 +467,22 @@ const AttendCtxCalendar = (props) => {
             }
             setWholeEvents(new_wholeEvents);
             await setDoc(attendTodoRef, { attend_data: new_wholeEvents });
+          }
+
+          //혹시 storage에 저장된 해당날짜의 데이터 있으면 그것도 삭제하기
+          try {
+            let folder = `${props.userUid}/attend/${data.id}`;
+            const listRef = ref(storageService, folder);
+
+            listAll(listRef).then((res) => {
+              res.items.forEach(async (itemRef) => {
+                await deleteObject(
+                  ref(storageService, itemRef["_location"]["path"])
+                );
+              });
+            });
+          } catch (error) {
+            console.log(error);
           }
           // console.log("이벤트바이데이즈에서 일치하는 자료 찾아서 제거함!");
         }

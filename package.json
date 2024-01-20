@@ -24,6 +24,7 @@
     "emailjs-com": "^3.2.0",
     "file-saver": "^2.0.5",
     "firebase": "^9.9.2",
+    "form-data": "^4.0.0",
     "fs": "^0.0.1-security",
     "gapi-script": "^1.2.0",
     "google-auth-library": "^8.7.0",

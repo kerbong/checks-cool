@@ -18,11 +18,20 @@ const EventInput = (props) => {
   const [reserveAlarm, setReserveAlarm] = useState(false);
   const [requestSubmit, setRequestSubmit] = useState(false);
   const [reportSubmit, setReportSubmit] = useState(false);
+  const [paperSubmit, setPaperSubmit] = useState(false);
   const [optionsSet, setOptionsSet] = useState([]);
   const [todoDate, setTodoDate] = useState(new Date());
+  const [atdOption, setAtdOption] = useState(true);
   const [showCal, setShowCal] = useState(false);
   const [currentMonth, setCurrentMonth] = useState(dayjs().format("YYYY-MM"));
   const noteRef = useRef(null);
+
+  useEffect(() => {
+    if (atdOption !== "1현장체험" && atdOption !== "3가정학습") {
+      setReportSubmit(false);
+      setRequestSubmit(false);
+    }
+  }, [atdOption]);
 
   //사이즈조절
   const handleResizeHeight = useCallback(() => {
@@ -207,8 +216,12 @@ const EventInput = (props) => {
 
       //출결에는 서류 제출부분 추가해서 보냄.
       if (props.about === "attendance") {
-        new_data["request"] = requestSubmit;
-        new_data["report"] = reportSubmit;
+        if (atdOption === "1현장체험" || atdOption === "3가정학습") {
+          new_data["request"] = requestSubmit;
+          new_data["report"] = reportSubmit;
+        } else {
+          new_data["paper"] = paperSubmit;
+        }
       }
       // if (props.about.slice(0, 4) === "todo") {
       //   showNotification(todo_eventName);
@@ -272,28 +285,48 @@ const EventInput = (props) => {
             {props.about.slice(0, 4) !== "todo" ? (
               <>
                 {/* 학생서류 제출했는지 체크하는 버튼 */}
-                <Button
-                  className={
-                    requestSubmit ? "paperSub-btn-clicked" : "paperSub-btn"
-                  }
-                  onclick={(e) => {
-                    e.preventDefault();
-                    setRequestSubmit((prev) => !prev);
-                  }}
-                  title="신청서"
-                  name={"신청서"}
-                />
-                <Button
-                  className={
-                    reportSubmit ? "paperSub-btn-clicked" : "paperSub-btn"
-                  }
-                  onclick={(e) => {
-                    e.preventDefault();
-                    setReportSubmit((prev) => !prev);
-                  }}
-                  title="보고서"
-                  name={"보고서"}
-                />
+                {/* 분류에 따라.. 보이는 게 바뀜. */}
+                {atdOption !== "1현장체험" && atdOption !== "3가정학습" ? (
+                  <>
+                    <Button
+                      className={
+                        paperSubmit ? "paperSub-btn-clicked" : "paperSub-btn"
+                      }
+                      onclick={(e) => {
+                        e.preventDefault();
+                        setPaperSubmit((prev) => !prev);
+                      }}
+                      title="서류"
+                      name={"서류"}
+                    />
+                  </>
+                ) : (
+                  <>
+                    <Button
+                      className={
+                        requestSubmit ? "paperSub-btn-clicked" : "paperSub-btn"
+                      }
+                      onclick={(e) => {
+                        e.preventDefault();
+                        setRequestSubmit((prev) => !prev);
+                      }}
+                      title="신청서"
+                      name={"신청서"}
+                    />
+                    <Button
+                      className={
+                        reportSubmit ? "paperSub-btn-clicked" : "paperSub-btn"
+                      }
+                      onclick={(e) => {
+                        e.preventDefault();
+                        setReportSubmit((prev) => !prev);
+                      }}
+                      title="보고서"
+                      name={"보고서"}
+                    />
+                  </>
+                )}
+
                 {/* 학생 선택버튼 부분 */}
                 <Button
                   className="choose-studentBtn"
@@ -409,6 +442,7 @@ const EventInput = (props) => {
                 }
                 defaultValue={props.dafaultValue}
                 required
+                onClick={(e) => setAtdOption(e.target.value)}
               >
                 <option value="">-- 분류 --</option>
                 {props.selectOption?.map((select_option) => (

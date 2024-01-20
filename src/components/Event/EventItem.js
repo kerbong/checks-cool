@@ -70,7 +70,7 @@ const EventItem = (props) => {
         new_item["paper"] = paperSubmit;
       }
     }
-    console.log(optionRef.current.value);
+    // console.log(optionRef.current.value);
     if (props.about.slice(0, 4) === "todo") {
       new_item["eventName"] = eventNameRef.current.value;
       new_item["option"] = optionRef.current.value;

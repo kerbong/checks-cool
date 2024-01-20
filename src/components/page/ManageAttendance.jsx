@@ -1,13 +1,20 @@
 import React, { useState, useEffect } from "react";
 import ManageEach from "./ManageEach";
 import dayjs from "dayjs";
-import { dbService } from "../../fbase";
+import { dbService, storageService } from "../../fbase";
 import { onSnapshot, setDoc, doc, getDoc } from "firebase/firestore";
 import { useLocation } from "react-router";
 import classes from "./ManageEach.module.css";
 import Button from "components/Layout/Button";
 import { utils, writeFile } from "xlsx";
 import Swal from "sweetalert2";
+import {
+  deleteObject,
+  getDownloadURL,
+  getStorage,
+  listAll,
+  ref,
+} from "firebase/storage";
 
 const ManageAttendance = (props) => {
   const [onStudent, setOnStudent] = useState("");
@@ -392,6 +399,7 @@ const ManageAttendance = (props) => {
   };
 
   useEffect(() => {
+    setDeleteChecked([]);
     if (Object.keys(uploadDatas)?.length === 0) return;
     upload_data(uploadDatas);
   }, [uploadDatas]);
@@ -401,20 +409,45 @@ const ManageAttendance = (props) => {
     if (allOrChecked !== "all" && deleteChecked?.length === 0) return;
     if (onAttends?.length === 0) return;
 
+    let new_del_ids = [...deleteChecked];
     let new_attends = [...attends];
     // 삭제하는 실제함수
     const deleteAttend = async (allOrChecked) => {
       // 전체 정보 받아오고, deleteChecked 있는거 제외해서 자료로 만들고 firebase저장 및 attends 상태에 저장.
       if (allOrChecked === "all") {
-        new_attends = new_attends?.filter(
-          (attend) => attend.name !== onStudent.split(" ")[1]
-        );
+        new_attends = [];
+        attends?.forEach((attend) => {
+          if (attend.name !== onStudent.split(" ")[1]) {
+            new_attends.push(attend);
+          } else {
+            new_del_ids.push(attend.id);
+          }
+        });
+
         // 만약 특정 선택된 것들만 제거일 경우...
       } else {
         // deleteChecked에는 id만 저장되어 있음.
         new_attends = new_attends?.filter(
           (attend) => !deleteChecked.includes(attend.id)
         );
+      }
+
+      //혹시 storage에 저장된 해당날짜의 데이터 있으면 그것도 삭제하기
+      try {
+        new_del_ids?.forEach((del_id) => {
+          let folder = `${props.userUid}/attend/${del_id}`;
+          const listRef = ref(storageService, folder);
+
+          listAll(listRef).then((res) => {
+            res.items.forEach(async (itemRef) => {
+              await deleteObject(
+                ref(storageService, itemRef["_location"]["path"])
+              );
+            });
+          });
+        });
+      } catch (error) {
+        console.log(error);
       }
 
       //  ===============오류.. 삭제안됨;;ㅠㅠ ======
@@ -499,7 +532,7 @@ const ManageAttendance = (props) => {
         if (result.isConfirmed) {
           // Swal.fire("개발중", "기능 개발중입니다...", "info");
           setShowDelete(false);
-          setDeleteChecked([]);
+
           await deleteAttend("checked");
         } else {
           return;
@@ -560,11 +593,83 @@ const ManageAttendance = (props) => {
             (attend) => attend.id !== attendEdit.id
           );
 
+          // storage에서 있으면.. 삭제해야함.
+          //혹시 storage에 저장된 해당날짜의 데이터 있으면 그것도 삭제하기
+          try {
+            let folder = `${props.userUid}/attend/${attendEdit.id}`;
+            const listRef = ref(storageService, folder);
+
+            listAll(listRef).then((res) => {
+              res.items.forEach(async (itemRef) => {
+                await deleteObject(
+                  ref(storageService, itemRef["_location"]["path"])
+                );
+              });
+            });
+          } catch (error) {
+            console.log(error);
+          }
+
           const fixed_data = { attend_data: new_attends };
-          console.log(fixed_data);
+          // console.log(fixed_data);
           setUploadDatas(fixed_data);
         }
       });
+    }
+  };
+
+  /** 신청서나 보고서, 출결 서류 다운로드 하는 함수 */
+  const downLoadImg = async (atd, what) => {
+    let folder;
+    if (what === "신청서") {
+      folder = "request";
+    } else if (what === "보고서") {
+      folder = "report";
+    }
+    // console.log(atd.id);
+    // 만약 신청서가 있으면.. 다운로드하기
+
+    try {
+      const listRef = ref(storageService, `${props.userUid}/attend/${atd.id}`);
+
+      // Find all the prefixes and items.
+      listAll(listRef)
+        .then((res) => {
+          res.items.forEach(async (itemRef) => {
+            let url = await getDownloadURL(
+              ref(storageService, itemRef["_location"]["path"])
+            );
+
+            if (url) {
+              const link = document.createElement("a");
+              document.body.appendChild(link);
+              link.href = url;
+
+              link.download = `${atd.id.slice(0, 10)} ${what}.jpg`; // 다운로드될 파일의 이름을 설정합니다.
+              link.target = "_blank"; // 새 창에서 열리지 않도록 설정
+              link.rel = "noopener noreferrer"; // 다운로드를 위한 링크임을 알림
+              link.click();
+              document.body.removeChild(link);
+            }
+          });
+        })
+        .catch((error) => {
+          // Uh-oh, an error occurred!
+        });
+
+      // const url = await getDownloadURL(
+      //   ref(storageService, `${props.userUid}/attend/${atd.id}/${folder}`)
+      // );
+      // if (url) {
+      //   // 새로운 <a> 요소를 생성합니다.
+      //   var link = document.createElement("a");
+      //   link.href = url;
+      //   link.download = `${atd.id.slice(0, 10)} 현장체험학습 ${what}`; // 다운로드될 파일의 이름을 설정합니다.
+      //   // 클릭 이벤트를 발생시켜 다운로드를 시작합니다.
+      //   link.click();
+      // }
+    } catch (error) {
+      console.log("서류 없음음");
     }
   };
 
@@ -723,7 +828,7 @@ const ManageAttendance = (props) => {
                     {/* 서류 제출/미제출 아이콘 */}
                     {attend?.paper !== undefined && (
                       <i
-                        className="fa-solid fa-circle-check"
+                        className="fa-solid fa-circle-check fa-xl"
                         style={
                           attend.paper
                             ? {
@@ -739,10 +844,15 @@ const ManageAttendance = (props) => {
                       <Button
                         className={
                           attend?.request
-                            ? "paperSub-btn-clicked"
-                            : "paperSub-btn"
+                            ? "reqRepSub-btn-s-clicked"
+                            : "reqRepSub-btn-s"
                         }
                         name={"신"}
+                        onclick={(e) => {
+                          e.stopPropagation();
+
+                          downLoadImg(attend, "신청서");
+                        }}
                       />
                     )}
 
@@ -751,10 +861,15 @@ const ManageAttendance = (props) => {
                       <Button
                         className={
                           attend?.report
-                            ? "paperSub-btn-clicked"
-                            : "paperSub-btn"
+                            ? "reqRepSub-btn-s-clicked"
+                            : "reqRepSub-btn-s"
                         }
                         name={"보"}
+                        onclick={(e) => {
+                          e.stopPropagation();
+
+                          downLoadImg(attend, "보고서");
+                        }}
                       />
                     )}
                   </div>
@@ -996,10 +1111,30 @@ const ManageAttendance = (props) => {
                                 : "sortBtn"
                             }
                             name={`${name} (${
-                              attends?.filter(
-                                (attend) =>
-                                  !attend.paper && attend.name === name
-                              )?.length
+                              attends?.filter((attend) => {
+                                let isNoPaper = false;
+                                if (attend.name !== name) return isNoPaper;
+                                if (
+                                  attend?.paper !== undefined &&
+                                  !attend?.paper
+                                ) {
+                                  isNoPaper = true;
+                                } else {
+                                  if (
+                                    attend?.request !== undefined &&
+                                    !attend?.request
+                                  ) {
+                                    isNoPaper = true;
+                                  }
+                                  if (
+                                    attend?.report !== undefined &&
+                                    !attend?.report
+                                  ) {
+                                    isNoPaper = true;
+                                  }
+                                }
+                                return isNoPaper;
+                              })?.length
                             })`}
                             onclick={() => {
                               setShowNoPaper(name);
@@ -1051,17 +1186,19 @@ const ManageAttendance = (props) => {
                       {attend.name}
                       {/* 서류 제출/미제출 아이콘 */}
                       {attend?.paper !== undefined && (
-                        <i
-                          className="fa-solid fa-circle-check"
-                          style={
-                            attend.paper
-                              ? {
-                                  color: "#ff5a71",
-                                  margin: "0 10px",
-                                }
-                              : { color: "#cacaca", margin: "0 10px" }
-                          }
-                        ></i>
+                        <>
+                          <i
+                            className="fa-solid fa-circle-check fa-xl"
+                            style={
+                              attend.paper
+                                ? {
+                                    color: "#ff5a71",
+                                    margin: "0 10px",
+                                  }
+                                : { color: "#cacaca", margin: "0 10px" }
+                            }
+                          ></i>
+                        </>
                       )}
                       {/* request 신청서  */}
                       {attend?.request !== undefined && (
@@ -1073,6 +1210,11 @@ const ManageAttendance = (props) => {
                           }
                           name={"신"}
                           style={{ marginLeft: "10px" }}
+                          onclick={(e) => {
+                            e.stopPropagation();
+
+                            downLoadImg(attend, "신청서");
+                          }}
                         />
                       )}
                       {/* report 보고서  */}
@@ -1084,6 +1226,10 @@ const ManageAttendance = (props) => {
                               : "reqRepSub-btn-s"
                           }
                           name={"보"}
+                          onclick={(e) => {
+                            e.stopPropagation();
+                            downLoadImg(attend, "보고서");
+                          }}
                         />
                       )}
                     </div>

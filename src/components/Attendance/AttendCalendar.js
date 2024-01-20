@@ -6,7 +6,7 @@ import { ko } from "date-fns/esm/locale";
 
 const AttendCalendar = (props) => {
   const [startDate, setStartDate] = useState(props.setStart || new Date());
-  const [endDate, setEndDate] = useState(startDate);
+  const [endDate, setEndDate] = useState(props.setEnd || startDate);
 
   const isWeekday = (date) => {
     if (props.filterNone) return date;

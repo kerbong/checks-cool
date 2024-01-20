@@ -78,7 +78,7 @@ const TodoLists = (props) => {
     let optionValue;
     let noteValue;
 
-    console.log(item);
+    // console.log(item);
     //새로운 이벤트일 경우 name없음.
     if (!item.eventName) {
       eventName = document.getElementById(`todo-eventName`).value;
@@ -104,7 +104,7 @@ const TodoLists = (props) => {
       fixed_data["edit_id"] = fixed_data.id;
       fixed_data.id = item.id;
     }
-    console.log(fixed_data);
+    // console.log(fixed_data);
 
     //set아이템 일경우 옵션 추가
     if (item.set) {

@@ -628,3 +628,35 @@
   background-color: rgb(255 90 113);
   color: white;
 }
+
+.mobileMain-x,
+.mobileMain-2x,
+.mobileMain-move {
+  height: 13vh;
+  max-height: 120px;
+  min-height: 80px;
+  padding: 20px;
+  margin: 10px;
+  border-radius: 20px;
+  border: 0;
+  background-color: #e6d9d9;
+  font-weight: bold;
+  font-size: 5.5vw;
+}
+
+.mobileMain-x,
+.mobileMain-move {
+  width: 27vw;
+  max-width: 200px;
+  letter-spacing: -1px;
+}
+.mobileMain-move {
+  background-color: inherit;
+  word-break: keep-all;
+  font-size: 4vw;
+}
+
+.mobileMain-2x {
+  width: calc(75vw + 60px);
+  max-width: 420px;
+}
