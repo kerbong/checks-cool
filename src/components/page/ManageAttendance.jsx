@@ -618,58 +618,203 @@ const ManageAttendance = (props) => {
     }
   };
 
+  /** url과 파일 이름을 전달하면 다운받는 함수 */
+  function handleFileDownload(downloadUrl, down_fileName) {
+    fetch(downloadUrl)
+      .then((response) => response.blob())
+      .then((blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = down_fileName;
+        a.click();
+        window.URL.revokeObjectURL(url);
+      })
+      .catch((error) => {
+        // 에러 처리
+      });
+  }
+
+  const info_down = () => {
+    Swal.fire(
+      "다운로드중...",
+      "모든 파일을 다운받고 있습니다. 해당 파일이 다운로드 되는 폴더는 기기/브라우저 설정마다 다를 수 있으니 확인해주세요! 문제가 지속될 경우 kerbong@gmail.com으로 알려주세요!",
+      "info"
+    );
+  };
+
+  const warn_noPaper = () => {
+    Swal.fire(
+      "서류 없음",
+      "저장된 서류가 존재하지 않아요! 로그인 하신 계정을 확인해주시고, 파일을 업로드 한 것이 맞는지 확인해주세요. 문제가 지속될 경우 kerbong@gmail.com으로 알려주세요!",
+      "warning"
+    );
+  };
+
+  const warn_nonData = () => {
+    Swal.fire(
+      "서류 없음",
+      "해당 날짜에 저장된 서류가 존재하지 않아요! 혹시 여러 날짜의 출결정보(기간으로 입력된) 인 경우, 해당 출결의 가장 처음 날짜에 데이터가 저장됩니다. 문제가 지속될 경우 kerbong@gmail.com으로 알려주세요!",
+      "warning"
+    );
+  };
+
   /** 신청서나 보고서, 출결 서류 다운로드 하는 함수 */
   const downLoadImg = async (atd, what) => {
-    let folder;
-    if (what === "신청서") {
-      folder = "request";
-    } else if (what === "보고서") {
-      folder = "report";
-    }
-    // console.log(atd.id);
-    // 만약 신청서가 있으면.. 다운로드하기
-
+    //학생의 이름이 what으로 전달되어서 번호가 있으면
     try {
-      const listRef = ref(storageService, `${props.userUid}/attend/${atd.id}`);
+      let listRef;
+      if (what === "all") {
+        listRef = ref(storageService, `${props.userUid}/attend/`);
 
-      // Find all the prefixes and items.
-      listAll(listRef)
-        .then((res) => {
-          res.items.forEach(async (itemRef) => {
-            let url = await getDownloadURL(
-              ref(storageService, itemRef["_location"]["path"])
-            );
-
-            if (url) {
-              const link = document.createElement("a");
-              document.body.appendChild(link);
-              link.href = url;
-
-              link.download = `${atd.id.slice(0, 10)} ${what}.jpg`; // 다운로드될 파일의 이름을 설정합니다.
-              link.target = "_blank"; // 새 창에서 열리지 않도록 설정
-              link.rel = "noopener noreferrer"; // 다운로드를 위한 링크임을 알림
-              link.click();
-              document.body.removeChild(link);
+        listAll(listRef)
+          .then(async (res) => {
+            if (res.prefixes?.length === 0) {
+              warn_noPaper();
+              return;
             }
-          });
-        })
-        .catch((error) => {
-          // Uh-oh, an error occurred!
-        });
 
-      // const url = await getDownloadURL(
-      //   ref(storageService, `${props.userUid}/attend/${atd.id}/${folder}`)
-      // );
-      // if (url) {
-      //   // 새로운 <a> 요소를 생성합니다.
-      //   var link = document.createElement("a");
-      //   link.href = url;
-      //   link.download = `${atd.id.slice(0, 10)} 현장체험학습 ${what}`; // 다운로드될 파일의 이름을 설정합니다.
-      //   // 클릭 이벤트를 발생시켜 다운로드를 시작합니다.
-      //   link.click();
-      // }
+            let new_folder_ref;
+            //출결 날짜+번호 + 시분  이 있는 출결 폴더
+            res.prefixes?.forEach((fold) => {
+              new_folder_ref = ref(
+                storageService,
+                `${props.userUid}/attend/${fold.name}`
+              );
+
+              listAll(new_folder_ref)
+                .then(async (folder) => {
+                  // 만약 데이터가 없으면..
+                  if (folder.items?.length === 0) {
+                    warn_nonData();
+                    return;
+                  }
+
+                  info_down();
+
+                  for (const itemRef of folder.items) {
+                    const url = await getDownloadURL(
+                      ref(storageService, itemRef["_location"]["path"])
+                    );
+
+                    if (url) {
+                      let fileDateName =
+                        itemRef?.fullPath?.split("attend/")?.[1];
+                      let fileDate = fileDateName?.slice(0, 10);
+                      let fileName = fileDateName?.split("/")?.[1];
+
+                      handleFileDownload(url, fileDate + " " + fileName);
+                    }
+                  }
+                })
+                .catch((ref_err) => {
+                  console.log(ref_err);
+                });
+            });
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      } else {
+        let now_stdNum = +what?.split(" ")?.[0];
+
+        //현재 학생의 번호가 있는, 해당 학생의 모든 서류 다운 이면..
+        if (!isNaN(+now_stdNum)) {
+          listRef = ref(storageService, `${props.userUid}/attend/`);
+
+          listAll(listRef)
+            .then(async (res) => {
+              if (res.prefixes?.length === 0) {
+                warn_noPaper();
+                return;
+              }
+
+              let new_folder_ref;
+              let total = 0;
+              //출결 날짜+번호 + 시분  이 있는 출결 폴더
+              res.prefixes?.forEach((fold) => {
+                //번호가 일치하지 않으면 패스..
+                if (+fold.name.split(" ")?.[0]?.slice(10) !== +now_stdNum) {
+                  return;
+                }
+
+                new_folder_ref = ref(
+                  storageService,
+                  `${props.userUid}/attend/${fold.name}`
+                );
+
+                listAll(new_folder_ref)
+                  .then(async (folder) => {
+                    // 만약 데이터가 없으면..
+                    if (folder.items?.length === 0) {
+                      warn_nonData();
+                      return;
+                    }
+
+                    info_down();
+
+                    for (const itemRef of folder.items) {
+                      const url = await getDownloadURL(
+                        ref(storageService, itemRef["_location"]["path"])
+                      );
+
+                      if (url) {
+                        let fileDateName =
+                          itemRef?.fullPath?.split("attend/")?.[1];
+                        let fileDate = fileDateName?.slice(0, 10);
+                        let fileName = fileDateName?.split("/")?.[1];
+
+                        handleFileDownload(url, fileDate + " " + fileName);
+                        total += 1;
+                      }
+                    }
+                  })
+                  .catch((ref_err) => {
+                    console.log(ref_err);
+                  });
+              });
+
+              if (total === 0) {
+                warn_noPaper();
+              }
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+        } else {
+          listRef = ref(storageService, `${props.userUid}/attend/${atd.id}`);
+
+          listAll(listRef)
+            .then(async (res) => {
+              // 만약 데이터가 없으면..
+              if (res.items?.length === 0) {
+                warn_nonData();
+                return;
+              }
+
+              info_down();
+
+              for (const itemRef of res.items) {
+                const url = await getDownloadURL(
+                  ref(storageService, itemRef["_location"]["path"])
+                );
+
+                if (url) {
+                  let fileDateName = itemRef?.fullPath?.split("attend/")?.[1];
+                  let fileDate = fileDateName?.slice(0, 10);
+                  let fileName = fileDateName?.split("/")?.[1];
+
+                  handleFileDownload(url, fileDate + " " + fileName);
+                }
+              }
+            })
+            .catch((ref_err) => {
+              console.log(ref_err);
+            });
+        }
+      }
     } catch (error) {
-      console.log("서류 없음음");
+      warn_noPaper();
     }
   };
 
@@ -697,7 +842,25 @@ const ManageAttendance = (props) => {
                 className={classes["bottom-content-li"]}
                 style={{ minWidth: "200px" }}
               >
-                <b> {onStudent} | 출결 요약</b>
+                <div
+                  className={classes["fs-22-bold"]}
+                  style={onAttends?.length !== 0 ? { margin: "15px" } : {}}
+                >
+                  {onStudent}
+                </div>
+                {/* 개별학생 자료 다운 */}
+                {onAttends?.length !== 0 && (
+                  <>
+                    <button
+                      className={classes["search-btns"]}
+                      onClick={() => downLoadImg(undefined, onStudent)}
+                      title={`"${onStudent}" 으로 업로드 된 모든 서류를 다운합니다.`}
+                      style={{ marginLeft: "15px", fontSize: "14px" }}
+                    >
+                      <i className="fa-solid fa-download"></i> 제출서류 저장
+                    </button>
+                  </>
+                )}
                 <hr className={classes["margin-15"]} />
                 {onAttends?.length === 0 ? (
                   <div
@@ -760,7 +923,6 @@ const ManageAttendance = (props) => {
                       name={!showDelete ? "전체삭제" : "확인"}
                       style={{
                         backgroundColor: !showDelete ? "#da9a9a" : "#ff5a70",
-                        fontWeight: "bold",
                       }}
                       onclick={() => {
                         !showDelete
@@ -775,7 +937,6 @@ const ManageAttendance = (props) => {
                       name={showDelete ? "취소" : "선택삭제"}
                       style={{
                         backgroundColor: showDelete ? "gray" : "#da9a9a",
-                        fontWeight: "bold",
                       }}
                       onclick={() => {
                         // Swal.fire("개발중", "기능 개발중입니다...", "info");
@@ -834,9 +995,17 @@ const ManageAttendance = (props) => {
                             ? {
                                 color: "#ff5a71",
                                 margin: "0 10px",
+                                cursor: "help",
                               }
                             : { color: "#cacaca", margin: "0 10px" }
                         }
+                        title="업로드 된 서류 다운받기"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (!attend?.paper) return;
+
+                          downLoadImg(attend, "서류");
+                        }}
                       ></i>
                     )}
                     {/* request 신청서  */}
@@ -848,9 +1017,10 @@ const ManageAttendance = (props) => {
                             : "reqRepSub-btn-s"
                         }
                         name={"신"}
+                        title="업로드 된 서류 다운받기"
                         onclick={(e) => {
                           e.stopPropagation();
-
+                          if (!attend?.request) return;
                           downLoadImg(attend, "신청서");
                         }}
                       />
@@ -865,8 +1035,10 @@ const ManageAttendance = (props) => {
                             : "reqRepSub-btn-s"
                         }
                         name={"보"}
+                        title="업로드 된 서류 다운받기"
                         onclick={(e) => {
                           e.stopPropagation();
+                          if (!attend?.report) return;
 
                           downLoadImg(attend, "보고서");
                         }}
@@ -1017,7 +1189,7 @@ const ManageAttendance = (props) => {
               {onAttends?.length !== 0 && (
                 <>
                   <li className={classes["bottom-content-li"]}>
-                    월별로 보기
+                    <b>월별로 보기</b>
                     <hr className={classes["margin-15"]} />
                     {/* 전체 월 버튼 */}
                     <Button
@@ -1069,7 +1241,17 @@ const ManageAttendance = (props) => {
 
                   {/* 서류 미제출학생 보기 */}
                   <li className={classes["bottom-content-li"]}>
-                    서류 미제출
+                    <div className={classes["flex-center-ml-10"]}>
+                      <b>서류 미제출</b>
+                      <button
+                        className={classes["search-btns"]}
+                        onClick={() => downLoadImg(undefined, "all")}
+                        title="업로드 된 모든 서류를 다운합니다."
+                        style={{ marginLeft: "15px" }}
+                      >
+                        <i className="fa-solid fa-download"></i> 제출서류 저장
+                      </button>
+                    </div>
                     <hr className={classes["margin-15"]} />
                     {/* 전체 학생 버튼 */}
                     <Button
@@ -1194,9 +1376,17 @@ const ManageAttendance = (props) => {
                                 ? {
                                     color: "#ff5a71",
                                     margin: "0 10px",
+                                    cursor: "help",
                                   }
                                 : { color: "#cacaca", margin: "0 10px" }
                             }
+                            title="업로드 된 서류 다운받기"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              if (!attend?.paper) return;
+
+                              downLoadImg(attend, "서류");
+                            }}
                           ></i>
                         </>
                       )}
@@ -1210,8 +1400,10 @@ const ManageAttendance = (props) => {
                           }
                           name={"신"}
                           style={{ marginLeft: "10px" }}
+                          title="업로드 된 서류 다운받기"
                           onclick={(e) => {
                             e.stopPropagation();
+                            if (!attend?.request) return;
 
                             downLoadImg(attend, "신청서");
                           }}
@@ -1226,8 +1418,10 @@ const ManageAttendance = (props) => {
                               : "reqRepSub-btn-s"
                           }
                           name={"보"}
+                          title="업로드 된 서류 다운받기"
                           onclick={(e) => {
                             e.stopPropagation();
+                            if (!attend?.report) return;
                             downLoadImg(attend, "보고서");
                           }}
                         />

@@ -33,15 +33,16 @@ const MobileMain = (props) => {
   const [ocrResult, setOcrResult] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [openAi, setOpenAi] = useState(null);
-  const [gptAnswer, setGptAnswer] = useState("");
   const [nowYearStd, setNowYearStd] = useState([]);
   const [newRequestData, setNewRequestData] = useState(null);
   const [finalData, setFinalData] = useState(null);
   const [dates, setDates] = useState(null);
   const [attachedFile, setAttachedFile] = useState(null);
   const [isSubject, setIsSubject] = useState(false);
+  const [selectedFiles, setSelectedFiles] = useState([]);
 
   const fileInput = useRef();
+  const multiFileInput = useRef();
   const navigate = useNavigate();
 
   const nowYear = () => {
@@ -64,11 +65,128 @@ const MobileMain = (props) => {
   }, [props.students]);
 
   const handleButtonClick = (e) => {
-    if (fileInput.current) {
-      fileInput.current.click();
-    }
     let now = e.target.title;
     setNowOcr(now);
+
+    if (now === "연수자료") {
+      // 여러 파일 추가하는 input 태그 클릭.
+      if (multiFileInput.current) {
+        multiFileInput.current.click();
+      }
+    } else {
+      if (fileInput.current) {
+        fileInput.current.click();
+      }
+    }
+  };
+
+  const handleFilesChange = (event) => {
+    const files = event.target?.files;
+    // console.log(files);
+    if (!files) return;
+
+    setSelectedFiles((prev) => [...prev, ...files]);
+
+    callOpenAiApi();
+  };
+
+  //   useEffect(() => {
+  //     console.log(selectedFiles);
+  //   }, [selectedFiles]);
+  /** 연수자료 업로드 완료..!!  */
+  const handleUpload = async () => {
+    const imagePromises = [];
+
+    for (let i = 0; i < selectedFiles.length; i++) {
+      const file = selectedFiles[i];
+      const imagePromise = await loadImage(file);
+      imagePromises.push(imagePromise);
+    }
+
+    Promise.all(imagePromises)
+      .then((images) => {
+        // 캔버스 생성
+        const mergedCanvas = document.createElement("canvas");
+        const mergedContext = mergedCanvas.getContext("2d");
+
+        // 이미지 높이의 총합 계산
+        const totalHeight = images.reduce(
+          (height, image) => height + image.height,
+          0
+        );
+
+        // 캔버스 크기 설정
+        mergedCanvas.width = images[0].width;
+        mergedCanvas.height = totalHeight;
+
+        // 이미지를 아래로 그리기
+        let offsetY = 0;
+        for (const image of images) {
+          mergedContext.drawImage(image, 0, offsetY);
+          offsetY += image.height;
+        }
+
+        // 새로운 이미지 파일로 변환
+        const mergedImageURL = mergedCanvas.toDataURL();
+
+        setIsLoading(true);
+
+        const reader = new FileReader();
+
+        // mergedImageURL을 Blob 객체로 변환
+        const byteString = atob(mergedImageURL.split(",")[1]);
+        const ab = new ArrayBuffer(byteString.length);
+        const ia = new Uint8Array(ab);
+        for (let i = 0; i < byteString.length; i++) {
+          ia[i] = byteString.charCodeAt(i);
+        }
+        const blob = new Blob([ab], { type: "image/png" });
+
+        reader.readAsDataURL(blob);
+
+        reader.onloadend = () => {
+          // 변환 완료!
+          const base64data = mergedImageURL;
+          setAttachedFile(base64data);
+          //구글image파일 ocr 하기
+          googleImageOcrHandler(base64data.split(",")[1]);
+        };
+
+        reader.onerror = (error) => {
+          console.error("파일을 읽을 수 없습니다.", error);
+        };
+
+        // 이후에 OCR을 수행하거나 이미지 파일로 저장하는 등의 작업을 진행할 수 있습니다.
+        console.log("문서 이미지 파일 업로드 완료:", mergedImageURL);
+      })
+      .catch((error) => {
+        console.error("문서 이미지 파일 업로드 실패:", error);
+      });
+  };
+
+  const loadImage = async (file) => {
+    const compressedImage = await compress(file);
+
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+
+      reader.onload = function (event) {
+        const image = new Image();
+        image.onload = function () {
+          resolve(image);
+        };
+        image.onerror = function () {
+          reject(new Error("이미지를 로드할 수 없습니다."));
+        };
+        image.src = event.target.result;
+      };
+
+      reader.onerror = function () {
+        reject(new Error("파일을 읽을 수 없습니다."));
+      };
+
+      reader.readAsDataURL(compressedImage);
+    });
   };
 
   // 버튼누르면 api 요청해서 받아와서 물어보기..
@@ -201,7 +319,11 @@ const MobileMain = (props) => {
             image: {
               content: base64Img,
             },
-            features: [{ type: "TEXT_DETECTION" }],
+            features: [
+              {
+                type: "TEXT_DETECTION",
+              },
+            ],
           },
         ],
       }),
@@ -211,9 +333,12 @@ const MobileMain = (props) => {
     })
       .then((response) => response.json())
       .then((data) => {
-        const ocrTexts = replaceNewLines(
-          data.responses[0].fullTextAnnotation.text
-        );
+        const ocrTexts =
+          nowOcr === "연수자료"
+            ? data.responses[0].fullTextAnnotation.text
+            : nowOcr === "예산"
+            ? data.responses[0].fullTextAnnotation.text
+            : replaceNewLines(data.responses[0].fullTextAnnotation.text);
 
         console.log(ocrTexts);
         setOcrResult(ocrTexts);
@@ -233,23 +358,29 @@ const MobileMain = (props) => {
       );
   };
 
-  /** open ai로 출결 관련 서류 제출할 때 ocrText분석해서 보여줄 부분. */
-  const responseCall = async (ocrText, prompt) => {
+  /** gpt에게 실제적으로 묻고 나온 결과 받아서 주기 */
+  const gptResult = async (text, prompt) => {
     const completion = await openAi.chat.completions.create({
       messages: [
         {
           role: "system",
           content: prompt,
         },
-        { role: "user", content: ocrText },
+        { role: "user", content: text },
       ],
       model: "gpt-3.5-turbo-1106",
       temperature: 0.2,
     });
+    return completion?.choices[0]?.message?.content;
+  };
+
+  /** open ai로 출결 관련 서류 제출할 때 ocrText분석해서 보여줄 부분. */
+  const responseCall = async (ocrText, prompt) => {
+    const resultContent = gptResult(ocrText, prompt);
 
     //[학생이름, 날짜, 목적지, 연락처] 담긴 배열
-    console.log(completion?.choices[0]?.message?.content);
-    const data = parseTextToDataArr(completion?.choices[0]?.message?.content);
+    console.log(resultContent);
+    const data = parseTextToDataArr(resultContent);
 
     //날짜 세팅하기
     setDates(extractDates(data?.[1]));
@@ -529,6 +660,78 @@ const MobileMain = (props) => {
     });
   };
 
+  /** 연수자료 텍스트 3~5줄로 요약해주고, 파일도 자동 저장해주기. */
+  const textSumUploadFile = async (text) => {
+    const resultContent = await gptResult(
+      text,
+      `이렇게 ocr로 인식한 text가 있는데, 개인 비서처럼 내용을 요약해서 아래처럼 답변해줘.추가적인 설명이나 줄바꿈은 필요없어.
+         1.자료제목
+         2.요약한 내용(400자 이내)
+         3.핵심내용(80자이내)`
+    );
+
+    // console.log(resultContent);
+
+    let data = {
+      id: dayjs().format("YYYY-MM-DD HH:mm"),
+    };
+
+    const lines = resultContent.split("\n");
+    //결과를 줄별로 나누고,
+    let count_line = 0;
+    lines.forEach((line) => {
+      // 콜론(:)을 기준으로 key와 value로 분리 하는데 혹시 콜론이 없이 1. 김민준 이런식으로 결과값이 나오면.. 띄어쓰기로 구분.
+
+      //   만약 빈 줄이면 패스.
+      if (line?.trim()?.length === 0) return;
+
+      const value =
+        line?.includes(":") && line?.split(":")?.[1]?.trim()?.length > 0
+          ? line?.split(":")?.[1]?.trim()
+          : line?.split(".")?.[1]?.trim();
+      if (count_line === 0) {
+        data["title"] = value?.trim();
+      } else if (count_line === 1) {
+        data["text"] = value?.trim();
+      } else if (count_line === 2) {
+        data["result"] = value?.trim();
+      }
+      count_line += 1;
+    });
+
+    //storage에 저장
+    const response = await uploadString(
+      ref(storageService, `${props.userUid}/${v4()}`),
+      attachedFile,
+      "data_url"
+    );
+    //firestore에 저장할 url받아오기
+    data["file"] = await getDownloadURL(response.ref);
+
+    //firestore에 저장
+    let meetingSumRef = doc(dbService, "todo", "MeetSum" + props.userUid);
+
+    //기존 자료 목록 받아오고 거기에 추가하기
+
+    let newDatas = [];
+    const meetSumDoc = await getDoc(meetingSumRef);
+    if (meetSumDoc.exists()) {
+      newDatas = [...meetSumDoc?.data()?.meetSum_data];
+    }
+
+    newDatas.push(data);
+
+    // console.log(data);
+    // console.log(newDatas);
+
+    await setDoc(meetingSumRef, { meetSum_data: newDatas });
+
+    saveSwal("연수자료", true).then(() => {
+      setNowOcr("");
+      setIsLoading(false);
+    });
+  };
+
   useEffect(() => {
     if (ocrResult === "") return;
 
@@ -577,13 +780,20 @@ const MobileMain = (props) => {
           `
         );
       }
+      //상담이면
     } else if (nowOcr === "상담") {
       // 학생 이름 고르기 Swal 보여주기.
       // 전담이면, 학급먼저 고르기
       showConsultStdSwal(ocrResult);
+    } else if (nowOcr === "예산") {
+      console.log("예산");
+      Swal.fire("코딩중", "아직 코딩중입니다.", "info");
+    } else if (nowOcr === "연수자료") {
+      textSumUploadFile(ocrResult);
     }
   }, [ocrResult]);
 
+  /** 파일 업로드할 때 실행되는 실제 함수 */
   const handleFileChange = async (e) => {
     const file = e.target.files[0];
     if (!file) {
@@ -651,6 +861,7 @@ const MobileMain = (props) => {
         className={"mobileMain-x"}
         onclick={handleButtonClick}
         title={name}
+        style={name === "연수자료" ? { fontSize: "20px" } : {}}
       />
     );
   };
@@ -677,10 +888,12 @@ const MobileMain = (props) => {
     );
   };
 
-  const saveSwal = (forWhat) => {
+  const saveSwal = (forWhat, isMeetSum) => {
     return Swal.fire({
       title: "저장완료!",
-      html: `${forWhat}에<br/> 내용이 저장되었습니다!<br/>(3초후 자동 닫힘)`,
+      html: !isMeetSum
+        ? `${forWhat}에<br/> 내용이 저장되었습니다!<br/>(3초후 자동 닫힘)`
+        : `${forWhat}에<br/> 내용이 저장되었습니다!<br/>저장된 연수자료는 [메모]-[일정]화면 하단의 "회의록/연수자료"에서 확인이 가능합니다. (3초후 자동 닫힘)`,
       timer: 3000,
       icon: "success",
       confirmButtonText: "확인",
@@ -941,7 +1154,7 @@ const MobileMain = (props) => {
     if (what === "request") {
       //저장가능한 날짜 중에 이미 저장된 데이터 있는지 확인하고 저장하기, 새로 시간을 저장하므로.. 동일한 데이터 있을 수도 있음. 날짜와 번호, 출결옵션이 같으면 동일 자료로 인식.
 
-      weekDayEvents.forEach((data_id) => {
+      weekDayEvents.forEach((data_id, ind) => {
         let existAttend = new_attendEvents?.filter(
           (event) =>
             event.id.slice(0, 11) === data_id.slice(0, 11) &&
@@ -963,6 +1176,11 @@ const MobileMain = (props) => {
               event.option === "1현장체험"
             ) {
               new_event["request"] = true;
+              //   //이미 있는 자료에서 첫번째 날짜에만 데이터 저장하기
+              if (ind === 0) {
+                start_id = event.id;
+                console.log(start_id);
+              }
             }
             return new_event;
           });
@@ -971,7 +1189,7 @@ const MobileMain = (props) => {
 
       //   체험학습 보고서 저장하기 [학생이름, 날짜]
     } else if (what === "report") {
-      weekDayEvents.forEach((data_id) => {
+      weekDayEvents.forEach((data_id, ind) => {
         let existAttend = new_attendEvents?.filter(
           (event) =>
             event.id.slice(0, 11) === data_id.slice(0, 11) &&
@@ -996,8 +1214,10 @@ const MobileMain = (props) => {
               event.option === "1현장체험"
             ) {
               new_event["report"] = true;
-              //   //이미 있는 자료이므로.. 첫 날짜의 id를 변경
-              //   start_id = event.id;
+              //   //이미 있는 자료에서 첫번째 날짜에만 데이터 저장하기
+              if (ind === 0) {
+                start_id = event.id;
+              }
             }
             return new_event;
           });
@@ -1022,7 +1242,7 @@ const MobileMain = (props) => {
         new_option = "4경조사";
       }
 
-      weekDayEvents.forEach((data_id) => {
+      weekDayEvents.forEach((data_id, ind) => {
         let existAttend = new_attendEvents?.filter(
           (event) =>
             event.id.slice(0, 11) === data_id.slice(0, 11) &&
@@ -1048,6 +1268,11 @@ const MobileMain = (props) => {
               event.option === new_option
             ) {
               new_event["paper"] = true;
+              //   //이미 있는 자료에서 첫번째 날짜에만 데이터 저장하기
+              if (ind === 0) {
+                start_id = event.id;
+                console.log(start_id);
+              }
             }
             return new_event;
           });
@@ -1064,9 +1289,9 @@ const MobileMain = (props) => {
     //신청서 데이터도 스토리지에 업로드하기.
     let address =
       what === "request"
-        ? `${props.userUid}/attend/${start_id}/request`
+        ? `${props.userUid}/attend/${start_id}/체험학습 신청서`
         : what === "report"
-        ? `${props.userUid}/attend/${start_id}/report`
+        ? `${props.userUid}/attend/${start_id}/체험학습 보고서`
         : `${props.userUid}/attend/${start_id}/${new_option?.slice(1)}`;
 
     await uploadString(ref(storageService, address), attachedFile, "data_url");
@@ -1259,7 +1484,10 @@ const MobileMain = (props) => {
       )}
 
       {/* 나중에.. 좋은 이미지로 채워질 공간, */}
-      <div className={classes["img-div"]}>
+      <div
+        className={classes["img-div"]}
+        style={nowOcr !== "연수자료" ? {} : { height: "92vh" }}
+      >
         {!isListening && "테스트 중입니다."}
         {/* 일정 듣는중 */}
         {isListening && voiceWhat === "일정" && (
@@ -1287,6 +1515,62 @@ const MobileMain = (props) => {
             <br />
             <b>예)</b> '독서록 제출 안내'
           </div>
+        )}
+        {/* 연수자료 업로드인데 파일 업로드 중이면, */}
+        {nowOcr === "연수자료" && !isLoading && (
+          <>
+            {/* 업로드된 파일 이름 보여주기 */}
+            <div className={classes["uploadFiles-div"]}>
+              <hr style={{ width: "70vw" }} />
+              <div
+                className={classes["uploadTitle-div"]}
+                style={{ fontSize: "30px" }}
+              >
+                연수자료/회의록
+                <br />
+                자동 요약 및 업로드
+                <hr style={{ width: "70vw" }} />
+              </div>
+              <div className={classes["uploadTitle-div"]}>
+                총 업로드 파일 ({selectedFiles?.length})
+              </div>
+              {selectedFiles?.map((file, f_ind) => (
+                <div key={f_ind} className={classes["uploadFile-div"]}>
+                  {file?.name}
+                </div>
+              ))}
+            </div>
+
+            <div style={{ display: "flex" }}>
+              <Button
+                name={"파일 추가"}
+                onclick={() => {
+                  if (multiFileInput.current) {
+                    multiFileInput.current.click();
+                  }
+                }}
+                className={"mobileMain-2x"}
+                style={{ backgroundColor: "orange", width: "42vw" }}
+              />
+              <Button
+                name={"업로드 완료"}
+                onclick={handleUpload}
+                className={"mobileMain-2x"}
+                style={{ backgroundColor: "orange", width: "42vw" }}
+              />
+            </div>
+
+            <Button
+              name={"취소"}
+              style={{ backgroundColor: "lightgray" }}
+              onclick={() => {
+                setNowOcr("");
+                setSelectedFiles([]);
+                setIsLoading(false);
+              }}
+              className={"mobileMain-2x"}
+            />
+          </>
         )}
         {/*ocr 분석 대기중 */}
         {isLoading && (
@@ -1326,14 +1610,24 @@ const MobileMain = (props) => {
         onChange={handleFileChange}
       />
 
-      <Button
-        name={"PC 메인화면"}
-        className={"mobileMain-2x"}
-        onclick={() => navigate(`/main`)}
+      {/* 여러 파일용  */}
+      <input
+        type="file"
+        onChange={handleFilesChange}
+        accept="image/*;capture=camera"
+        ref={multiFileInput}
+        style={{ display: "none" }}
       />
+      {nowOcr !== "연수자료" && (
+        <Button
+          name={"PC 메인화면"}
+          className={"mobileMain-2x"}
+          onclick={() => navigate(`/main`)}
+        />
+      )}
 
       {/* 처음 세팅, 오른손 잡이용 */}
-      {!isLeft && (
+      {nowOcr !== "연수자료" && !isLeft && (
         <>
           {/* 왼쪽으로 몰기 */}
           <Button
@@ -1352,11 +1646,18 @@ const MobileMain = (props) => {
           />
           {xForFileBtn("상담")}
           {!isSubject && xForFileBtn("출결")}
+          <Button
+            name={""}
+            className={"mobileMain-x"}
+            style={{ backgroundColor: "inherit" }}
+          />
+          {xForFileBtn("예산")}
+          {xForFileBtn("연수자료")}
         </>
       )}
 
       {/* 왼손 잡이용 */}
-      {isLeft && (
+      {nowOcr !== "연수자료" && isLeft && (
         <>
           {xForVoiceBtn("할일")}
           {xForVoiceBtn("일정")}
@@ -1367,10 +1668,18 @@ const MobileMain = (props) => {
             className={"mobileMain-move"}
             onclick={() => setIsLeft(false)}
           />
+
           {!isSubject && xForFileBtn("출결")}
           {xForFileBtn("상담")}
-
           {/* 일단 비워두기 */}
+          <Button
+            name={""}
+            className={"mobileMain-x"}
+            style={{ backgroundColor: "inherit" }}
+          />
+
+          {xForFileBtn("연수자료")}
+          {xForFileBtn("예산")}
           <Button
             name={""}
             className={"mobileMain-x"}

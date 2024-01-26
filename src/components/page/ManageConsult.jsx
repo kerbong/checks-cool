@@ -456,7 +456,7 @@ const ManageConsult = (props) => {
                 {/* 월별 데이터 보여주기 버튼 */}
                 {onConsults?.length !== 0 && (
                   <li className={classes["bottom-content-li"]}>
-                    월별로 보기
+                    <b>월별로 보기</b>
                     <hr className={classes["margin-15"]} />
                     {/* 전체 월 버튼 */}
                     <Button

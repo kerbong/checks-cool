@@ -31,8 +31,9 @@ const MeetingSummary = (props) => {
     const meetSumSnap = await getDoc(meetingSumRef);
     // 자료가 존재하면
     setSummary([]);
-    if (meetSumSnap.exists()) {
-      onSnapshot(meetingSumRef, (doc) => {
+
+    onSnapshot(meetingSumRef, (doc) => {
+      if (doc.exists()) {
         let new_summary = [];
         // 2월~1월까지를 학년도로 보고 자료날짜와 달력 날짜 비교해서 자료 저장
         doc.data().meetSum_data?.forEach((data) => {
@@ -48,13 +49,13 @@ const MeetingSummary = (props) => {
             new_summary.push(data);
           }
         });
-
         setSummary([...new_summary]);
-        // setSummary([...doc.data().meetSum_data]);
-      });
-    } else {
-      setSummary([]);
-    }
+      } else {
+        setSummary([]);
+      }
+
+      // setSummary([...doc.data().meetSum_data]);
+    });
   };
 
   useEffect(() => {
@@ -257,7 +258,7 @@ const MeetingSummary = (props) => {
       {/* 회의록 리스트 부분 */}
       <div className={classes["title-div"]}>
         <h1 className={`${classes["m-10"]} ${classes["title"]}`}>
-          {props.showPublicEvent ? "공용 " : "개인 "}회의록 / 연수자료 ...
+          {props.showPublicEvent ? "공용 " : "개인 "}회의록 <br />/ 연수자료
         </h1>
         {/* 추가버튼 */}
         <button

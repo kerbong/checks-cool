@@ -627,12 +627,13 @@
   width: 30px;
   background-color: rgb(255 90 113);
   color: white;
+  cursor: help;
 }
 
 .mobileMain-x,
 .mobileMain-2x,
 .mobileMain-move {
-  height: 13vh;
+  height: 10vh;
   max-height: 120px;
   min-height: 80px;
   padding: 20px;
