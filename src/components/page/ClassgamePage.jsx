@@ -92,6 +92,12 @@ const ClassgamePage = (props) => {
         style={{ fontSize: "1em", color: "#f2ffd8" }}
       ></i>
     </div>,
+    <div className={classes["iconLeft"]}>
+      <i
+        className="fa-solid fa-users-rectangle"
+        style={{ fontSize: "1em", color: "#f2ffd8" }}
+      ></i>
+    </div>,
   ];
 
   return (
@@ -232,6 +238,22 @@ const ClassgamePage = (props) => {
                   navigate("/scoreBoard");
                 }}
                 icon={ICONS_LEFT[7]}
+                style={{ backgroundColor: "#9ad237" }}
+              />
+
+              <Button
+                name={"모둠화면"}
+                className={"settingSeatSelect"}
+                title={
+                  "새창) 모둠의 자리배치를 보면서 ( 모둠점수 / 개별점수 / 출결 / 제출 / 개별기록 ) 등을 사용해요"
+                }
+                onclick={() => {
+                  const specificString = "groupPage";
+                  const encodedString = encodeURIComponent(specificString);
+                  const url = `https://checks-cho-ok.web.app/${encodedString}`;
+                  window.open(url, "_blank");
+                }}
+                icon={ICONS_LEFT[9]}
                 style={{ backgroundColor: "#9ad237" }}
               />
             </div>

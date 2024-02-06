@@ -46,7 +46,7 @@ const MobileMain = (props) => {
   const navigate = useNavigate();
 
   const nowYear = () => {
-    return +dayjs().format("MM") <= 2
+    return dayjs().format("MM-DD") <= "02-15"
       ? String(+dayjs().format("YYYY") - 1)
       : dayjs().format("YYYY");
   };
@@ -78,6 +78,49 @@ const MobileMain = (props) => {
         fileInput.current.click();
       }
     }
+  };
+
+  /** 파일 업로드할 때 실행되는 실제 함수 */
+  const handleFileChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) {
+      return;
+    }
+    // 예산인 경우... 뒤로 돌아가기!
+    if (nowOcr === "예산") {
+      Swal.fire(
+        "준비중!",
+        "다양한 테스트 중입니다. 사용에 불편드려 죄송합니다! 빠른 업데이트를 원하신다면 [교사랑]-[이거해요]에 알려주세요~",
+        "info"
+      );
+      return;
+    }
+
+    if (nowOcr === "학생등록") {
+      Swal.fire(
+        "준비중!",
+        "학생명부를 사진으로 등록하는 기능을 추가하고 있습니다!",
+        "info"
+      );
+      return;
+    }
+
+    callOpenAiApi();
+
+    // 이후에는 선택된 파일 혹은 이미지를 ocr로 처리하기
+    setIsLoading(true);
+
+    const reader = new FileReader();
+    const compressedImage = await compress(file);
+
+    reader.readAsDataURL(compressedImage);
+    reader.onloadend = (e) => {
+      // 변환 완료!
+      const base64data = reader.result;
+      setAttachedFile(e.currentTarget.result);
+      //구글image파일 ocr 하기
+      googleImageOcrHandler(base64data.split(",")[1]);
+    };
   };
 
   const handleFilesChange = (event) => {
@@ -310,6 +353,10 @@ const MobileMain = (props) => {
     //구글 ocr 자료 분석실행
     const API_KEY = process.env.REACT_APP_GOOGLE_OCR_API_KEY;
 
+    //예산인 경우... ocr Type 변경해주기
+    let ocrType =
+      nowOcr !== "예산" ? "TEXT_DETECTION" : "DOCUMENT_TEXT_DETECTION";
+
     const URL = `https://vision.googleapis.com/v1/images:annotate?key=${API_KEY}`;
     await fetch(URL, {
       method: "POST",
@@ -321,7 +368,7 @@ const MobileMain = (props) => {
             },
             features: [
               {
-                type: "TEXT_DETECTION",
+                type: ocrType,
               },
             ],
           },
@@ -337,11 +384,15 @@ const MobileMain = (props) => {
           nowOcr === "연수자료"
             ? data.responses[0].fullTextAnnotation.text
             : nowOcr === "예산"
-            ? data.responses[0].fullTextAnnotation.text
+            ? data?.responses[0].fullTextAnnotation.pages[0].blocks //여기 예산 ocr 결과 수정해야 할 부분.
             : replaceNewLines(data.responses[0].fullTextAnnotation.text);
 
         console.log(ocrTexts);
-        setOcrResult(ocrTexts);
+        if (nowOcr === "예산") {
+          setOcrResult(JSON.stringify(ocrTexts));
+        } else {
+          setOcrResult(ocrTexts);
+        }
 
         // 숫자가 아닌 것들 빈칸으로 만들었다가 지우고 배열로 만들기
       })
@@ -376,10 +427,13 @@ const MobileMain = (props) => {
 
   /** open ai로 출결 관련 서류 제출할 때 ocrText분석해서 보여줄 부분. */
   const responseCall = async (ocrText, prompt) => {
-    const resultContent = gptResult(ocrText, prompt);
+    const resultContent = await gptResult(ocrText, prompt);
 
     //[학생이름, 날짜, 목적지, 연락처] 담긴 배열
     console.log(resultContent);
+
+    if (nowOcr === "예산") return;
+
     const data = parseTextToDataArr(resultContent);
 
     //날짜 세팅하기
@@ -787,34 +841,19 @@ const MobileMain = (props) => {
       showConsultStdSwal(ocrResult);
     } else if (nowOcr === "예산") {
       console.log("예산");
-      Swal.fire("코딩중", "아직 코딩중입니다.", "info");
+      responseCall(
+        ocrResult,
+        `이렇게 ocr로 인식한 객체가 있는데 이 내용을 자세히 분석해봐. 학교 예산과 관련된 서류야. 아래의 질문에 대한 답변만 해줘.추가적인 설명 필요없어. 2번은 품목이 많으면 줄을바꿔서 알려줘.
+        1.예산 세부항목
+        2.품목내역 및 규격, 수량, 예상단가, 예상금액
+        3.예산총액 및 예산잔액
+        `
+      );
+      // Swal.fire("코딩중", "아직 코딩중입니다.", "info");
     } else if (nowOcr === "연수자료") {
       textSumUploadFile(ocrResult);
     }
   }, [ocrResult]);
-
-  /** 파일 업로드할 때 실행되는 실제 함수 */
-  const handleFileChange = async (e) => {
-    const file = e.target.files[0];
-    if (!file) {
-      return;
-    }
-    callOpenAiApi();
-    // 이후에는 선택된 파일 혹은 이미지를 ocr로 처리하기
-    setIsLoading(true);
-
-    const reader = new FileReader();
-    const compressedImage = await compress(file);
-
-    reader.readAsDataURL(compressedImage);
-    reader.onloadend = (e) => {
-      // 변환 완료!
-      const base64data = reader.result;
-      setAttachedFile(e.currentTarget.result);
-      //구글image파일 ocr 하기
-      googleImageOcrHandler(base64data.split(",")[1]);
-    };
-  };
 
   const handleVoiceButtonClick = (e) => {
     if (!("webkitSpeechRecognition" in window)) {
@@ -861,7 +900,9 @@ const MobileMain = (props) => {
         className={"mobileMain-x"}
         onclick={handleButtonClick}
         title={name}
-        style={name === "연수자료" ? { fontSize: "20px" } : {}}
+        style={
+          name === "연수자료" || name === "학생등록" ? { fontSize: "20px" } : {}
+        }
       />
     );
   };
@@ -1646,11 +1687,7 @@ const MobileMain = (props) => {
           />
           {xForFileBtn("상담")}
           {!isSubject && xForFileBtn("출결")}
-          <Button
-            name={""}
-            className={"mobileMain-x"}
-            style={{ backgroundColor: "inherit" }}
-          />
+          {xForFileBtn("학생등록")}
           {xForFileBtn("예산")}
           {xForFileBtn("연수자료")}
         </>
@@ -1680,11 +1717,7 @@ const MobileMain = (props) => {
 
           {xForFileBtn("연수자료")}
           {xForFileBtn("예산")}
-          <Button
-            name={""}
-            className={"mobileMain-x"}
-            style={{ backgroundColor: "inherit" }}
-          />
+          {xForFileBtn("학생등록")}
         </>
       )}
     </div>

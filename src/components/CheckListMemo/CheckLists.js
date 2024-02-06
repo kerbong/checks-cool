@@ -118,7 +118,7 @@ const CheckLists = (props) => {
           // 자료가 없으면 현재 학년도로 세팅
         } else {
           setDataYears([
-            +dayjs().format("MM") <= 2
+            dayjs().format("MM-DD") <= "02-15"
               ? String(+dayjs().format("YYYY") - 1)
               : dayjs().format("YYYY"),
           ]);
@@ -155,7 +155,7 @@ const CheckLists = (props) => {
           // 자료가 없으면 현재 학년도로 세팅
         } else {
           setDataYears([
-            +dayjs().format("MM") <= 2
+            dayjs().format("MM-DD") <= "02-15"
               ? String(+dayjs().format("YYYY") - 1)
               : dayjs().format("YYYY"),
           ]);
@@ -170,12 +170,8 @@ const CheckLists = (props) => {
 
   //처음 보여줄 학년도 설정(올해 자료있으면 보여줌)
   useEffect(() => {
-    let new_date = new Date();
     //학년도 설정
-    let new_year = new_date.getFullYear();
-    if (new_date.getMonth() + 1 <= 2) {
-      new_year -= 1;
-    }
+    let new_year = nowYear();
     //데이터 중에 현재 학년도와 같은 데이터가 있으면 바로 보여줌.
     let this_year_data = dataYears?.filter((year) => year === String(new_year));
     if (this_year_data?.length > 0) {
@@ -517,13 +513,13 @@ const CheckLists = (props) => {
   }, [nowClassName]);
 
   const nowYear = () => {
-    return +dayjs().format("MM") <= 2
+    return dayjs().format("MM-DD") <= "02-15"
       ? String(+dayjs().format("YYYY") - 1)
       : dayjs().format("YYYY");
   };
 
   const nowJanFeb = () => {
-    return +dayjs().format("MM") <= 2 ? true : false;
+    return dayjs().format("MM-DD") <= "02-15" ? true : false;
   };
 
   //전담의 경우 학급 선택하면 최종 학생명단 세팅
@@ -1153,7 +1149,7 @@ const CheckLists = (props) => {
 
           <p style={{ marginTop: "80px" }}>
             {nowJanFeb() &&
-              "* 2월에 새로 가입하신 경우, 다음학년도 학생명부는 입력이 되었으나 아직 다음학년도 3월이 되지 않아서 자료 저장이 불가능합니다. (예- 아직 2022학년도인데, 2022학년도 학생정보는 없음.)"}
+              "* 2월 16일부터 새로운 학년도로 인식되고 자료 입력이 가능합니다!"}
           </p>
           <p>
             * 입력한 자료가 안 보이면 메뉴를 다시 클릭해주시거나 다시

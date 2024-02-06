@@ -30,14 +30,9 @@ const StudentCalendarLayout = (props) => {
 
   //학년도 설정함수
   const setYear = () => {
-    let now = dayjs();
-    let now_month = now.format("MM");
-    let now_year = now.format("YYYY");
-
-    if (+now_month <= 1) {
-      now_year = String(+now_year - 1);
-    }
-    return now_year;
+    return dayjs().format("MM-DD") <= "02-15"
+      ? String(+dayjs().format("YYYY") - 1)
+      : dayjs().format("YYYY");
   };
 
   useEffect(() => {

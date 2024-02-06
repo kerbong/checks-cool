@@ -4,6 +4,7 @@ import classes from "./SettingSeat.module.css";
 import SeatTable from "./SeatTable";
 import { dbService } from "../../../fbase";
 import { onSnapshot, doc } from "firebase/firestore";
+import dayjs from "dayjs";
 
 const SeatLists = (props) => {
   const [seatLists, setSeatLists] = useState([]);
@@ -11,6 +12,14 @@ const SeatLists = (props) => {
   // const [showEditor, setShowEditor] = useState("");
   const [dataYears, setDataYears] = useState([]);
   const [changeData, setChangeData] = useState("");
+
+  //학년도 설정함수
+  const setYear = (date) => {
+    let data_id = date?.length > 0 ? date : new Date();
+    return dayjs(data_id).format("MM-DD") <= "02-15"
+      ? String(+dayjs(data_id).format("YYYY") - 1)
+      : dayjs(data_id).format("YYYY");
+  };
 
   const getSeatsFromDb = () => {
     let seatsRef = doc(dbService, "seats", props.userUid);
@@ -24,19 +33,12 @@ const SeatLists = (props) => {
 
         if (data.title.includes("-*-예시자료-*-")) return;
 
-        //22.2.1~23.1.31까지 년도로 묶음
-        let data_year = data.saveDate.slice(0, 4);
-        let data_month = data.saveDate.slice(5, 7);
-        let new_data = {};
-        if (+data_month >= 2) {
-          years.push(data_year);
-          //자료에 년도를 yearGroup으로 추가해둠
-          new_data = { ...data, yearGroup: data_year };
-        } else if (+data_month <= 1) {
-          let fixed_year = String(+data_year - 1);
-          years.push(fixed_year);
-          new_data = { ...data, yearGroup: fixed_year };
-        }
+        //22.2.16~23.2.15까지 년도로 묶음
+        let fixed_year = setYear(data.saveDate.slice(0, 10));
+
+        let new_data = { ...data, yearGroup: fixed_year };
+
+        years.push(fixed_year);
         new_seats.push(new_data);
       });
 

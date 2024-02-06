@@ -20,6 +20,15 @@ const MeetingSummary = (props) => {
     roomInfo = "--";
   }
 
+  const nowYear = (date) => {
+    //해당학년도에 전담여부 확인
+
+    let data_id = date?.length > 0 ? date : new Date();
+    return dayjs(data_id).format("MM-DD") <= "02-15"
+      ? String(+dayjs(data_id).format("YYYY") - 1)
+      : dayjs(data_id).format("YYYY");
+  };
+
   //회의자료 받아오기
   const getMeetingSumDb = async () => {
     let meetingSumRef;
@@ -28,7 +37,7 @@ const MeetingSummary = (props) => {
     } else {
       meetingSumRef = doc(dbService, "todo", "MeetSum" + props.userUid);
     }
-    const meetSumSnap = await getDoc(meetingSumRef);
+
     // 자료가 존재하면
     setSummary([]);
 
@@ -37,14 +46,9 @@ const MeetingSummary = (props) => {
         let new_summary = [];
         // 2월~1월까지를 학년도로 보고 자료날짜와 달력 날짜 비교해서 자료 저장
         doc.data().meetSum_data?.forEach((data) => {
-          let data_year =
-            data?.id?.slice(5, 7) <= 1
-              ? String(+data?.id?.slice(0, 4) - 1)
-              : data?.id?.slice(0, 4);
-          let current_year =
-            props.currentMonth?.slice(5, 7) <= 1
-              ? String(+props.currentMonth?.slice(0, 4) - 1)
-              : props.currentMonth?.slice(0, 4);
+          let data_year = nowYear(data?.id?.slice(0, 10));
+
+          let current_year = nowYear(props.currentMonth?.slice(0, 10));
           if (data_year === current_year) {
             new_summary.push(data);
           }

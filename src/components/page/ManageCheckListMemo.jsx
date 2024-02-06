@@ -29,12 +29,6 @@ const ManageCheckListMemo = (props) => {
     setOnStudent(studentNumName);
   };
 
-  const nowYear = () => {
-    return +dayjs().format("MM") <= 2
-      ? String(+dayjs().format("YYYY") - 1)
-      : dayjs().format("YYYY");
-  };
-
   //해당학년도의 전담여부 확인해서 설정하는 함수
   const changeSubjectHandler = (data_year) => {
     let isSubject;
@@ -46,7 +40,7 @@ const ManageCheckListMemo = (props) => {
     return isSubject;
   };
 
-  const nowIsSubject = changeSubjectHandler(nowYear());
+  const nowIsSubject = changeSubjectHandler(setYear());
 
   //firestore에서 checkLists와 listMemo 둘다 받아서 저장해두기
   const getDatasFromDb = async () => {
@@ -61,7 +55,7 @@ const ManageCheckListMemo = (props) => {
         let new_checkLists = [];
         let now_year_data = doc
           .data()
-          ?.checkLists_data?.filter((data) => data.yearGroup === nowYear());
+          ?.checkLists_data?.filter((data) => data.yearGroup === setYear());
 
         now_year_data?.forEach((list) =>
           list.unSubmitStudents.forEach((stu) => {
@@ -91,7 +85,7 @@ const ManageCheckListMemo = (props) => {
         let new_listMemo = [];
         let now_year_data = doc
           .data()
-          ?.listMemo_data?.filter((data) => data.yearGroup === nowYear());
+          ?.listMemo_data?.filter((data) => data.yearGroup === setYear());
 
         now_year_data?.forEach((list) =>
           list?.data?.forEach((item) => {
@@ -172,7 +166,7 @@ const ManageCheckListMemo = (props) => {
 
   //학년도 설정함수
   const setYear = () => {
-    return +dayjs().format("MM") <= 2
+    return dayjs().format("MM-DD") <= "02-15"
       ? String(+dayjs().format("YYYY") - 1)
       : dayjs().format("YYYY");
   };

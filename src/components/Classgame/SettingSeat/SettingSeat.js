@@ -25,9 +25,8 @@ const SettingSeat = (props) => {
   const [goneStudents, setGoneStudents] = useState([]);
 
   //학년도 설정함수
-  const setYear = (from1) => {
-    let month = from1 ? 1 : 2;
-    return +dayjs().format("MM") <= +month
+  const setYear = () => {
+    return dayjs().format("MM-DD") <= "02-15"
       ? String(+dayjs().format("YYYY") - 1)
       : dayjs().format("YYYY");
   };
@@ -42,7 +41,7 @@ const SettingSeat = (props) => {
     if (goneStdSnap.exists()) {
       let new_goneStds = [];
 
-      new_goneStds = goneStdSnap.data()?.goneStd_data?.[setYear(true)];
+      new_goneStds = goneStdSnap.data()?.goneStd_data?.[setYear()];
 
       //전출학생의 전출 날짜와 오늘 날짜를 비교해서.. 전출이 과거인 경우(이미 전학감) 전체 학생 목록에서 빼주기
       const yyyy_mm_dd = dayjs().format("YYYY-MM-DD");
@@ -61,7 +60,7 @@ const SettingSeat = (props) => {
   // }, []);
 
   const nowStudentHandler = () => {
-    let now_year = setYear(false);
+    let now_year = setYear();
     //현재학년도 자료만 입력가능하고,, 불러오기
     let now_students = props?.students?.filter(
       (yearStd) => Object.keys(yearStd)[0] === now_year

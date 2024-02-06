@@ -20,7 +20,7 @@ const RandomPick = (props) => {
 
   //학년도 설정함수
   const setYear = () => {
-    return +dayjs().format("MM") <= 1
+    return dayjs().format("MM-DD") <= "02-15"
       ? String(+dayjs().format("YYYY") - 1)
       : dayjs().format("YYYY");
   };

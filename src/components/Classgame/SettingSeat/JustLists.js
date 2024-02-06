@@ -8,10 +8,12 @@ import { doc, getDoc } from "firebase/firestore";
 import dayjs from "dayjs";
 
 //현재 학년도 정보
-const now_year =
-  +dayjs().format("MM") <= 1
-    ? String(+dayjs().format("YYYY") - 1)
-    : dayjs().format("YYYY");
+const setYear = (date) => {
+  let data_id = date?.length > 0 ? date : new Date();
+  return dayjs(data_id).format("MM-DD") <= "02-15"
+    ? String(+dayjs(data_id).format("YYYY") - 1)
+    : dayjs(data_id).format("YYYY");
+};
 
 const JustLists = (props) => {
   const [yearSeatLists, setYearSeatLists] = useState([]);
@@ -29,21 +31,13 @@ const JustLists = (props) => {
 
         if (data.title.includes("-*-예시자료-*-")) return;
 
-        //22.2.1~23.1.31까지 년도로 묶음
-        let data_year = data.saveDate.slice(0, 4);
-        let data_month = data.saveDate.slice(5, 7);
+        //22.2.16~23.2.15까지 년도로 묶음
+        let data_year = setYear(data.saveDate.slice(0, 10));
+
         let new_data = {};
-        if (+data_month >= 2) {
-          if (+data_year === +now_year) {
-            //자료에 년도를 yearGroup으로 추가해둠
-            new_data = { ...data, yearGroup: data_year };
-          }
-        } else if (+data_month <= 1) {
-          if (+data_year === +now_year - 1) {
-            let fixed_year = String(+data_year - 1);
-            new_data = { ...data, yearGroup: fixed_year };
-          }
-        }
+
+        new_data = { ...data, yearGroup: data_year };
+
         new_seats.push(new_data);
       });
 

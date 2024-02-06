@@ -36,8 +36,7 @@ const Profile = (props) => {
   }, []);
 
   const now_year = () => {
-    //2월부터는 새로운 학년도로 인식함
-    return +dayjs().format("MM") <= 1
+    return dayjs().format("MM-DD") <= "02-15"
       ? String(+dayjs().format("YYYY") - 1)
       : dayjs().format("YYYY");
   };

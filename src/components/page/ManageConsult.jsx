@@ -26,9 +26,9 @@ const ManageConsult = (props) => {
 
   const { state } = useLocation();
 
-  const nowYear = (dataId) => {
-    let data_id = dataId ? dataId : new Date();
-    return +dayjs(data_id).format("MM") <= 2
+  const nowYear = (date) => {
+    let data_id = date?.length > 0 ? date : new Date();
+    return dayjs(data_id).format("MM-DD") <= "02-15"
       ? String(+dayjs(data_id).format("YYYY") - 1)
       : dayjs(data_id).format("YYYY");
   };

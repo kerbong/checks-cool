@@ -10,7 +10,7 @@ import Swal from "sweetalert2";
 import ExampleModal from "./ExampleModal";
 import byExcel from "../../assets/student/teacher-excel.gif";
 
-import mainImg from "../../assets/notice/240113.png";
+import mainImg from "../../assets/notice/240206.jpg";
 
 import dayjs from "dayjs";
 import AttendCalendar from "components/Attendance/AttendCalendar";
@@ -34,63 +34,61 @@ const monthEnd_text = `월말입니다! 선생님들의 소중한 정보를 다�
 ** 첵스쿨 사용에 만족하신다면 <br/> <b>첵스쿨 활용팁, 후기를 👉</b> <u>[교사랑] - [추천해요]에 공유</u>해주세요!
  `;
 
-const update_title = `☕이벤트 종료! 업데이트 예정🎇`;
+const update_title = `새학년도 공지 / 업데이트 예정 / 커피쿠폰 재발송 🎇`;
 
 const update_text = ` <br/> 
-<b>=== ☕이벤트 종료!! ===</b>
+<b>=== 신학기 안내!!🎉 ===</b>
 <br/><br/>
-우리 점잖고 부끄럼 많으신 첵스쿨 선생님들..
+선생님들 푹 쉬셨나요??! <br/>
+항상 방학은 왜이리 짧은지..😂<br/>
+새학기에도 여유롭고 유능한 교사가 되실 수 있도록<br/>
+최선을 다해 돕고, 함께 성장하는 첵스쿨이 되겠습니다🤗<br/>
+<br/>
+<b>** <u>2월 16일</u> 부터 신학기로 인식됩니다!! **</b>
+<br/><br/>
+<b>=== 업데이트 예정!!😎 ===</b>
+<br/><br/>
+<b>1. [제자랑]-[모둠화면]🧮</b>
 <br/> 
-에 맞게, 원래 예정과는 다르게 조건을 바꾸어<br/> 
- 총 15분의 선생님께 ☕커피쿠폰을 보내드렸어요!
-<br/>
-<b>꼭!!!!!! 이메일을 확인하시고,<br/>
- 기간(~1/17) 안에 쿠폰을 등록해주세요!</b>
-<br/>
-<br/>
-<b>추천해요 후기 남겨주신😍, 4분 </b>(호칭은 생략할게요!)
-<br/>
-꾀돌이 / 최강여신쌤 / 평화 / 희진
-<br/>
-<br/>
-<b>첵스쿨 대표 기능의 데이터 최강자🤓 8분</b>
-<br/>
-네세동 gre********@gmail.com / 바로쌤 tcc*****@gmail.com / 반짝이 muk*********@naver.com / 슨생님 hel*****@gmail.com / 하늘구름 hsl******@naver.com / 나그리고나 hhl*****@gmail.com / 김피쓰 pea*******@sen.go.kr / 알록달록 200********@gmail.com / 
-<br/>
-<br/>
-<b>갑진년 시작부터 좋은, 랜덤 당첨😎 3분!!</b>
-<br/>
-toasty duc******@gmail.com / 율 sdd*******@soline20.sen.go.kr / 브라우니 pat*****@naver.com
-<br/><br/>
-<b>모두모두 축하드리고...감사합니다!<br/>
- 꼭!!!!!! 이메일을 확인하셔서 <br/>
- 기간(~1/17)내에 ☕쿠폰을 등록해주세요!!!!! </b>
-<br/>
-<br/><br/>
-<b>===== 24년도 업데이트 예정 =====</b>
-<br/><br/>
-
-1. 모바일 활용 기능 업데이트(고민중..)<br/>
-카메라 기능, 대화기능을 활용한 <br/> 
-빠르고 손쉬운 데이터 저장 방법을 고민하고 있습니다.
-<br/>
-<br/>
-2. 사용 설명서 업데이트<br/>
+자리뽑기를 활용하여 학생들의 모둠점수/개별점수로<br/>
+학급을 운영할 수 있는 [모둠화면]<br/>
+페이지가 업데이트 예정입니다!<br/>
+<b>* 좋은...이름 추천부탁드립니다🤓</b> <br/><br/>
+<b>2. 모바일 Ai + 📱</b><br/>
+모바일로 접속하면 간단하게<br/> 일정 / 할일 / 상담 / 출결 / 자료 등을<br/> 음성 또는 파일로 자동 저장하실 수 있어요! <br/><br/>
+<b>3. 사용 설명서 📑</b><br/>
 로그인 버튼 => 공지사항"을 대신하여 <br/> 
-각 기능별 사용 설명서를 담은 페이지를 구성하려고 합니다.  
+각 기능별 사용 설명서를 담은 페이지인데, 생각보다... 다른 업데이트 시간이 많이걸리네요😖
 <br/>
 <br/>
-유능하고 여유로운 선생님들이 되실 수 있도록, 새해에도 꾸준한 업데이트 / 관리로 함께 하겠습니다!!!!
-<br/><br/>
+<b>=== 커피쿠폰 재발송!!☕ ===</b>
 
-** <br/>
- 전보할 때 <b>정보의 불균형을 없애고 좋은 지역/학교에 대한 정보를 나누려고 만든, 새로운 사이트(스-포)</b>도 운영중입니다! 많은관심 부탁드려요!!<br/> https://school-info-ok.web.app/ 
- <br/><br/>
+<br/>
+<br/>
+이벤트 당첨되신 분들중에.. 미처 메일을 확인하지 못하신..<br/>
+<b>9분께 2월 19일에 다시 발송</b>해드립니다! (* 받아가세요..)<br/><br/>
 
 
-<b>새해에도 즐겁고 행복한 일들만 가득하시길!!!🔥🔥</b><br/><br/> 
+평화 hel**********@naver.com<br/>
+희진 eha***@naver.com <br/>
+슨생님 hel*****@gmail.com <br/>
+하늘구름 hsl******@naver.com <br/>
+나그리고나 hhl*****@gmail.com <br/>
+김피쓰 pea*******@sen.go.kr <br/>
+toasty duc******@gmail.com <br/>
+ 브라우니 pat*****@naver.com <br/>
+ 반짝이 muk*********@naver.com <br/>
+* 반짝이님! 이메일이 가득찼데요ㅠ 메일보내주세요!<br/>
+<br/>
 
-* 유능하고 여유로운 교사의 비밀노트 | 첵스-쿨<br/><br/>
+
+
+
+
+<b>새학년도, 계시는 학교에서 즐겁고 행복한 일들만 가득하시길!!!🔥🔥</b><br/><br/> 
+================================<br/> 
+* 유능하고 여유로운 교사의 비밀노트 | 첵스-쿨<br/>
+================================<br/> <br/>
 
 `;
 
@@ -192,7 +190,7 @@ const MainPage = (props) => {
   const [beforeYmd, setBeforeYmd] = useState(dayjs().format("YYYY-MM-DD"));
 
   useEffect(() => {
-    if (localStorage.getItem("showNotice") <= "20240126") {
+    if (localStorage.getItem("showNotice") <= "20240221") {
       setShowNotice(true);
     }
     if (
@@ -262,15 +260,13 @@ const MainPage = (props) => {
     };
   }, []);
 
-  const nowYear = () => {
+  const nowYear = (date) => {
     //해당학년도에 전담여부 확인
-    let year = todayYyyymmdd.slice(0, 4);
-    let month = todayYyyymmdd.slice(5, 7);
 
-    if (+month <= 2) {
-      year = String(+year - 1);
-    }
-    return year;
+    let data_id = date?.length > 0 ? date : new Date();
+    return dayjs(data_id).format("MM-DD") <= "02-15"
+      ? String(+dayjs(data_id).format("YYYY") - 1)
+      : dayjs(data_id).format("YYYY");
   };
 
   useEffect(() => {
@@ -642,12 +638,7 @@ const MainPage = (props) => {
   //db에서 자료 받아오기 useEffect
   useEffect(() => {
     //해당학년도에 전담여부 확인
-    let year = todayYyyymmdd.slice(0, 4);
-    let month = todayYyyymmdd.slice(5, 7);
-
-    if (+month <= 1) {
-      year = String(+year - 1);
-    }
+    let year = nowYear(todayYyyymmdd);
 
     let isSubject = false;
     props.isSubject?.forEach((yearData) => {
@@ -1643,24 +1634,15 @@ const MainPage = (props) => {
   // 현재 자료 다운 받은 상태, 날짜를 바꿨는데 이전 날짜와 년도가 달라진 경우 다시 getAllDataDone을 false로 바꾸기
   useEffect(() => {
     if (!getAllDataDone) return;
-    const dataYear = (date) => {
-      return +dayjs(date).format("MM") <= 2
-        ? String(+dayjs(date).format("YYYY") - 1)
-        : dayjs(date).format("YYYY");
-    };
-    if (dataYear(todayYyyymmdd) !== dataYear(beforeYmd)) {
+
+    if (nowYear(todayYyyymmdd) !== nowYear(beforeYmd)) {
       setGetAllDataDone(false);
     }
   }, [todayYyyymmdd]);
 
   //단축키 작동하는 부분
   useEffect(() => {
-    let year = todayYyyymmdd.slice(0, 4);
-    let month = todayYyyymmdd.slice(5, 7);
-
-    if (+month <= 1) {
-      year = String(+year - 1);
-    }
+    let year = nowYear(todayYyyymmdd);
 
     let isSubject = false;
     props.isSubject?.forEach((yearData) => {

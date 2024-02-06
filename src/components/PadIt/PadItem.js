@@ -469,7 +469,7 @@ const PadItem = ({
 
   //현재 학년도 정보 반환하는 함수
   const now_year = () => {
-    return +dayjs().format("MM") <= 2
+    return dayjs().format("MM-DD") <= "02-15"
       ? String(+dayjs().format("YYYY") - 1)
       : dayjs().format("YYYY");
   };

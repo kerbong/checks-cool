@@ -24,6 +24,7 @@ const ScoreBoard = lazy(() =>
 const SimpleRandom = lazy(() =>
   import("./components/Classgame/SimpleRandom/SimpleRandom")
 );
+const GroupPage = lazy(() => import("./components/page/GroupPage"));
 
 const ManageStudentInfo = lazy(() =>
   import("./components/page/ManageStudentInfo")
@@ -67,6 +68,7 @@ function App() {
   const [isStudent, setIsStudent] = useState(false);
   const [padItInfo, setPadItInfo] = useState({});
   const [isMobile, setIsMobile] = useState(false);
+  const [navigateGroupPage, setNavigateGroupPage] = useState(false);
 
   let navigate = useNavigate();
 
@@ -119,6 +121,10 @@ function App() {
       return;
     } else if (userUid) {
       getStudents(userUid);
+
+      if (navigateGroupPage) {
+        navigate("/groupPage");
+      }
 
       //로그인해서 7~9시면 아침미션 화면 먼저 보여주기
       const nowHour = +new Date().toTimeString().slice(0, 2);
@@ -177,9 +183,9 @@ function App() {
     setMenuOnHead((prev) => !prev);
   };
 
-  //현재 학년도 정보 반환하는 함수
+  //현재 학년도 정보 반환하는 함수 (2월 15일 기준)
   const now_year = () => {
-    return +dayjs().format("MM") <= 1
+    return dayjs().format("MM-DD") <= "02-15"
       ? String(+dayjs().format("YYYY") - 1)
       : dayjs().format("YYYY");
   };
@@ -256,6 +262,8 @@ function App() {
         roomPw: addressSplit[3],
       });
       setIsStudent(true);
+    } else if (address.includes("groupPage")) {
+      setNavigateGroupPage(true);
     }
   }, []);
 
@@ -271,13 +279,16 @@ function App() {
   return (
     <div>
       <div className={menuOnHead ? "App" : "App-bottom"}>
-        <Header
-          isLoggedIn={isLoggedIn}
-          user={isLoggedIn && user}
-          logOutHandler={logOutHandler}
-          setMenuHandler={setMenuHandler}
-          menuOnHead={menuOnHead}
-        />
+        {/* 모둠화면이 아닐때만 보여주기 */}
+        {!navigateGroupPage && (
+          <Header
+            isLoggedIn={isLoggedIn}
+            user={isLoggedIn && user}
+            logOutHandler={logOutHandler}
+            setMenuHandler={setMenuHandler}
+            menuOnHead={menuOnHead}
+          />
+        )}
 
         <Notification saveTokenHandler={saveTokenHandler} />
         <Suspense fallback={<Loading />}>
@@ -362,6 +373,18 @@ function App() {
                     />
                   }
                 />
+
+                <Route
+                  path="groupPage"
+                  element={
+                    <GroupPage
+                      students={students}
+                      userUid={userUid}
+                      isSubject={profile?.isSubject || []}
+                    />
+                  }
+                />
+
                 <Route
                   path="weteacher"
                   element={
@@ -542,17 +565,6 @@ function App() {
                         />
                       }
                     />
-
-                    {/* <Route
-                      path="padIt"
-                      element={
-                        <PadIt
-                          isStudent={isStudent}
-                          padItInfo={padItInfo}
-                          students={students}
-                        />
-                      }
-                    /> */}
 
                     <Route
                       path="/*"

@@ -55,7 +55,8 @@ const StudentLists = (props) => {
   //학년도 설정함수
   const setYear = () => {
     //학생자료 등록의 경우..예외적으로 2월부터는 새로운 학년도로 인식함
-    return +dayjs().format("MM") <= 1
+
+    return dayjs().format("MM-DD") <= "02-15"
       ? String(+dayjs().format("YYYY") - 1)
       : dayjs().format("YYYY");
   };
@@ -81,31 +82,45 @@ const StudentLists = (props) => {
 
   //저장버튼 누르면 현재 학생목록을 firestore에 저장하는 함수(덮어쓰기)
   const uploadStudents = async (data) => {
-    //현재학년도를 제외한 학생자료 만들어서 exceptNow 배열에 저장
-    const studentsRef = doc(dbService, "students", props.userUid);
-    const studentSnap = await getDoc(studentsRef);
+    // 학년도 기준 설명하고 계속 저장할지 ... 물어보기
+    Swal.fire({
+      title: "학생명부를 저장할까요?",
+      html: `학생명부는 <b>${setYear()}학년도</b> 로 저장됩니다. <br/><br/>  * 2월 15일을 기준으로 학년도가 설정됩니다. <br/> (예 2023.02.16. ~ 2024.2.15.)`,
+      showDenyButton: true,
+      confirmButtonText: "저장",
+      confirmButtonColor: "#db100cf2",
+      denyButtonColor: "#85bd82",
+      denyButtonText: `취소`,
+    }).then(async (result) => {
+      /* Read more about isConfirmed, isDenied below */
+      if (result.isConfirmed) {
+        //현재학년도를 제외한 학생자료 만들어서 exceptNow 배열에 저장
+        const studentsRef = doc(dbService, "students", props.userUid);
+        const studentSnap = await getDoc(studentsRef);
 
-    let uploadData = [];
-    if (studentSnap.exists()) {
-      // console.log(studentSnap.data());
-      let exceptNow = [];
-      // console.log(studentSnap);
-      studentSnap.data()?.studentDatas?.forEach((yearData) => {
-        if (Object.keys(yearData)[0] !== Object.keys(data)[0]) {
-          exceptNow.push(yearData);
+        let uploadData = [];
+        if (studentSnap.exists()) {
+          // console.log(studentSnap.data());
+          let exceptNow = [];
+          // console.log(studentSnap);
+          studentSnap.data()?.studentDatas?.forEach((yearData) => {
+            if (Object.keys(yearData)[0] !== Object.keys(data)[0]) {
+              exceptNow.push(yearData);
+            }
+          });
+          exceptNow.push({ ...data });
+          uploadData = exceptNow;
+        } else {
+          uploadData = [{ ...data }];
         }
-      });
-      exceptNow.push({ ...data });
-      uploadData = exceptNow;
-    } else {
-      uploadData = [{ ...data }];
-    }
-    // console.log(uploadData);
+        // console.log(uploadData);
 
-    //업로드할 데이터, 기존자료에 전달받은 학년도 자료 추가
+        //업로드할 데이터, 기존자료에 전달받은 학년도 자료 추가
 
-    await setDoc(doc(dbService, "students", props.userUid), {
-      studentDatas: uploadData,
+        await setDoc(doc(dbService, "students", props.userUid), {
+          studentDatas: uploadData,
+        });
+      }
     });
   };
 
@@ -130,6 +145,7 @@ const StudentLists = (props) => {
         const fixed_data = {
           [setYear()]: sortNum(new_studentsInfo),
         };
+
         uploadStudents(fixed_data);
 
         //전담용 로직

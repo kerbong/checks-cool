@@ -49,17 +49,10 @@ const ManageEach = (props) => {
 
   //학년도 설정함수
   const setYear = (date) => {
-    let now = dayjs(date);
-    let yearGroup = "";
-    let now_month = now.format("MM");
-    let now_year = now.format("YYYY");
-
-    if (+now_month >= 2) {
-      yearGroup = now_year;
-    } else if (+now_month <= 1) {
-      yearGroup = String(+now_year - 1);
-    }
-    return yearGroup;
+    let data_id = date?.length > 0 ? date : new Date();
+    return dayjs(data_id).format("MM-DD") <= "02-15"
+      ? String(+dayjs(data_id).format("YYYY") - 1)
+      : dayjs(data_id).format("YYYY");
   };
 
   //해당학년도의 전담여부 확인해서 설정하는 함수

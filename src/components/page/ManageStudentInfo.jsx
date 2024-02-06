@@ -31,7 +31,7 @@ const ManageStudentInfo = (props) => {
   const fileInfoInput = useRef();
 
   const nowYear = () => {
-    return +dayjs().format("MM") <= 2
+    return dayjs().format("MM-DD") <= "02-15"
       ? String(+dayjs().format("YYYY") - 1)
       : dayjs().format("YYYY");
   };

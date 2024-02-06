@@ -39,17 +39,13 @@ const ConsultLists = (props) => {
       const years = [];
       doc.data()?.consult_data?.forEach((data) => {
         let new_data = {};
-        let data_month = data.id.slice(5, 7);
-        let data_year = data.id.slice(0, 4);
-        if (+data_month >= 3) {
-          years.push(data_year);
-          //자료에 년도를 yearGroup으로 추가
-          new_data = { ...data, yearGroup: data_year };
-        } else if (+data_month <= 2) {
-          let fixed_year = String(+data_year - 1);
-          years.push(fixed_year);
-          new_data = { ...data, yearGroup: fixed_year };
-        }
+
+        let data_year = setYear(data.id.slice(0, 10));
+
+        years.push(data_year);
+        //자료에 년도를 yearGroup으로 추가
+        new_data = { ...data, yearGroup: data_year };
+
         new_consults.push(new_data);
       });
       //학년도 저장 및 상담기록 저장
@@ -368,18 +364,11 @@ const ConsultLists = (props) => {
   }, [nowClassName]);
 
   //학년도 설정함수
-  const setYear = () => {
-    let now = dayjs();
-    let yearGroup = "";
-    let now_month = now.format("MM");
-    let now_year = now.format("YYYY");
-
-    if (+now_month >= 2) {
-      yearGroup = now_year;
-    } else if (+now_month <= 1) {
-      yearGroup = String(+now_year - 1);
-    }
-    return yearGroup;
+  const setYear = (date) => {
+    let data_id = date?.length > 0 ? date : new Date();
+    return dayjs(data_id).format("MM-DD") <= "02-15"
+      ? String(+dayjs(data_id).format("YYYY") - 1)
+      : dayjs(data_id).format("YYYY");
   };
 
   //해당학년도의 전담여부 확인해서 설정하는 함수

@@ -661,3 +661,50 @@
   width: calc(75vw + 60px);
   max-width: 420px;
 }
+
+.groupPage-btn,
+.group-btn,
+.groupPage-btn-cancle {
+  padding: 15px 20px;
+  margin: 3px 6px;
+  border-radius: 10px;
+  background-color: #334a52;
+  color: whitesmoke;
+  max-height: 60px;
+}
+
+.groupPage-btn:hover {
+  background-color: #1c292e;
+}
+
+.groupPage-btn-cancle:hover {
+  background-color: #718b94;
+}
+
+.groupMode-saveBtn {
+  width: 290px;
+  height: 45px;
+  border-radius: 12px;
+  border: 0;
+  background-color: #2d8474;
+  color: whitesmoke;
+  margin: 10px;
+}
+
+.group-btn {
+  background-color: #2d8474;
+  font-size: 16px;
+  color: black;
+  border-radius: 40px;
+}
+
+.group-btn:hover,
+.groupMode-saveBtn {
+  background-color: #216458;
+}
+
+.groupPage-btn-cancle {
+  background-color: #96afb8;
+  color: black;
+  border-color: #96afb8a8;
+}

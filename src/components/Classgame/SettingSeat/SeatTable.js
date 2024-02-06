@@ -210,17 +210,13 @@ const SeatTable = (props) => {
       (v, i) => i + 1
     );
 
-    let data_month;
     let data_year;
     let dataYear_students;
     //기존 자료인 경우 학생 자료 받아와서.. 성별 넣어주기
     if (props.saveDate) {
-      data_month = props.saveDate.slice(5, 7);
-      data_year = props.saveDate.slice(0, 4);
-      //학년도 세팅한 후에 (1월까지)
-      if (+data_month <= 1) {
-        data_year = String(+data_year - 1);
-      }
+      //학년도 세팅한 후에 (2월 15까지)
+      data_year = setYear(props.saveDate.slice(0, 10));
+
       //받아온 전체 학생 자료에서 현재 학년도 학생 자료만 만들어 주기
       dataYear_students = props?.wholeStudents?.filter(
         (yearStd) => Object.keys(yearStd)[0] === data_year
@@ -336,29 +332,23 @@ const SeatTable = (props) => {
     getSeatsFromDb();
   }, []);
 
-  // useEffect(() => {
-  //   setTitleValue(props.title);
-  // }, [props.title]);
+  //학년도 설정함수
+  const setYear = (date) => {
+    let data_id = date?.length > 0 ? date : new Date();
+    return dayjs(data_id).format("MM-DD") <= "02-15"
+      ? String(+dayjs(data_id).format("YYYY") - 1)
+      : dayjs(data_id).format("YYYY");
+  };
 
   useEffect(() => {
     setSeatLists([]);
     //현재학년도 세팅
-    let now_date = getDateHandler(new Date());
-    let now_year = now_date.slice(0, 4);
-    let now_month = now_date.slice(5, 7);
-    if (+now_month <= 1) {
-      now_year = String(+now_year - 1);
-    }
+    let now_year = setYear();
 
     const new_seats = [];
     allSeats.forEach((data) => {
       // let now_years
-      let data_month = data.saveDate.slice(5, 7);
-      let data_year = data.saveDate.slice(0, 4);
-
-      if (+data_month <= 1) {
-        data_year = String(+data_year - 1);
-      }
+      let data_year = setYear(data.saveDate.slice(0, 10));
 
       //현재 학년도와 자료의 년도가 일치하면
       if (now_year === data_year) {
@@ -1086,11 +1076,8 @@ const SeatTable = (props) => {
       new_allSeats.push(data);
 
       //현재학년도 세팅
-      let now_year = data.saveDate.slice(0, 4);
-      let now_month = data.saveDate.slice(5, 7);
-      if (+now_month <= 1) {
-        now_year = String(+now_year - 1);
-      }
+      let now_year = setYear(data.saveDate.slice(0, 10));
+
       props.changeData(now_year);
       //새로운 자리표 추가 중이면
     } else {
@@ -1116,11 +1103,8 @@ const SeatTable = (props) => {
         seats_data: new_allSeats,
       });
       //현재학년도 세팅
-      let now_year = props.saveDate.slice(0, 4);
-      let now_month = props.saveDate.slice(5, 7);
-      if (+now_month <= 1) {
-        now_year = String(+now_year - 1);
-      }
+      let now_year = setYear(props.saveDate.slice(0, 10));
+
       props.changeData(now_year);
     };
 
@@ -1392,16 +1376,12 @@ const SeatTable = (props) => {
     // console.log(items_students);
     // console.log(props.rowColumn);
 
-    let data_month;
     let data_year;
     let dataYear_students;
     //학생 자료 받아와서.. 성별 넣어주기
-    data_month = props.saveDate.slice(5, 7);
-    data_year = props.saveDate.slice(0, 4);
-    //학년도 세팅한 후에 (1월까지)
-    if (+data_month <= 1) {
-      data_year = String(+data_year - 1);
-    }
+
+    //현재학년도 세팅
+    data_year = setYear(props.saveDate.slice(0, 10));
     //받아온 전체 학생 자료에서 현재 학년도 학생 자료만 만들어 주기
     dataYear_students = props?.wholeStudents?.filter(
       (yearStd) => Object.keys(yearStd)[0] === data_year
