@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/checks-cool/static/css/main.684963d2.css",
-    "main.js": "/checks-cool/static/js/main.aeea9cab.js",
+    "main.css": "/checks-cool/static/css/main.ebe9a479.css",
+    "main.js": "/checks-cool/static/js/main.83f716df.js",
     "static/css/793.d3c8de06.chunk.css": "/checks-cool/static/css/793.d3c8de06.chunk.css",
     "static/js/793.c36d10b7.chunk.js": "/checks-cool/static/js/793.c36d10b7.chunk.js",
     "static/css/309.28fad559.chunk.css": "/checks-cool/static/css/309.28fad559.chunk.css",
     "static/js/309.de589c30.chunk.js": "/checks-cool/static/js/309.de589c30.chunk.js",
     "static/css/133.ed4b7544.chunk.css": "/checks-cool/static/css/133.ed4b7544.chunk.css",
     "static/js/133.422010b8.chunk.js": "/checks-cool/static/js/133.422010b8.chunk.js",
-    "static/css/164.3eb16bdd.chunk.css": "/checks-cool/static/css/164.3eb16bdd.chunk.css",
-    "static/js/164.9aa40927.chunk.js": "/checks-cool/static/js/164.9aa40927.chunk.js",
+    "static/css/164.96ff594e.chunk.css": "/checks-cool/static/css/164.96ff594e.chunk.css",
+    "static/js/164.56324437.chunk.js": "/checks-cool/static/js/164.56324437.chunk.js",
     "static/css/128.09ca68d6.chunk.css": "/checks-cool/static/css/128.09ca68d6.chunk.css",
     "static/js/128.46648cdb.chunk.js": "/checks-cool/static/js/128.46648cdb.chunk.js",
     "static/css/478.c0696301.chunk.css": "/checks-cool/static/css/478.c0696301.chunk.css",
@@ -19,7 +19,7 @@
     "static/css/176.09ca68d6.chunk.css": "/checks-cool/static/css/176.09ca68d6.chunk.css",
     "static/js/176.e67e6064.chunk.js": "/checks-cool/static/js/176.e67e6064.chunk.js",
     "static/css/399.52deba57.chunk.css": "/checks-cool/static/css/399.52deba57.chunk.css",
-    "static/js/399.695140ce.chunk.js": "/checks-cool/static/js/399.695140ce.chunk.js",
+    "static/js/399.c5871149.chunk.js": "/checks-cool/static/js/399.c5871149.chunk.js",
     "static/css/480.1ed00d41.chunk.css": "/checks-cool/static/css/480.1ed00d41.chunk.css",
     "static/js/480.906cab08.chunk.js": "/checks-cool/static/js/480.906cab08.chunk.js",
     "static/css/52.704b96f6.chunk.css": "/checks-cool/static/css/52.704b96f6.chunk.css",
@@ -58,7 +58,7 @@
     "static/js/981.c91b734f.chunk.js": "/checks-cool/static/js/981.c91b734f.chunk.js",
     "static/js/636.ab2f22cb.chunk.js": "/checks-cool/static/js/636.ab2f22cb.chunk.js",
     "static/js/699.6a17a4b3.chunk.js": "/checks-cool/static/js/699.6a17a4b3.chunk.js",
-    "static/js/8.229a8533.chunk.js": "/checks-cool/static/js/8.229a8533.chunk.js",
+    "static/js/918.bea69dbb.chunk.js": "/checks-cool/static/js/918.bea69dbb.chunk.js",
     "static/js/167.1337e744.chunk.js": "/checks-cool/static/js/167.1337e744.chunk.js",
     "static/js/527.1d8ce142.chunk.js": "/checks-cool/static/js/527.1d8ce142.chunk.js",
     "static/js/81.e98f3d08.chunk.js": "/checks-cool/static/js/81.e98f3d08.chunk.js",
@@ -78,7 +78,7 @@
     "static/media/todayTodo.gif": "/checks-cool/static/media/todayTodo.538cb7bb82a6b9a8bd5c.gif",
     "static/media/teacher-typing.gif": "/checks-cool/static/media/teacher-typing.f82dbc64495a78c6242f.gif",
     "static/media/teacher-excel.gif": "/checks-cool/static/media/teacher-excel.e6955cccf0ee0cffd757.gif",
-    "static/media/240206.jpg": "/checks-cool/static/media/240206.beca2ecb54335238fed7.jpg",
+    "static/media/240206.jpg": "/checks-cool/static/media/240206.d386d5f33ff3cc046312.jpg",
     "static/media/Spinner250px.gif": "/checks-cool/static/media/Spinner250px.5d939b7f9050c12f01f4.gif",
     "static/media/donation.png": "/checks-cool/static/media/donation.474ddc55de45cde98d1e.png",
     "static/media/endingSound.mp3": "/checks-cool/static/media/endingSound.fabc44b613282b92bc06.mp3",
@@ -88,7 +88,7 @@
     "index.html": "/checks-cool/index.html"
   },
   "entrypoints": [
-    "static/css/main.684963d2.css",
-    "static/js/main.aeea9cab.js"
+    "static/css/main.ebe9a479.css",
+    "static/js/main.83f716df.js"
   ]
 }
