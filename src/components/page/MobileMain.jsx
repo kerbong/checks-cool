@@ -96,14 +96,14 @@ const MobileMain = (props) => {
       return;
     }
 
-    if (nowOcr === "학생등록") {
-      Swal.fire(
-        "준비중!",
-        "학생명부를 사진으로 등록하는 기능을 추가하고 있습니다!",
-        "info"
-      );
-      return;
-    }
+    // if (nowOcr === "학생등록") {
+    //   Swal.fire(
+    //     "준비중!",
+    //     "학생명부를 사진으로 등록하는 기능을 추가하고 있습니다!",
+    //     "info"
+    //   );
+    //   return;
+    // }
 
     callOpenAiApi();
 
@@ -232,6 +232,72 @@ const MobileMain = (props) => {
     });
   };
 
+  /**학생 정보담긴 배열... 저장하기 */
+  const saveStdsData = async (stds) => {
+    const fixed_data = {
+      [nowYear()]: stds,
+    };
+
+    const uploadLogic = async (data) => {
+      //현재학년도를 제외한 학생자료 만들어서 exceptNow 배열에 저장
+      const studentsRef = doc(dbService, "students", props.userUid);
+      const studentSnap = await getDoc(studentsRef);
+
+      let uploadData = [];
+      if (studentSnap.exists()) {
+        // console.log(studentSnap.data());
+        let exceptNow = [];
+        // console.log(studentSnap);
+        studentSnap.data()?.studentDatas?.forEach((yearData) => {
+          if (Object.keys(yearData)[0] !== Object.keys(data)[0]) {
+            exceptNow.push(yearData);
+          }
+        });
+        exceptNow.push({ ...data });
+        uploadData = exceptNow;
+      } else {
+        uploadData = [{ ...data }];
+      }
+
+      Swal.fire({
+        icon: "success",
+        title: "저장되었어요!",
+        text: `학생명부가 저장되었습니다. 명부확인 및 수정은 [메인화면]-[학생명부] 에서 가능합니다!`,
+        confirmButtonText: "확인",
+        confirmButtonColor: "#85bd82",
+        timer: 5000,
+      });
+
+      // console.log(uploadData);
+
+      //업로드할 데이터, 기존자료에 전달받은 학년도 자료 추가
+
+      await setDoc(doc(dbService, "students", props.userUid), {
+        studentDatas: uploadData,
+      });
+    };
+
+    // 만약 현재 1, 2월인 경우.  학년도 기준 설명하고 계속 저장할지 ... 물어보기
+    if (+dayjs().format("MM") <= 2) {
+      Swal.fire({
+        title: "학생명부를 저장할까요?",
+        html: `학생명부는 <b>${nowYear()}학년도</b> 로 저장됩니다. <br/> <b>**주의** 기존 학생명부가 있으면 덮어쓰기 됩니다!!</b><br/> <br/>  * 학년도 기준 : 2월 15일 <br/> (예 2023.02.16. ~ 2024.2.15.)`,
+        showDenyButton: true,
+        confirmButtonText: "저장",
+        confirmButtonColor: "#db100cf2",
+        denyButtonColor: "#85bd82",
+        denyButtonText: `취소`,
+      }).then(async (result) => {
+        /* Read more about isConfirmed, isDenied below */
+        if (result.isConfirmed) {
+          uploadLogic(fixed_data);
+        }
+      });
+    } else {
+      uploadLogic(fixed_data);
+    }
+  };
+
   // 버튼누르면 api 요청해서 받아와서 물어보기..
   const callOpenAiApi = async () => {
     //로딩중이면 취소하기
@@ -256,6 +322,57 @@ const MobileMain = (props) => {
 
       setOpenAi(openai);
     }
+  };
+
+  /**  ocrText에서 학생등록에 필요한 정보만 남기는 함수. */
+  const remainStDatas = (text) => {
+    let new_stds = [];
+    let gender = "";
+
+    let lines = text.split("\n");
+
+    for (let line of lines) {
+      // 학생 정보 추출
+      let studentMatch = line.match(/(\d+) ([가-힣]+)/);
+      if (line?.length > 4 && studentMatch) {
+        let line_split = line.split(" ");
+        new_stds.push({ num: line_split[0], name: line_split[1] });
+        // new_text += line + "\n";
+      }
+
+      // 성별 정보 추출
+      let genderMatch = line.match(/여|남/);
+      if (!line?.includes(" ") && genderMatch) {
+        gender += line;
+      }
+    }
+
+    new_stds = new_stds.map((std, st_ind) => {
+      let woman =
+        gender[st_ind] === "여" ? true : gender[st_ind] === "남" ? false : true;
+      return { ...std, woman: woman };
+    });
+
+    return new_stds;
+  };
+
+  /** 표로된 ocrText에서 단어만 분리해내는 함수. */
+  const collectWords = (text) => {
+    let new_text = "";
+    text?.forEach((t) => {
+      t?.paragraphs?.forEach((wd, ind) => {
+        wd?.words?.forEach((w) => {
+          w?.symbols?.forEach((s) => {
+            new_text += s?.text;
+          });
+        });
+        if (ind + 1 === t?.paragraphs?.length) {
+          new_text += "\n";
+        }
+      });
+    });
+
+    return new_text;
   };
 
   //구글ocr
@@ -355,7 +472,7 @@ const MobileMain = (props) => {
 
     //예산인 경우... ocr Type 변경해주기
     let ocrType =
-      nowOcr !== "예산" ? "TEXT_DETECTION" : "DOCUMENT_TEXT_DETECTION";
+      nowOcr === "예산" ? "DOCUMENT_TEXT_DETECTION" : "TEXT_DETECTION";
 
     const URL = `https://vision.googleapis.com/v1/images:annotate?key=${API_KEY}`;
     await fetch(URL, {
@@ -381,7 +498,7 @@ const MobileMain = (props) => {
       .then((response) => response.json())
       .then((data) => {
         const ocrTexts =
-          nowOcr === "연수자료"
+          nowOcr === "연수자료" || nowOcr === "학생등록"
             ? data.responses[0].fullTextAnnotation.text
             : nowOcr === "예산"
             ? data?.responses[0].fullTextAnnotation.pages[0].blocks //여기 예산 ocr 결과 수정해야 할 부분.
@@ -389,7 +506,22 @@ const MobileMain = (props) => {
 
         console.log(ocrTexts);
         if (nowOcr === "예산") {
-          setOcrResult(JSON.stringify(ocrTexts));
+          let new_ocrTexts = collectWords(ocrTexts);
+          setOcrResult(new_ocrTexts);
+          console.log(new_ocrTexts);
+        } else if (nowOcr === "학생등록") {
+          let new_stds = remainStDatas(ocrTexts);
+          // setOcrResult(new_ocrTexts);
+          if (new_stds?.length === 0) {
+            Swal.fire(
+              "학생등록 실패!",
+              "학생 등록에 실패했어요. [메인화면]-[학생명부] 탭을 활용해주세요!",
+              "warning"
+            );
+          } else {
+            saveStdsData(new_stds);
+            setIsLoading(false);
+          }
         } else {
           setOcrResult(ocrTexts);
         }
@@ -1687,7 +1819,7 @@ const MobileMain = (props) => {
           />
           {xForFileBtn("상담")}
           {!isSubject && xForFileBtn("출결")}
-          {xForFileBtn("학생등록")}
+          {!isSubject && xForFileBtn("학생등록")}
           {xForFileBtn("예산")}
           {xForFileBtn("연수자료")}
         </>
@@ -1717,7 +1849,7 @@ const MobileMain = (props) => {
 
           {xForFileBtn("연수자료")}
           {xForFileBtn("예산")}
-          {xForFileBtn("학생등록")}
+          {!isSubject && xForFileBtn("학생등록")}
         </>
       )}
     </div>

@@ -32,12 +32,12 @@
   .option,
   .option-select {
     padding: 12px;
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     margin: 7px;
     width: 90px;
   }
   .option-select {
-    font-size: 1.4rem;
+    font-size: 1.3rem;
     letter-spacing: -1px;
   }
 }

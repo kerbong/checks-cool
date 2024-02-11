@@ -1,17 +1,34 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { GiHoneypot } from "react-icons/gi";
 import classes from "./GroupPage.module.css";
 import Button from "components/Layout/Button";
-import { dbService } from "fbase";
+import { dbService, storageService } from "fbase";
 import { doc, getDoc, onSnapshot, setDoc } from "firebase/firestore";
 import Swal from "sweetalert2";
 import Modal from "components/Layout/Modal";
 import { motion } from "framer-motion";
 import dayjs from "dayjs";
 import ClassTableBasic from "./ClassTableBasic";
+
 import { FaExchangeAlt } from "react-icons/fa";
-import { BiEdit } from "react-icons/bi";
-import { BiSolidColorFill } from "react-icons/bi";
+import { FaCrown } from "react-icons/fa6";
+import { FaRegEdit } from "react-icons/fa";
+import { ImMakeGroup } from "react-icons/im";
+import { IoPersonSharp } from "react-icons/io5";
+import { VscDebugRestart } from "react-icons/vsc";
+import { MdOutlinePublishedWithChanges } from "react-icons/md";
+
+import Attendance from "components/Attendance/Attendance";
+import attendanceOption from "../../attendanceOption";
+import consultingOption from "../../consultingOption";
+import {
+  getDownloadURL,
+  ref,
+  uploadBytes,
+  uploadString,
+} from "firebase/storage";
+import { v4 } from "uuid";
+import Input from "components/Layout/Input";
 
 /** 그룹 설정하는 단계: 0시작전, 1rowCol설정, 2학생배치, 3그룹이름설정, 4그룹-학생매칭  */
 const MAKE_STEP = ["", "makeSeat", "seatStd", "makeGroupName", "chooseGroup"];
@@ -45,6 +62,36 @@ const GROUP_BGCOLOR = [
   "#c9e2ff",
 ];
 
+const CHARACTERS = [
+  "🍿",
+  "🍞",
+  "🍟",
+  "🍔",
+  "🍕",
+  "🍗",
+  "🍰",
+  "🍬",
+  "🍫",
+  "🍡",
+  "🍇",
+  "🍉",
+  "🍒",
+  "🍓",
+  "🍎",
+  "🥑",
+  "🥕",
+  "🌰",
+  "🍋",
+  "🫐",
+  "🍩",
+  "🥗",
+  "🌭",
+  "🍧",
+  "🫛",
+  "🥦",
+  "🥨",
+];
+
 const GroupPage = (props) => {
   const [newFrom, setNewFrom] = useState("");
   const [showSeatsList, setShowSeatsList] = useState(false);
@@ -71,16 +118,57 @@ const GroupPage = (props) => {
   const [nowStudents, setNowStudents] = useState([]);
   const [stdPoints, setStdPoints] = useState([]);
   const [hoveredIndex, setHoveredIndex] = useState(null);
+  const [randNum, setRandNum] = useState(0);
+  const [menuRight, setMenuRight] = useState(true);
+  const [menuFunc, setMenuFunc] = useState("");
+  const [clickedStd, setClickedStd] = useState("");
+  const [addOrLoad, setAddOrLoad] = useState("");
+  const [checkListDataAll, setCheckListDataAll] = useState([]);
+  const [checkListData, setCheckListData] = useState(null);
+  const [unSubmitStudents, setUnSubmitStudents] = useState([]);
+  const [filteredStudents, setFilteredStudents] = useState([]);
 
-  const handleMouseEnter = (index) => {
-    setHoveredIndex(index);
+  const autoSaveGroupDatas = useRef(null);
+  const selectRef = useRef();
+  const menuRef = useRef();
+
+  const handleMouseEnter = (what, index) => {
+    setHoveredIndex(String(what + index));
   };
 
   const handleMouseLeave = () => {
     setHoveredIndex(null);
   };
 
-  const selectRef = useRef();
+  //화면 사이즈가 변경되면.. 시간표의 기본 세팅을 열림으로 바꿔주기.
+  const resizeHandler = useCallback(() => {
+    window.addEventListener("resize", () => {
+      if (window.innerWidth > 1400) {
+        setMenuRight(true);
+        if (menuRef?.current) {
+          menuRef.current.style.left = "auto";
+        }
+      } else {
+        setMenuRight(false);
+        if (menuRef?.current) {
+          let menu_width = menuRef?.current?.offsetWidth;
+          //   console.log(menuRef?.current?.offsetWidth);
+          menuRef.current.style.left =
+            (window.innerWidth - menu_width) / 2 + "px";
+        }
+      }
+    });
+  }, []);
+
+  // 윈도우 창의 크기에 따라 시간표 보여주기 기능 true로 바꾸기
+  useEffect(() => {
+    resizeHandler();
+    return () => {
+      window.removeEventListener("resize", resizeHandler);
+    };
+  }, []);
+
+  const charactersRanNum = +Math.round(Math.random() * CHARACTERS?.length);
 
   /** 전달받는 id있으면 있는날짜 기준, 없으면 없는 기준으로 년도 반환 */
   const nowYear = (date) => {
@@ -105,6 +193,30 @@ const GroupPage = (props) => {
     setNowStudents(nowYearStudents());
   }, [props.students]);
 
+  //모둠점수 초기화
+  const grPointsZero = () => {
+    if (groupInfo?.length === 0) return;
+    Swal.fire({
+      title: "모둠점수 초기화!",
+      html: `모둠점수를 0점으로 초기화 할까요?<br/> <b>** 되돌리기 불가능!!</b>`,
+      showDenyButton: true,
+      confirmButtonText: "저장",
+      confirmButtonColor: "#db100cf2",
+      denyButtonColor: "#85bd82",
+      denyButtonText: `취소`,
+    }).then((result) => {
+      /* Read more about isConfirmed, isDenied below */
+      if (result.isConfirmed) {
+        let new_groupInfo = [];
+        groupInfo?.forEach((ginfo) => {
+          new_groupInfo.push({ ...ginfo, grPoints: 0 });
+        });
+        setGroupInfo(new_groupInfo);
+        setSettingWhat("");
+      }
+    });
+  };
+
   //해당학년도의 전담여부 확인해서 설정하는 함수
   const changeSubjectHandler = (data_year) => {
     let isSubject;
@@ -115,6 +227,74 @@ const GroupPage = (props) => {
     }
     return isSubject;
   };
+
+  const autoSave = async () => {
+    let new_groupData = {
+      title: nowDatas?.title,
+      clName: nowDatas?.clName,
+      rowColumn: nowDatas?.rowColumn,
+      id: nowDatas?.id,
+      students: nowDatas?.students,
+      stdPoints: stdPoints,
+      groupIndex: groupIndex,
+      groupInfo: groupInfo,
+    };
+
+    let new_groupDatas = [];
+
+    try {
+      const groupRef = doc(dbService, "groupMode", props.userUid);
+      const now_doc = await getDoc(groupRef);
+      //기존 자료 있으면... id가 같은거 있으면 찾아서 교체하기
+      if (now_doc.exists()) {
+        [...now_doc?.data()?.groupDatas].forEach((dt) => {
+          let new_dt = dt;
+          if (dt.id === nowDatas?.id) {
+            new_dt = new_groupData;
+          }
+          new_groupDatas.push(new_dt);
+        });
+      } else {
+        new_groupDatas.push(new_groupData);
+      }
+
+      await setDoc(groupRef, {
+        groupDatas: new_groupDatas,
+        characters: characters,
+      });
+
+      // 자료 저장되었음을 알려주는... 클릭필요없는 검은색 반투명의 작은 모달 띄워주기
+    } catch (error) {
+      Swal.fire(
+        "저장실패!",
+        "자료 수정/저장에 실패했어요! 인터넷 연결상태를 확인해주세요. 문제가 지속되면 kerbong@gmail.com 혹은 [교사랑]-[이거해요]로 알려주세요!",
+        "warning"
+      );
+    }
+  };
+
+  // 무언가 요소가 변하면, 2초 후에 저장하는 함수.
+  useEffect(() => {
+    if (!nowDatas?.id || groupDatas?.length === 0) return;
+
+    // 이전에 예약된 저장 작업이 있다면 취소
+    if (autoSaveGroupDatas.current) {
+      clearTimeout(autoSaveGroupDatas.current);
+    }
+
+    // 새로운 저장 작업 예약
+    autoSaveGroupDatas.current = setTimeout(() => {
+      autoSaveGroupDatas.current = null; // 저장 작업 예약 해제
+      autoSave();
+    }, 2800);
+
+    // 컴포넌트가 언마운트되거나 의존성이 변경되면 저장 작업 예약 취소
+    return () => {
+      if (autoSaveGroupDatas.current) {
+        clearTimeout(autoSaveGroupDatas.current);
+      }
+    };
+  }, [groupIndex, groupInfo, stdPoints, nowDatas]);
 
   useEffect(() => {
     if (tableRow === "" || tableColumn === "") return;
@@ -127,7 +307,7 @@ const GroupPage = (props) => {
   }, [tableRow, tableColumn]);
 
   /** 학생을 클릭하면 실행됨. groupMakingStep가 2학생배치 중이면 자리 이동할 수 있게.  */
-  const groupIndexHandler = (name, stdInd) => {
+  const stdClickHandler = (name, stdInd) => {
     // 만약.. 현재 그룹설정 단계가 학생바꾸기이면..
     if (groupMakingStep === MAKE_STEP[2]) {
       //저장된 학생 없으면 추가
@@ -140,28 +320,77 @@ const GroupPage = (props) => {
         //이미 존재하고 있으면.. 다시 비우기
       } else if (changeStd === name) {
         setChangeStd("");
-        //현재 클릭한 학생의 배경색 원래 흰색으로
-        document.getElementById(name).style.backgroundColor = "white";
+        // 만약.. id가 없는, 기존 자료가 아니면
+        if (!nowDatas?.id) {
+          //현재 클릭한 학생의 배경색 원래 흰색으로
+          document.getElementById(name).style.backgroundColor = "white";
+          // 기존 자료에서 자리바꾸기면, 배경색을 바꿔줘야함.
+        } else {
+          let bg_color =
+            groupInfo?.[groupIndex?.[stdInd]]?.color ||
+            GROUP_BGCOLOR[groupIndex?.[stdInd]];
+          document.getElementById(name).style.backgroundColor = bg_color;
+        }
+
         //없던 학생이름이면.. 자리 바꾸고 비우기
       } else {
+        // 기존모둠 인덱스
+        let changeStd_ind = 0;
+        let nowStd_ind = 0;
+
         let new_nowDatas = nowDatas;
         let new_students = [];
-        nowDatas?.students?.forEach((std) => {
+        nowDatas?.students?.forEach((std, st_ind) => {
           let new_std = std;
-          if (changeStd.includes(std)) {
+          if (std === changeStd) {
+            changeStd_ind = st_ind;
             new_std = name;
           } else if (std === name) {
+            nowStd_ind = st_ind;
             new_std = changeStd;
           }
           new_students.push(new_std);
         });
         new_nowDatas.students = new_students;
 
+        // 만약.. id가 있는, 기존 자료면 그룹인덱스 배열도 변경해주기
+        let changeStd_color = "white";
+        let nowStd_color = "white";
+        if (nowDatas?.id) {
+          changeStd_color =
+            groupInfo?.[groupIndex?.[changeStd_ind]]?.color ||
+            GROUP_BGCOLOR[groupIndex?.[changeStd_ind]];
+
+          nowStd_color =
+            groupInfo?.[groupIndex?.[nowStd_ind]]?.color ||
+            GROUP_BGCOLOR[groupIndex?.[nowStd_ind]];
+
+          //개별 포인트 순서도 바꿔주기
+
+          let new_stdPoints = [];
+
+          stdPoints?.forEach((p, p_ind) => {
+            let new_p = p;
+            if (p_ind === nowStd_ind) {
+              new_p = stdPoints[changeStd_ind];
+            } else if (p_ind === changeStd_ind) {
+              new_p = stdPoints[nowStd_ind];
+            }
+            new_stdPoints.push(+new_p);
+          });
+
+          setStdPoints(new_stdPoints);
+
+          //그룹 인덱스도 수정 안해도 됨. 자리의 모둠설정 자체는 동일함. 학생만 자리를 바꿈.
+        }
+
         document.getElementById(name).style.backgroundColor = "#E9CBB7";
+
         setTimeout(() => {
           setNowDatas(new_nowDatas);
-          document.getElementById(name).style.backgroundColor = "white";
-          document.getElementById(changeStd).style.backgroundColor = "white";
+          document.getElementById(name).style.backgroundColor = changeStd_color;
+          document.getElementById(changeStd).style.backgroundColor =
+            nowStd_color;
         }, 2000);
 
         setChangeStd("");
@@ -169,8 +398,12 @@ const GroupPage = (props) => {
       // 현재 학생- 모둠 매칭상황이면
     } else if (groupMakingStep === MAKE_STEP[4]) {
       // 학생의 모둠인덱스 groupIndex에 값이 없으면 현재 클릭된 모둠의 인덱스를 학생의 인덱스에 넣어주기(있어도 덮어씌움) (현재랑 똑같을 때만..제거!)
+
+      if (selectedGrInd === "") return;
+
       let new_groupIndex = [...groupIndex];
       let now_groupInd = new_groupIndex[+stdInd];
+
       if (now_groupInd === selectedGrInd) {
         new_groupIndex[+stdInd] = "";
       } else {
@@ -179,8 +412,41 @@ const GroupPage = (props) => {
       setGroupIndex(new_groupIndex);
 
       //
-    } else {
-      console.log("학생 클릭");
+    } else if (menuFunc === "출결" || menuFunc === "상담") {
+      // 이름만 보내는 게 아니라, "1 김민수" 형태로 설정하기
+      let stData = filteredStudents?.filter(
+        (stObj) => stObj.name === name
+      )?.[0];
+
+      //   만약 학생이 존재하지 않으면
+      if (!stData) {
+        Swal.fire(
+          "학생 오류!",
+          "선택한 학생이 현재 학년도에 존재하지 않아요! [메인화면]-[학생명부]를 확인해주세요!",
+          "warning"
+        );
+        return;
+        // 존재하면 "1 김민수" 처럼 세팅하기.
+      } else {
+        setClickedStd(stData.num + " " + stData.name);
+      }
+      //   제출에서 add 즉, 추가 혹은 기존자료 수정  중에 클릭하면
+    } else if (menuFunc === "제출" && addOrLoad === "add") {
+      let new_unSubmitStudents = [...unSubmitStudents];
+      // 미제출 학생에 있었으면 제외, 없었으면 추가
+      if (unSubmitStudents?.filter((st) => st.name === name)?.length > 0) {
+        new_unSubmitStudents = new_unSubmitStudents?.filter(
+          (st) => st.name !== name
+        );
+      } else {
+        let stData = filteredStudents?.filter(
+          (stObj) => stObj.name === name
+        )?.[0];
+
+        new_unSubmitStudents.push(stData);
+      }
+      setUnSubmitStudents(new_unSubmitStudents);
+    } else if (menuFunc === "개별" && addOrLoad === "add") {
     }
   };
 
@@ -377,6 +643,21 @@ const GroupPage = (props) => {
 
   /** 그룹 제거하기 */
   const delGroupInfo = (index) => {
+    // 만약 그룹인덱스 배열에 해당 그룹의 인덱스가 존재하면... 삭제해주기
+    if (groupIndex?.length > 0) {
+      let new_groupIndex = [];
+      groupIndex?.forEach((gind) => {
+        let new_gind = gind;
+        if (gind === index) {
+          new_gind = "";
+        } else if (gind > index) {
+          new_gind -= 1;
+        }
+        new_groupIndex.push(new_gind);
+      });
+      setGroupIndex(new_groupIndex);
+    }
+
     let new_gInfo = groupInfo.filter((g, ind) => ind !== index);
     setGroupInfo(new_gInfo);
   };
@@ -516,11 +797,7 @@ const GroupPage = (props) => {
     if (isSubject && nowClassName === "") return;
 
     //students에서 이름만..
-    let now_students = !isSubject
-      ? nowStudents
-      : nowStudents?.filter(
-          (clSt) => Object.keys(clSt)?.[0] === nowClassName
-        )?.[0]?.[nowClassName];
+    let now_students = filteringStds();
 
     now_students = now_students?.map((stdObj) => `${stdObj.name}`);
 
@@ -559,12 +836,14 @@ const GroupPage = (props) => {
   const grPointsHandler = (what, std_ind) => {
     if (what === "honey-plus") {
       let new_groupInfo = [...groupInfo];
-      new_groupInfo[groupIndex[std_ind]].grPoints += 1;
+      new_groupInfo[std_ind].grPoints += 1;
+
       setGroupInfo(new_groupInfo);
     } else if (what === "honey-minus") {
       let new_groupInfo = [...groupInfo];
-      if (new_groupInfo[groupIndex[std_ind]] > 0) {
-        new_groupInfo[groupIndex[std_ind]].grPoints -= 1;
+
+      if (new_groupInfo[std_ind].grPoints > 0) {
+        new_groupInfo[std_ind].grPoints -= 1;
         setGroupInfo(new_groupInfo);
       }
     } else if (what === "heart-plus") {
@@ -579,6 +858,327 @@ const GroupPage = (props) => {
         setStdPoints(new_stdPoints);
       }
     }
+  };
+
+  /** 그룹설정 변경되는거 관리하기 */
+  //   const saveGroupSettingHandler = () => {
+  //     if (settingWhat === "자리변경") {
+  //       //   setGroupMakingStep(MAKE_STEP[2]);
+  //     } else if (settingWhat === "모둠수정") {
+  //       //   setGroupMakingStep(MAKE_STEP[3]);
+  //     }
+  //   };
+
+  /** 학생 개인 점수의 등수 1~5등까지 보여주기 */
+  const stdRank1to5 = (st_ind) => {
+    let now_point = stdPoints[st_ind];
+
+    const sum = stdPoints.reduce((acc, curr) => {
+      // 현재 값이 빈 문자열인 경우 0으로 처리하여 더함
+      if (
+        typeof curr === "number" ||
+        (typeof curr === "string" && curr.trim() !== "")
+      ) {
+        return acc + Number(curr);
+      }
+      return acc;
+    }, 0);
+
+    if (sum === 0) return;
+
+    const sortedArray = [...stdPoints].sort((a, b) => b - a); // 배열을 내림차순으로 정렬
+    const targetIndex = sortedArray.indexOf(now_point); // 대상 값의 인덱스 찾기
+    let rank = targetIndex + 1; // 인덱스를 등수로 변환하여 1을 더함
+
+    let crown;
+
+    if (rank === 1) {
+      crown = (
+        <FaCrown
+          size={32}
+          color="#ffe300"
+          className={classes["std-crown"]}
+          style={{ top: "-30%", left: "2%" }}
+        />
+      );
+    } else if (rank <= 5) {
+      crown = (
+        <FaCrown size={25} color="#ffe300" className={classes["std-crown"]} />
+      );
+    } else {
+      crown = (
+        <FaCrown size={25} color="lightgray" className={classes["std-crown"]} />
+      );
+    }
+
+    // 중복된 점수 처리
+    // const duplicates = sortedArray.filter((score) => score === now_point);
+    // if (duplicates.length > 1) {
+    //   rank = "공동 " + rank;
+    // }
+
+    return (
+      <>
+        {crown}
+        <div
+          className={classes["std-rank"]}
+          style={rank === 1 ? { fontSize: "16px" } : {}}
+        >
+          {rank}
+        </div>
+      </>
+    );
+  };
+
+  /** 전담여부 판단해서 현재 학급의 학생만 필터링해서 반환해주는 함수 */
+  const filteringStds = () => {
+    let now_students = !isSubject
+      ? nowStudents
+      : nowStudents?.filter(
+          (clSt) => Object.keys(clSt)?.[0] === nowClassName
+        )?.[0]?.[nowClassName];
+
+    return now_students;
+  };
+
+  const sortList = (list) => {
+    const sorted_lists = list.sort(function (a, b) {
+      let a_date = `${a.id}`;
+      let b_date = `${b.id}`;
+      return new Date(a_date) - new Date(b_date);
+    });
+    return sorted_lists;
+  };
+
+  /** 체크리스트 혹은 리스트메모 기존 자료 다운받아오는 로직 */
+  const getCheckListsDataHandler = async (what) => {
+    const dataRef = doc(dbService, what, props.userUid);
+
+    onSnapshot(dataRef, (dataDoc) => {
+      setCheckListDataAll([]);
+      setCheckListDataAll(sortList([...dataDoc?.data()?.[what + "_data"]]));
+    });
+  };
+
+  /** 메뉴바의 기능들을 실행하는  / 출결 개별 상담 제출 / 중에서 */
+  useEffect(() => {
+    if (menuFunc === "") return;
+
+    let now_students = filteringStds();
+    setFilteredStudents(now_students);
+
+    setUnSubmitStudents(now_students);
+
+    // 기존 자료 목록 다운로드..!
+    if (menuFunc === "제출") {
+      getCheckListsDataHandler("checkLists");
+    } else if (menuFunc === "개별") {
+      getCheckListsDataHandler("listMemo");
+    }
+  }, [menuFunc]);
+
+  /** 만약 제출 혹은 개별기록의 기존 자료를 선택하면, unSubmitStudents를 세팅해줌. */
+  useEffect(() => {
+    if (!checkListData) return;
+    setGroupName(checkListData?.title);
+    if (menuFunc === "제출") {
+      setUnSubmitStudents(
+        checkListData?.unSubmitStudents?.sort((a, b) => +a.num - +b.num)
+      );
+    } else if (menuFunc === "개별") {
+    }
+  }, [checkListData]);
+
+  const saveCheckListMemo = () => {
+    if (menuFunc === "제출") {
+    } else if (menuFunc === "개별") {
+    }
+  };
+
+  /** 상담자료 저장하기 로직 */
+  const addDataHandler = async (data) => {
+    let fileUrl = "";
+    //파일 있으면 storage에 저장하기, 업데이트하면서 파일을 바꾸지 않는 경우 패스!
+    if (data.attachedFileUrl !== "") {
+      //storage에 저장
+      //음성녹음인 경우
+      if (data.attachedFileUrl instanceof Object) {
+        const upAndDownUrl = async (audio_file) => {
+          const response = await uploadBytes(
+            ref(storageService, `${props.userUid}/${v4()}`),
+            audio_file,
+            { contentType: "audio/mp4" }
+          );
+          //firestore에 저장할 url받아오기
+          return await getDownloadURL(response.ref);
+        };
+
+        fileUrl = await upAndDownUrl(data.attachedFileUrl);
+
+        //이미지파일인 경우
+      } else {
+        const response = await uploadString(
+          ref(storageService, `${props.userUid}/${v4()}`),
+          data.attachedFileUrl,
+          "data_url"
+        );
+        //firestore에 저장할 url받아오기
+        fileUrl = await getDownloadURL(response.ref);
+      }
+    }
+    //firebase에 firestore에 업로드, 데이터에서 같은게 있는지 확인
+    let new_data = {
+      ...data,
+      attachedFileUrl: fileUrl,
+    };
+
+    let data_year = nowYear(data.id.slice(0, 10));
+    //전담일 경우 학급만 추가하기
+    if (changeSubjectHandler(data_year)) {
+      new_data = {
+        ...new_data,
+        clName: nowClassName === "" ? new_data.clName : nowClassName,
+      };
+    }
+    if (new_data?.yearGroup) {
+      delete new_data.yearGroup;
+    }
+
+    const consultRef = doc(dbService, "consult", props.userUid);
+    //상담자료 받아오기
+    const consultSnap = await getDoc(consultRef);
+    //만약 저장된 자료가 있었으면
+    if (consultSnap.exists()) {
+      //현재 저장되는 자료와 중복되는거 제외하고 거기에 새 자료 추가함
+
+      let new_datas = [...consultSnap.data().consult_data];
+
+      new_datas.push(new_data);
+      await setDoc(consultRef, {
+        consult_data: new_datas,
+      });
+    } else {
+      await setDoc(consultRef, { consult_data: [new_data] });
+    }
+  };
+
+  /** 제출 혹은 개별자료 저장하는 함수 */
+  const saveCheckList = async () => {
+    // 제목 없으면 저장불가.
+    let title = groupName?.trim();
+
+    if (title?.length === 0) {
+      Swal.fire("제목 없음!", "제목을 입력해주세요!", "warning");
+      return;
+    }
+
+    let what;
+    let new_data = {
+      id: checkListData?.id || dayjs().format("YYYY-MM-DD HH:mm:ss"),
+      title: groupName,
+      yearGroup: nowYear(checkListData?.id?.slice(0, 10)),
+    };
+    if (menuFunc === "제출") {
+      what = "checkLists";
+
+      new_data.unSubmitStudents = unSubmitStudents;
+    } else if (menuFunc === "개별") {
+      what = "listMemo";
+
+      // {name: num: memo: } 로 데이터 있는 학생 자료만 추가하기
+      new_data.data = checkListData.data;
+    }
+
+    if (isSubject) {
+      new_data.clName = checkListData?.clName || nowClassName;
+    }
+
+    const dataRef = doc(dbService, what, props.userUid);
+    const dataDoc = await getDoc(dataRef);
+
+    let new_datas = [];
+    //기존 자료 있으면
+    if (dataDoc.exists()) {
+      //checkListData에 id가 있으면(기존자료), 수정. 없으면 추가해주기
+      new_datas = [...dataDoc?.data()?.[what + "_data"]];
+      if (checkListData?.id?.length > 0) {
+        new_datas = new_datas?.map((dt) => {
+          let new_dt = dt;
+          if (dt.id === checkListData?.id) {
+            new_dt = new_data;
+          }
+          return new_dt;
+        });
+      } else {
+        new_datas.push(new_data);
+      }
+
+      // 기존 자료 없으면
+    } else {
+      new_datas.push(new_data);
+    }
+
+    // console.log({
+    //   [what + "_data"]: new_datas,
+    // });
+
+    //저장하고 나서, checkListData에 세팅해주기! (저장하고 나면 기존자료로 세팅되어야함.)
+    await setDoc(dataRef, {
+      [what + "_data"]: new_datas,
+    }).then(() => {
+      setCheckListData(new_data);
+      Swal.fire("저장완료!", "자료가 저장되었어요.", "success");
+    });
+  };
+
+  /** 미제출 제출 한번에 바꾸는 함수 */
+  const changeSubmitHandler = () => {
+    let new_unSubmitStudents = [...filteredStudents]?.filter((stu) => {
+      return !unSubmitStudents.some(
+        (st) => st.name === stu.name && st.num === stu.num
+      );
+    });
+    setUnSubmitStudents(new_unSubmitStudents);
+  };
+
+  /** 제출ox에서 취소하는 함수. */
+  const checkListCancleHandler = () => {
+    Swal.fire({
+      title: "자료 입력 취소",
+      html: `자료 입력을 취소하고 돌아갈까요? <br/><b>** 현재 입력하던 자료는 저장되지 않습니다!!/<b>`,
+      showDenyButton: true,
+      confirmButtonText: "입력취소",
+      confirmButtonColor: "#db100cf2",
+      denyButtonColor: "#85bd82",
+      denyButtonText: `계속하기`,
+    }).then((result) => {
+      /* Read more about isConfirmed, isDenied below */
+      if (result.isConfirmed) {
+        setMenuFunc("");
+        setUnSubmitStudents([...filteredStudents]);
+        setCheckListData(null);
+        setAddOrLoad("");
+        setGroupName("");
+      }
+    });
+  };
+
+  /** textarea 값변화하면 실행될 함수. */
+  const getValueHandler = (e, name) => {
+    let stData = filteredStudents?.filter((stObj) => stObj.name === name)?.[0];
+
+    let new_checkListData = { ...checkListData };
+    let new_data = new_checkListData?.data || [];
+    if (new_data?.length > 0) {
+      new_data = new_data?.filter(
+        (dt) => dt.name !== name && dt.memo?.trim()?.length > 0
+      );
+    }
+
+    new_data.push({ num: stData.num, name: stData.name, memo: e.target.value });
+    new_checkListData.data = new_data;
+
+    setCheckListData(new_checkListData);
   };
 
   return (
@@ -861,6 +1461,185 @@ const GroupPage = (props) => {
         </>
       )}
 
+      {/* 학생 클릭하면... 출결 나오기! */}
+      {clickedStd !== "" && menuFunc === "출결" && (
+        <Attendance
+          onClose={() => setClickedStd("")}
+          who={clickedStd}
+          date={new Date()}
+          selectOption={attendanceOption}
+          userUid={props.userUid}
+          isSubject={isSubject}
+          about="attendance"
+        />
+      )}
+
+      {/* 학생 클릭하면... 상담 나오기! */}
+      {clickedStd !== "" && menuFunc === "상담" && (
+        <Attendance
+          onClose={() => setClickedStd("")}
+          who={clickedStd}
+          students={filteringStds()}
+          date={new Date()}
+          selectOption={consultingOption}
+          addData={addDataHandler}
+          about="consulting"
+          userUid={props.userUid}
+          isSubject={true}
+        />
+      )}
+
+      {/* 제출 혹은 개별기록 불러오기면.. 모달로 선택하는 부분, */}
+      {(menuFunc === "제출" || menuFunc === "개별") && addOrLoad === "load" && (
+        <Modal onClose={() => setAddOrLoad("")}>
+          <span onClick={() => setAddOrLoad("")} className={classes.xmark}>
+            <i className="fa-regular fa-circle-xmark"></i>
+          </span>
+          {/* 타이틀 부분 */}
+          <div className={classes["flex-cen"]}>
+            <div className={classes["title"]}>
+              {menuFunc === "제출" ? "제출ox" : "개별기록"} 목록
+            </div>
+            <div className={classes["title-sub"]}>
+              *{" "}
+              {menuFunc === "제출"
+                ? "[생기부]-[제출ox]"
+                : "[생기부]-[개별기록]"}
+              에 저장된 자료목록
+            </div>
+          </div>
+
+          {/* 가로줄 */}
+          <hr style={{ margin: "20px 15px" }} />
+
+          {/* 자리표 목록 보여주기 */}
+          <ul className={classes["seat-ul"]}>
+            {checkListDataAll?.map((list, ind) => (
+              <li
+                key={ind}
+                className={classes["seat-li"]}
+                onClick={() => {
+                  //   현재 데이터 설정하고, add화면으로!
+                  setCheckListData(list);
+                  setAddOrLoad("add");
+                }}
+              >
+                <div className={classes["seat-id"]}>{list.id.slice(0, 10)}</div>
+                <div className={classes["seat-title"]}>{list.title}</div>
+              </li>
+            ))}
+          </ul>
+        </Modal>
+      )}
+
+      {/* 오른쪽 메뉴 디브.. 출결 제출 등... 기능버튼 모음 */}
+      {nowDatas?.id &&
+        groupMakingStep === MAKE_STEP[0] &&
+        settingWhat === "" && (
+          <div
+            className={
+              menuRight ? classes["menu-div"] : classes["menu-top-div"]
+            }
+            ref={menuRef}
+            style={
+              (menuFunc === "제출" || menuFunc === "개별") &&
+              addOrLoad === "add"
+                ? { opacity: 0 }
+                : { opacity: 1 }
+            }
+          >
+            {menuFunc === "" ? (
+              <>
+                <Button
+                  name="&nbsp; 출결"
+                  className={"groupPage-btn"}
+                  icon={
+                    <i
+                      className="fa-regular fa-calendar-days"
+                      aria-hidden="true"
+                    ></i>
+                  }
+                  onclick={() => {
+                    setMenuFunc("출결");
+                  }}
+                />
+                <Button
+                  name="&nbsp; 제출"
+                  className={"groupPage-btn"}
+                  icon={
+                    <i
+                      className="fa-regular fa-square-check"
+                      aria-hidden="true"
+                    ></i>
+                  }
+                  onclick={() => {
+                    setMenuFunc("제출");
+                  }}
+                />
+                <Button
+                  name="&nbsp; 개별"
+                  className={"groupPage-btn"}
+                  icon={
+                    <i
+                      className="fa-solid fa-clipboard-check"
+                      aria-hidden="true"
+                    ></i>
+                  }
+                  onclick={() => {
+                    setMenuFunc("개별");
+                  }}
+                />
+                <Button
+                  name="&nbsp; 상담"
+                  className={"groupPage-btn"}
+                  icon={
+                    <i
+                      className="fa-regular fa-comments"
+                      aria-hidden="true"
+                    ></i>
+                  }
+                  onclick={() => {
+                    setMenuFunc("상담");
+                  }}
+                />
+
+                {/* 메뉴 기능 중에 하나가 선택된 상태면 */}
+              </>
+            ) : (
+              <>
+                {/* 제출이나 개별기록의 경우, 저장버튼 만들어주기 */}
+                {(menuFunc === "제출" || menuFunc === "개별") &&
+                  addOrLoad === "" && (
+                    <>
+                      <Button
+                        name="new+"
+                        title="자료 추가하기"
+                        className={"groupPage-btn"}
+                        onclick={() => setAddOrLoad("add")}
+                      />
+                      <Button
+                        name="&nbsp; 열기"
+                        title="자료 가져오기"
+                        icon={<i className="fa-regular fa-folder-open"></i>}
+                        className={"groupPage-btn"}
+                        onclick={() => setAddOrLoad("load")}
+                      />
+                    </>
+                  )}
+                <Button
+                  name="&nbsp; 취소"
+                  className={"groupPage-btn"}
+                  icon={<i className="fa-regular fa-circle-xmark"></i>}
+                  onclick={() => {
+                    setMenuFunc("");
+                    setAddOrLoad("");
+                  }}
+                />
+              </>
+            )}
+          </div>
+        )}
+
       {/* 헤더의.. 버튼들 div */}
       <div className={classes["headBtns-div"]}>
         {/* 왼쪽에 배치될 새로/ 목록 버튼 */}
@@ -871,13 +1650,17 @@ const GroupPage = (props) => {
               animate="originXY"
               transition="dur5"
               variants={MOTION_VAR}
+              className={classes["newList-div"]}
             >
               {/* 새로만들기 */}
 
               <Button
                 title="새로만들기"
                 icon={<i className="fa-regular fa-plus"></i>}
-                onclick={() => setNewFrom("allNew")}
+                onclick={() => {
+                  setSettingWhat("");
+                  setNewFrom("allNew");
+                }}
                 className={"groupPage-btn"}
               />
               {/* 목록보기 */}
@@ -886,6 +1669,7 @@ const GroupPage = (props) => {
                 icon={<i className="fa-regular fa-folder-open"></i>}
                 onclick={() => {
                   setNewFrom("");
+                  setSettingWhat("");
                   setShowGroupList(true);
                 }}
                 className={"groupPage-btn"}
@@ -899,6 +1683,7 @@ const GroupPage = (props) => {
               animate="originXY"
               transition="dur5"
               variants={MOTION_VAR}
+              className={classes["newList-div"]}
             >
               {/* 처음부터 */}
               <Button
@@ -911,7 +1696,7 @@ const GroupPage = (props) => {
                 title="자리뽑기 데이터 가져오기"
                 icon={
                   <>
-                    from <i className="fa-sharp fa-solid fa-chair"></i>
+                    from &nbsp;<i className="fa-sharp fa-solid fa-chair"></i>
                   </>
                 }
                 onclick={() => {
@@ -948,7 +1733,96 @@ const GroupPage = (props) => {
           className={classes["header-center"]}
           style={{ flexDirection: "column" }}
         >
-          {groupMakingStep === MAKE_STEP[0] && <div>업데이트 중...</div>}
+          {groupMakingStep === MAKE_STEP[0] && menuFunc === "" && (
+            <div
+              className={classes["header-title"]}
+              style={window.innerWidth < 1400 ? { marginTop: "70px" } : {}}
+            >
+              <span className={classes["title-span"]}>
+                {nowDatas?.id?.slice(0, 10)}
+              </span>
+              {nowDatas?.title}
+            </div>
+          )}
+
+          {groupMakingStep === MAKE_STEP[0] && menuFunc === "출결" && (
+            <>
+              <div
+                className={classes["header-title"]}
+                style={window.innerWidth < 1400 ? { marginTop: "70px" } : {}}
+              >
+                출결자료 등록하기
+              </div>
+              <div>* 자료를 등록할 학생을 클릭해주세요.</div>
+            </>
+          )}
+
+          {groupMakingStep === MAKE_STEP[0] &&
+            (menuFunc === "제출" || menuFunc === "개별") && (
+              <>
+                <div
+                  className={classes["header-title"]}
+                  style={window.innerWidth < 1400 ? { marginTop: "70px" } : {}}
+                >
+                  {menuFunc === "제출"
+                    ? "제출ox 등록하기"
+                    : "개별기록 등록하기"}
+                </div>
+                {addOrLoad !== "" && (
+                  <div className={classes["header-center"]}>
+                    {/* 제출 add상태, 즉 새로운 자료 혹은 수정상황이면..  */}
+                    {menuFunc === "제출" && (
+                      <Button
+                        title={"미제출 <=> 제출"}
+                        icon={<MdOutlinePublishedWithChanges />}
+                        className={"groupPage-btn"}
+                        onclick={changeSubmitHandler}
+                      />
+                    )}
+
+                    <input
+                      type="text"
+                      placeholder="제목"
+                      id={"title-input"}
+                      value={groupName || ""}
+                      onChange={(e) => setGroupName(e.target.value)}
+                      className={classes["groupName-input"]}
+                    />
+                    <Button
+                      name={window.innerWidth < 1100 ? "" : <>&nbsp; 저장</>}
+                      icon={<i className="fa-regular fa-floppy-disk"></i>}
+                      className={"groupPage-btn"}
+                      onclick={saveCheckList}
+                    />
+                    <Button
+                      name={window.innerWidth < 1100 ? "" : <>&nbsp; 취소</>}
+                      className={"groupPage-btn"}
+                      icon={<i className="fa-regular fa-circle-xmark"></i>}
+                      onclick={() => {
+                        checkListCancleHandler();
+                      }}
+                    />
+                  </div>
+                )}
+                {addOrLoad === "add" && menuFunc === "제출" && (
+                  <div className={classes["header-center"]}>
+                    미제출 ({unSubmitStudents?.length})
+                  </div>
+                )}
+              </>
+            )}
+
+          {groupMakingStep === MAKE_STEP[0] && menuFunc === "상담" && (
+            <>
+              <div
+                className={classes["header-title"]}
+                style={window.innerWidth < 1400 ? { marginTop: "70px" } : {}}
+              >
+                상담자료 등록하기
+              </div>
+              <div>* 자료를 등록할 학생을 클릭해주세요.</div>
+            </>
+          )}
 
           {groupMakingStep === MAKE_STEP[2] && (
             <>
@@ -1018,10 +1892,12 @@ const GroupPage = (props) => {
                   * 모둠클릭 => 학생클릭 👉🏼{" "}
                   <i className="fa-regular fa-floppy-disk"></i> 클릭
                 </div>
-                <div>
-                  * 모둠없이 사용하시려면{" "}
-                  <i className="fa-regular fa-floppy-disk"></i> 클릭
-                </div>
+                {groupInfo?.length === 0 && (
+                  <div>
+                    * 모둠없이 사용하시려면{" "}
+                    <i className="fa-regular fa-floppy-disk"></i> 클릭
+                  </div>
+                )}
               </motion.div>
             </>
           )}
@@ -1089,6 +1965,9 @@ const GroupPage = (props) => {
                       //그룹만들기 끝나면 저장하는 함수 실행
                       saveGroupDatas();
                     } else {
+                      if (now === 3) {
+                        setGroupName("");
+                      }
                       setGroupMakingStep(MAKE_STEP[now + 1]);
                     }
                   }}
@@ -1117,7 +1996,7 @@ const GroupPage = (props) => {
                   className={classes["newList-div"]}
                 >
                   <Button
-                    name=" 모둠설정"
+                    title="설정보기"
                     icon={<i className="fa-solid fa-gear"></i>}
                     onclick={() => setSettingWhat("on")}
                     className={"groupPage-btn"}
@@ -1134,21 +2013,47 @@ const GroupPage = (props) => {
                 >
                   {/* 설정on이면  */}
                   <Button
-                    name={<FaExchangeAlt />}
-                    title="자리변경"
-                    onclick={() => setSettingWhat("자리변경")}
+                    name={
+                      <>
+                        <IoPersonSharp size={14} />
+
+                        <FaExchangeAlt size={10} />
+                        <IoPersonSharp size={14} />
+                      </>
+                    }
+                    title="학생 자리변경"
+                    onclick={() => {
+                      setSettingWhat("자리변경");
+                      setGroupMakingStep(MAKE_STEP[2]);
+                    }}
                     className={"groupPage-btn"}
                   />
                   <Button
-                    name={<BiSolidColorFill />}
-                    title="모둠 수정"
-                    onclick={() => setSettingWhat("모둠수정")}
-                    className={"groupPage-btn"}
-                  />
-                  <Button
-                    name={<BiEdit />}
+                    name={"group"}
+                    icon={<FaRegEdit />}
                     title="모둠명 변경"
-                    onclick={() => setSettingWhat("모둠명변경")}
+                    onclick={() => {
+                      setSettingWhat("모둠명변경");
+                      setGroupMakingStep(MAKE_STEP[3]);
+                    }}
+                    className={"groupPage-btn"}
+                  />
+                  <Button
+                    icon={<ImMakeGroup />}
+                    title="모둠자리 수정"
+                    onclick={() => {
+                      setSettingWhat("모둠수정");
+                      setGroupMakingStep(MAKE_STEP[4]);
+                    }}
+                    className={"groupPage-btn"}
+                  />
+                  <Button
+                    name={"score"}
+                    icon={<VscDebugRestart />}
+                    title="모둠점수 초기화"
+                    onclick={() => {
+                      grPointsZero();
+                    }}
                     className={"groupPage-btn"}
                   />
                   <Button
@@ -1156,6 +2061,37 @@ const GroupPage = (props) => {
                     icon={<i className="fa-solid fa-xmark"></i>}
                     onclick={() => setSettingWhat("")}
                     className={"groupPage-btn-cancle"}
+                  />
+                </motion.div>
+              )}
+              {(settingWhat === "자리변경" ||
+                settingWhat === "모둠수정" ||
+                settingWhat === "모둠명변경") && (
+                <motion.div
+                  initial="_downY"
+                  animate="originXY"
+                  transition="dur5"
+                  variants={MOTION_VAR}
+                  className={classes["newList-div"]}
+                >
+                  <Button
+                    name={<i className="fa-regular fa-floppy-disk"></i>}
+                    title="저장"
+                    onclick={() => {
+                      setSettingWhat("");
+                      setGroupMakingStep(MAKE_STEP[0]);
+                      //   saveGroupSettingHandler();
+                    }}
+                    className={"groupPage-btn"}
+                  />
+                  <Button
+                    name={<i className="fa-regular fa-circle-xmark"></i>}
+                    title="취소"
+                    onclick={() => {
+                      setSettingWhat("");
+                      setGroupMakingStep(MAKE_STEP[0]);
+                    }}
+                    className={"groupPage-btn"}
                   />
                 </motion.div>
               )}
@@ -1186,7 +2122,7 @@ const GroupPage = (props) => {
               ))}
             </div>
 
-            {groupInfo?.length > 0 && <div>* 모둠 클릭하면 삭제!</div>}
+            {groupInfo?.length > 0 && <div>* 모둠 이름을 클릭하면 삭제!</div>}
           </>
         )}
 
@@ -1197,7 +2133,13 @@ const GroupPage = (props) => {
               <span key={ind}>
                 <Button
                   name={gInfo.groupName}
-                  onclick={() => setSelectedGrInd(ind)}
+                  onclick={() => {
+                    if (selectedGrInd === ind) {
+                      setSelectedGrInd("");
+                    } else {
+                      setSelectedGrInd(ind);
+                    }
+                  }}
                   className={"group-btn"}
                   style={
                     selectedGrInd === ind
@@ -1234,54 +2176,161 @@ const GroupPage = (props) => {
               className={classes["item"]}
               id={std}
               style={
-                groupIndex?.[ind] !== ""
-                  ? {
+                menuFunc !== "제출"
+                  ? groupIndex?.[ind] !== ""
+                    ? {
+                        backgroundColor:
+                          groupInfo?.[groupIndex?.[ind]]?.color ||
+                          GROUP_BGCOLOR[groupIndex?.[ind]],
+                      }
+                    : {}
+                  : //   제출이고 add(자료 입력 / 수정) 상태면...
+                  addOrLoad === "add" &&
+                    unSubmitStudents?.filter((st) => st.name === std)?.length >
+                      0
+                  ? { backgroundColor: "whitesmoke" }
+                  : {
                       backgroundColor:
                         groupInfo?.[groupIndex?.[ind]]?.color ||
                         GROUP_BGCOLOR[groupIndex?.[ind]],
                     }
-                  : {}
               }
-              onClick={() => groupIndexHandler(std, ind)}
-              onMouseEnter={() => handleMouseEnter(ind)}
+              onClick={() => stdClickHandler(std, ind)}
+              onMouseEnter={() => handleMouseEnter("item", ind)}
               onMouseLeave={handleMouseLeave}
             >
               {/* 자료가 완성된 상태고, 호버할때만 보일... 꿀당+,-  하트 +,- */}
-              {nowDatas?.title?.length > 0 && hoveredIndex === ind && (
-                <>
-                  <div
-                    className={classes["honey-plus"]}
-                    onClick={() => grPointsHandler("honey-plus", ind)}
-                  >
-                    <GiHoneypot />+
-                  </div>
-                  <div
-                    className={classes["honey-minus"]}
-                    onClick={() => grPointsHandler("honey-minus", ind)}
-                  >
-                    <GiHoneypot />-
-                  </div>
-                  <div
-                    className={classes["heart-plus"]}
-                    onClick={() => grPointsHandler("heart-plus", ind)}
-                  >
-                    <i className="fa-solid fa-heart-circle-plus"></i>
-                  </div>
-                  <div
-                    className={classes["heart-minus"]}
-                    onClick={() => grPointsHandler("heart-minus", ind)}
-                  >
-                    <i className="fa-solid fa-heart-circle-minus"></i>
-                  </div>
-                </>
-              )}
+              {nowDatas?.title?.length > 0 &&
+                hoveredIndex === String("item" + ind) &&
+                settingWhat !== "자리변경" &&
+                settingWhat !== "모둠수정" &&
+                menuFunc === "" && (
+                  <>
+                    <div
+                      className={classes["plus"]}
+                      onClick={() => grPointsHandler("heart-plus", ind)}
+                    >
+                      <i className="fa-solid fa-heart-circle-plus"></i>
+                    </div>
+                    <div
+                      className={classes["minus"]}
+                      onClick={() => grPointsHandler("heart-minus", ind)}
+                    >
+                      <i className="fa-solid fa-heart-circle-minus"></i>
+                    </div>
+                  </>
+                )}
 
-              {std}
+              {/* 개인점수, 랭킹이 높으면 보여주기 */}
+              {nowDatas?.title?.length > 0 &&
+                hoveredIndex !== String("item" + ind) &&
+                menuFunc === "" && (
+                  <>
+                    <div className={classes["std-point"]}>
+                      {stdPoints[ind]}
+                      <i
+                        className="fa-solid fa-heart fa-sm"
+                        style={{
+                          color: "#d90f30",
+                          filter: "drop-shadow(2px 1px 1px rgba(46, 0, 0, 1))",
+                          marginLeft: "3px",
+                        }}
+                      ></i>
+                    </div>
+
+                    {/* 개인랭킹과 왕관 */}
+
+                    {stdRank1to5(ind)}
+                  </>
+                )}
+
+              {/* 캐릭터 */}
+              {/*  학생 이름 */}
+              <div
+                className={
+                  menuFunc === "개별" && addOrLoad === "add"
+                    ? classes["listStyle-item"]
+                    : ""
+                }
+              >
+                {CHARACTERS[ind + randNum]}
+                {std}
+              </div>
+
+              {/* 개별기록 입력일때만 보이는, textarea 태그 */}
+              {menuFunc === "개별" && addOrLoad === "add" && (
+                <Input
+                  id={"textarea" + std}
+                  myKey={"textarea" + std}
+                  className={"memo-section"}
+                  label="inputData"
+                  input={{
+                    type: "textarea",
+                  }}
+                  getValue={true}
+                  getValueHandler={(e) => getValueHandler(e, std)}
+                  defaultValue={
+                    // //자료가 있으면 length가 undefined가 나오고 없으면 0이 나옴. 자료 있을 때만 저장되어 있던거 보여주기
+                    checkListData?.data?.filter(
+                      (data) => data.name === std
+                    )?.[0]?.memo || ""
+                  }
+                  startheight={"25px"}
+                />
+              )}
             </motion.div>
           ))}
         </div>
       </div>
-      <div className={classes["points-div"]}></div>
+      {/* 모둠 점수 보여주기 */}
+      {groupInfo?.length !== 0 && (
+        <div className={classes["points-div"]}>
+          <div className={classes["points-group"]}>
+            <GiHoneypot
+              size={60}
+              color="#e8c909"
+              style={{ filter: "drop-shadow(0px 0px 2px rgba(0, 0, 0, 1))" }}
+            />
+            {groupInfo?.map((gr, gr_ind) => (
+              <div
+                key={gr_ind}
+                className={classes["gr-div"]}
+                style={{
+                  backgroundColor: gr?.color || GROUP_BGCOLOR[gr_ind],
+                }}
+                onMouseEnter={() => handleMouseEnter("group", gr_ind)}
+                onMouseLeave={handleMouseLeave}
+              >
+                {hoveredIndex === String("group" + gr_ind) && (
+                  <>
+                    {/* 점수 +, - 버튼 */}
+
+                    <div
+                      className={classes["plus"]}
+                      onClick={() => grPointsHandler("honey-plus", gr_ind)}
+                    >
+                      +
+                    </div>
+                    <div
+                      className={classes["minus"]}
+                      onClick={() => grPointsHandler("honey-minus", gr_ind)}
+                    >
+                      -
+                    </div>
+                  </>
+                )}
+                {/* 왕관.. 1,2,3 */}
+                {gr?.groupName} : {gr?.grPoints}
+              </div>
+            ))}
+            <GiHoneypot
+              size={60}
+              color="#e8c909"
+              style={{ filter: "drop-shadow(0px 0px 2px rgba(0, 0, 0, 1))" }}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

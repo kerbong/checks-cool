@@ -442,7 +442,7 @@ const EventInput = (props) => {
                 }
                 defaultValue={props.dafaultValue}
                 required
-                onClick={(e) => setAtdOption(e.target.value)}
+                onChange={(e) => setAtdOption(e.target.value)}
               >
                 <option value="">-- 분류 --</option>
                 {props.selectOption?.map((select_option) => (

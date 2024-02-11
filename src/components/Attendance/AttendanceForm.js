@@ -16,6 +16,7 @@ const AttendanceForm = (props) => {
   const [attachedFile, setAttachedFile] = useState("");
   const [option, setOption] = useState("");
   const [inputIsShown, setInputIsShown] = useState(false);
+  const [paperSubmit, setPaperSubmit] = useState(false);
   const [requestSubmit, setRequestSubmit] = useState(false);
   const [reportSubmit, setReportSubmit] = useState(false);
   const [isImgFile, setIsImgFile] = useState(false);
@@ -131,9 +132,15 @@ const AttendanceForm = (props) => {
         name: studentInfo[1],
         option: option,
         note: inputValue,
-        request: requestSubmit,
-        report: reportSubmit,
       };
+
+      //서류 제출부분 추가
+      if (option === "1현장체험" || option === "3가정학습") {
+        data["request"] = requestSubmit;
+        data["report"] = reportSubmit;
+      } else {
+        data["paper"] = paperSubmit;
+      }
 
       //주말 제외한 날짜만 모아두기
       let weekDayEvents = [];
@@ -164,14 +171,24 @@ const AttendanceForm = (props) => {
       //저장가능한 날짜 중에 이미 저장된 데이터 있는지 확인하고 저장하기
       let new_attendEvents = JSON.parse(JSON.stringify(attendEvents));
       weekDayEvents.forEach((data_id) => {
-        let existAttend = attendEvents?.filter((event) => event.id === data_id);
-        //같은 날에 저장된 다른 자료가 없으면
-        if (existAttend.length === 0) {
+        // 같은날 같은 번호로 저장된 출결자료
+        let existAttend = attendEvents?.filter(
+          (event) => event.id?.split(" ")?.[0] === data_id?.split(" ")?.[0]
+        );
+        //해당날짜에 해당학생 출결은 최대 3개!
+        if (existAttend.length < 3) {
           //새로운 리스트에 추가해두기
           new_attendEvents.push({
             ...data,
             id: data_id,
           });
+        } else {
+          Swal.fire(
+            "저장 실패",
+            "출결자료는 학생당 하루에 3개 까지만 저장할 수 있습니다.",
+            "error"
+          );
+          return;
         }
       });
       // 저장할 자료들이 추가된 리스트를 업로드하기
@@ -355,28 +372,46 @@ const AttendanceForm = (props) => {
             {/* 학생서류 제출했는지 체크하는 버튼 */}
             {props.about === "attendance" && (
               <>
-                <Button
-                  className={
-                    requestSubmit ? "paperSub-btn-clicked" : "paperSub-btn"
-                  }
-                  onclick={(e) => {
-                    e.preventDefault();
-                    setRequestSubmit((prev) => !prev);
-                  }}
-                  title="신청서"
-                  name={"신청서"}
-                />
-                <Button
-                  className={
-                    reportSubmit ? "paperSub-btn-clicked" : "paperSub-btn"
-                  }
-                  onclick={(e) => {
-                    e.preventDefault();
-                    setReportSubmit((prev) => !prev);
-                  }}
-                  title="보고서"
-                  name={"보고서"}
-                />
+                {option === "1현장체험" || option === "3가정학습" ? (
+                  <>
+                    <Button
+                      className={
+                        requestSubmit ? "paperSub-btn-clicked" : "paperSub-btn"
+                      }
+                      onclick={(e) => {
+                        e.preventDefault();
+                        setRequestSubmit((prev) => !prev);
+                      }}
+                      title="신청서"
+                      name={"신청서"}
+                    />
+                    <Button
+                      className={
+                        reportSubmit ? "paperSub-btn-clicked" : "paperSub-btn"
+                      }
+                      onclick={(e) => {
+                        e.preventDefault();
+                        setReportSubmit((prev) => !prev);
+                      }}
+                      title="보고서"
+                      name={"보고서"}
+                    />
+                  </>
+                ) : (
+                  <>
+                    <Button
+                      className={
+                        paperSubmit ? "paperSub-btn-clicked" : "paperSub-btn"
+                      }
+                      onclick={(e) => {
+                        e.preventDefault();
+                        setPaperSubmit((prev) => !prev);
+                      }}
+                      title="서류"
+                      name={"서류"}
+                    />
+                  </>
+                )}
               </>
             )}
 
@@ -422,12 +457,18 @@ const AttendanceForm = (props) => {
             )}
           </div>
 
-          <div className={classes.btnArea}>
+          <div
+            className={classes.btnArea}
+            style={
+              props.about === "attendance" ? { justifyContent: "center" } : {}
+            }
+          >
             {props.about === "consulting" && (
               <>
                 <button
                   className={classes.btn}
                   onClick={() => setIsImgFile((prev) => !prev)}
+                  style={{ fontSize: "1em" }}
                 >
                   <i className="fa-solid fa-rotate"></i>{" "}
                   {isImgFile ? "오디오 녹음하기" : "사진 올리기"}
@@ -435,7 +476,15 @@ const AttendanceForm = (props) => {
               </>
             )}
 
-            <button className={classes.btn} onClick={submitHandler}>
+            <button
+              className={classes.btn}
+              onClick={submitHandler}
+              style={
+                props.about === "attendance"
+                  ? { width: "98%" }
+                  : { width: "50%" }
+              }
+            >
               저장
             </button>
           </div>

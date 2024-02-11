@@ -665,12 +665,18 @@
 .groupPage-btn,
 .group-btn,
 .groupPage-btn-cancle {
-  padding: 15px 20px;
+  padding: 10px 13px;
   margin: 3px 6px;
   border-radius: 10px;
   background-color: #334a52;
   color: whitesmoke;
   max-height: 60px;
+  font-size: 15px;
+}
+
+.groupPage-btn {
+  display: flex;
+  align-items: center;
 }
 
 .groupPage-btn:hover {
