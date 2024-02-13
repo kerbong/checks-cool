@@ -1,3 +1,7 @@
+:root {
+  --groupColumns: 6; /* 원하는 초기값으로 설정 */
+}
+
 .div {
   width: 100vw;
   height: auto;
@@ -31,11 +35,14 @@
   border-radius: 15px;
   font-size: 20px;
   position: relative;
-  transition: font-weight 0.2s ease-in-out;
+  transition: padding 0.5s ease-in-out, margin 0.5s ease-in-out,
+    font-weight 0.2s ease-in-out;
 }
 
 .gr-div:hover {
   font-weight: bold;
+  margin: 0px 4px;
+  padding: 25px 13px;
 }
 
 .seats-div {
@@ -106,7 +113,8 @@
   align-items: center;
 }
 
-.item {
+.item,
+.empty-item {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -127,6 +135,18 @@
   font-weight: bold;
 }
 
+.group-edit {
+  font-size: 17px;
+  margin: 10px;
+  text-align: left;
+}
+
+.autoSave-expl {
+  font-size: 13px;
+  font-weight: 400;
+  letter-spacing: -1px;
+}
+
 .plus,
 .minus {
   filter: drop-shadow(3px 2px 1px rgba(46, 0, 0, 1));
@@ -145,7 +165,7 @@
 }
 .std-point {
   position: absolute;
-  top: 3%;
+  bottom: 3%;
   right: 7%;
   font-size: 15px;
   display: flex;
@@ -153,7 +173,8 @@
 }
 
 .std-rank,
-.std-crown {
+.std-crown,
+.gr-rank {
   position: absolute;
   top: -23%;
   font-weight: bold;
@@ -164,9 +185,17 @@
   left: 5%;
 }
 
+.gr-rank {
+  left: 50%;
+  font-size: 18px;
+  top: -30%;
+  filter: none;
+}
+
 .std-rank {
   top: -18%;
-  left: 10%;
+  left: 9%;
+  filter: none;
 }
 
 .minus {
@@ -211,7 +240,8 @@
   padding: 30px;
   background-color: whitesmoke;
   border-radius: 15px;
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(var(--groupColumns), 1fr);
   margin-bottom: 30px;
   align-items: center;
   flex-wrap: wrap;
@@ -259,4 +289,18 @@
   margin-right: 20px;
   vertical-align: text-top;
   margin-left: -40px;
+}
+
+.window {
+  position: absolute;
+  bottom: 120px;
+  right: 20px;
+  transform: translate(-50%, -50%);
+  background-color: #00000054;
+  padding: 18px 22px;
+  z-index: 3;
+  border-radius: 16px;
+  color: white;
+  font-size: 12px;
+  text-align: center;
 }
