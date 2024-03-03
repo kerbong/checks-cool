@@ -217,23 +217,37 @@ const ClassTableBasic = (props) => {
   };
 
   //시간표 시간 수정하는 함수
-  const classStartHandler = (what, plusMinus, minute) => {
+  const classStartHandler = (what, sTime, eTime) => {
+    let newTime = `${dayjs("2022-01-13 " + sTime).format(
+      "YYYY-MM-DD HH:mm"
+    )},${dayjs("2022-01-13 " + eTime).format("YYYY-MM-DD HH:mm")}`;
+
     let new_classStart = [];
+    console.log(newTime);
+    console.log(classStart);
     classStart.forEach((cl, index) => {
       //모두 변경이 아니고, what과 인덱스가 다르면 변경하지 않음
-      if (what !== "all" && +what !== index) {
+      if (index < +what) {
         new_classStart.push(cl);
-        return;
-      }
-      //더할까 뺄까?
-      if (plusMinus === "plus") {
-        new_classStart.push(
-          dayjs(cl).add(+minute, "minute").format("YYYY-MM-DD HH:mm")
-        );
+      } else if (index === +what) {
+        new_classStart.push(newTime);
       } else {
-        new_classStart.push(
-          dayjs(cl).subtract(+minute, "minute").format("YYYY-MM-DD HH:mm")
-        );
+        let cl_time = cl?.split(",");
+        // 만약...해당교시 시간이 이미 저장되어 있으면, 패스!
+        if (cl_time?.[1]) {
+          new_classStart.push(cl);
+          return;
+        }
+
+        let howMin = 10 + 50 * (index - +what - 1);
+
+        //인덱스 차이 = 1이면, 시작 시간은 끝시각 + 10 분  2차이면, 시작은 + 10+50
+        // 10 + 50*(인덱스-1)
+        let new_clTime = dayjs("2022-01-13 " + eTime)
+          .add(+howMin, "minute")
+          .format("YYYY-MM-DD HH:mm");
+
+        new_classStart.push(new_clTime);
       }
     });
     setClassStart([...new_classStart]);
@@ -338,6 +352,42 @@ const ClassTableBasic = (props) => {
     }
   };
 
+  /** 시작, 끝 시각 불러오는 함수ㅡ 시작시각, 끝시각 */
+  const classTimeHandler = (value, ind) => {
+    let new_classTime = [];
+    // 같은 이름.. 중복은 안되도록
+    if (classTime?.includes(value)) {
+      Swal.fire(
+        "중복 불가!",
+        "중복된 교시 이름이 존재합니다! 교시의 이름이 겹치지 않도록 수정해주세요.",
+        "warning"
+      );
+      return;
+    }
+
+    let new_value = value;
+    //  /같은 css선택자에서 불가능한 것들 사용하지 못하도록 막아주기
+    if (/[\s!\"#$%&'()*+,.\/:;<=>?@\[\]^`{|}~]/.test(value)) {
+      Swal.fire(
+        "특수문자 사용불가!",
+        `방금 입력하신 특수문자, 띄어쓰기 등은 사용이 불가능합니다! - _ 숫자 영어 한글 문자만 활용해주세요.`,
+        "warning"
+      );
+      new_value = value.replace(/[\s!\"#$%&'()*+,.\/:;<=>?@\[\]^`{|}~]/g, "");
+
+      return;
+    }
+
+    classTime?.forEach((ct, index) => {
+      if (index === ind) {
+        new_classTime.push(new_value);
+      } else {
+        new_classTime.push(ct);
+      }
+    });
+    setClassTime(new_classTime);
+  };
+
   return (
     <>
       {showExample && (
@@ -368,6 +418,11 @@ const ClassTableBasic = (props) => {
         <button id="title-btn" onClick={() => setShowExample(true)}>
           <i className="fa-solid fa-table"></i> 기초시간표
         </button>
+        <Button
+          name={"저장"}
+          className={"save-classTable-button"}
+          onclick={saveClassBasicHandler}
+        />
       </div>
 
       <div className={classes["title-class-container"]}>
@@ -386,7 +441,7 @@ const ClassTableBasic = (props) => {
         {/* 아침~ 6교시, 방과후 표시 */}
         <div className={classes["title-class"]}>
           {classTime?.map((ct, index) => (
-            <div key={ct} className={classes["title-class-div"]}>
+            <div key={index} className={classes["title-class-div"]}>
               {/* 1교시 */}
               <div style={{ fontWeight: "bold" }}>
                 <input
@@ -394,19 +449,27 @@ const ClassTableBasic = (props) => {
                   type="text"
                   id={`classTime-${index}`}
                   placeholder={""}
-                  defaultValue={ct}
+                  value={ct}
+                  onChange={(e) => {
+                    e.preventDefault();
+                    classTimeHandler(e.target?.value?.trim(), index);
+                  }}
                 />
               </div>
               <div className={classes["timeRanges"]}>
                 {/* 시간표시 09:00~09:40 */}
                 <div className={classes["timeRange"]}>{`${dayjs(
-                  classStart[index]
+                  classStart[index]?.split(",")?.[0]
                 ).format("HH:mm")} `}</div>
-                <div className={classes["timeRange"]}>{` ~ ${dayjs(
-                  classStart[index]
-                )
-                  .add(40, "minute")
-                  .format("HH:mm")}`}</div>
+                <div className={classes["timeRange"]}>
+                  {classStart[index]?.split(",")?.[1]
+                    ? ` ~ ${dayjs(classStart[index]?.split(",")?.[1]).format(
+                        "HH:mm"
+                      )}`
+                    : ` ~ ${dayjs(classStart[index]?.split(",")?.[0])
+                        .add(40, "minute")
+                        .format("HH:mm")}`}
+                </div>
               </div>
             </div>
           ))}
@@ -414,17 +477,11 @@ const ClassTableBasic = (props) => {
         {/* 인풋창, 40개 */}
         <div className={classes["container"]}>{items}</div>
       </div>
-      <div className={classes["select-p-m"]}>
-        <Button
-          name={"저장"}
-          className={"save-classTable-button"}
-          onclick={saveClassBasicHandler}
-        />
-      </div>
 
       <TimeTable
-        classStartHandler={classStartHandler}
+        timeHandler={classStartHandler}
         classTime={classTime}
+        classStart={classStart}
         returnBaseHandler={returnBaseHandler}
         delAddClassTimeHandler={delAddClassTimeHandler}
       />

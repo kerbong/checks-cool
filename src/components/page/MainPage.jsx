@@ -8,15 +8,20 @@ import ClassItem from "../Main/ClassItem";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import ExampleModal from "./ExampleModal";
-import byExcel from "../../assets/student/teacher-excel.gif";
 
-import mainImg from "../../assets/notice/240206.jpg";
+import mainImg from "../../assets/notice/20240304.gif";
 
 import dayjs from "dayjs";
 import AttendCalendar from "components/Attendance/AttendCalendar";
 import donationImg from "../../assets/notice/donation.png";
 import Modal from "components/Layout/Modal";
 import MainShortCut from "components/Main/MainShortCut";
+import ShowClassChange from "components/Main/ShowClassChange";
+import weekOfYear from "dayjs/plugin/weekOfYear"; // 주차 계산 지원
+import isoWeek from "dayjs/plugin/isoWeek"; // ISO 주차 계산 지원
+
+dayjs.extend(weekOfYear);
+dayjs.extend(isoWeek);
 
 dayjs.locale("ko");
 
@@ -34,63 +39,55 @@ const monthEnd_text = `월말입니다! 선생님들의 소중한 정보를 다�
 ** 첵스쿨 사용에 만족하신다면 <br/> <b>첵스쿨 활용팁, 후기를 👉</b> <u>[교사랑] - [추천해요]에 공유</u>해주세요!
  `;
 
-const update_title = `새학년도 공지 / 업데이트 예정 / 커피쿠폰 재발송 🎇`;
+const yearEnd_title = `학년도 끝에는, 자료다운!`;
+const yearEnd_text = `이번 학년도 고생 많으셨습니다! 선생님들의 소중한 정보를 다운로드 해주세요!<br/>
+메인화면의 '💾 데이터 저장'을 활용해주세요!!<br/>
+(** 꼭이요..!!!!!! )<br/><br/>
+오늘 날짜가 2월 15일 이후라면, 날짜를 2월 15일 전으로 바꾸신 후에 저장해주세요!! (날짜를 기준으로 학년도 자료가 저장됩니다.)<br/>
+** 선생님들의 모든 학교 데이터를 <br/> 엑셀파일 하나로 만들어 편하게 보관하실 수 있습니다! <br/><br/> 
+** 첵스쿨 사용에 만족하셨다면 <br/> <b>첵스쿨 활용팁, 후기를 👉</b> <u>[교사랑] - [추천해요]에 공유</u>해주세요!
+ `;
 
-const update_text = ` <br/> 
-<b>=== 신학기 안내!!🎉 ===</b>
+const update_title = `주간시간표 / 모둠화면 업데이트 🎇`;
+
+const update_text = ` 
+(상세 설명 https://bit.ly/첵스쿨사용설명서)
+<br/> <br/> 
+<b>=== 업데이트 안내🎉 ===</b>
 <br/><br/>
-선생님들 푹 쉬셨나요??! <br/>
-항상 방학은 왜이리 짧은지..😂<br/>
-새학기에도 여유롭고 유능한 교사가 되실 수 있도록<br/>
-최선을 다해 돕고, 함께 성장하는 첵스쿨이 되겠습니다🤗<br/>
-<br/>
-<b>** <u>2월 16일</u> 부터 신학기로 인식됩니다!! **</b>
-<br/><br/>
-<b>=== 업데이트 예정!!😎 ===</b>
-<br/><br/>
-<b>1. [제자랑]-[모둠화면]🧮</b>
+
+
+<b>1. [메인화면]-[주간시간표]</b>
 <br/> 
-자리뽑기를 활용하여 학생들의 모둠점수/개별점수로<br/>
-학급을 운영할 수 있는 [모둠화면]<br/>
-페이지가 업데이트 예정입니다!<br/>
-<b>* 좋은...이름 추천부탁드립니다🤓</b> <br/><br/>
-<b>2. 모바일 Ai + 📱</b><br/>
-모바일로 접속하면 간단하게<br/> 일정 / 할일 / 상담 / 출결 / 자료 등을<br/> 음성 또는 파일로 자동 저장하실 수 있어요! <br/><br/>
-<b>3. 사용 설명서 📑</b><br/>
-로그인 버튼 => 공지사항"을 대신하여 <br/> 
-각 기능별 사용 설명서를 담은 페이지인데, 생각보다... 다른 업데이트 시간이 많이걸리네요😖
-<br/>
-<br/>
-<b>=== 커피쿠폰 재발송!!☕ ===</b>
+메인화면 가장 아래에 주간시간표가 추가되었어요! <br/> 
+수동 저장만 가능하니, 꼭! 저장버튼 눌러주세요!!
+<br/> <br/> 
 
+<b>2. [제자랑]-[모둠화면]🧮</b>
+<br/> 
+모둠화면에 "캐릭터" 기능이 추가되었어요!!<br/>
+모둠점수/개별점수 보상 항목을 정해두고,<br/>
+보상 점수를 사용하여 캐릭터 변경이 가능해요!
+<br/><br/>
+
+업데이트 작업량도 많고, 쉴틈이 없어서 사용설명서 작성에 시간이 많이걸리네요😖 죄송합니다. 안정되면ㅡ하나씩 올려보겠습니다!!(https://bit.ly/첵스쿨사용설명서)
 <br/>
 <br/>
-이벤트 당첨되신 분들중에.. 미처 메일을 확인하지 못하신..<br/>
-<b>9분께 2월 19일에 다시 발송</b>해드립니다! (* 받아가세요..)<br/><br/>
 
-
-평화 hel**********@naver.com<br/>
-희진 eha***@naver.com <br/>
-슨생님 hel*****@gmail.com <br/>
-하늘구름 hsl******@naver.com <br/>
-나그리고나 hhl*****@gmail.com <br/>
-김피쓰 pea*******@sen.go.kr <br/>
-toasty duc******@gmail.com <br/>
- 브라우니 pat*****@naver.com <br/>
  반짝이 muk*********@naver.com <br/>
-* 반짝이님! 이메일이 가득찼데요ㅠ 메일보내주세요!<br/>
-<br/>
+* 반짝이님! 이메일이 가득찼데요ㅠ <br/>
+평화님!! 이메일을 찾을 수 없거나, 받을 수 없데요ㅠ <br/> 두 분, kerbong@gmail.com으로 연락주세요!! 커피쿠폰 받아가세요!
+<br/><br/>
 
 
-
-
-
-<b>새학년도, 계시는 학교에서 즐겁고 행복한 일들만 가득하시길!!!🔥🔥</b><br/><br/> 
+<b>새학년도, 즐겁고 행복한 일들만 가득하시길!!!🔥🔥</b><br/><br/> 
 ================================<br/> 
-* 유능하고 여유로운 교사의 비밀노트 | 첵스-쿨<br/>
+* 여유롭고 유능한 선생님의 비밀노트, 첵스-쿨<br/>
 ================================<br/> <br/>
 
 `;
+
+const WEEKDAYS = ["일", "월", "화", "수", "목", "금", "토"];
 
 //오늘 날짜 yyyy-mm-dd로 만들기
 const getDateHandler = (date, titleOrQuery) => {
@@ -100,8 +97,8 @@ const getDateHandler = (date, titleOrQuery) => {
 
   if (titleOrQuery === "title") {
     let weekd = date.getDay();
-    let weekDays = ["일", "월", "화", "수", "목", "금", "토"];
-    return `${year}년 ${month}월 ${day}일(${weekDays[weekd]})`;
+
+    return `${year}년 ${month}월 ${day}일(${WEEKDAYS[weekd]})`;
   } else {
     return year + "-" + month + "-" + day;
   }
@@ -132,6 +129,9 @@ const STARTBASE = [
   "2022-01-13 14:50",
   "2022-01-13 15:40",
 ];
+
+/** 타이틀(교시명시간만) 텍스트(수업내용만) 올(둘다) */
+const SHOWWHAT = ["title", "text", "all"];
 
 const MainPage = (props) => {
   const [shortCutKey, setShortCutKey] = useState(
@@ -186,11 +186,38 @@ const MainPage = (props) => {
   //업데이트 내용 보여주기 로컬스토리지에서 showNotice를 스트링으로 저장해서 확인 후에 이전에 봤으면 안보여주기
   const [showNotice, setShowNotice] = useState(false);
   const [showMonthEnd, setShowMonthEnd] = useState(false);
+  const [showYearEnd, setShowYearEnd] = useState(false);
   const [showDeployNotice, setShowDeployNotice] = useState(false);
   const [beforeYmd, setBeforeYmd] = useState(dayjs().format("YYYY-MM-DD"));
 
+  const [timeoutId, setTimeoutId] = useState(null); // setTimeout 함수의 ID를 저장할 state 추가
+  const [selectedClass, setSelectedClass] = useState([]); // 바꾸려고 선택한 시간표, 처음꺼가 from, 두번째 꺼가 to
+  const [classBasicAll, setClassBasicAll] = useState({}); // 바꾸려고 선택한 시간표, 처음꺼가 from, 두번째 꺼가 to
+  /** 주간학습표용 데이터, [{'월'데이터}, {화} ...] */
+  const [weekClassTable, setWeekClassTable] = useState([]);
+  const [weekClassFromSchedule, setWeekClassFromSchedule] = useState([]);
+  const [showWeekTable, setShowWeekTable] = useState(false);
+
+  /** 메인 노티스 창 닫고, 로컬스토리지에 오늘 날짜 넣어두기, */
+  const handleCheckboxChange = (todayOrWeek) => {
+    if (todayOrWeek === "today") {
+      setShowNotice(false);
+      localStorage.setItem("todayNotice", dayjs().format("YYYY-MM-DD"));
+    } else if (todayOrWeek === "week") {
+      localStorage.setItem(
+        "todayNotice",
+        dayjs().add(5, "day").format("YYYY-MM-DD")
+      );
+    }
+    setShowNotice(false);
+  };
+
   useEffect(() => {
-    if (localStorage.getItem("showNotice") <= "20240221") {
+    //오늘그만보기 클릭 안되어 있고, 아직 공지 중이면
+    if (
+      localStorage.getItem("showNotice") <= "20240311" &&
+      localStorage.getItem("todayNotice") < dayjs().format("YYYY-MM-DD")
+    ) {
       setShowNotice(true);
     }
     if (
@@ -207,6 +234,12 @@ const MainPage = (props) => {
 
   //화면 사이즈가 변경되면.. 시간표의 기본 세팅을 열림으로 바꿔주기.
   const resizeHandler = useCallback(() => {
+    if (window.innerWidth > 1000) {
+      setShowWeekTable(true);
+    } else {
+      setShowWeekTable(false);
+    }
+
     window.addEventListener("resize", () => {
       if (window.innerWidth > 1400) {
         setIsLgWidth(true);
@@ -216,9 +249,11 @@ const MainPage = (props) => {
         setIsLgWidth(true);
         setHideClassTable(false);
         setGridFr3or4("4fr");
+        setShowWeekTable(true);
       } else {
         setGridFr3or4("");
         setIsLgWidth(false);
+        setShowWeekTable(false);
       }
     });
   }, []);
@@ -242,7 +277,7 @@ const MainPage = (props) => {
   //올해 자료인지 판단하는 함수, 첫번째 인자는 날짜 2023-03-06
   const isWithinSchoolYear = (date) => {
     //nowYear 자체가.. 현재 메인화면에서 클릭한, 날짜를 기준으로 학년도를 구하는거라, 그걸 바꿔서 저장하면 됨.
-    const schoolYearStart = dayjs(nowYear() + "-03-01");
+    const schoolYearStart = dayjs(nowYear(todayYyyymmdd) + "-02-16");
     const schoolYearEnd = schoolYearStart.add(1, "year").subtract(1, "day");
 
     const inputDate = dayjs(date);
@@ -274,6 +309,21 @@ const MainPage = (props) => {
       (yearStd) => Object.keys(yearStd)[0] === nowYear()
     )?.[0]?.[nowYear()];
     setNowYearStd(new_nowYearStd);
+
+    //현재 날짜를 기준으로, 2월 16일 이후
+    let beforeYearStd = props.students?.filter(
+      (yearStd) => Object.keys(yearStd)[0] === String(+nowYear() - 1)
+    )?.[0]?.[String(+nowYear() - 1)];
+
+    //이전 학년도 학생 데이터가 있으면
+    if (
+      beforeYearStd?.length > 0 &&
+      dayjs().format("MM-DD") > "01-01" &&
+      dayjs().format("MM-DD") < "03-04" &&
+      localStorage.getItem("yearDataDown") === "false"
+    ) {
+      setShowYearEnd(true);
+    }
   }, [props.students]);
 
   // 기초시간표 자료 받아올 때 classLists 이름이 있으면 세팅해서 불러오도록...? 기초시간표에 교시 쪽에 input 넣어주고 기본 값으로 교시 넣어주기. 수정 저장 가능.
@@ -355,7 +405,7 @@ const MainPage = (props) => {
   };
 
   //firestore에서 공용/개인 스케쥴 자료 받아오기
-  const getScheduleFromDb = async () => {
+  const getScheduleFromDb = async (weekdays) => {
     setSchedule([]);
 
     let new_nowYearSchedule = [];
@@ -428,34 +478,47 @@ const MainPage = (props) => {
       future7days?.includes(data.id.slice(0, 10))
     );
 
-    // 시간표
-    let new_classFromSchedule = [...classLists.map((cl) => "")];
     // 시간표에 보여줄.. 오늘 일정 중에 교시 데이터가 있으면 보여주기 위한 자료
-    setFixed_events
-      ?.filter((evt) => evt.id.slice(0, 10) === todayYyyymmdd)
-      ?.forEach((today_evt) => {
-        // console.log(today_evt);
-        classLists?.forEach((cl, index) => {
-          // 만약 교시를 분별하는 @가 포함되어 있으면.. setNum도 있으면 함께 넣어주기 (저장된 교시명과 일정에 note에 저장한 교시명이 일치하는지 확인하기!!!!)
-          if (cl === today_evt.note?.split("@")?.[0]) {
-            new_classFromSchedule[index] = `${today_evt.eventName}@${
-              today_evt.note
-            }${
-              today_evt?.setNum
-                ? `(${today_evt.setNum}/${
-                    events_sets_all?.filter(
-                      (evtName) => evtName === today_evt.set
-                    )?.length
-                  })`
-                : ""
-            }`;
-            // console.log(new_classFromSchedule[index]);
-          }
-        });
-      });
 
-    //일정에 있는 자료 중 과목과 내용 정보 저장해두기
-    setClassFromSchedule(new_classFromSchedule);
+    //이번주 스케쥴 데이터 모음
+    let new_weekClassFromSchedule = [];
+
+    weekdays?.forEach((dayYmd) => {
+      // 시간표
+      let new_classFromSchedule = [...classLists.map((cl) => "")];
+
+      setFixed_events
+        ?.filter((evt) => evt.id.slice(0, 10) === dayYmd)
+        ?.forEach((today_evt) => {
+          // console.log(today_evt);
+          classLists?.forEach((cl, index) => {
+            // 만약 교시를 분별하는 @가 포함되어 있으면.. setNum도 있으면 함께 넣어주기 (저장된 교시명과 일정에 note에 저장한 교시명이 일치하는지 확인하기!!!!)
+            if (cl === today_evt.note?.split("@")?.[0]) {
+              let text = `${today_evt.eventName}@${today_evt.note}${
+                today_evt?.setNum
+                  ? `(${today_evt.setNum}/${
+                      events_sets_all?.filter(
+                        (evtName) => evtName === today_evt.set
+                      )?.length
+                    })`
+                  : ""
+              }`;
+              new_classFromSchedule[index] = text;
+
+              // console.log(new_classFromSchedule[index]);
+            }
+          });
+        });
+
+      new_weekClassFromSchedule.push(new_classFromSchedule);
+
+      if (dayYmd === todayYyyymmdd) {
+        //일정에 있는 자료 중 과목과 내용 정보 저장해두기
+        setClassFromSchedule(new_classFromSchedule);
+      }
+    });
+
+    setWeekClassFromSchedule(new_weekClassFromSchedule);
 
     setSchedule(
       setFixed_events.sort((a, b) =>
@@ -545,7 +608,7 @@ const MainPage = (props) => {
   };
 
   //firestore에서 오늘 시간표 관련 자료들 받아오기
-  const getClassTableFromDb = async () => {
+  const getClassTableFromDb = async (weekdays) => {
     let classTableRef = doc(dbService, "classTable", props.userUid);
     setTodayClassTable({});
 
@@ -565,6 +628,10 @@ const MainPage = (props) => {
     let class_basic = [];
     let cltime = [];
     const now_doc = await getDoc(classTableRef);
+
+    //이번주 데이터 목록
+    let new_weekClassTable = [];
+
     if (now_doc.exists()) {
       //오늘 요일설정
       let today_weekday = new Date(todayYyyymmdd).getDay();
@@ -572,6 +639,14 @@ const MainPage = (props) => {
       if (today_weekday > 0 && today_weekday < 6) {
         class_basic = now_doc.data()?.[WEEKDAYS[today_weekday]];
       }
+      let basicAll = {
+        월: now_doc.data()?.["월"],
+        화: now_doc.data()?.["화"],
+        수: now_doc.data()?.["수"],
+        목: now_doc.data()?.["목"],
+        금: now_doc.data()?.["금"],
+      };
+      setClassBasicAll(basicAll);
       setClassBasic(class_basic);
 
       //교시별 시작시간 세팅하기
@@ -606,32 +681,57 @@ const MainPage = (props) => {
 
         setNowYearClassTable(new_nowYearClassTable);
 
-        let todayClass = all_classTable?.filter(
-          (data) => data.id === todayYyyymmdd
-        );
-        //오늘자료가 있는 경우 넣어주기
-        if (todayClass.length !== 0) {
-          //기초시간표에서 교시명을 바꾼 경우.. 바꿔서 데이터에 저장해주기..!!
-          let new_classMemo = todayClass[0]?.classMemo?.map((cl, index) => {
-            return { ...cl, classNum: cltime[index] };
-          });
-          todayClass[0].classMemo = new_classMemo;
+        weekdays?.forEach((dayYmd) => {
+          let todayClass = all_classTable?.filter((data) => data.id === dayYmd);
+          //오늘자료가 있는 경우 넣어주기
+          if (todayClass.length !== 0) {
+            //기초시간표에서 교시명을 바꾼 경우.. 바꿔서 데이터에 저장해주기..!!
+            let new_classMemo = todayClass[0]?.classMemo?.map((cl, index) => {
+              return { ...cl, classNum: cltime[index] };
+            });
+            todayClass[0].classMemo = new_classMemo;
 
-          setTodayClassTable({ ...todayClass[0] });
-          return;
-          // console.log(todayClass[0]);
-          //오늘 자료는 없는 경우.. 혹시 저장된 과목이 있으면 그건 넣어줌!
-        } else {
-          setTodayClassTable(new_todayClassTable);
-        }
+            if (todayYyyymmdd === dayYmd) {
+              setTodayClassTable({ ...todayClass[0] });
+              new_weekClassTable.push({ ...todayClass[0] });
+            } else {
+              new_weekClassTable.push({ ...todayClass[0] });
+            }
+
+            return;
+            // console.log(todayClass[0]);
+            //오늘 자료는 없는 경우.. 혹시 저장된 과목이 있으면 그건 넣어줌!
+          } else {
+            if (todayYyyymmdd === dayYmd) {
+              setTodayClassTable(new_todayClassTable);
+              new_weekClassTable.push({ ...new_todayClassTable, id: dayYmd });
+            } else {
+              new_weekClassTable.push({ ...new_todayClassTable, id: dayYmd });
+            }
+          }
+        });
+
+        setWeekClassTable(new_weekClassTable);
+
         // 저장된 시간표 데이터가 없으면
       } else {
+        weekdays?.forEach((dayYmd) => {
+          new_weekClassTable.push({ ...new_todayClassTable, id: dayYmd });
+        });
+        console.table(new_weekClassTable);
+        setWeekClassTable(new_weekClassTable);
+
         setTodayClassTable(new_todayClassTable);
       }
       // 아예 새롭게 처음이면
     } else {
       setTodayClassTable(new_todayClassTable);
       setClassLists(CLASSLISTS);
+      weekdays?.forEach((dayYmd) => {
+        new_weekClassTable.push({ ...new_todayClassTable, id: dayYmd });
+      });
+      console.table(new_weekClassTable);
+      setWeekClassTable(new_weekClassTable);
     }
   };
 
@@ -648,11 +748,18 @@ const MainPage = (props) => {
       }
     });
 
+    const startOfWeek = dayjs(todayYyyymmdd).startOf("isoWeek");
+
+    // 이번주 날짜들 모으기
+    const weekdays = Array.from({ length: 5 }, (v, i) =>
+      startOfWeek.add(i, "day").format("YYYY-MM-DD")
+    );
+
+    getClassTableFromDb(weekdays);
     getAttendsFromDb(isSubject);
-    getClassTableFromDb();
-    getScheduleFromDb();
     getCheckListsFromDb();
     getListMemoFromDb();
+    getScheduleFromDb(weekdays);
   }, [todayYyyymmdd, props.isSubject]);
 
   useEffect(() => {
@@ -664,9 +771,12 @@ const MainPage = (props) => {
     //오늘 날짜 데이터를 받을 때... 상태를 쓰면 최신을 쓰지 못할 수 있음(setTImeout때문...)
     // console.log("와이");
     //년 월 일
+    if (timeoutId) clearTimeout(timeoutId);
+
+    if (document.getElementById("todayYYYYMMDD") === null) return;
+
     let nowDate = document.getElementById("todayYYYYMMDD")?.innerText;
     //다른 페이지로 이동해서 혹시 안보이면 사라지도록.. 왜 useEffect return이 작동을 안하지...
-    if (document.getElementById("todayYYYYMMDD") === null) return;
 
     let year = "20" + nowDate.split("년")[0];
     let month = nowDate.split("월")[0].split(" ")[1];
@@ -691,6 +801,17 @@ const MainPage = (props) => {
       recent_classLists = now_doc.data().classTime;
     }
     recent_classLists.forEach((item, index) => {
+      if (/[\s!\"#$%&'()*+,.\/:;<=>?@\[\]^`{|}~]/.test(item)) {
+        Swal.fire(
+          "특수문자 존재!",
+          `'교시명' 부분에 사용 불가능한 특수문자가 존재합니다. [기초시간표] 로 들어가서 교시명을 수정한 후에 시간표 내용의 저장이 가능합니다. (- _ 숫자 영어 한글 문자만 활용가능)`,
+          "warning"
+        );
+
+        isPageMoved = true;
+        return;
+      }
+
       let subject = document.querySelector(`#classSubject-${item}`);
       let memo = document.querySelector(`#classMemo-${item}`);
 
@@ -707,6 +828,59 @@ const MainPage = (props) => {
 
     //페이지 이동시 끝내기
     if (isPageMoved) return;
+
+    let new_classTable = [];
+
+    //상태인 classTable을 사용할 경우... setTImeout으로 자동저장될 때 최신값을 가져오지 못해서.. (키를 누를 당시의 값을 기준으로 함.) 데이터베이스에 있는 최신 정보를 받아오도록.. 해야 할듯. (읽기 횟수가 늘어나기는 하겠지만..)
+
+    let datas = now_doc?.data()?.datas;
+
+    datas?.forEach((item) => {
+      //현재 시간표를 제외한 나머지를 푸시해두고
+      if (item.id !== new_classMemo.id) {
+        new_classTable.push(item);
+      }
+    });
+
+    new_classTable.push(new_classMemo);
+
+    if (!auto) {
+      Swal.fire({
+        icon: "success",
+        title: "저장 완료",
+        text: "시간표 과목, 활동 정보가 저장되었습니다.(5초 후에 창이 사라집니다.)",
+        confirmButtonText: "확인",
+        confirmButtonColor: "#85bd82",
+        timer: 5000,
+      });
+    }
+
+    const new_classData = { datas: new_classTable };
+
+    setClassTable(new_classTable);
+
+    if (weekClassTable?.length !== 0) {
+      // 주간학습표에 있는 오늘 시간표도 수정해주기.
+      let new_weekClassTable = [...weekClassTable];
+
+      new_weekClassTable = new_weekClassTable?.map((nwct) => {
+        let new_nwct = nwct;
+        if (nwct.id === new_classMemo.id) {
+          new_nwct = new_classMemo;
+        }
+        return new_nwct;
+      });
+
+      setWeekClassTable(new_weekClassTable);
+    }
+
+    if (now_doc.exists()) {
+      await updateDoc(classMemoRef, new_classData);
+    } else {
+      await setDoc(classMemoRef, new_classData);
+    }
+
+    if (timeoutId) clearTimeout(timeoutId);
 
     //수업 시간표용으로 만들어서 저장해두기...
     let cttRef = doc(dbService, "classTimeTable", props.userUid);
@@ -730,76 +904,6 @@ const MainPage = (props) => {
       classStart: new_classStart,
       classTitles: classLists,
     });
-
-    //다르지 않아! 기본세팅
-    let isDiff = false;
-
-    let new_classTable = [];
-
-    //상태인 classTable을 사용할 경우... setTImeout으로 자동저장될 때 최신값을 가져오지 못해서.. (키를 누를 당시의 값을 기준으로 함.) 데이터베이스에 있는 최신 정보를 받아오도록.. 해야 할듯. (읽기 횟수가 늘어나기는 하겠지만..)
-
-    let datas = now_doc?.data()?.datas;
-
-    datas?.forEach((item) => {
-      if (item.id === new_classMemo.id) {
-        //혹시 내용이 다르면 저장할 수 있도록 세팅
-        item.classMemo.forEach((cl, index) => {
-          if (cl?.memo !== new_classMemo?.["classMemo"]?.[index]?.memo) {
-            isDiff = true;
-          }
-          if (cl?.subject !== new_classMemo?.["classMemo"]?.[index]?.subject) {
-            isDiff = true;
-          }
-        });
-        // 혹시 기초시간표 변경으로 새로운 교시가 추가될 경우..
-        if (new_classMemo?.["classMemo"]?.length > item?.classMemo?.length) {
-          isDiff = true;
-        }
-
-        //현재 시간표를 제외한 나머지를 푸시해두고
-      } else {
-        new_classTable.push(item);
-      }
-    });
-
-    if (datas?.length > 0) {
-      //기존 데이터가 있는데 현재 저장하고 있는 날짜의 자료가 없으면
-      if (datas?.filter((data) => data.id === new_classMemo.id).length === 0) {
-        isDiff = true;
-      }
-      //혹시 기존 데이터가 없으면 무조건 저장가능하도록
-    } else {
-      isDiff = true;
-    }
-
-    new_classTable.push(new_classMemo);
-
-    // 동일하면(다르지 않으면) 저장하지 않음
-    if (!isDiff) {
-      // console.log("동일함");
-      return;
-    }
-
-    if (!auto) {
-      Swal.fire({
-        icon: "success",
-        title: "저장 완료",
-        text: "시간표 과목, 활동 정보가 저장되었습니다.(5초 후에 창이 사라집니다.)",
-        confirmButtonText: "확인",
-        confirmButtonColor: "#85bd82",
-        timer: 5000,
-      });
-    }
-
-    const new_classData = { datas: new_classTable };
-
-    setClassTable(new_classTable);
-
-    if (now_doc.exists()) {
-      await updateDoc(classMemoRef, new_classData);
-    } else {
-      await setDoc(classMemoRef, new_classData);
-    }
   };
 
   //할일 목록 중요한 거 부터 보여주는 sort 함수
@@ -845,18 +949,27 @@ const MainPage = (props) => {
     document.body.style.zoom = scaleValue;
   }, [scaleValue]);
 
+  const checkInput = () => {
+    if (timeoutId) clearTimeout(timeoutId);
+
+    const id = setTimeout(() => {
+      saveClassMemoHandler(true);
+    }, 9500);
+    setTimeoutId(id);
+  };
+
   //시간표 반응 없는 10초마다 저장시키기
   useEffect(() => {
     let ulTextareas = document.querySelector("#ul-textareas");
-    let timer;
-    const checkInput = () => {
-      clearTimeout(timer);
-      timer = setTimeout(() => {
-        saveClassMemoHandler(true);
-      }, 10000);
-    };
+    if (timeoutId) clearTimeout(timeoutId);
+
     ulTextareas?.addEventListener("keydown", checkInput);
-    return () => clearTimeout(timer);
+    return () => {
+      clearTimeout(timeoutId);
+
+      ulTextareas?.removeEventListener("keydown", checkInput);
+      // ... 기존 코드 ...
+    };
   }, [hideClassTable]);
 
   const getAlarmFromDb = async () => {
@@ -956,6 +1069,11 @@ const MainPage = (props) => {
 
   //모든 데이터 받아오는 함수, 없던 데이터들 받아오기
   const getAllDataHandler = () => {
+    Swal.fire(
+      "날짜 확인!",
+      "화면 상단의 날짜를 기준으로 학년도 자료가 생성되고 다운로드 됩니다. (2023학년도 : 2022.2.16. ~ 2023.2.15.) ",
+      "info"
+    );
     // if (isSubject) return;
     getAlarmFromDb();
     getBudgetsFromDb();
@@ -1629,6 +1747,16 @@ const MainPage = (props) => {
     }
     // 최종 파일 만들기
     writeFile(book, fileName);
+
+    //학년도 말 자료 저장한거면, local에 저장해주기
+    if (
+      dayjs(todayYyyymmdd).format("MM-DD") > "01-01" &&
+      dayjs(todayYyyymmdd).format("MM-DD") < "03-04"
+    ) {
+      localStorage.setItem("yearDataDown", "true");
+    } else {
+      localStorage.setItem("yearDataDown", "false");
+    }
   };
 
   // 현재 자료 다운 받은 상태, 날짜를 바꿨는데 이전 날짜와 년도가 달라진 경우 다시 getAllDataDone을 false로 바꾸기
@@ -1701,32 +1829,224 @@ const MainPage = (props) => {
     };
   }, [shortCutKey]);
 
+  const changeHandler = () => {
+    checkInput();
+  };
+
+  /** 시간표에서 받아온, 현재 선택한 바꿀 시간표 데이터 */
+  const classChHandler = (newClass) => {
+    //기존 데이터 없으면, from데이터 추가면
+    if (selectedClass?.length === 0) {
+      setSelectedClass([{ ...newClass, id: todayYyyymmdd }]);
+      //기존 데이터 있으면, to데이터 추가면
+    } else if (selectedClass?.length === 1) {
+      let new_data = [...selectedClass].push({
+        ...newClass,
+        id: todayYyyymmdd,
+      });
+      setSelectedClass(new_data);
+    }
+  };
+
+  /**주간시간표 저장함수 */
+  const saveWeekClassMemo = async (e) => {
+    e.preventDefault();
+    if (document.getElementById("todayYYYYMMDD") === null) return;
+
+    let isPageMoved = false;
+
+    const classMemoRef = doc(dbService, "classTable", props.userUid);
+    const now_doc = await getDoc(classMemoRef);
+    let new_classTable = [];
+
+    if (now_doc?.data()?.datas?.length > 0) {
+      new_classTable = [...now_doc?.data()?.datas];
+    }
+
+    let new_weekClassTable = [];
+
+    weekClassTable?.forEach((wct, week_ind) => {
+      let new_classMemo = {
+        id: wct.id,
+        classMemo: [],
+      };
+
+      classLists.forEach((item) => {
+        if (/[\s!\"#$%&'()*+,.\/:;<=>?@\[\]^`{|}~]/.test(item)) {
+          Swal.fire(
+            "특수문자 존재!",
+            `'교시명' 부분에 사용 불가능한 특수문자가 존재합니다. [기초시간표] 로 들어가서 교시명을 수정한 후에 시간표 내용의 저장이 가능합니다. (- _ 숫자 영어 한글 문자만 활용가능)`,
+            "warning"
+          );
+          isPageMoved = true;
+
+          return;
+        }
+
+        let subject = document.querySelector(
+          `#classSubject-${week_ind}${item}`
+        );
+        let memo = document.querySelector(`#classMemo-${week_ind}${item}`);
+
+        if (!subject || !memo) {
+          isPageMoved = true;
+        }
+
+        new_classMemo["classMemo"].push({
+          subject: subject?.value?.trim(),
+          // memo: memo.value.trim(),
+          memo: memo?.innerHTML,
+        });
+      });
+
+      new_classTable = new_classTable?.filter(
+        (new_c) => new_c.id !== new_classMemo.id
+      );
+
+      new_weekClassTable.push(new_classMemo);
+      new_classTable.push(new_classMemo);
+    });
+
+    if (isPageMoved) return;
+
+    const new_classData = { datas: new_classTable };
+
+    setClassTable(new_classTable);
+    setWeekClassTable(new_weekClassTable);
+
+    if (now_doc.exists()) {
+      await updateDoc(classMemoRef, new_classData);
+    } else {
+      await setDoc(classMemoRef, new_classData);
+    }
+
+    Swal.fire(
+      "저장완료!",
+      "주간 학습표의 모든 내용이 저장되었습니다.",
+      "success"
+    );
+  };
+
+  /** 시간표 그리는 부분 */
+  const classTableHtml = (today_class_table, showWhat, week_ind) => {
+    let now_schedule =
+      showWhat === SHOWWHAT[1]
+        ? weekClassFromSchedule[week_ind]
+        : classFromSchedule;
+
+    let now_classBasic =
+      showWhat === SHOWWHAT[1]
+        ? classBasicAll?.[WEEKDAYS?.[week_ind + 1]]
+        : classBasic;
+
+    return (
+      <>
+        {/* todayClassTable로 렌더링 */}
+        {today_class_table?.classMemo?.map((clInfo, index) => {
+          // 만약..기초시간표 변경으로.. 해당 교시가 사라졌다면.. 보여주지 않기
+          if (classLists[index] === undefined || classLists[index] === null)
+            return null;
+
+          return (
+            <ClassItem
+              key={`item${classLists[index]}`}
+              myKey={`class${classLists[index]}`}
+              classNum={classLists[index]}
+              classStart={classStart?.[index]?.split(",")?.[0]}
+              classEnd={classStart?.[index]?.split(",")?.[1]}
+              subject={
+                // 우선순위 1.해당날짜의 저장한 자료 2.일정자료 3.기초시간표
+                clInfo?.subject !== ""
+                  ? clInfo?.subject
+                  : now_schedule?.[index]?.includes("@")
+                  ? now_schedule?.[index]?.split("@")?.[0]
+                  : now_classBasic?.[index] || ""
+              }
+              memo={
+                clInfo?.memo !== ""
+                  ? clInfo?.memo
+                  : now_schedule?.[index]?.includes("@")
+                  ? now_schedule?.[index]?.split("@")?.[2]
+                  : ""
+              }
+              changeHandler={
+                showWhat === SHOWWHAT[2]
+                  ? () => {
+                      changeHandler();
+                    }
+                  : () => {}
+              }
+              todayYyyymmdd={todayYyyymmdd}
+              classChHandler={classChHandler}
+              clIndex={index}
+              showWhat={showWhat}
+              weekInd={week_ind}
+            />
+          );
+        })}
+
+        {/* 만약.. 해당 날짜의 자료는 5교시가 최대인데, 기초시간표에 6교시를 추가하면.. classLists로 해당 부분만 렌더링*/}
+        {today_class_table?.classMemo?.length < classLists.length &&
+          classLists?.map((clName, index) => {
+            // 만약.. 기존 자료에도 인덱스가 있으면
+            if (today_class_table?.classMemo?.[index]) return null;
+
+            return (
+              <ClassItem
+                key={`item${clName}`}
+                myKey={`class${clName}`}
+                classNum={clName}
+                classStart={classStart?.[index]}
+                subject={now_classBasic?.[index] || ""}
+                memo={""}
+                changeHandler={
+                  showWhat === SHOWWHAT[2]
+                    ? () => {
+                        changeHandler();
+                      }
+                    : () => {}
+                }
+                todayYyyymmdd={todayYyyymmdd}
+                clIndex={index}
+                showWhat={showWhat}
+                weekInd={week_ind}
+              />
+            );
+          })}
+      </>
+    );
+  };
+
   // 실직적으로 화면 그리기... 휴 어렵다.
 
   return (
     <div className={classes["whole-div"]}>
-      {props.showMainExample && (
-        <ExampleModal
-          onClose={() => props.setShowMainExample()}
-          imgSrc={byExcel}
-          text={
-            <>
-              <p
-                style={{
-                  fontSize: "1.3em",
-                  textAlign: "center",
-                  margin: "5px",
-                }}
-              >
-                === 처음 학생등록 예시 ===
-              </p>
-              <p style={{ margin: "15px" }}>
-                * 화면 왼쪽 상단의 현재 페이지 타이틀을 클릭하시면 각 화면의
-                예시를 보실 수 있어요!
-              </p>
-            </>
-          }
-        />
+      {/* 바꿀 시간표 목록에 시간표가 생기면 보여줄 팝업창 */}
+      {selectedClass?.length !== 0 && (
+        <>
+          {/* 창을 닫으면.. 다시 바꿀 시간표 from 에서 지우기 */}
+          <Modal onClose={() => setSelectedClass([])}>
+            <span
+              onClick={() => setSelectedClass([])}
+              className={classes.xmark}
+            >
+              <i className="fa-regular fa-circle-xmark"></i>
+            </span>
+
+            <ShowClassChange
+              selectedClass={selectedClass}
+              classLists={classLists}
+              classTable={classTable}
+              classFromSchedule={classFromSchedule}
+              classBasicAll={classBasicAll}
+              userUid={props.userUid}
+              saveDone={() => {
+                setSelectedClass([]);
+                getClassTableFromDb();
+              }}
+            />
+          </Modal>
+        </>
       )}
 
       {/* //10시 ~ 1시까지 보여줄 업데이트 팝업창 */}
@@ -1784,6 +2104,33 @@ const MainPage = (props) => {
         />
       )}
 
+      {/* 학년도 말, 초에 나오느느 팝업창 */}
+      {showYearEnd && (
+        <ExampleModal
+          onClose={() => {
+            setShowYearEnd(false);
+          }}
+          title={
+            <h1
+              style={{
+                margin: "10px 0 25px 0",
+                display: "flex",
+                justifyContent: "center",
+              }}
+              dangerouslySetInnerHTML={{ __html: yearEnd_title }}
+            ></h1>
+          }
+          text={
+            <>
+              <p
+                className={`${classes.p} ${classes.top}`}
+                dangerouslySetInnerHTML={{ __html: yearEnd_text }}
+              ></p>
+            </>
+          }
+        />
+      )}
+
       {/* //update 업데이트 시 보여줄 팝업창 */}
       {showNotice && (
         <ExampleModal
@@ -1809,6 +2156,10 @@ const MainPage = (props) => {
                 dangerouslySetInnerHTML={{ __html: update_text }}
               ></p>
             </>
+          }
+          closeToday={true}
+          handleCheckboxChange={(todayOrWeek) =>
+            handleCheckboxChange(todayOrWeek)
           }
         />
       )}
@@ -1858,6 +2209,7 @@ const MainPage = (props) => {
                 about="main"
                 setStart={new Date(todayYyyymmdd)}
                 getMonthValue={() => {}}
+                getYearValue={() => {}}
               />
             </span>
           </span>
@@ -1980,76 +2332,31 @@ const MainPage = (props) => {
               {titleDate.slice(-2, -1) !== "토" &&
               titleDate.slice(-2, -1) !== "일" ? (
                 <>
-                  * 수정, 변경 10초 후 자동저장
                   <ul
                     className={`${classes["ul-section"]}`}
                     id={`ul-textareas`}
                   >
-                    {/* todayClassTable로 렌더링 */}
-                    {todayClassTable?.classMemo?.map((clInfo, index) => {
-                      // 만약..기초시간표 변경으로.. 해당 교시가 사라졌다면.. 보여주지 않기
-                      if (
-                        classLists[index] === undefined ||
-                        classLists[index] === null
-                      )
-                        return null;
-
-                      // [ {index: ,time: , subject: } ]
-
-                      return (
-                        <ClassItem
-                          key={`item${classLists[index]}`}
-                          myKey={`class${classLists[index]}`}
-                          classNum={classLists[index]}
-                          classStart={classStart?.[index]}
-                          subject={
-                            // 우선순위 1.해당날짜의 저장한 자료 2.일정자료 3.기초시간표
-                            clInfo?.subject !== ""
-                              ? clInfo?.subject
-                              : classFromSchedule?.[index]?.includes("@")
-                              ? classFromSchedule?.[index]?.split("@")?.[0]
-                              : classBasic?.[index] || ""
-                          }
-                          memo={
-                            clInfo?.memo !== ""
-                              ? clInfo?.memo
-                              : classFromSchedule?.[index]?.includes("@")
-                              ? classFromSchedule?.[index]?.split("@")?.[2]
-                              : ""
-                          }
-                        />
-                      );
-                    })}
-
-                    {/* 만약.. 해당 날짜의 자료는 5교시가 최대인데, 기초시간표에 6교시를 추가하면.. classLists로 해당 부분만 렌더링*/}
-                    {todayClassTable?.classMemo?.length < classLists.length &&
-                      classLists?.map((clName, index) => {
-                        // 만약.. 기존 자료에도 인덱스가 있으면
-                        if (todayClassTable?.classMemo?.[index]) return null;
-
-                        return (
-                          <ClassItem
-                            key={`item${clName}`}
-                            myKey={`class${clName}`}
-                            classNum={clName}
-                            classStart={classStart?.[index]}
-                            subject={classBasic?.[index] || ""}
-                            memo={""}
-                          />
-                        );
-                      })}
+                    {/* 당일 시간표 보여주는 html */}
+                    {classTableHtml(todayClassTable, SHOWWHAT[2])}
                   </ul>
                   <div className={classes["eventSave-div"]}>
                     <Button
                       name={"기초시간표"}
                       className={"show-basicClass-button"}
                       onclick={() => navigate(`/classTable`)}
+                      style={{ width: "60%" }}
                     />
                     <Button
                       name={"저장"}
                       className={"save-classItem-button"}
                       onclick={() => saveClassMemoHandler(false)}
+                      style={{ width: "40%" }}
                     />
+                  </div>
+                  <div className={classes["expl-div"]}>
+                    * 수정, 변경 10초 후 자동저장
+                    <br />
+                    <br />* 교시명 클릭 후 수업내용 옮기기 가능
                   </div>
                 </>
               ) : (
@@ -2340,7 +2647,9 @@ const MainPage = (props) => {
                 💾 데이터 저장 | 후원
               </div>
               <hr className={classes["main-hr"]} />
-              <p>* 다운 버튼을 누르시면, 저장 버튼이 생성됩니다.</p>
+              <div className={classes["expl-div"]}>
+                * 다운 버튼을 누르시면, 저장 버튼이 생성됩니다.
+              </div>
               <div
                 className={classes["event-title"]}
                 style={{ justifyContent: "space-evenly" }}
@@ -2361,7 +2670,7 @@ const MainPage = (props) => {
                   {/* 모든자료 불러오고 나면 보이는 저장버튼 */}
                   {getAllDataDone && (
                     <Button
-                      name={` ${nowYear()}학년도 자료저장`}
+                      name={` ${nowYear(todayYyyymmdd)}학년도 자료저장`}
                       style={{
                         width: "auto",
                         height: "auto",
@@ -2384,6 +2693,49 @@ const MainPage = (props) => {
                 </div>
               </div>
             </div>
+          </div>
+
+          {/* 주간 시간표 */}
+          <div className={`${classes["event-div"]} ${classes["week-table"]}`}>
+            {showWeekTable && (
+              <>
+                <div className={classes["event-title"]} onClick={() => {}}>
+                  <span>🕘 주간 시간표 (* 수동 저장만 가능)</span>
+
+                  <Button
+                    name={"저장"}
+                    className={"save-classItem-button"}
+                    onclick={saveWeekClassMemo}
+                    style={{ width: "15%" }}
+                  />
+                </div>
+                <hr className={classes["main-hr"]} />
+                {/* 주간학습 안내처럼 보일 부분 */}
+                <div className={classes["weekdays-grid"]}>
+                  {weekClassTable?.map((wct, wct_ind) => (
+                    <div className={classes["day"]} key={"wct" + wct_ind}>
+                      {/* 날짜 (요일) */}
+                      {dayjs(weekClassTable[wct_ind]?.id).format("D") === "1" &&
+                        dayjs(weekClassTable[wct_ind]?.id).format("M") + "월 "}
+                      {dayjs(weekClassTable[wct_ind]?.id).format("D")}일(
+                      {WEEKDAYS[wct_ind + 1]}) <br />
+                      {/* 실제 시간표, 과목 내용  */}
+                      {classTableHtml(wct, SHOWWHAT[1], wct_ind)}
+                      <br />
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
+
+            {!showWeekTable && (
+              <div
+                className={classes["expl-div"]}
+                style={{ fontSize: "0.8em" }}
+              >
+                * 인터넷 창의 가로 크기를 늘리면 주간시간표가 보입니다!(pc권장)
+              </div>
+            )}
           </div>
         </div>
       </div>

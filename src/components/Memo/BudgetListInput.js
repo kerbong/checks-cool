@@ -178,6 +178,7 @@ const BudgetListInput = (props) => {
                       new Date(props.date || dayjs().format("YYYY") + "-12-01")
                     }
                     getMonthValue={getMonthHandler}
+                    getYearValue={getMonthHandler}
                   />
                 </div>
               </span>

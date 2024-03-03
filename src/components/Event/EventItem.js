@@ -103,6 +103,37 @@ const EventItem = (props) => {
     }
   }, [props.fixIsShown]);
 
+  /** note가 있으면.. 보여주는데, a링크할 게 있으면 a태그 넣어주기 */
+  const noteHandler = (note) => {
+    if (!note) return;
+
+    let replacedText, replacePattern1, replacePattern2, replacePattern3;
+
+    //URLs starting with http://, https://, or ftp://
+    replacePattern1 =
+      /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gim;
+    replacedText = note.replace(
+      replacePattern1,
+      '<a href="$1" target="_blank">$1</a>'
+    );
+
+    //URLs starting with "www." (without // before it, or it'd re-link the ones done above).
+    replacePattern2 = /(^|[^\/])(www\.[\S]+(\b|$))/gim;
+    replacedText = replacedText.replace(
+      replacePattern2,
+      '$1<a href="http://$2" target="_blank">$2</a>'
+    );
+
+    //Change email addresses to mailto:: links.
+    replacePattern3 = /(\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,6})/gim;
+    replacedText = replacedText.replace(
+      replacePattern3,
+      '<a href="mailto:$1">$1</a>'
+    );
+
+    return <span dangerouslySetInnerHTML={{ __html: replacedText }} />;
+  };
+
   return (
     <>
       <li
@@ -252,6 +283,7 @@ const EventItem = (props) => {
                   getDateValue={getDateHandler}
                   setStart={new Date(changeDateFormat(keyId))}
                   getMonthValue={() => {}}
+                  getYearValue={() => {}}
                 />
               </div>
               {props.about.slice(0, 4) !== "todo"
@@ -267,7 +299,7 @@ const EventItem = (props) => {
                   display: props.fixIsShown === shownId && "none",
                 }}
               >
-                {option.slice(1)} | {note && note}
+                {option.slice(1)} | {noteHandler(note)}
               </span>
             )}
           </div>
@@ -347,7 +379,7 @@ const EventItem = (props) => {
               marginLeft: "20px",
             }}
           >
-            {option.slice(1)} | {note && note}
+            {option.slice(1)} | {noteHandler(note)}
           </span>
         )}
 

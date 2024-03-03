@@ -327,30 +327,51 @@ const MobileMain = (props) => {
   /**  ocrText에서 학생등록에 필요한 정보만 남기는 함수. */
   const remainStDatas = (text) => {
     let new_stds = [];
-    let gender = "";
+    let new_names = [];
+    let new_nums = [];
+    let new_genders = [];
 
     let lines = text.split("\n");
 
     for (let line of lines) {
-      // 학생 정보 추출
-      let studentMatch = line.match(/(\d+) ([가-힣]+)/);
-      if (line?.length > 4 && studentMatch) {
-        let line_split = line.split(" ");
-        new_stds.push({ num: line_split[0], name: line_split[1] });
-        // new_text += line + "\n";
-      }
-
-      // 성별 정보 추출
-      let genderMatch = line.match(/여|남/);
-      if (!line?.includes(" ") && genderMatch) {
-        gender += line;
-      }
+      let line_split = line.split(" ");
+      line_split?.forEach((word) => {
+        // 번호나 이름이 아니면 걸러..
+        let new_w = word?.trim();
+        let new_split = new_w?.split("");
+        if (new_w.match(/(\d+)/)) {
+          new_nums.push(new_w);
+        } else if (
+          new_w.match(/([가-힣]+)/) &&
+          new_w?.length > 1 &&
+          new_split?.filter((s_w) => s_w === "남" || s_w === "여")?.length !==
+            new_split?.length
+        ) {
+          new_names.push(new_w);
+        } else if (new_w.includes("여") || new_w.includes("남")) {
+          let ws = new_w?.split("");
+          ws?.forEach((_w) => {
+            if (_w.includes("여") || _w.includes("남")) {
+              new_genders.push(_w);
+            }
+          });
+        }
+      });
     }
 
-    new_stds = new_stds.map((std, st_ind) => {
-      let woman =
-        gender[st_ind] === "여" ? true : gender[st_ind] === "남" ? false : true;
-      return { ...std, woman: woman };
+    new_stds = new_names?.map((std, st_ind) => {
+      let std_data = {
+        name: std,
+        num: new_nums?.[st_ind] || st_ind,
+        woman:
+          new_genders?.[st_ind] === "여"
+            ? true
+            : new_genders?.[st_ind] === "남"
+            ? false
+            : true,
+      };
+
+      return std_data;
     });
 
     return new_stds;
@@ -504,7 +525,7 @@ const MobileMain = (props) => {
             ? data?.responses[0].fullTextAnnotation.pages[0].blocks //여기 예산 ocr 결과 수정해야 할 부분.
             : replaceNewLines(data.responses[0].fullTextAnnotation.text);
 
-        console.log(ocrTexts);
+        // console.log(ocrTexts);
         if (nowOcr === "예산") {
           let new_ocrTexts = collectWords(ocrTexts);
           setOcrResult(new_ocrTexts);
@@ -559,12 +580,11 @@ const MobileMain = (props) => {
 
   /** open ai로 출결 관련 서류 제출할 때 ocrText분석해서 보여줄 부분. */
   const responseCall = async (ocrText, prompt) => {
+    if (nowOcr === "예산") return;
     const resultContent = await gptResult(ocrText, prompt);
 
     //[학생이름, 날짜, 목적지, 연락처] 담긴 배열
     console.log(resultContent);
-
-    if (nowOcr === "예산") return;
 
     const data = parseTextToDataArr(resultContent);
 
@@ -850,7 +870,7 @@ const MobileMain = (props) => {
   const textSumUploadFile = async (text) => {
     const resultContent = await gptResult(
       text,
-      `이렇게 ocr로 인식한 text가 있는데, 개인 비서처럼 내용을 요약해서 아래처럼 답변해줘.추가적인 설명이나 줄바꿈은 필요없어.
+      `이렇게 ocr로 인식한 text가 있는데, 개인 비서처럼 내용을 요약해서 아래처럼 답변해줘.추가 설명이나 줄바꿈은 필요없어.
          1.자료제목
          2.요약한 내용(400자 이내)
          3.핵심내용(80자이내)`
@@ -912,7 +932,7 @@ const MobileMain = (props) => {
 
     await setDoc(meetingSumRef, { meetSum_data: newDatas });
 
-    saveSwal("연수자료", true).then(() => {
+    saveSwal("[메모] - [일정] 하단 - [연수자료]", true).then(() => {
       setNowOcr("");
       setIsLoading(false);
     });
@@ -930,7 +950,7 @@ const MobileMain = (props) => {
       ) {
         responseCall(
           ocrResult,
-          `이렇게 ocr로 인식한 text가 있는데 이 내용을 자세히 분석해봐. 그리고 신청날짜에 있는 날짜와 기간을 고려해서 아래의 질문에 대한 답변만 해줘. 추가적인 설명 필요없어.
+          `이렇게 ocr로 인식한 text가 있는데 이 내용을 자세히 분석해봐. 그리고 신청날짜에 있는 날짜와 기간을 고려해서 아래의 질문에 대한 답변만 해줘. 추가설명 필요없어.
         1.학생이름
         2.신청날짜(기간)
         3.목적지
@@ -947,7 +967,7 @@ const MobileMain = (props) => {
         console.log(ocrResult);
         responseCall(
           ocrResult,
-          `이렇게 ocr로 인식한 text가 있는데 이 내용을 자세히 분석해봐. 그리고 체험학습 날짜(혹은 기간)을 고려해서 아래의 질문에 대한 답변만 해줘. 추가적인 설명 필요없어.
+          `이렇게 ocr로 인식한 text가 있는데 이 내용을 자세히 분석해봐. 그리고 체험학습 날짜(혹은 기간)을 고려해서 아래의 질문에 대한 답변만 해줘. 추가설명 필요없어.
           1.학생이름
           2.신청날짜(기간)
           `
@@ -959,7 +979,7 @@ const MobileMain = (props) => {
         console.log(ocrResult);
         responseCall(
           ocrResult,
-          `이렇게 ocr로 인식한 text가 있는데 이 내용을 자세히 분석해봐. 그리고 신청날짜에 있는 날짜와 기간을 고려해서 아래의 질문에 대한 답변만 해줘. 아래의 3번 서류 제목은 "OO으로 인한 (질병결석/경조사/인정결석/조퇴/지각/기타결석)"으로 만들어줘. 추가적인 설명 필요없어.
+          `이렇게 ocr로 인식한 text가 있는데 이 내용을 자세히 분석해봐. 그리고 신청날짜에 있는 날짜와 기간을 고려해서 아래의 질문에 대한 답변만 해줘. 아래의 3번 서류 제목은 "OO으로 인한 (질병결석/경조사/인정결석/조퇴/지각/기타결석)"으로 만들어줘. 추가설명 필요없어.
           1.학생이름
           2.신청날짜(기간)
           3.서류제목(예시 "감기로 인한 질병결석")
@@ -975,7 +995,7 @@ const MobileMain = (props) => {
       console.log("예산");
       responseCall(
         ocrResult,
-        `이렇게 ocr로 인식한 객체가 있는데 이 내용을 자세히 분석해봐. 학교 예산과 관련된 서류야. 아래의 질문에 대한 답변만 해줘.추가적인 설명 필요없어. 2번은 품목이 많으면 줄을바꿔서 알려줘.
+        `이렇게 ocr로 인식한 객체가 있는데 이 내용을 자세히 분석해봐. 학교 예산과 관련된 서류야. 아래의 질문에 대한 답변만 해줘.추가설명 필요없어. 2번은 품목이 많으면 줄을바꿔서 알려줘.
         1.예산 세부항목
         2.품목내역 및 규격, 수량, 예상단가, 예상금액
         3.예산총액 및 예산잔액
@@ -1033,7 +1053,7 @@ const MobileMain = (props) => {
         onclick={handleButtonClick}
         title={name}
         style={
-          name === "연수자료" || name === "학생등록" ? { fontSize: "20px" } : {}
+          name === "연수자료" || name === "학생등록" ? { fontSize: "19px" } : {}
         }
       />
     );
@@ -1102,7 +1122,7 @@ const MobileMain = (props) => {
       const new_data = { memoTodo: new_todoList };
       await setDoc(todoRef, new_data);
 
-      saveSwal("할일 목록");
+      saveSwal("[메모] - [할일] 목록");
     } catch (error) {
       errorSwal();
     }
@@ -1226,7 +1246,7 @@ const MobileMain = (props) => {
 
       await setDoc(todoRef, { todo_data: new_todoEvents });
       //   console.log(new_todoEvents);
-      saveSwal("메모 일정");
+      saveSwal("[메모] - [일정]");
     } catch (error) {
       errorSwal();
     }
@@ -1458,7 +1478,7 @@ const MobileMain = (props) => {
     await setDoc(doc(dbService, "attend", props.userUid), {
       attend_data: new_attendEvents,
     });
-    saveSwal("출결");
+    saveSwal("[생기부] - [출결]");
     //신청서 데이터도 스토리지에 업로드하기.
     let address =
       what === "request"
@@ -1549,6 +1569,7 @@ const MobileMain = (props) => {
                     getDateValue={getDateHandler}
                     about={"attendance"}
                     getMonthValue={() => {}}
+                    getYearValue={() => {}}
                   />
                 </span>
               </div>

@@ -7,7 +7,7 @@ import selectOption from "../../todoOption";
 import classes from "../Attendance/AttendCtxCalendar.module.css";
 import TodoPublicSetting from "../Todo/TodoPublicSetting";
 import BaseTodo from "components/Todo/BaseTodo";
-import publicSetting from "../../assets/todo/publicSetting.gif";
+
 import MeetingSummary from "../Todo/MeetingSummary";
 import Swal from "sweetalert2";
 import holidays2023 from "holidays2023";
@@ -16,7 +16,8 @@ import { useNavigate } from "react-router-dom";
 
 import { dbService } from "../../fbase";
 import { onSnapshot, setDoc, doc, getDoc } from "firebase/firestore";
-import ExampleModal from "./ExampleModal";
+
+import dayjs from "dayjs";
 
 const thisMonth = () => {
   let today = new Date();
@@ -34,7 +35,7 @@ const TodoPage = (props) => {
   const [eventOnDay, setEventOnDay] = useState([]);
   //개인용, 공용 전환
   const [showPublicEvent, setShowPublicEvent] = useState(false);
-  const [showExample, setShowExample] = useState(false);
+
   const [showExplain, setShowExplain] = useState(false);
   const [showBaseTodo, setShowBaseTodo] = useState(false);
   const [showCal, setShowCal] = useState(false);
@@ -492,7 +493,7 @@ const TodoPage = (props) => {
 
   //달력에서 받은 month로 currentMonth변경하기
   const getMonthHandler = (month) => {
-    setCurrentMonth(month);
+    setCurrentMonth(dayjs(month).format("YYYY-MM"));
   };
 
   //여러 행사 한 번에 입력툴 저장함수
@@ -604,33 +605,10 @@ const TodoPage = (props) => {
 
   return (
     <>
-      {props.insideLoad && showExample && (
-        <ExampleModal
-          onClose={() => setShowExample(false)}
-          imgSrc={publicSetting}
-          text={
-            <>
-              <p
-                style={{
-                  fontSize: "1.3em",
-                  textAlign: "center",
-                  margin: "5px",
-                }}
-              >
-                === 공용설정 예시 ===
-              </p>
-              <p style={{ margin: "15px" }}>
-                * 화면 왼쪽 상단의 현재 페이지 타이틀을 클릭하시면 다시 보실 수
-                있어요!
-              </p>
-            </>
-          }
-        />
-      )}
       {!props.insideLoad && (
         <div id="title-div">
           {/* 화면 좌측 상단 타이틀 나오는 부분 */}
-          <button id="title-btn" onClick={() => setShowExample(true)}>
+          <button id="title-btn">
             <>
               <i
                 className="fa-regular fa-calendar-check"
@@ -819,6 +797,7 @@ const TodoPage = (props) => {
           inline={"true"}
           getDateValue={getDateHandler}
           getMonthValue={getMonthHandler}
+          getYearValue={getMonthHandler}
         />
       </div>
       <br />

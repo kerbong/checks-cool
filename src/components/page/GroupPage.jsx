@@ -10,6 +10,7 @@ import { motion } from "framer-motion";
 import dayjs from "dayjs";
 import ClassTableBasic from "./ClassTableBasic";
 
+import { PiDogFill } from "react-icons/pi";
 import { FaExchangeAlt } from "react-icons/fa";
 import { FaCrown } from "react-icons/fa6";
 import { FaRegEdit } from "react-icons/fa";
@@ -62,8 +63,20 @@ const GROUP_BGCOLOR = [
   "#c9e2ff",
 ];
 
-const CHARACTERS = [
-  "🍿",
+const importAll = (r) => r.keys().map(r);
+const CHARACTERS = Array.from(
+  new Set(
+    importAll(
+      require.context(
+        "../../assets/characters",
+        false,
+        /^((?!@2x|@3x).)*\.png$/
+      )
+    )
+  )
+);
+
+const IMAGES = [
   "🍞",
   "🍟",
   "🍔",
@@ -128,6 +141,11 @@ const GroupPage = (props) => {
   const [unSubmitStudents, setUnSubmitStudents] = useState([]);
   const [filteredStudents, setFilteredStudents] = useState([]);
   const [showWindow, setShowWindow] = useState(false);
+  const [giftItem, setGiftItem] = useState("");
+  const [gifts, setGifts] = useState([]);
+  const [giftName, setGiftName] = useState("");
+  const [giftScore, setGiftScore] = useState(1);
+  const [giftClass, setGiftClass] = useState("");
 
   const autoSaveGroupDatas = useRef(null);
   const selectRef = useRef();
@@ -263,6 +281,7 @@ const GroupPage = (props) => {
       await setDoc(groupRef, {
         groupDatas: new_groupDatas,
         characters: characters,
+        gifts: gifts,
       });
 
       // 자료 저장되었음을 알려주는... 클릭필요없는 검은색 반투명의 작은 모달 띄워주기
@@ -297,7 +316,7 @@ const GroupPage = (props) => {
         clearTimeout(autoSaveGroupDatas.current);
       }
     };
-  }, [groupIndex, groupInfo, stdPoints, nowDatas]);
+  }, [groupIndex, groupInfo, stdPoints, nowDatas, characters]);
 
   useEffect(() => {
     if (tableRow === "" || tableColumn === "") return;
@@ -336,14 +355,31 @@ const GroupPage = (props) => {
           document.getElementById(name).style.backgroundColor = "white";
           // 기존 자료에서 자리바꾸기면, 배경색을 바꿔줘야함.
         } else {
-          let bg_color =
-            groupInfo?.[groupIndex?.[stdInd]]?.color ||
-            GROUP_BGCOLOR[groupIndex?.[stdInd]];
-          document.getElementById(name).style.backgroundColor = bg_color;
+          //숫자인경우... 배경색 기본값으로
+          if (!isNaN(+name)) {
+            document.getElementById(name).style.backgroundColor = "#e1e1e1";
+            //학생인 경우 배경색 원래대로
+          } else {
+            let bg_color =
+              groupInfo?.[groupIndex?.[stdInd]]?.color ||
+              GROUP_BGCOLOR[groupIndex?.[stdInd]];
+            document.getElementById(name).style.backgroundColor = bg_color;
+          }
         }
 
         //없던 학생이름이면.. 자리 바꾸고 비우기
       } else {
+        // 클릭이 둘다 숫자(빈자리) 였으면 그냥 비워주고 끝내기
+        if (!isNaN(+changeStd) && !isNaN(+name)) {
+          // 자리색 다시.. 원래대로
+          document.getElementById(name).style.backgroundColor = "#e1e1e1";
+          document.getElementById(changeStd).style.backgroundColor = "#e1e1e1";
+
+          setChangeStd("");
+
+          return;
+        }
+
         // 기존모둠 인덱스
         let changeStd_ind = 0;
         let nowStd_ind = 0;
@@ -392,11 +428,36 @@ const GroupPage = (props) => {
           setStdPoints(new_stdPoints);
 
           //그룹 인덱스도 수정 안해도 됨. 자리의 모둠설정 자체는 동일함. 학생만 자리를 바꿈.
+          // 만약 둘 중 하나가 숫자(빈자리)면 그룹인덱스도 수정해줘야 함.
+          if (!isNaN(+changeStd) || !isNaN(+name)) {
+            let new_groupIndex = [];
+
+            groupIndex?.forEach((gi, gi_ind) => {
+              let new_gi = gi;
+              if (gi_ind === nowStd_ind) {
+                new_gi = groupIndex[changeStd_ind];
+              } else if (gi_ind === changeStd_ind) {
+                new_gi = groupIndex[nowStd_ind];
+              }
+              new_groupIndex.push(new_gi);
+            });
+
+            setGroupIndex(new_groupIndex);
+
+            setChangeStd("");
+            return;
+          }
         }
 
         document.getElementById(name).style.backgroundColor = "#E9CBB7";
 
         setTimeout(() => {
+          if (!isNaN(+name)) {
+            changeStd_color = "#e1e1e1";
+          }
+          if (!isNaN(+changeStd)) {
+            nowStd_color = "#e1e1e1";
+          }
           setNowDatas(new_nowDatas);
           document.getElementById(name).style.backgroundColor = changeStd_color;
           document.getElementById(changeStd).style.backgroundColor =
@@ -520,6 +581,8 @@ const GroupPage = (props) => {
       onSnapshot(groupRef, (doc) => {
         setCharacters([...doc?.data()?.characters]);
         setGroupDatas([...doc?.data()?.groupDatas]);
+
+        setGifts([...doc?.data()?.gifts]);
       });
     }
   };
@@ -731,9 +794,12 @@ const GroupPage = (props) => {
       });
     } else if (
       groupInfo?.length !== 0 &&
-      groupIndex?.filter((gi) => gi === "")?.length !== 0
+      groupIndex?.filter(
+        (gi, gi_ind) => gi === "" && isNaN(nowDatas?.students?.[gi_ind])
+      )?.length !== 0
     ) {
       // 만약 모둠은 있는데, 모둠설정이 ""인, 모둠설정이 안된 학생이 있으면 swal알림
+      // 만약 숫자만 있으면.. 모둠 설정 안되어도 됨.
 
       Swal.fire(
         "모둠배정 필요",
@@ -819,6 +885,7 @@ const GroupPage = (props) => {
     await setDoc(groupRef, {
       groupDatas: new_groupDatas,
       characters: characters,
+      gifts: gifts,
     }).then(() => {
       setNowDatas(new_groupData);
     });
@@ -847,6 +914,18 @@ const GroupPage = (props) => {
     let now_students = filteringStds();
 
     now_students = now_students?.map((stdObj) => `${stdObj.name}`);
+
+    //전체 자리를 기준으로..  남는 자리가 있으면 해당 자리를 숫자로 채워주기
+    let wholeSeats = +tableRow * +tableColumn;
+    now_students = Array.from({ length: wholeSeats }, (v, i) => {
+      let new_std = +i + 1;
+      if (now_students?.[i] !== undefined) {
+        new_std = now_students?.[i];
+      }
+      return new_std;
+    });
+
+    // console.log(now_students);
 
     setNowDatas({
       rowColumn: tableRow + "-" + tableColumn,
@@ -959,10 +1038,14 @@ const GroupPage = (props) => {
       } else {
         crown = (
           <GiHoneypot
-            size={72}
+            size={!menuRight ? 72 : 65}
             color="#ffe300"
             className={classes["std-crown"]}
-            style={{ top: "-84%", left: "20%" }}
+            style={
+              !menuRight
+                ? { top: "-84%", left: "20%" }
+                : { top: "-60%", right: "-10%", left: "auto" }
+            }
           />
         );
       }
@@ -974,10 +1057,14 @@ const GroupPage = (props) => {
       } else {
         crown = (
           <GiHoneypot
-            size={57}
+            size={!menuRight ? 57 : 42}
             color="#e8c909"
             className={classes["std-crown"]}
-            style={{ top: "-68%", left: "25%" }}
+            style={
+              !menuRight
+                ? { top: "-68%", left: "25%" }
+                : { top: "-30%", left: "60%" }
+            }
           />
         );
       }
@@ -993,10 +1080,14 @@ const GroupPage = (props) => {
       } else {
         crown = (
           <GiHoneypot
-            size={45}
+            size={!menuRight ? 45 : 33}
             color="#e6e6e6"
             className={classes["std-crown"]}
-            style={{ top: "-56%", left: "33%" }}
+            style={
+              !menuRight
+                ? { top: "-56%", left: "33%" }
+                : { top: "-20%", left: "65%" }
+            }
           />
         );
       }
@@ -1012,12 +1103,20 @@ const GroupPage = (props) => {
       <>
         {crown}
         <div
-          className={!isGroup ? classes["std-rank"] : classes["gr-rank"]}
+          className={
+            !isGroup
+              ? classes["std-rank"]
+              : !menuRight
+              ? classes["gr-rank"]
+              : classes["gr-rank-left"]
+          }
           style={
             rank === 1
               ? !isGroup
                 ? { fontSize: "16px" }
-                : { fontSize: "25px", top: "-36%" }
+                : !menuRight
+                ? { fontSize: "25px", top: "-36%" }
+                : { fontSize: "25px", top: "-25%" }
               : {}
           }
         >
@@ -1042,7 +1141,7 @@ const GroupPage = (props) => {
     const sorted_lists = list.sort(function (a, b) {
       let a_date = `${a.id}`;
       let b_date = `${b.id}`;
-      return new Date(a_date) - new Date(b_date);
+      return a_date < b_date ? 1 : -1;
     });
     return sorted_lists;
   };
@@ -1215,10 +1314,6 @@ const GroupPage = (props) => {
       new_datas.push(new_data);
     }
 
-    // console.log({
-    //   [what + "_data"]: new_datas,
-    // });
-
     //저장하고 나서, checkListData에 세팅해주기! (저장하고 나면 기존자료로 세팅되어야함.)
     await setDoc(dataRef, {
       [what + "_data"]: new_datas,
@@ -1252,7 +1347,7 @@ const GroupPage = (props) => {
       /* Read more about isConfirmed, isDenied below */
       if (result.isConfirmed) {
         setMenuFunc("");
-        setUnSubmitStudents([...filteredStudents]);
+        setUnSubmitStudents([]);
         setCheckListData(null);
         setAddOrLoad("");
         setGroupName("");
@@ -1289,6 +1384,245 @@ const GroupPage = (props) => {
     }
   }, [showWindow]);
 
+  /** 보상 목록에 수정하는 함수 */
+  const saveGiftsHandler = async (new_datas) => {
+    const groupRef = doc(dbService, "groupMode", props.userUid);
+
+    await setDoc(groupRef, {
+      groupDatas: groupDatas,
+      characters: characters,
+      gifts: new_datas,
+    });
+  };
+
+  /** 모둠 개인보상 추가하는 함수 */
+  const giftSubmitHandler = (e) => {
+    e.preventDefault();
+
+    if (giftClass === "" || giftName?.trim() === "" || giftScore === 0) {
+      Swal.fire(
+        "저장 실패!",
+        "보상의 종류 | 보상의 이름 | 보상의 점수 3 가지를 모두 입력해주세요!",
+        "warning"
+      );
+      return;
+    }
+
+    if (isNaN(+giftScore)) {
+      Swal.fire("저장 실패!", "점수는 숫자만 입력이 가능합니다.", "warning");
+      return;
+    }
+
+    let new_gift = {
+      class: giftClass,
+      name: giftName?.trim(),
+      score: +giftScore,
+    };
+
+    let new_gifts = [...gifts];
+    //이름과 분류가 같은 게 있으면 안됨.(선택된 보상이 없고)
+    if (
+      selectedGrInd === "" &&
+      new_gifts?.length > 0 &&
+      new_gifts?.filter(
+        (g) => g.name === new_gift.name && g.class === new_gift.class
+      )?.length > 0
+    ) {
+      Swal.fire(
+        "저장 실패!",
+        "보상의 종류와 이름 두 항목이 같은 데이터가 존재합니다!",
+        "warning"
+      );
+      return;
+      // 새로운 자료면 그냥 추가
+    } else if (selectedGrInd === "") {
+      new_gifts.push(new_gift);
+      saveGiftsHandler(new_gifts);
+      // 기존 자료 수정이면 인덱스 제외후 추가
+    } else if (selectedGrInd !== "") {
+      new_gifts.splice(+selectedGrInd, 1, new_gift);
+      saveGiftsHandler(new_gifts);
+      resetGift();
+    }
+  };
+
+  /** 보상 목록 삭제하는 함수, 받아온 인덱스 목록 지워주기 */
+  const delGiftHandler = (ind) => {
+    let new_gifts = [...gifts];
+    new_gifts = new_gifts?.filter((g, g_ind) => g_ind !== +ind);
+
+    saveGiftsHandler(new_gifts);
+    resetGift();
+  };
+
+  /** 선택취소, 삭제 후 보상을 원상태로 돌리는 함수 */
+  const resetGift = () => {
+    setSelectedGrInd("");
+    setGiftName("");
+    setGiftScore(1);
+    setGiftClass("");
+  };
+
+  /** 점수로 보상 구입하는 함수! */
+  const shoppingGift = (what, name, score) => {
+    Swal.fire({
+      title:
+        what === "group"
+          ? "모둠보상 구입!"
+          : what === "person"
+          ? "개인보상 구입!"
+          : "캐릭터 변경!",
+      html:
+        what !== "character"
+          ? `<b>[${name} 항목] 을 [${score}] 에</b> 구입할까요?<br/> <b>** 되돌리기 불가능!!</b>`
+          : `<img  src="${name}" alt="" style="width: 80%" /> <br/><b>${nowDatas?.students?.[selectedGrInd]} 학생 캐릭터를 변경할까요?</b> `,
+      showDenyButton: true,
+      confirmButtonText: what !== "character" ? "구입" : "변경",
+      confirmButtonColor: "#db100cf2",
+      denyButtonColor: "#85bd82",
+      denyButtonText: `취소`,
+      icon: what !== "character" ? "warning" : "",
+    }).then((result) => {
+      /* Read more about isConfirmed, isDenied below */
+      if (result.isConfirmed) {
+        // 모둠 보상 구입
+        if (what === "group") {
+          let new_groupInfo = [];
+          groupInfo?.forEach((ginfo, ind) => {
+            if (ind === +selectedGrInd) {
+              new_groupInfo.push({
+                ...ginfo,
+                grPoints: ginfo.grPoints - score,
+              });
+            } else {
+              new_groupInfo.push({ ...ginfo });
+            }
+          });
+          setGroupInfo(new_groupInfo);
+
+          // 개인 보상 구입
+        } else if (what === "person") {
+          let new_stdPoints = [...stdPoints];
+          new_stdPoints[+selectedGrInd] =
+            +new_stdPoints[+selectedGrInd] - score;
+
+          setStdPoints(new_stdPoints);
+          // 캐릭터 변경
+        } else {
+          let new_characters = [...characters];
+          new_characters = new_characters?.map((stdChrac) => {
+            let new_stdChrac = stdChrac;
+            if (stdChrac.name === nowDatas?.students?.[selectedGrInd]) {
+              new_stdChrac.url = name;
+            }
+            return new_stdChrac;
+          });
+          setCharacters(new_characters);
+        }
+      }
+    });
+  };
+
+  /** 모든 캐릭터 초기화 */
+  const resetCharacters = () => {
+    Swal.fire({
+      title: "캐릭터 초기화!",
+      html: `모든 학생의 캐릭터를 초기화 합니다! <br/><b>초기화할까요?</b> `,
+      showDenyButton: true,
+      confirmButtonText: "초기화",
+      confirmButtonColor: "#db100cf2",
+      denyButtonColor: "#85bd82",
+      denyButtonText: `취소`,
+      icon: "warning",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        let new_characters = [...characters]?.map((stdChrac) => {
+          return { ...stdChrac, url: "" };
+        });
+        setCharacters(new_characters);
+      }
+    });
+  };
+
+  const getChacterImgSrc = (std) => {
+    let imgSrc = characters?.filter((crt) => crt?.name === std)?.[0]?.url;
+    let nowLocation = window?.location?.href;
+    //접속주소가 checks-cool이면, imgsrc에도 있어야 함.
+    if (imgSrc?.length > 0) {
+      //현재 접속은 checkscool인데, 저장된 주소가 checkscool이 아니면
+      if (
+        nowLocation?.includes("checks-cool") &&
+        !imgSrc?.includes("checks-cool")
+      ) {
+        imgSrc = "/checks-cool" + imgSrc;
+
+        // 현재 접속은 checkscool이 아닌데, 저장 주소가 checkscool이면
+      } else if (
+        !nowLocation?.includes("checks-cool") &&
+        imgSrc?.includes("checks-cool")
+      ) {
+        imgSrc = imgSrc.split("checks-cool")?.[1];
+      }
+    } else {
+      imgSrc = CHARACTERS[0];
+    }
+
+    return imgSrc;
+  };
+
+  const groupPointsHtml = () => {
+    return (
+      <div
+        className={
+          !menuRight ? classes["points-group"] : classes["menu-left-div"]
+        }
+        id="points-group"
+      >
+        {groupInfo?.map((gr, gr_ind) => (
+          <motion.div
+            initial="_downY"
+            animate="originXY"
+            transition="dur5"
+            variants={MOTION_VAR}
+            key={gr_ind}
+            className={classes["gr-div"]}
+            style={{
+              backgroundColor: gr?.color || GROUP_BGCOLOR[gr_ind],
+            }}
+            onMouseEnter={() => handleMouseEnter("group", gr_ind)}
+            onMouseLeave={handleMouseLeave}
+          >
+            {hoveredIndex === String("group" + gr_ind) && (
+              <>
+                {/* 점수 +, - 버튼 */}
+
+                <div
+                  className={classes["plus"]}
+                  onClick={() => grPointsHandler("honey-plus", gr_ind)}
+                >
+                  +
+                </div>
+                <div
+                  className={classes["minus"]}
+                  onClick={() => grPointsHandler("honey-minus", gr_ind)}
+                >
+                  -
+                </div>
+              </>
+            )}
+            {/* 그룹랭킹과 왕관 */}
+            {stdRank1to5(gr_ind, true)}
+            {/* 모둠이름 : 점수*/}
+            {gr?.groupName?.includes("모둠")
+              ? gr?.groupName
+              : gr?.groupName + "모둠"}{" "}
+            : {gr?.grPoints}
+          </motion.div>
+        ))}
+      </div>
+    );
+  };
+
   //  전체 html그리는 return 부분
   return (
     <div className={classes["div"]}>
@@ -1303,6 +1637,661 @@ const GroupPage = (props) => {
         >
           자료가 수정/저장되었어요!
         </motion.div>
+      )}
+
+      {/* 보상 설정하는 modal */}
+      {giftItem === "setting" && (
+        <Modal
+          onClose={() => {
+            setGiftItem("");
+            resetGift();
+          }}
+        >
+          <span
+            onClick={() => {
+              setGiftItem("");
+              resetGift();
+            }}
+            className={classes.xmark}
+          >
+            <i className="fa-regular fa-circle-xmark"></i>
+          </span>
+          {/* 타이틀 부분 */}
+          <div className={classes["flex-cen"]}>
+            <div className={classes["title"]}>개인 / 모둠 보상 관리하기</div>
+            <div className={classes["title-sub"]}>
+              * 개인보상 &nbsp;
+              <span
+                className={`${classes["todoOption"]} ${classes["op1"]}`}
+              ></span>{" "}
+              &nbsp;&nbsp;&nbsp; 모둠보상 &nbsp;
+              <span
+                className={`${classes["todoOption"]} ${classes["op2"]}`}
+              ></span>
+            </div>
+            <div className={classes["title-sub"]}>
+              * 보상 클릭 시 "수정/삭제 가능"
+            </div>
+          </div>
+
+          {/* 가로줄 */}
+          <hr style={{ margin: "20px 15px" }} />
+
+          {/* 보상 목록 보여주기 */}
+          <div
+            className={classes["seat-ul"]}
+            style={{
+              justifyContent: "center",
+              width: "100%",
+              alignItems: "baseline",
+            }}
+          >
+            {/* 보상 추가하기 */}
+            <form
+              className={classes["flex-start-35"]}
+              onSubmit={giftSubmitHandler}
+              style={{ alignItems: "normal" }}
+            >
+              <div className={classes["seat-ul"]}>
+                <Button
+                  name={"개인보상"}
+                  onclick={(e) => {
+                    e.preventDefault();
+                    setGiftClass("person");
+                  }}
+                  className={"groupPage-btn"}
+                  style={
+                    giftClass === "person"
+                      ? { fontSize: "20px", fontWeight: "bold" }
+                      : { backgroundColor: "#334a52a3" }
+                  }
+                />
+                <Button
+                  name={"모둠보상"}
+                  onclick={(e) => {
+                    e.preventDefault();
+                    setGiftClass("group");
+                  }}
+                  className={"groupPage-btn"}
+                  style={
+                    giftClass === "group"
+                      ? { fontSize: "20px", fontWeight: "bold" }
+                      : { backgroundColor: "#334a52a3" }
+                  }
+                />
+              </div>
+              <div className={classes["giftAdd-div"]}>
+                &nbsp;&nbsp;보상 이름
+                <input
+                  className={classes["groupName-input"]}
+                  type="text"
+                  value={giftName}
+                  onChange={(e) => setGiftName(e.target.value)}
+                  placeholder="보상 이름"
+                  style={{
+                    width: "70%",
+                    maxWidth: "200px",
+                  }}
+                />
+              </div>
+              <div className={classes["giftAdd-div"]}>
+                &nbsp;&nbsp;보상 획득점수
+                <input
+                  className={classes["groupName-input"]}
+                  type="number"
+                  min="1"
+                  max="50"
+                  step="1"
+                  value={giftScore}
+                  onChange={(e) => setGiftScore(e.target.value?.trim())}
+                  style={{ width: "60px" }}
+                />
+              </div>
+
+              <div className={classes["giftAdd-div"]}>
+                {/* 보상 아이템 추가/수정 버튼 */}
+                <Button
+                  name={selectedGrInd === "" ? "추가" : "수정"}
+                  onclick={giftSubmitHandler}
+                  className={"groupPage-add"}
+                />
+
+                {/* 선택된 항목이 있을 때 보일 삭제 / 선택 취소 버튼 */}
+                {selectedGrInd !== "" && (
+                  <>
+                    <Button
+                      name={"삭제"}
+                      onclick={() => {
+                        delGiftHandler(selectedGrInd);
+                      }}
+                      className={"groupPage-add"}
+                    />
+                    <Button
+                      name={"선택취소"}
+                      onclick={() => {
+                        resetGift();
+                      }}
+                      style={{ backgroundColor: "rgba(51, 74, 82, 0.64)" }}
+                      className={"groupPage-add"}
+                    />
+                  </>
+                )}
+              </div>
+            </form>
+
+            <ul
+              className={classes["seat-ul"]}
+              style={{ width: "55%", paddingLeft: "0" }}
+            >
+              {gifts?.map((gift, ind) => (
+                <li
+                  key={ind}
+                  className={classes["seat-li"]}
+                  onClick={() => {
+                    setSelectedGrInd(ind);
+                    setGiftName(gift.name);
+                    setGiftScore(gift.score);
+                    setGiftClass(gift.class);
+                  }}
+                  style={
+                    gift.class === "group"
+                      ? {
+                          backgroundColor: "#cebfd5",
+                          width: "auto",
+                          maxWidth: "145px",
+                        }
+                      : {
+                          backgroundColor: "#d2e395",
+                          width: "auto",
+                          maxWidth: "145px",
+                        }
+                  }
+                >
+                  <div className={classes["seat-id"]}>
+                    {gift.class === "group" ? "모둠" : "개인"}{" "}
+                  </div>
+                  <div className={classes["seat-title"]}>{gift.name}</div>
+                  <div
+                    className={classes["seat-ul"]}
+                    style={{ fontSize: "15px" }}
+                  >
+                    {Array(gift.score)?.fill(
+                      <span className={classes["gift-icon"]}>
+                        {gift.class === "group" ? (
+                          <GiHoneypot
+                            size={25}
+                            color="#ffe300"
+                            style={{
+                              filter:
+                                "drop-shadow(2px 1px 1px rgba(46, 0, 0, 1))",
+                            }}
+                          />
+                        ) : (
+                          <i
+                            className="fa-solid fa-heart fa-sm"
+                            style={{
+                              color: "#d90f30",
+                              filter:
+                                "drop-shadow(2px 1px 1px rgba(46, 0, 0, 1))",
+                              marginLeft: "3px",
+                            }}
+                          ></i>
+                        )}
+                      </span>
+                    )}{" "}
+                    ({gift.score})
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </Modal>
+      )}
+
+      {/* 그룹 보상 주는 modal */}
+      {giftItem === "group" && (
+        <Modal
+          onClose={() => {
+            setGiftItem("");
+            resetGift();
+          }}
+        >
+          <span
+            onClick={() => {
+              setGiftItem("");
+              resetGift();
+            }}
+            className={classes.xmark}
+          >
+            <i className="fa-regular fa-circle-xmark"></i>
+          </span>
+          {/* 타이틀 부분 */}
+          <div className={classes["flex-cen"]}>
+            <div className={classes["title"]}>모둠점수로 쇼핑하기</div>
+
+            <div className={classes["title-sub"]}>* 모둠 선택 => 보상 선택</div>
+          </div>
+
+          {/* 가로줄 */}
+          <hr style={{ margin: "20px 15px" }} />
+
+          {/*모둠목록   보상목록 */}
+          <div
+            className={classes["seat-ul"]}
+            style={{
+              justifyContent: "center",
+              width: "100%",
+              alignItems: "baseline",
+            }}
+          >
+            {/* 모둠 목록 보여주기 */}
+            <ul
+              className={classes["seat-ul"]}
+              style={{
+                width: "36%",
+                padding: "15px",
+                justifyContent: "center",
+              }}
+            >
+              <div className={classes["sec-title"]}>모둠목록</div>
+              {groupInfo?.map((gr, gr_ind) => (
+                <li
+                  key={gr_ind}
+                  className={classes["gr-list-div"]}
+                  onClick={() => {
+                    if (+selectedGrInd === +gr_ind) {
+                      setSelectedGrInd("");
+                    } else {
+                      setSelectedGrInd(gr_ind);
+                    }
+                  }}
+                  style={
+                    +selectedGrInd === +gr_ind
+                      ? {
+                          backgroundColor: gr?.color || GROUP_BGCOLOR[gr_ind],
+                          fontWeight: "bold",
+                          fontSize: "20px",
+                          padding: "18px 13px",
+                          border: "solid",
+                        }
+                      : {
+                          backgroundColor: gr?.color || GROUP_BGCOLOR[gr_ind],
+                        }
+                  }
+                >
+                  {gr?.groupName?.includes("모둠")
+                    ? gr?.groupName
+                    : gr?.groupName + "모둠"}{" "}
+                  : {gr?.grPoints}
+                </li>
+              ))}{" "}
+            </ul>
+
+            {/* 모둠상품 목록만 보여주기 */}
+            <ul
+              className={classes["seat-ul"]}
+              style={{
+                width: "55%",
+                paddingLeft: "0",
+                justifyContent: "center",
+              }}
+            >
+              <div className={classes["sec-title"]}>보상 목록</div>
+              {gifts?.map((gift, ind) => {
+                if (gift.class !== "group") return null;
+
+                return (
+                  <li
+                    key={ind}
+                    className={classes["seat-li"]}
+                    onClick={() => {
+                      if (selectedGrInd === "") {
+                        Swal.fire(
+                          "선택 불가!",
+                          "먼저 모둠을 선택한 후에 보상을 선택해주세요!",
+                          "warning"
+                        );
+                        return;
+                      } else {
+                        // 점수가 더 낮으면 구입불가
+                        if (
+                          +groupInfo?.[+selectedGrInd]?.grPoints < +gift.score
+                        ) {
+                          Swal.fire(
+                            "점수 부족!",
+                            "필요한 점수가 부족하여 보상을 구입할 수 없어요.",
+                            "warning"
+                          );
+                          return;
+                        } else {
+                          shoppingGift("group", gift.name, gift.score);
+                        }
+                      }
+                    }}
+                    style={{
+                      backgroundColor: "#cebfd5",
+                      width: "auto",
+                      maxWidth: "145px",
+                    }}
+                  >
+                    <div className={classes["seat-title"]}>{gift.name}</div>
+                    <div
+                      className={classes["seat-ul"]}
+                      style={{ fontSize: "15px" }}
+                    >
+                      {Array(gift.score)?.fill(
+                        <span className={classes["gift-icon"]}>
+                          <GiHoneypot
+                            size={25}
+                            color="#ffe300"
+                            style={{
+                              filter:
+                                "drop-shadow(2px 1px 1px rgba(46, 0, 0, 1))",
+                            }}
+                          />
+                        </span>
+                      )}{" "}
+                      ({gift.score})
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        </Modal>
+      )}
+
+      {/* 개인 보상 주는 modal */}
+      {giftItem === "person" && (
+        <Modal
+          onClose={() => {
+            setGiftItem("");
+            resetGift();
+          }}
+        >
+          <span
+            onClick={() => {
+              setGiftItem("");
+              resetGift();
+            }}
+            className={classes.xmark}
+          >
+            <i className="fa-regular fa-circle-xmark"></i>
+          </span>
+          {/* 타이틀 부분 */}
+          <div className={classes["flex-cen"]}>
+            <div className={classes["title"]}>개인점수로 쇼핑하기</div>
+
+            <div className={classes["title-sub"]}>* 학생 선택 => 보상 선택</div>
+          </div>
+
+          {/* 가로줄 */}
+          <hr style={{ margin: "20px 15px" }} />
+
+          {/*학생목록   보상목록 */}
+          <div
+            className={classes["seat-ul"]}
+            style={{
+              justifyContent: "center",
+              width: "100%",
+              alignItems: "baseline",
+            }}
+          >
+            {/* 학생 목록 보여주기 */}
+            <ul
+              className={classes["seat-ul"]}
+              style={{
+                width: "38%",
+                padding: "15px",
+                justifyContent: "center",
+              }}
+            >
+              <div className={classes["sec-title"]}>학생목록</div>
+              {nowDatas?.students?.map((std, st_ind) => {
+                // 숫자면.. 빈자리면 안보여주기
+                if (!isNaN(+std)) return null;
+
+                return (
+                  <li
+                    key={st_ind}
+                    className={classes["std-div"]}
+                    onClick={() => {
+                      if (selectedGrInd !== "" && +selectedGrInd === +st_ind) {
+                        setSelectedGrInd("");
+                      } else {
+                        setSelectedGrInd(st_ind);
+                      }
+                    }}
+                    style={
+                      selectedGrInd !== "" && +selectedGrInd === +st_ind
+                        ? {
+                            backgroundColor: GROUP_BGCOLOR[4],
+                            fontWeight: "bold",
+                            fontSize: "18px",
+                            border: "solid",
+                          }
+                        : {}
+                    }
+                  >
+                    {std}({stdPoints?.[st_ind]})
+                  </li>
+                );
+              })}{" "}
+            </ul>
+
+            {/* 개인상품 목록만 보여주기 */}
+            <ul
+              className={classes["seat-ul"]}
+              style={{
+                width: "55%",
+                paddingLeft: "0",
+                justifyContent: "center",
+              }}
+            >
+              <div className={classes["sec-title"]}>보상 목록</div>
+              {gifts?.map((gift, ind) => {
+                if (gift.class === "group") return null;
+
+                return (
+                  <li
+                    key={ind}
+                    className={classes["seat-li"]}
+                    onClick={() => {
+                      if (selectedGrInd === "") {
+                        Swal.fire(
+                          "선택 불가!",
+                          "먼저 학생을 선택한 후에 보상을 선택해주세요!",
+                          "warning"
+                        );
+                        return;
+                      } else {
+                        // 점수가 더 낮으면 구입불가
+                        if (+stdPoints?.[+selectedGrInd] < +gift.score) {
+                          Swal.fire(
+                            "점수 부족!",
+                            "필요한 점수가 부족하여 보상을 구입할 수 없어요.",
+                            "warning"
+                          );
+                          return;
+                        } else {
+                          shoppingGift("person", gift.name, gift.score);
+                        }
+                      }
+                    }}
+                    style={{
+                      backgroundColor: "#d2e395",
+                      width: "auto",
+                      maxWidth: "145px",
+                    }}
+                  >
+                    <div className={classes["seat-title"]}>{gift.name}</div>
+                    <div
+                      className={classes["seat-ul"]}
+                      style={{ fontSize: "15px" }}
+                    >
+                      {Array(gift.score)?.fill(
+                        <span className={classes["gift-icon"]}>
+                          <i
+                            className="fa-solid fa-heart fa-sm"
+                            style={{
+                              color: "#d90f30",
+                              filter:
+                                "drop-shadow(2px 1px 1px rgba(46, 0, 0, 1))",
+                              marginLeft: "3px",
+                            }}
+                          ></i>
+                        </span>
+                      )}{" "}
+                      ({gift.score})
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        </Modal>
+      )}
+
+      {/* 캐릭터 변경하는 modal */}
+      {giftItem === "characterChange" && (
+        <Modal
+          onClose={() => {
+            setGiftItem("");
+            resetGift();
+          }}
+        >
+          <span
+            onClick={() => {
+              setGiftItem("");
+              resetGift();
+            }}
+            className={classes.xmark}
+          >
+            <i className="fa-regular fa-circle-xmark"></i>
+          </span>
+          {/* 타이틀 부분 */}
+          <div className={classes["flex-cen"]}>
+            <div className={classes["title"]}>캐릭터 변경하기</div>
+
+            <div className={classes["title-sub"]}>
+              * 개인/모둠 보상으로 설정하여 캐릭터를 변경해보세요.
+            </div>
+            <div className={classes["title-sub"]}>
+              * 학생 선택 => 캐릭터 선택
+            </div>
+          </div>
+
+          {/* 가로줄 */}
+          <hr style={{ margin: "20px 15px" }} />
+
+          {/*학생목록   보상목록 */}
+          <div
+            className={classes["seat-ul"]}
+            style={{
+              justifyContent: "center",
+              width: "100%",
+              alignItems: "baseline",
+            }}
+          >
+            {/* 학생 목록 보여주기 */}
+            <ul
+              className={classes["seat-ul"]}
+              style={{
+                width: "38%",
+                padding: "15px",
+                justifyContent: "center",
+              }}
+            >
+              <div className={classes["sec-title"]}>학생목록</div>
+              {nowDatas?.students?.map((std, st_ind) => {
+                // 숫자면.. 빈자리면 안보여주기
+                if (!isNaN(+std)) return null;
+
+                return (
+                  <li
+                    key={st_ind}
+                    className={classes["std-div"]}
+                    onClick={() => {
+                      if (selectedGrInd !== "" && +selectedGrInd === +st_ind) {
+                        setSelectedGrInd("");
+                      } else {
+                        setSelectedGrInd(st_ind);
+                      }
+                    }}
+                    style={
+                      selectedGrInd !== "" && +selectedGrInd === +st_ind
+                        ? {
+                            backgroundColor: GROUP_BGCOLOR[4],
+                            fontWeight: "bold",
+                            fontSize: "18px",
+                            border: "solid",
+                          }
+                        : {}
+                    }
+                  >
+                    {std}
+                  </li>
+                );
+              })}{" "}
+              <div
+                className={classes["sec-title"]}
+                style={{ marginTop: "25px" }}
+              >
+                <Button
+                  name={"캐릭터 초기화"}
+                  onclick={resetCharacters}
+                  className={"groupPage-add"}
+                />
+              </div>
+            </ul>
+
+            {/* 캐릭터 목록 보여주기 */}
+            <ul
+              className={classes["seat-ul"]}
+              style={{
+                width: "55%",
+                paddingLeft: "0",
+                justifyContent: "center",
+              }}
+            >
+              <div className={classes["sec-title"]}>캐릭터 목록</div>
+
+              {CHARACTERS?.map((image, index) => (
+                <li
+                  key={index}
+                  className={classes["seat-li"]}
+                  onClick={() => {
+                    if (selectedGrInd === "") {
+                      Swal.fire(
+                        "선택 불가!",
+                        "먼저 학생을 선택한 후에 캐릭터를 선택해주세요!",
+                        "warning"
+                      );
+                      return;
+                    } else {
+                      // let new_img = window.location.href.includes("checks-cool")
+                      //   ? image.split("checks-cool")?.[1]
+                      //   : image;
+
+                      shoppingGift("character", image);
+                    }
+                  }}
+                  style={{
+                    position: "relative",
+                    width: "80px",
+                    height: "100px",
+                  }}
+                >
+                  <img
+                    src={image}
+                    className={classes["character"]}
+                    alt={`character${index}`}
+                  />{" "}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </Modal>
       )}
 
       {/* 자리표 이쓰면 목록 보여주기 */}
@@ -1726,6 +2715,14 @@ const GroupPage = (props) => {
                     setMenuFunc("상담");
                   }}
                 />
+                <Button
+                  name="&nbsp; 보상"
+                  className={"groupPage-btn"}
+                  icon={<i className="fa-solid fa-gift" aria-hidden="true"></i>}
+                  onclick={() => {
+                    setMenuFunc("보상");
+                  }}
+                />
                 {/*  */}
                 <div className={classes["autoSave-expl"]}>
                   * 자료 변경 시<br /> 3초 후 자동저장
@@ -1754,6 +2751,50 @@ const GroupPage = (props) => {
                       />
                     </>
                   )}
+
+                {/* 제출이나 개별기록의 경우, 저장버튼 만들어주기 */}
+                {menuFunc === "보상" && (
+                  <>
+                    <Button
+                      icon={<i className="fa-solid fa-users-rectangle"></i>}
+                      title="모둠보상 주기"
+                      name="&nbsp;보상"
+                      className={"groupPage-btn"}
+                      onclick={() => {
+                        if (groupInfo?.length === 0) {
+                          Swal.fire(
+                            "모둠없음!",
+                            "설정된 모둠이 없어서 모둠보상 주기가 불가능해요! 먼저 화면 우측 상단의 설정 버튼을 눌러서 모둠을 생성해주세요."
+                          );
+                          return;
+                        }
+                        setGiftItem("group");
+                      }}
+                    />
+                    <Button
+                      icon={<i className="fa-solid fa-user fa-md"></i>}
+                      name="&nbsp;보상"
+                      title="개별보상 주기"
+                      className={"groupPage-btn"}
+                      onclick={() => setGiftItem("person")}
+                    />
+                    <Button
+                      name="&nbsp;관리"
+                      icon={<i className="fa-solid fa-gift"></i>}
+                      title="(개인/모둠) 보상 관리하기"
+                      className={"groupPage-btn"}
+                      onclick={() => setGiftItem("setting")}
+                    />
+                    <Button
+                      name="&nbsp;캐릭터"
+                      icon={<PiDogFill />}
+                      title="캐릭터 변경하기"
+                      className={"groupPage-btn"}
+                      onclick={() => setGiftItem("characterChange")}
+                    />
+                  </>
+                )}
+
                 <Button
                   name="&nbsp; 취소"
                   className={"groupPage-btn"}
@@ -1979,7 +3020,7 @@ const GroupPage = (props) => {
                 <input
                   className={classes["groupName-input"]}
                   type="text"
-                  placeholder="모둠이름"
+                  placeholder="'모둠'을 제외한 모둠명"
                   onChange={(e) => setGroupName(e.target?.value)}
                   value={groupName}
                 />
@@ -2115,6 +3156,17 @@ const GroupPage = (props) => {
                   variants={MOTION_VAR}
                   className={classes["newList-div"]}
                 >
+                  <Button
+                    title="새창) 첵스쿨 열기"
+                    icon={<i className="fa-solid fa-house"></i>}
+                    onclick={() =>
+                      window.open(
+                        window.location.href?.split("groupPage")?.[0],
+                        "_blank"
+                      )
+                    }
+                    className={"groupPage-btn"}
+                  />
                   <Button
                     title="설정보기"
                     icon={<i className="fa-solid fa-gear"></i>}
@@ -2302,6 +3354,9 @@ const GroupPage = (props) => {
         )}
       </div>
 
+      {/* 모둠 점수 보여주기 - 왼쪽 */}
+      {groupInfo?.length !== 0 && menuRight && groupPointsHtml()}
+
       <div className={classes["seatsDiv-div"]}>
         {/* 실제 학생들 자리가 보여질 부분 */}
         <div className={classes["seats-div"]} id={"seats-div"}>
@@ -2312,7 +3367,13 @@ const GroupPage = (props) => {
               transition="dur5"
               variants={MOTION_VAR}
               key={ind}
-              className={isNaN(std) ? classes["item"] : classes["empty-item"]}
+              className={
+                isNaN(std)
+                  ? classes["item"]
+                  : groupMakingStep !== MAKE_STEP[2]
+                  ? classes["empty-item"]
+                  : classes["empty-item-color"]
+              }
               id={std}
               style={
                 menuFunc !== "제출"
@@ -2338,7 +3399,7 @@ const GroupPage = (props) => {
               onMouseEnter={() => handleMouseEnter("item", ind)}
               onMouseLeave={handleMouseLeave}
             >
-              {/* 자료가 완성된 상태고, 호버할때만 보일... 꿀당+,-  하트 +,- */}
+              {/* 자료가 완성된 상태고, 호버할때만 보일... 하트 +,- */}
               {nowDatas?.stdPoints?.length > 0 &&
                 hoveredIndex === String("item" + ind) &&
                 settingWhat !== "자리변경" &&
@@ -2371,17 +3432,21 @@ const GroupPage = (props) => {
                       {stdRank1to5(ind)}
                     </>
                   )}
-                  <div className={classes["std-point"]}>
-                    {stdPoints[ind]}
-                    <i
-                      className="fa-solid fa-heart fa-sm"
-                      style={{
-                        color: "#d90f30",
-                        filter: "drop-shadow(2px 1px 1px rgba(46, 0, 0, 1))",
-                        marginLeft: "3px",
-                      }}
-                    ></i>
-                  </div>
+
+                  {/* 개인점수와 하트, 문자일 때만 보임 */}
+                  {isNaN(std) && (
+                    <div className={classes["std-point"]}>
+                      <i
+                        className="fa-solid fa-heart fa-sm"
+                        style={{
+                          color: "#d90f30",
+                          filter: "drop-shadow(2px 1px 1px rgba(46, 0, 0, 1))",
+                          marginRight: "5px",
+                        }}
+                      ></i>
+                      {stdPoints[ind]}
+                    </div>
+                  )}
                 </>
               )}
 
@@ -2391,11 +3456,24 @@ const GroupPage = (props) => {
                 className={
                   menuFunc === "개별" && addOrLoad === "add"
                     ? classes["listStyle-item"]
-                    : ""
+                    : classes["std-name"]
                 }
               >
-                {CHARACTERS[ind + randNum]}
-                {std}
+                {isNaN(std) && (
+                  <img
+                    className={
+                      hoveredIndex !== String("item" + ind)
+                        ? classes["character"]
+                        : classes["now-character"]
+                    }
+                    src={getChacterImgSrc(std)}
+                    alt=""
+                  >
+                    {/* {CHARACTERS[ind + randNum]} */}
+                  </img>
+                )}
+                {/* 학생이름 */}
+                <span>{std}</span>
               </div>
 
               {/* 개별기록 입력일때만 보이는, textarea 태그 */}
@@ -2423,63 +3501,9 @@ const GroupPage = (props) => {
           ))}
         </div>
       </div>
-      {/* 모둠 점수 보여주기 */}
-      {groupInfo?.length !== 0 && (
-        <div className={classes["points-div"]}>
-          <div className={classes["points-group"]} id="points-group">
-            {/* <GiHoneypot
-              size={60}
-              color="#e8c909"
-              style={{ filter: "drop-shadow(0px 0px 2px rgba(0, 0, 0, 1))" }}
-            /> */}
-            {groupInfo?.map((gr, gr_ind) => (
-              <motion.div
-                initial="_downY"
-                animate="originXY"
-                transition="dur5"
-                variants={MOTION_VAR}
-                key={gr_ind}
-                className={classes["gr-div"]}
-                style={{
-                  backgroundColor: gr?.color || GROUP_BGCOLOR[gr_ind],
-                }}
-                onMouseEnter={() => handleMouseEnter("group", gr_ind)}
-                onMouseLeave={handleMouseLeave}
-              >
-                {hoveredIndex === String("group" + gr_ind) && (
-                  <>
-                    {/* 점수 +, - 버튼 */}
-
-                    <div
-                      className={classes["plus"]}
-                      onClick={() => grPointsHandler("honey-plus", gr_ind)}
-                    >
-                      +
-                    </div>
-                    <div
-                      className={classes["minus"]}
-                      onClick={() => grPointsHandler("honey-minus", gr_ind)}
-                    >
-                      -
-                    </div>
-                  </>
-                )}
-                {/* 그룹랭킹과 왕관 */}
-                {stdRank1to5(gr_ind, true)}
-                {/* 모둠이름 : 점수*/}
-                {gr?.groupName?.length !== 1
-                  ? gr?.groupName
-                  : gr?.groupName + "모둠"}{" "}
-                : {gr?.grPoints}
-              </motion.div>
-            ))}
-            {/* <GiHoneypot
-              size={60}
-              color="#e8c909"
-              style={{ filter: "drop-shadow(0px 0px 2px rgba(0, 0, 0, 1))" }}
-            /> */}
-          </div>
-        </div>
+      {/* 모둠 점수 보여주기 - 아래쪽 */}
+      {groupInfo?.length !== 0 && !menuRight && (
+        <div className={classes["points-div"]}>{groupPointsHtml()}</div>
       )}
       {/* 자동저장 안내 */}
     </div>

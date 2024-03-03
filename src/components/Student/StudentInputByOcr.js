@@ -86,7 +86,7 @@ const StudentInputByOcr = (props) => {
       .then((data) => {
         const ocrTexts = data.responses[0].fullTextAnnotation.text;
 
-        console.log(data.responses[0]);
+        // console.log(data.responses[0]);
         // 숫자가 아닌 것들 빈칸으로 만들었다가 지우고 배열로 만들기
         first_sumNum = ocrTexts
           .replace(/[^0-9]+/g, " ")
@@ -256,14 +256,14 @@ const StudentInputByOcr = (props) => {
               성별 입력 및 내용확인 후
               <span className={classes["span-highlight"]}> 저장누르기</span>
             </span>
-            <hr className={classes["hr"]} />
-            <span className={classes["span-small"]}>
-              * 인쇄된 파일을 촬영하면 인식률이 높아집니다.
-              <br />
-              * 화면 왼쪽 상단의 보라색 [학생등록]
-              <br />
-              버튼을 누르시면 예시를 보실 수 있어요!
-            </span>
+
+            <a
+              href="https://kerbong.notion.site/50edba6218114a3e9a52981988c6db04"
+              target="_blank"
+              rel="noreferrer"
+            >
+              설명서 보러가기
+            </a>
             <hr className={classes["hr"]} />
           </div>
 

@@ -5,7 +5,7 @@ import Swal from "sweetalert2";
 const MemoTodayTodoItem = ({ todoItem, todoList, setTodoList, mykey }) => {
   const [edited, setEdited] = useState(false);
   const [newText, setNewTest] = useState(todoItem.text);
-  const [emergency, setEmergency] = useState(todoItem.emg || false);
+  const [emergency, setEmergency] = useState(false);
 
   const editInputRef = useRef(null);
 
@@ -15,6 +15,10 @@ const MemoTodayTodoItem = ({ todoItem, todoList, setTodoList, mykey }) => {
       editInputRef.current.focus();
     }
   }, [edited]);
+
+  useEffect(() => {
+    setEmergency(todoItem.emg);
+  }, [todoItem]);
 
   const handleResizeHeight = useCallback(() => {
     if (editInputRef === null || editInputRef.current === null) {

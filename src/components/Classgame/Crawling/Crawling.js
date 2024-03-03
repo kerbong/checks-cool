@@ -174,6 +174,7 @@ const Crawling = (props) => {
           getDateValue={getDateHandler}
           about={"attendance"}
           getMonthValue={getMonthHandler}
+          getYearValue={getMonthHandler}
         />
       </div>
       <div

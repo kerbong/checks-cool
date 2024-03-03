@@ -38,6 +38,24 @@ const MeetingSumItem = (props) => {
     }
   };
 
+  /**  */
+  const fileExtension = (img) => {
+    console.log(img);
+    if (img?.includes("application/haansofthwp")) {
+      return ".hwp";
+    } else if (img?.includes("application/pdf")) {
+      return ".pdf";
+    } else if (img?.includes("image/jpeg")) {
+      return ".jpg";
+    } else if (img?.includes("application/vnd.openxmlformats-officedocument")) {
+      return ".xlsx";
+    } else if (img?.includes("application/vnd.ms-excel")) {
+      return ".xls";
+    } else {
+      return "";
+    }
+  };
+
   const makeData = async () => {
     //데이터 만들기
     let title = document.getElementById("title-input").value.trim();
@@ -52,6 +70,21 @@ const MeetingSumItem = (props) => {
       return;
     }
 
+    //새로운 자료인데, 기존 이번달 자료에 id와 title이 같은게 있으면 저장 불가!
+    if (
+      isNew &&
+      props.nowSummary?.filter(
+        (s) => s.title === title && s.id === dayjs().format("YYYY-MM-DD HH:mm")
+      )?.length > 0
+    ) {
+      Swal.fire(
+        "저장 불가!",
+        "같은 시각에 같은 제목의 회의록/연수자료가 있어요!! 회의 제목을 변경해주세요!",
+        "warning"
+      );
+      return;
+    }
+
     let data = {
       id: isNew ? dayjs().format("YYYY-MM-DD HH:mm") : props.item.id,
       title: title,
@@ -61,13 +94,17 @@ const MeetingSumItem = (props) => {
     };
 
     let img = data.file;
+
     //새로운 자료면
     if (isNew) {
       //첨부파일 있으면
       if (img.length > 0) {
         //storage에 저장
         const response = await uploadString(
-          ref(storageService, `${props.userUid}/${v4()}`),
+          ref(
+            storageService,
+            `${props.userUid}/${data?.title}${fileExtension(img)}`
+          ),
           img,
           "data_url"
         );
@@ -87,7 +124,6 @@ const MeetingSumItem = (props) => {
         //firestore에 저장할 url받아오기
         img = await getDownloadURL(response.ref);
       } else {
-        console.log("안바뀜");
       }
     }
 
@@ -187,17 +223,18 @@ const MeetingSumItem = (props) => {
             <i className="fa-regular fa-circle-xmark"></i>
           </span>
         </div>
-
         <div>
           {/* 제목 */}
-          {isNew && (
-            <>
-              <h1 className={classes["t-align-left"]}>(회의제목)</h1>
-              <br />
-            </>
-          )}
+
+          <h3 className={classes["t-align-left"]}>
+            &nbsp;&nbsp;&nbsp;&nbsp;회의제목
+          </h3>
+
           <Input
-            input={{ id: "title-input" }}
+            input={{
+              id: "title-input",
+              style: { width: "50%", minWidth: "230px", marginLeft: "10px" },
+            }}
             className={"meetSum-Text"}
             type="text"
             required
@@ -206,10 +243,10 @@ const MeetingSumItem = (props) => {
             placeholder={"30자 내로 작성해주세요."}
           />
         </div>
-        <hr />
+
         <div className={`${classes["fs-12"]} ${classes["m-10"]}`}>
           {/* 회의내용 */}
-          {isNew && <h3>(회의내용)</h3>}
+          {<h3>&nbsp;&nbsp;회의내용</h3>}
           <Input
             id={`text-input`}
             myKey={"text-input"}
@@ -225,15 +262,15 @@ const MeetingSumItem = (props) => {
           />
         </div>
         <FileArea
-          about={props.about}
+          about={"meetSum"}
           file={!isNew ? props.item.file : ""}
           attachedFileHandler={(file) => {
             setAttachedFile(file);
           }}
         />
-        <hr />
+
         <div className={`${classes["fs-14"]} ${classes["m-10"]}`}>
-          {isNew && <h3>(회의결과)</h3>}
+          {<h3>&nbsp;&nbsp;회의결과</h3>}
           <div>
             <Input
               input={{ id: "result-input" }}
@@ -246,6 +283,10 @@ const MeetingSumItem = (props) => {
             />
           </div>
         </div>
+        <div style={{ margin: "20px" }}>
+          ** 저장/수정/삭제 후 눈을 감고 10초 동안 쉬고계세요! 얼른
+          저장해드릴게요.😌
+        </div>
 
         {/* 수정 / 삭제 버튼 */}
         <div className={classes["m-20-5-btns"]}>
@@ -255,6 +296,7 @@ const MeetingSumItem = (props) => {
                 className={"saveSimsim-btn"}
                 onclick={deleteHandler}
                 icon={<>삭제</>}
+                style={{ width: "45%", backgroundColor: "#767676" }}
               />
             </>
           )}
@@ -263,6 +305,7 @@ const MeetingSumItem = (props) => {
             className={"saveSimsim-btn"}
             onclick={isNew ? submitHandler : editHandler}
             icon={isNew ? <>저장</> : <>수정</>}
+            style={{ width: "45%" }}
           />
         </div>
       </div>

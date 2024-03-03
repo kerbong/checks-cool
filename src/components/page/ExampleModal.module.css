@@ -17,3 +17,34 @@
   max-width: 85vw;
   width: 100%;
 }
+
+.close-today {
+  margin: 10px;
+  display: flex;
+  justify-content: flex-end;
+  font-size: 20px;
+  padding: 10px;
+  border-radius: 20px;
+  cursor: pointer;
+}
+
+.close-today:hover {
+  background-color: lightgray;
+}
+
+.close-div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.closeInput-div {
+  display: flex;
+  justify-content: flex-end;
+  width: 90%;
+}
+
+.close-hr {
+  width: 95%;
+  margin: 10px;
+}

@@ -37,6 +37,7 @@ const MemoTodayTodoInput = ({ todoList, setTodoList }) => {
       checked: false,
       emg: emergency,
     });
+    console.log(new_todoList);
     setTodoList(new_todoList);
 
     // input 값 초기화 및 포커싱

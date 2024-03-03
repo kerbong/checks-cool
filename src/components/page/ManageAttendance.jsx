@@ -112,7 +112,7 @@ const ManageAttendance = (props) => {
       if (!nowIsSubject) {
         new_onAttends =
           attends
-            ?.filter((attend) => attend.name === onStudent.split(" ")[1])
+            ?.filter((attend) => attend.name === onStudent?.split(" ")?.[1])
             ?.sort((a, b) =>
               a.id.slice(0, 10) > b.id.slice(0, 10) ? 1 : -1
             ) || [];
@@ -122,7 +122,7 @@ const ManageAttendance = (props) => {
           attends
             ?.filter(
               (attend) =>
-                attend.name === onStudent.split(" ")[1] &&
+                attend.name === onStudent?.split(" ")?.[1] &&
                 attend.clName === clName
             )
             ?.sort((a, b) =>
@@ -162,7 +162,7 @@ const ManageAttendance = (props) => {
     //받아온 정보 { student: 학생번호 이름 , clName: 전담이면 반이름}
     let new_onStudent = state?.student;
     let new_clName = state?.clName;
-    if (new_onStudent !== "") {
+    if (new_onStudent !== "" && new_onStudent) {
       setOnStudent(new_onStudent);
     }
 
@@ -417,7 +417,7 @@ const ManageAttendance = (props) => {
       if (allOrChecked === "all") {
         new_attends = [];
         attends?.forEach((attend) => {
-          if (attend.name !== onStudent.split(" ")[1]) {
+          if (attend.name !== onStudent?.split(" ")?.[1]) {
             new_attends.push(attend);
           } else {
             new_del_ids.push(attend.id);
@@ -501,7 +501,7 @@ const ManageAttendance = (props) => {
         icon: "warning",
         title: "전체 삭제할까요?",
         text: `${
-          onStudent.split(" ")[1]
+          onStudent?.split(" ")?.[1]
         } 학생의 출결 기록을 모두 삭제할까요? 삭제 후에는 기록을 복구할 수 없습니다. 신중히 선택해주세요!`,
         confirmButtonText: "삭제",
         confirmButtonColor: "#85bd82",
@@ -522,7 +522,7 @@ const ManageAttendance = (props) => {
         icon: "warning",
         title: "선택 삭제할까요?",
         text: `${
-          onStudent.split(" ")[1]
+          onStudent?.split(" ")?.[1]
         } 학생의 선택된 출결 기록을 삭제할까요? 삭제 후에는 기록을 복구할 수 없습니다. 신중히 선택해주세요!`,
         confirmButtonText: "확인",
         confirmButtonColor: "#85bd82",
@@ -734,7 +734,7 @@ const ManageAttendance = (props) => {
               //출결 날짜+번호 + 시분  이 있는 출결 폴더
               res.prefixes?.forEach((fold) => {
                 //번호가 일치하지 않으면 패스..
-                if (+fold.name.split(" ")?.[0]?.slice(10) !== +now_stdNum) {
+                if (+fold.name?.split(" ")?.[0]?.slice(10) !== +now_stdNum) {
                   return;
                 }
 
@@ -855,9 +855,9 @@ const ManageAttendance = (props) => {
                       className={classes["search-btns"]}
                       onClick={() => downLoadImg(undefined, onStudent)}
                       title={`"${onStudent}" 으로 업로드 된 모든 서류를 다운합니다.`}
-                      style={{ marginLeft: "15px", fontSize: "14px" }}
+                      style={{ marginLeft: "15px", fontSize: "0.7rem" }}
                     >
-                      <i className="fa-solid fa-download"></i> 제출서류 저장
+                      <i className="fa-solid fa-download"></i>서류
                     </button>
                   </>
                 )}
@@ -1047,7 +1047,7 @@ const ManageAttendance = (props) => {
                   </div>
                   {/* 출결옵션 */}
                   <div className={classes["fs-13"]}>
-                    {attend.option.slice(1)} | {attend.note || "-"}
+                    {attend.option.slice(1)} * {attend.note || ""}
                   </div>
                   {/* 현재 클릭된 학생이면 */}
 
@@ -1127,15 +1127,17 @@ const ManageAttendance = (props) => {
               >
                 <div className={classes["flex-center-ml-10"]}>
                   <span className={classes["fs-13-bold"]}>
-                    {clName ? `${clName} | 출결 요약` : "우리반 출결 요약"}
+                    {clName ? `출결 요약 (${clName})` : "우리반 출결 요약"}
                   </span>
                   &nbsp;&nbsp;
                   {/* 엑셀다운 버튼 */}
                   <button
                     className={classes["search-btns"]}
                     onClick={saveExcelHandler}
+                    title="출결 데이터 엑셀파일로 저장하기"
+                    style={{ fontSize: "0.7rem" }}
                   >
-                    <i className="fa-solid fa-download"></i> 엑셀저장
+                    <i className="fa-solid fa-download"></i>엑셀
                   </button>
                 </div>
 
@@ -1242,14 +1244,18 @@ const ManageAttendance = (props) => {
                   {/* 서류 미제출학생 보기 */}
                   <li className={classes["bottom-content-li"]}>
                     <div className={classes["flex-center-ml-10"]}>
-                      <b>서류 미제출</b>
+                      <b style={{ whiteSpace: "nowrap" }}>서류 미제출</b>
                       <button
                         className={classes["search-btns"]}
                         onClick={() => downLoadImg(undefined, "all")}
-                        title="업로드 된 모든 서류를 다운합니다."
-                        style={{ marginLeft: "15px" }}
+                        title="업로드 된 모든 제출된 서류를 다운합니다."
+                        style={{
+                          marginLeft: "5px",
+                          whiteSpace: "nowrap",
+                          fontSize: "0.7rem",
+                        }}
                       >
-                        <i className="fa-solid fa-download"></i> 제출서류 저장
+                        <i className="fa-solid fa-download"></i>서류
                       </button>
                     </div>
                     <hr className={classes["margin-15"]} />
@@ -1360,7 +1366,7 @@ const ManageAttendance = (props) => {
                     }}
                   >
                     {/* 출결의 id(yyyy-mm-dd)보여줌 */}
-                    <div className={classes["flex-ml-10"]}>
+                    <div className={classes["btns-div"]}>
                       {/* 날짜보여줌 */}
                       {attend.id.slice(0, 10)}
                       &nbsp;&nbsp;
@@ -1429,7 +1435,7 @@ const ManageAttendance = (props) => {
                     </div>
                     {/* 출결옵션 */}
                     <div className={classes["fs-13"]}>
-                      {attend.option.slice(1)} | {attend.note || "-"}
+                      {attend.option.slice(1)} * {attend.note || ""}
                     </div>
                     {/* 현재 클릭된 학생이면 */}
 

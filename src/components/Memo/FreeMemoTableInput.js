@@ -541,6 +541,7 @@ function Cell({
               filterNone={true}
               getDateValue={getDateHandler}
               getMonthValue={getMonthHandler}
+              getYearValue={getMonthHandler}
               about="tableInput"
               tableDateChangeHandler={(date) =>
                 onChange(date, rowIndex, colIndex)
@@ -560,6 +561,7 @@ function Cell({
               showTime={true}
               getDateValue={getDateHandler}
               getMonthValue={getMonthHandler}
+              getYearValue={getMonthHandler}
               about="tableInput"
               tableDateChangeHandler={(date) =>
                 onChange(date, rowIndex, colIndex)
@@ -577,6 +579,7 @@ function Cell({
               filterNone={true}
               getDateValue={getDateHandler}
               getMonthValue={getMonthHandler}
+              getYearValue={getMonthHandler}
               about="tableInput"
               showTime={true}
               tableDateChangeHandler={(date) =>

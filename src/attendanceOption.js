@@ -8,6 +8,9 @@ let attendanceOption = [
   { class: "조퇴", id: "7", value: "7조퇴" },
   { class: "지각", id: "8", value: "8지각" },
   { class: "미인정", id: "9", value: "9미인정" },
+  { class: "인정조퇴", id: "10", value: "10인정조퇴" },
+  { class: "인정지각", id: "11", value: "11인정지각" },
+  { class: "결과", id: "12", value: "12결과" },
 ];
 
 export default attendanceOption;

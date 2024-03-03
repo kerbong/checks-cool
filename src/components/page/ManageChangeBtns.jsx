@@ -30,17 +30,6 @@ const ManageChangeBtns = (props) => {
   return (
     <div className={classes["btns-div"]}>
       <Button
-        name={"정보"}
-        className={
-          nowOn !== "manageStudent" ? "manageBtn" : "manageBtn-clicked"
-        }
-        onclick={() =>
-          navigate(`/manageStudent`, {
-            state: { student: onStudent, clName: clName || "" },
-          })
-        }
-      />
-      <Button
         name={"출결"}
         className={
           nowOn !== "manageAttendance" ? "manageBtn" : "manageBtn-clicked"
@@ -70,6 +59,18 @@ const ManageChangeBtns = (props) => {
         }
         onclick={() =>
           navigate(`/manageCheckListMemo`, {
+            state: { student: onStudent, clName: clName || "" },
+          })
+        }
+      />
+
+      <Button
+        name={"정보"}
+        className={
+          nowOn !== "manageStudent" ? "manageBtn" : "manageBtn-clicked"
+        }
+        onclick={() =>
+          navigate(`/manageStudent`, {
             state: { student: onStudent, clName: clName || "" },
           })
         }

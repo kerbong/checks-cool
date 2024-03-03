@@ -395,6 +395,13 @@
 .show-basicClass-button {
   width: 35%;
 }
+.show-basicClass-button:hover,
+.save-classItem-button:hover,
+.reset-cl-button:hover,
+.time-pm-button:hover,
+.save-classTable-button:hover {
+  background-color: #94c9cc;
+}
 
 .time-pm-button {
   width: 60px;
@@ -417,8 +424,7 @@
   font-size: 1.1rem;
   height: 50px;
   margin: 20px 10px;
-  position: absolute;
-  top: 60px;
+
   border-radius: 15px;
 }
 .reset-cl-button {
@@ -472,7 +478,7 @@
 .saveSimsim-btn2 {
   padding: 10px;
   color: #ffffff;
-  background-color: #ff6600;
+  background-color: #334a52;
   border-width: 0;
   font-size: 1.3rem;
   width: 80px;
@@ -481,6 +487,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.saveSimsim-btn:hover,
+.saveSimsim-btn2:hover {
+  background-color: #1c292e;
+  font-weight: bold;
 }
 
 .saveSimsim-btn2 {
@@ -664,7 +676,8 @@
 
 .groupPage-btn,
 .group-btn,
-.groupPage-btn-cancle {
+.groupPage-btn-cancle,
+.groupPage-add {
   padding: 10px 13px;
   margin: 3px 6px;
   border-radius: 10px;
@@ -679,7 +692,15 @@
   align-items: center;
 }
 
-.groupPage-btn:hover {
+.groupPage-add {
+  width: 100%;
+  font-size: 17px;
+
+  letter-spacing: 3px;
+}
+
+.groupPage-btn:hover,
+.groupPage-add:hover {
   background-color: #1c292e;
 }
 

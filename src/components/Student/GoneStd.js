@@ -239,6 +239,7 @@ const GoneStd = ({ student, closeModal, userUid, isSubject, nowClassName }) => {
               about="main"
               setStart={new Date(todayYyyymmdd)}
               getMonthValue={getMonthHandler}
+              getYearValue={getMonthHandler}
             />
           </span>
         </span>

@@ -186,7 +186,7 @@ const Mission = (props) => {
           </Modal>
         )}
 
-        <h1 className={classes.h1}>🌞 오늘의 다-짐 </h1>
+        {/* <h1 className={classes.h1}>🌞 아침 한마디 </h1> */}
         <p>
           ✅ 오늘의 <b> 목표 / 다짐 / 생각</b> 등을 나눠주세요~
         </p>

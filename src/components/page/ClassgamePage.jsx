@@ -250,7 +250,10 @@ const ClassgamePage = (props) => {
                 onclick={() => {
                   const specificString = "groupPage";
                   const encodedString = encodeURIComponent(specificString);
-                  const url = `https://checks-cho-ok.web.app/${encodedString}`;
+                  let urlHref = window.location.href;
+                  const url = `${
+                    urlHref?.split("/classgame")?.[0]
+                  }/${encodedString}`;
                   window.open(url, "_blank");
                 }}
                 icon={ICONS_LEFT[9]}

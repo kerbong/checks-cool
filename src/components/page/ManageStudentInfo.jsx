@@ -97,17 +97,12 @@ const ManageStudentInfo = (props) => {
     //받아온 정보 { student: 학생번호 이름 , clName: 전담이면 반이름}
     let new_onStudent = state?.student;
     let new_clName = state?.clName;
-    if (new_onStudent !== "") {
+    if (new_onStudent !== "" && new_onStudent) {
       setOnStudent(new_onStudent);
     }
 
     if (new_clName !== "") {
       setClName(new_clName);
-    }
-
-    //초기 화면에 진입하면..
-    if (new_onStudent === undefined) {
-      setOnStudent("");
     }
   }, [state]);
 

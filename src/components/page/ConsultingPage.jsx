@@ -4,8 +4,7 @@ import Attendance from "../Attendance/Attendance";
 import Student from "../Student/Student";
 import dayjs from "dayjs";
 import ConsultLists from "../Consult/ConsultLists";
-import ExampleModal from "./ExampleModal";
-import consultAdd from "../../assets/consult/consultAdd.gif";
+
 import { dbService, storageService } from "../../fbase";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -22,7 +21,7 @@ const ConsultingPage = (props) => {
   const [optionIsShown, setOptionShown] = useState(false);
   const [student, setStudent] = useState("");
   const [showConsultList, setShowConsultList] = useState(false);
-  const [showExample, setShowExample] = useState(false);
+
   const [nowClassName, setNowClassName] = useState("");
   const [nowClStudents, setNowClStudents] = useState([]);
   const [nowStudents, setNowStudents] = useState([]);
@@ -224,31 +223,8 @@ const ConsultingPage = (props) => {
 
   return (
     <>
-      {showExample && (
-        <ExampleModal
-          onClose={() => setShowExample(false)}
-          imgSrc={consultAdd}
-          text={
-            <>
-              <p
-                style={{
-                  fontSize: "1.3em",
-                  textAlign: "center",
-                  margin: "5px",
-                }}
-              >
-                === 상담기록 예시 ===
-              </p>
-              <p style={{ margin: "15px" }}>
-                * 화면 왼쪽 상단의 현재 페이지 타이틀을 클릭하시면 다시 보실 수
-                있어요!
-              </p>
-            </>
-          }
-        />
-      )}
       <div id="title-div">
-        <button id="title-btn" onClick={() => setShowExample(true)}>
+        <button id="title-btn">
           <i className="fa-regular fa-comments" style={{ fontSize: "1em" }}></i>{" "}
           상담관리
         </button>
@@ -327,11 +303,17 @@ const ConsultingPage = (props) => {
           isSubject={true}
         />
       )}
-      {nowStudents?.length === 0 && (
+      {(!nowStudents || nowStudents?.length === 0) && (
         <>
-          <div>올해 학생 명단이 존재하지 않네요!</div>
-          <div>메뉴의 곰돌이를 눌러서</div>
-          <div>학생 명단을 먼저 입력해주세요!</div>
+          <>
+            현재 학년도의 기초자료를 먼저 입력해주세요. <br />
+            (학년도 기준 예: 2023.02.16. ~ 2024.02.15.)
+            <br />
+            <br />
+            1. 프로필 ( [👤] - '프로필 수정' - '저장')
+            <br /> 2. 학생 ( [메인화면] - '학생등록' )
+            <br /> <br />
+          </>
         </>
       )}
       {!showConsultList ? (

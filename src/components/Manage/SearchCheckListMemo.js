@@ -49,7 +49,7 @@ const SearchCheckListMemo = (props) => {
 
     Swal.fire({
       icon: "warning",
-      title: "초기화 할까요?",
+      title: "모든 자료 선택해제",
       text: "선택했던 항목들을 모두 선택 취소할까요?",
       confirmButtonText: "확인",
       confirmButtonColor: "#85bd82",
@@ -148,12 +148,12 @@ const SearchCheckListMemo = (props) => {
 
           {/* 초기화버튼 */}
           <button onClick={resetHandler} className={classes["search-btns"]}>
-            초기화
+            전체 선택해제
           </button>
           {/* 선택한 자료 타이틀만 보여주기 */}
           <div className={classes["bottom-content-li"]}>
             <h3 className={classes["margin-15"]}>
-              선택된 자료{" "}
+              선택된 자료 목록{" "}
               {compareCheckListMemo?.length > 0 &&
                 `(${compareCheckListMemo?.length})`}
             </h3>
@@ -204,6 +204,7 @@ const SearchCheckListMemo = (props) => {
             onClick={() => {
               setCompareCheckListMemo([]);
               setShowCompareCheckListMemo(false);
+              setSearchWord("");
             }}
             className={classes["search-btns"]}
           >

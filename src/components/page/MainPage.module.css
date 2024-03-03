@@ -88,12 +88,18 @@
 .eventSave-div {
   display: flex;
   width: 100%;
-  justify-content: flex-end;
+  justify-content: center;
 }
 
 .event-title-dropdown {
   padding: 10px 20px;
   color: #00000082;
+}
+
+.expl-div {
+  margin: 20px;
+  font-size: 15px;
+  text-align: left;
 }
 
 .eventContent-hide {
@@ -220,4 +226,24 @@
 
 .img {
   width: 150px;
+}
+
+.week-table {
+  grid-column: 1 / 5;
+  grid-row: 4 / 4;
+}
+
+.weekdays-grid {
+  display: flex;
+  gap: 10px; /* 각 요일 사이의 간격을 조절합니다. */
+  width: 100%;
+  /* display: grid;
+  grid-template-columns: repeat(5, 1fr); */
+}
+
+.day {
+  width: 20%;
+  padding: 20px; /* 각 요일 안의 텍스트와의 간격을 조절합니다. */
+  border-radius: 5px; /* 각 요일의 모서리를 둥글게 만듭니다. */
+  text-align: center; /* 텍스트를 중앙에 배치합니다. */
 }

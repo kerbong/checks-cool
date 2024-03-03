@@ -7,6 +7,11 @@ import Button from "../Layout/Button";
 import classes from "./CheckLists.module.css";
 import Swal from "sweetalert2";
 import ScoreGradeInput from "./ScoreGradeInput";
+import { useNavigate } from "react-router-dom";
+
+import { FaRankingStar } from "react-icons/fa6";
+import { BsPersonFillCheck } from "react-icons/bs";
+import { BsPersonCheck } from "react-icons/bs";
 
 import { dbService } from "../../fbase";
 import { onSnapshot, setDoc, doc, getDoc } from "firebase/firestore";
@@ -42,6 +47,8 @@ const CheckLists = (props) => {
   const checkListsYear = useRef();
   const listMemoYear = useRef();
   const selectRef = useRef();
+
+  const navigate = useNavigate();
 
   //전학생 목록 받아옴
   const getGoneStdFromDb = async () => {
@@ -113,7 +120,13 @@ const CheckLists = (props) => {
         }
         //학년도 저장 및 체크리스트기록 저장
         if (years.length > 0) {
-          setDataYears([...new Set(years)]);
+          //학년도 자료가 있지만 현재 학년도는 없으면..? 추가해주기
+          let new_years = [...new Set(years)];
+
+          if (new_years.filter((y) => y === nowYear())?.length === 0) {
+            new_years.push(nowYear());
+          }
+          setDataYears(new_years);
 
           // 자료가 없으면 현재 학년도로 세팅
         } else {
@@ -150,7 +163,13 @@ const CheckLists = (props) => {
         }
         //학년도 저장 및 체크리스트기록 저장
         if (years.length > 0) {
-          setDataYears([...new Set(years)]);
+          //학년도 자료가 있지만 현재 학년도는 없으면..? 추가해주기
+          let new_years = [...new Set(years)];
+
+          if (new_years.filter((y) => y === nowYear())?.length === 0) {
+            new_years.push(nowYear());
+          }
+          setDataYears(new_years);
 
           // 자료가 없으면 현재 학년도로 세팅
         } else {
@@ -172,7 +191,7 @@ const CheckLists = (props) => {
   useEffect(() => {
     //학년도 설정
     let new_year = nowYear();
-    //데이터 중에 현재 학년도와 같은 데이터가 있으면 바로 보여줌.
+    //데이터 중에 현재 학년도와 같은 데이터가 있으면 바로 보여줌. 없으면 있는 데이터 중에 가장 최신꺼 보여줌.
     let this_year_data = dataYears?.filter((year) => year === String(new_year));
     if (this_year_data?.length > 0) {
       searchYearHandler(this_year_data[0]);
@@ -189,9 +208,16 @@ const CheckLists = (props) => {
     const now_date = document.querySelector(".custom-input").innerText;
 
     const year = now_date.split(" ")[0].replace("년", "");
-    const month = now_date.split(" ")[1].replace("월", "");
+    const month = String(now_date.split(" ")[1].replace("월", "")).padStart(
+      2,
+      "0"
+    );
+    const day = String(now_date.split(" ")[2]?.split("일")?.[0]).padStart(
+      2,
+      "0"
+    );
 
-    if (parseInt(month) < 3) {
+    if (month + "-" + day < "02-16") {
       return "20" + String(parseInt(year) - 1).padStart(2, "0");
     } else {
       return "20" + year;
@@ -259,11 +285,11 @@ const CheckLists = (props) => {
             // 전담이면.. 학급의 자료만 보여주기!
             let showCheckLists = !isSubject
               ? [...new_datas]?.filter(
-                  (data) => data.yearGroup === checkListsYear.current.value
+                  (data) => data.yearGroup === checkListsYear?.current?.value
                 )
               : [...new_datas]?.filter(
                   (data) =>
-                    data.yearGroup === checkListsYear.current.value &&
+                    data.yearGroup === checkListsYear?.current?.value &&
                     data.clName === nowClassName
                 );
 
@@ -288,7 +314,7 @@ const CheckLists = (props) => {
               checkLists_data: [new_checkItem],
             });
 
-            if (screen_nowYear === checkListsYear.current.value) {
+            if (screen_nowYear === checkListsYear?.current?.value) {
               setNowOnCheckLists(sortList([new_checkItem]));
             }
             // }
@@ -334,7 +360,7 @@ const CheckLists = (props) => {
             // 전담이면.. 학급의 자료만 보여주기!
             let showListMemo = !isSubject
               ? [...new_datas]?.filter(
-                  (data) => data.yearGroup === checkListsYear.current.value
+                  (data) => data.yearGroup === listMemoYear.current.value
                 )
               : [...new_datas]?.filter(
                   (data) =>
@@ -615,6 +641,10 @@ const CheckLists = (props) => {
 
   useEffect(() => {
     setNowClassName("");
+
+    if (dataYears?.length > 0) {
+      searchYearHandler(dataYears[dataYears?.length - 1]);
+    }
   }, [props.about]);
 
   /** 학생목록을 전학생 보여주기 여부에 따라 바꿔주는 함수, 매개변수에 학생목록 넣어주기 */
@@ -625,7 +655,7 @@ const CheckLists = (props) => {
         ? goneStudents
         : goneStudents?.filter((std) => std.clName === nowClassName);
       unsubStu = unsubStu?.filter((stu) => {
-        return !goneStds.some(
+        return !goneStds?.some(
           (g_stu) => +g_stu.num === +stu.num && g_stu.name === stu.name
         );
       });
@@ -684,6 +714,7 @@ const CheckLists = (props) => {
           <div className={classes["listMemoBtn-div"]}>
             {/* checkLists 학년도 설정 셀렉트태그 */}
             <select
+              id="checkListsYear"
               ref={checkListsYear}
               className={classes["searchYear-select"]}
               onChange={(e) => {
@@ -728,19 +759,31 @@ const CheckLists = (props) => {
                   id={"add-checkItemBtn"}
                   className={"check-memo-button"}
                   onclick={() => {
-                    setUnSubmitStudents([]);
-                    setAddCheckItem(true);
+                    //학생 정보 없으면... 실행 불가! 학생정보 입력화면으로 보냄.
+
+                    if (!students || students?.length === 0) {
+                      Swal.fire({
+                        icon: "error",
+                        title: "학생 정보 없음",
+                        text: "이번학년도 학생 정보가 없어요! [확인] 버튼을 눌러서 학생명부를 입력해주세요.",
+                        confirmButtonText: "확인",
+                        confirmButtonColor: "#85bd82",
+                        showDenyButton: false,
+                      }).then((result) => {
+                        /* Read more about isConfirmed, isDenied below */
+                        if (result.isConfirmed) {
+                          navigate(`/student-manage`);
+                        }
+                      });
+                    } else {
+                      setUnSubmitStudents([]);
+                      setAddCheckItem(true);
+                    }
                   }}
                 />
                 {/* 전학생제외 */}
                 <Button
-                  icon={
-                    exceptGone ? (
-                      <i className="fa-solid fa-user"></i>
-                    ) : (
-                      <i className="fa-regular fa-user"></i>
-                    )
-                  }
+                  icon={exceptGone ? <BsPersonCheck /> : <BsPersonFillCheck />}
                   id={"add-checkItemBtn"}
                   className={"check-memo-button"}
                   onclick={() => {
@@ -755,7 +798,9 @@ const CheckLists = (props) => {
                       setExceptGone((prev) => !prev);
                     }
                   }}
-                  title={exceptGone ? "전학생 보기" : "전학생 숨기기"}
+                  title={
+                    exceptGone ? "전학생 포함해서 보기" : "전학생 숨기고 보기"
+                  }
                 />
               </div>
             )}
@@ -772,9 +817,26 @@ const CheckLists = (props) => {
                       yearGroup: checkListsYear.current.value,
                       clName: nowClassName,
                     };
-                    inputStudentsHandler(baseItem);
-                    setUnSubmitStudents([]);
-                    setAddCheckItem(true);
+
+                    if (!students || students?.length === 0) {
+                      Swal.fire({
+                        icon: "error",
+                        title: "학생 정보 없음",
+                        text: "이번학년도 학생 정보가 없어요! [확인] 버튼을 눌러서 학생명부를 입력해주세요.",
+                        confirmButtonText: "확인",
+                        confirmButtonColor: "#85bd82",
+                        showDenyButton: false,
+                      }).then((result) => {
+                        /* Read more about isConfirmed, isDenied below */
+                        if (result.isConfirmed) {
+                          navigate(`/student-manage`);
+                        }
+                      });
+                    } else {
+                      inputStudentsHandler(baseItem);
+                      setUnSubmitStudents([]);
+                      setAddCheckItem(true);
+                    }
                   }}
                 />
 
@@ -969,25 +1031,39 @@ const CheckLists = (props) => {
                     id={"add-listMemoBtn"}
                     className={"check-memo-button"}
                     onclick={() => {
-                      setItem([]);
-                      setAddListMemo(true);
+                      if (!students || students?.length === 0) {
+                        Swal.fire({
+                          icon: "error",
+                          title: "학생 정보 없음",
+                          text: "이번학년도 학생 정보가 없어요! [확인] 버튼을 눌러서 학생명부를 입력해주세요.",
+                          confirmButtonText: "확인",
+                          confirmButtonColor: "#85bd82",
+                          showDenyButton: false,
+                        }).then((result) => {
+                          /* Read more about isConfirmed, isDenied below */
+                          if (result.isConfirmed) {
+                            navigate(`/student-manage`);
+                          }
+                        });
+                      } else {
+                        setItem([]);
+                        setAddListMemo(true);
+                      }
                     }}
                   />
                   {/* 전학생제외 */}
                   <Button
                     icon={
-                      exceptGone ? (
-                        <i className="fa-solid fa-user"></i>
-                      ) : (
-                        <i className="fa-regular fa-user"></i>
-                      )
+                      exceptGone ? <BsPersonCheck /> : <BsPersonFillCheck />
                     }
                     id={"add-checkItemBtn"}
                     className={"check-memo-button"}
                     onclick={() => {
                       setExceptGone((prev) => !prev);
                     }}
-                    title={exceptGone ? "전학생 보기" : "전학생 숨기기"}
+                    title={
+                      exceptGone ? "전학생 포함해서 보기" : "전학생 숨기고 보기"
+                    }
                   />
                 </div>
               )}
@@ -1005,34 +1081,47 @@ const CheckLists = (props) => {
                       yearGroup: listMemoYear.current.value,
                       clName: nowClassName,
                     };
-                    inputStudentsHandler(baseItem);
-                    setItem([]);
-                    setAddListMemo(true);
+
+                    if (!students || students?.length === 0) {
+                      Swal.fire({
+                        icon: "error",
+                        title: "학생 정보 없음",
+                        text: "이번학년도 학생 정보가 없어요! [확인] 버튼을 눌러서 학생명부를 입력해주세요.",
+                        confirmButtonText: "확인",
+                        confirmButtonColor: "#85bd82",
+                        showDenyButton: false,
+                      }).then((result) => {
+                        /* Read more about isConfirmed, isDenied below */
+                        if (result.isConfirmed) {
+                          navigate(`/student-manage`);
+                        }
+                      });
+                    } else {
+                      inputStudentsHandler(baseItem);
+                      setItem([]);
+                      setAddListMemo(true);
+                    }
                   }}
                 />
 
                 {/* 전학생제외 */}
                 <Button
-                  icon={
-                    exceptGone ? (
-                      <i className="fa-solid fa-user"></i>
-                    ) : (
-                      <i className="fa-regular fa-user"></i>
-                    )
-                  }
+                  icon={exceptGone ? <BsPersonCheck /> : <BsPersonFillCheck />}
                   id={"add-checkItemBtn"}
                   className={"check-memo-button"}
                   onclick={() => {
                     setExceptGone((prev) => !prev);
                   }}
-                  title={exceptGone ? "전학생 보기" : "전학생 숨기기"}
+                  title={
+                    exceptGone ? "전학생 포함해서 보기" : "전학생 숨기고 보기"
+                  }
                 />
               </div>
             )}
 
             {/* 성적 단계 설정하는 버튼 */}
             <Button
-              icon={<i className="fa-solid fa-list-ol"></i>}
+              icon={<FaRankingStar />}
               id={"save-listMemoBtn"}
               className={"check-memo-button"}
               onclick={() => setShowScoreGrade(true)}

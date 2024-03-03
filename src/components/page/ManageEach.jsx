@@ -80,7 +80,11 @@ const ManageEach = (props) => {
       (yearStd) => Object.keys(yearStd)[0] === now_year
     )?.[0]?.[now_year];
 
-    setNowStudents(now_students);
+    if (now_students?.length > 0) {
+      setNowStudents(now_students);
+    } else {
+      setNowStudents([]);
+    }
   }, [props.students]);
 
   //선택된 학급이 바뀌면 해당반 학생으로 바꿔주기
@@ -162,6 +166,29 @@ const ManageEach = (props) => {
           manageEach={true}
           passStudent={props.passStudent}
         />
+        {/* 학생 등록이 안되어 있으면, */}
+        {!isSubject && (!nowStudents || nowStudents?.length === 0) && (
+          <>
+            현재 학년도의 기초자료를 먼저 입력해주세요. <br />
+            (학년도 기준 예: 2023.02.16. ~ 2024.02.15.)
+            <br />
+            <br />
+            1. 프로필 ( [👤] - '프로필 수정' - '저장')
+            <br /> 2. 학생 ( [메인화면] - '학생등록' )
+            <br /> <br />
+          </>
+        )}
+        {isSubject && (!nowClStudents || nowClStudents?.length === 0) && (
+          <>
+            현재 학년도의 기초자료를 먼저 입력해주세요. <br />
+            (학년도 기준 예: 2023.02.16. ~ 2024.02.15.)
+            <br />
+            <br />
+            1. 프로필 ( [👤] - '프로필 수정' - '저장')
+            <br /> 2. 학생 ( [메인화면] - '학생등록' )
+            <br /> <br />
+          </>
+        )}
       </div>
       {/* 버튼 모음 보여주기 */}
       <ManageChangeBtns onStudent={student} clName={nowClassName} />

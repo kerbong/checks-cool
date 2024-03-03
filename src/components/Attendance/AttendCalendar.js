@@ -43,6 +43,10 @@ const AttendCalendar = (props) => {
     props.getMonthValue(month);
   };
 
+  const onYearChange = (year) => {
+    props.getYearValue(year);
+  };
+
   useEffect(() => {
     if (props.about === "main") {
       setStartDate(props.setStart);
@@ -74,6 +78,7 @@ const AttendCalendar = (props) => {
         showYearDropdown
         scrollableYearDropdown
         onMonthChange={onMonthChange}
+        onYearChange={onYearChange}
         dateFormatCalendar="yyyy년 "
         endDate={
           (props.about === "attendance" || props.about === "todo") && endDate

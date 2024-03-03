@@ -7,10 +7,10 @@ input {
   height: 20px;
   width: 60%;
   margin-left: 10px;
-  margin-bottom: 5px;
   padding: 10px;
   text-align: center;
   border: 1px solid rgb(204, 204, 204);
+  border-radius: 8px;
 }
 
 .rowcolumn-input {

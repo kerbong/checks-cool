@@ -20,6 +20,31 @@
   grid-template-columns: 2fr 3fr 2fr;
 }
 
+.todoOption {
+  width: 30px;
+  height: 12px;
+  display: inline-block;
+  border-radius: 7px;
+}
+
+/* 개인보상 */
+.op1 {
+  background-color: #d2e395;
+}
+/* 모둠보상 */
+.op2 {
+  background-color: #cebfd5;
+}
+
+.gift-icon {
+  width: 22px;
+  height: 22px;
+  border-radius: 30px;
+  background-color: whitesmoke;
+  display: inline-block;
+  margin: 3px;
+}
+
 .points-div {
   height: auto;
   display: flex;
@@ -29,20 +54,49 @@
   margin-top: 25px;
 }
 
-.gr-div {
+.gr-div,
+.gr-list-div {
   margin: 3px 8px;
   padding: 22px 18px;
   border-radius: 15px;
-  font-size: 20px;
+  font-size: 18px;
   position: relative;
   transition: padding 0.5s ease-in-out, margin 0.5s ease-in-out,
-    font-weight 0.2s ease-in-out;
+    font-weight 0.1s ease-in-out;
+}
+
+.std-div {
+  padding: 8px 6px;
+  margin: 2px;
+  border-radius: 10px;
+  font-size: 15px;
+  border: 0;
+  list-style: none;
+  cursor: pointer;
+  background-color: #1d8b0073;
+  transition: font-size 0.3s ease-in-out;
+}
+
+.std-div:hover {
+  font-weight: bold;
+}
+
+.gr-list-div {
+  list-style: none;
+  cursor: pointer;
+  transition: none;
+}
+
+.gr-div {
+  word-break: break-all;
 }
 
 .gr-div:hover {
   font-weight: bold;
-  margin: 0px 4px;
-  padding: 25px 13px;
+}
+
+.gr-list-div:hover {
+  font-weight: bold;
 }
 
 .seats-div {
@@ -76,6 +130,9 @@
 
 .title-sub {
   font-size: 15px;
+  align-items: center;
+  display: flex;
+  justify-content: center;
 }
 
 .seat-li {
@@ -113,8 +170,36 @@
   align-items: center;
 }
 
+.sec-title {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  font-size: 25px;
+  margin-bottom: 20px;
+}
+
+.flex-start-35 {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  align-items: normal;
+  width: 35%;
+  padding: 15px;
+  margin: 5px 10px;
+  border-radius: 15px;
+  background-color: #eaeaea;
+  min-width: 240px;
+}
+.giftAdd-div {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
 .item,
-.empty-item {
+.empty-item,
+.empty-item-color {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -127,6 +212,36 @@
   transition: background-color 0.5s linear, padding 0.5s ease-in-out,
     margin 0.5s ease-in-out, font-weight 0.2s ease-in-out;
   position: relative;
+}
+
+.empty-item {
+  background-color: #e1e1e1;
+  color: #e1e1e1;
+}
+
+.character,
+.now-character {
+  width: auto;
+  height: 104%;
+  position: absolute;
+  top: 3%;
+  left: 0%;
+  transition: left 0.5s ease-in-out;
+}
+
+.now-character {
+  left: 5%;
+}
+
+.std-name {
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+}
+
+.empty-item-color {
+  background-color: #e1e1e1;
+  color: black;
 }
 
 .item:hover {
@@ -162,11 +277,13 @@
   height: 25px;
   background-color: whitesmoke;
   cursor: pointer;
+  z-index: 5;
 }
 .std-point {
   position: absolute;
-  bottom: 3%;
-  right: 7%;
+  bottom: 10%;
+
+  right: 14%;
   font-size: 15px;
   display: flex;
   align-items: center;
@@ -174,21 +291,29 @@
 
 .std-rank,
 .std-crown,
-.gr-rank {
+.gr-rank,
+.gr-rank-left {
   position: absolute;
-  top: -23%;
+  top: -25%;
   font-weight: bold;
   font-size: 13px;
   display: flex;
   align-items: center;
   filter: drop-shadow(3px 2px 1px rgba(0, 0, 0, 0.5));
-  left: 5%;
+  left: 3%;
 }
 
 .gr-rank {
   left: 50%;
   font-size: 18px;
   top: -30%;
+  filter: none;
+}
+
+.gr-rank-left {
+  left: 79%;
+  font-size: 18px;
+  top: -8%;
   filter: none;
 }
 
@@ -200,14 +325,15 @@
 
 .minus {
   color: rgb(58, 103, 174);
-  top: -10%;
-  left: 6%;
+
+  bottom: -10%;
+  left: 3%;
 }
 
 .plus {
   color: rgb(241, 88, 0);
   top: -10%;
-  right: 6%;
+  left: 3%;
 }
 
 .header-center {
@@ -249,10 +375,11 @@
 }
 
 .menu-div,
-.menu-top-div {
+.menu-top-div,
+.menu-left-div {
   font-size: 18px;
   position: absolute;
-  right: -35px;
+
   display: flex;
   flex-direction: column;
   width: 110px;
@@ -263,6 +390,18 @@
   top: 25vh;
   z-index: 5;
   left: auto;
+}
+
+.menu-div {
+  right: -35px;
+}
+
+.menu-left-div {
+  left: -15px;
+  width: auto;
+  max-width: 200px;
+  padding: 7px 1px 7px 20px;
+  top: 20vh;
 }
 
 .menu-top-div {

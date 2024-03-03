@@ -149,6 +149,7 @@ const ConsultEdit = (props) => {
             about="main"
             setStart={new Date(consultId.slice(0, 10))}
             getMonthValue={() => {}}
+            getYearValue={() => {}}
           />
         </span>
         <span className={classes.nameSpan}>

@@ -61,7 +61,7 @@ function App() {
   const [userUid, setUserUid] = useState(null);
   const [students, setStudents] = useState([]);
   const [user, setUser] = useState(null);
-  const [menuOnHead, setMenuOnHead] = useState(true);
+  const [menuOnHead, setMenuOnHead] = useState(null);
   const [showMainExample, setShowMainExample] = useState();
   const [profile, setProfile] = useState({});
   const [nowToken, setNowToken] = useState("");
@@ -182,6 +182,16 @@ function App() {
   const setMenuHandler = () => {
     setMenuOnHead((prev) => !prev);
   };
+
+  useEffect(() => {
+    if (menuOnHead === null) {
+      let localMenuOnHead = JSON.parse(localStorage.getItem("menuOnHead"));
+
+      setMenuOnHead(localMenuOnHead);
+    } else {
+      localStorage.setItem("menuOnHead", menuOnHead);
+    }
+  }, [menuOnHead]);
 
   //현재 학년도 정보 반환하는 함수 (2월 15일 기준)
   const now_year = () => {

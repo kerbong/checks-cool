@@ -40,6 +40,13 @@ const ListMemoInput = (props) => {
     setTodayYyyymmdd(props.item.id);
   }, [props.item]);
 
+  const nowYear = (date) => {
+    let data_id = date?.length > 0 ? date : new Date();
+    return dayjs(data_id).format("MM-DD") <= "02-15"
+      ? String(+dayjs(data_id).format("YYYY") - 1)
+      : dayjs(data_id).format("YYYY");
+  };
+
   const saveMemo = (auto) => {
     let tempId = localStorage.getItem("listId");
     let item_id;
@@ -55,6 +62,24 @@ const ListMemoInput = (props) => {
       //완전 새거면.. 최신..현재 상태의 값으로 만든 시간 넣어주기
     } else {
       item_id = nowOn_id;
+      //혹시나... 새 자료인데 현재 날짜의 학년도와, 데이터의 학년도가 다르면 저장불가
+      if (nowYear() !== nowYear(nowOn_id)) {
+        Swal.fire({
+          icon: "error",
+          title: "저장 불가",
+          text: "현재날짜 기준의 학년도와 다른 학년도의 데이터를 새롭게 저장할 수 없습니다! * 수정은 가능함. (예 : 현재 2023학년도 인데 2022학년도 자료 추가 불가)",
+          confirmButtonText: "확인",
+          confirmButtonColor: "#85bd82",
+          showDenyButton: false,
+        }).then((result) => {
+          /* Read more about isConfirmed, isDenied below */
+          if (result.isConfirmed) {
+            return;
+          }
+        });
+
+        return;
+      }
     }
 
     //혹시나.. id가 null같은게 들어가 있으면 현재 시간으로 찍어줌..!
@@ -510,6 +535,7 @@ const ListMemoInput = (props) => {
                   about="main"
                   setStart={new Date(todayYyyymmdd)}
                   getMonthValue={getMonthHandler}
+                  getYearValue={getMonthHandler}
                 />
               </span>
             </div>

@@ -1,13 +1,32 @@
-import React, { useRef } from "react";
+import React, { useState, useEffect } from "react";
 import Button from "../Layout/Button";
 import classes from "../page/ClassTableBasic.module.css";
+import DateTimePicker from "./DateTimePicker";
+import dayjs from "dayjs";
 
 const TimeTable = (props) => {
-  const selectRef = useRef();
+  const [startTime, setStartTime] = useState("");
+  const [endTime, setEndTime] = useState("");
+  const [classIndex, setClassIndex] = useState("");
 
-  const submitHandler = (e, pm, minute) => {
-    e.preventDefault();
-    props.classStartHandler(selectRef.current.value, pm, minute);
+  const timeHandler = (sTime, eTime) => {
+    props.timeHandler(classIndex, sTime, eTime);
+  };
+
+  useEffect(() => {
+    if (classIndex === "") return;
+
+    const seTime = props.classStart?.[classIndex]?.split(",");
+    setStartTime(dayjs(seTime?.[0]).format("HH:mm"));
+    setEndTime(
+      seTime?.[1]
+        ? dayjs(seTime?.[1]).format("HH:mm")
+        : dayjs(seTime?.[0]).add(40, "minute").format("HH:mm")
+    );
+  }, [classIndex]);
+
+  const classIndexHandler = (e) => {
+    setClassIndex(e.target.value);
   };
 
   return (
@@ -37,33 +56,20 @@ const TimeTable = (props) => {
           className={"reset-cl-button"}
           onclick={() => props.returnBaseHandler()}
         />
-        <form onSubmit={submitHandler} className={classes["select-p-m"]}>
-          <select ref={selectRef} className={classes["select"]}>
-            <option defaultChecked value={"all"}>
-              전체
-            </option>
-
+        <div className={classes["select-p-m"]}>
+          <select onChange={classIndexHandler} className={classes["select"]}>
             {props?.classTime?.map((cl, index) => (
-              <option key={`option-${cl}`} value={index}>
+              <option key={`option-${index}`} value={index}>
                 {cl}
               </option>
             ))}
           </select>
-          <Button
-            name={"+5분"}
-            className={"time-pm-button"}
-            onclick={(e) => {
-              submitHandler(e, "plus", 5);
-            }}
+          <DateTimePicker
+            timeHandler={timeHandler}
+            startTime={startTime}
+            endTime={endTime}
           />
-          <Button
-            name={"-5분"}
-            className={"time-pm-button"}
-            onclick={(e) => {
-              submitHandler(e, "minus", 5);
-            }}
-          />
-        </form>
+        </div>
       </div>
     </>
   );

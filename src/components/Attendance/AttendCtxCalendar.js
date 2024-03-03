@@ -4,6 +4,7 @@ import Modal from "../Layout/Modal";
 import holidays2023 from "holidays2023";
 import EventLists from "../Event/EventLists";
 import classes from "./AttendCtxCalendar.module.css";
+import dayjs from "dayjs";
 
 import { dbService, storageService } from "../../fbase";
 import { onSnapshot, setDoc, doc, updateDoc } from "firebase/firestore";
@@ -382,6 +383,11 @@ const AttendCtxCalendar = (props) => {
     setCurrentMonth(month);
   };
 
+  //달력에서 받은 month로 currentMonth변경하기
+  const getYearHandler = (year) => {
+    setCurrentMonth(dayjs(year).format("YYYY-MM"));
+  };
+
   //달력에서 모달 밖 클릭하면 함수
   const dayEventHideHandler = () => {
     setDayEventIsShown(false);
@@ -629,6 +635,7 @@ const AttendCtxCalendar = (props) => {
         getDateValue={getDateHandler}
         isSubject={true}
         getMonthValue={getMonthHandler}
+        getYearValue={getYearHandler}
       />
     </>
   );

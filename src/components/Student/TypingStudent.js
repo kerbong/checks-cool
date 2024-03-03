@@ -20,6 +20,19 @@ const TypingStudent = (props) => {
     let studentNumValue = numberRef.current.value;
     let studentNameValue = nameRef.current.value;
 
+    if (/[\s!\"#$%&'()*+,.\/:;<=>?@\[\]^`{|}~]/.test(studentNameValue)) {
+      Swal.fire(
+        "특수문자 사용불가!",
+        `학생이름에 특수문자, 띄어쓰기 등은 사용이 불가능합니다! - _ 숫자 영어 한글 문자만 활용해주세요.`,
+        "warning"
+      );
+      studentNameValue = studentNameValue.replace(
+        /[\s!\"#$%&'()*+,.\/:;<=>?@\[\]^`{|}~]/g,
+        ""
+      );
+      return;
+    }
+
     // //같은 번호의 학생이 있을 경우 해당 값 지우기
     // props.deleteStudentHandler({ num: studentNumValue });
 
@@ -266,14 +279,16 @@ const TypingStudent = (props) => {
                 저장버튼으로 반영
               </span>
               해주세요!
+              <br />
+              <a
+                href="https://kerbong.notion.site/50edba6218114a3e9a52981988c6db04"
+                target="_blank"
+                rel="noreferrer"
+              >
+                설명서 보러가기
+              </a>
             </span>
           </div>
-          <hr className={classes["hr"]} />
-          <span className={classes["span-explain"]}>
-            * 화면 왼쪽 상단의 보라색 [학생등록] <br />
-            버튼을 누르시면 예시를 보실 수 있어요!
-            <br />
-          </span>
           <hr className={classes["hr"]} />
         </div>
       </div>

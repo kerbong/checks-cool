@@ -9,6 +9,7 @@ import classes from "./ManageEach.module.css";
 import { utils, writeFile } from "xlsx";
 import DoughnutChart from "../Manage/DoughnutChart";
 import SearchCheckListMemo from "components/Manage/SearchCheckListMemo";
+import Swal from "sweetalert2";
 
 const ManageCheckListMemo = (props) => {
   const [students, setStudents] = useState([]);
@@ -27,6 +28,13 @@ const ManageCheckListMemo = (props) => {
   //선택된 학생 정보  번호 한칸띄우고 이름
   const selectStudentHandler = (studentNumName) => {
     setOnStudent(studentNumName);
+  };
+
+  //학년도 설정함수
+  const setYear = () => {
+    return dayjs().format("MM-DD") <= "02-15"
+      ? String(+dayjs().format("YYYY") - 1)
+      : dayjs().format("YYYY");
   };
 
   //해당학년도의 전담여부 확인해서 설정하는 함수
@@ -57,16 +65,46 @@ const ManageCheckListMemo = (props) => {
           .data()
           ?.checkLists_data?.filter((data) => data.yearGroup === setYear());
 
-        now_year_data?.forEach((list) =>
-          list.unSubmitStudents.forEach((stu) => {
-            let new_data = { ...stu, id: list.id, title: list.title };
+        now_year_data?.forEach((list) => {
+          let now_students = [...students];
+          let nowClassName = list?.clName;
+          //혹시 데이터에 없는 학급목록이면 return
+
+          if (
+            now_students?.filter((cl) => Object.keys(cl)[0] === nowClassName)
+              ?.length === 0
+          )
+            return;
+
+          if (nowClassName?.length > 0) {
+            now_students?.forEach((cl, cl_ind) => {
+              if (Object.keys(cl)[0] === nowClassName) {
+                now_students = now_students[cl_ind][nowClassName];
+              }
+            });
+          }
+
+          now_students?.forEach((stu1) => {
+            let new_data = {
+              ...stu1,
+              id: list.id,
+              title: list.title,
+              submit: true,
+            };
+            //미제출 학생이면
+            if (
+              list.unSubmitStudents?.some((stu2) => +stu1.num === +stu2.num)
+            ) {
+              new_data.submit = false;
+            }
             //전담이면 clName도 추가함
-            if (nowIsSubject) {
+            if (list?.clName) {
               new_data.clName = list.clName;
             }
             new_checkLists.push(new_data);
-          })
-        );
+          });
+        });
+
         //학생용 가공데이터
         setCheckLists([...new_checkLists]);
 
@@ -106,8 +144,9 @@ const ManageCheckListMemo = (props) => {
   };
 
   useEffect(() => {
+    if (students?.length === 0) return;
     getDatasFromDb();
-  }, []);
+  }, [students]);
 
   useEffect(() => {
     if (onStudent !== "") {
@@ -121,7 +160,10 @@ const ManageCheckListMemo = (props) => {
         let new_onCheckLists = checkLists.filter(
           (list) => list.name === onStudent.split(" ")[1]
         );
-        setOnCheckLists(new_onCheckLists);
+
+        setOnCheckLists(
+          new_onCheckLists.sort((a, b) => (a.submit > b.submit ? 1 : -1))
+        );
 
         //전담이면.. 반과 이름 모두 같아야 함
       } else {
@@ -135,7 +177,9 @@ const ManageCheckListMemo = (props) => {
           (list) =>
             list.name === onStudent.split(" ")[1] && list.clName === clName
         );
-        setOnCheckLists(new_onCheckLists);
+        setOnCheckLists(
+          new_onCheckLists.sort((a, b) => (a.submit > b.submit ? 1 : -1))
+        );
       }
     }
 
@@ -154,7 +198,7 @@ const ManageCheckListMemo = (props) => {
     if (new_clName !== "") {
       setClName(new_clName);
     }
-    if (new_onStudent !== "") {
+    if (new_onStudent !== "" && new_onStudent) {
       setOnStudent(new_onStudent);
     }
   }, [state]);
@@ -162,13 +206,6 @@ const ManageCheckListMemo = (props) => {
   //선택되어 있는 학급 (전담의 경우)
   const nowClassNameHandler = (classname) => {
     setClName(classname);
-  };
-
-  //학년도 설정함수
-  const setYear = () => {
-    return dayjs().format("MM-DD") <= "02-15"
-      ? String(+dayjs().format("YYYY") - 1)
-      : dayjs().format("YYYY");
   };
 
   useEffect(() => {
@@ -228,8 +265,7 @@ const ManageCheckListMemo = (props) => {
   const doughnut_datas = () => {
     let submitNum = 0;
     let unSubmitNum = 0;
-    console.log("여긴가");
-    console.log(originCheckLists);
+
     originCheckLists?.forEach((list) => {
       // 전담인데.. 현재 선택된 학급과 자료 학급이 다르면 리턴
       if (nowIsSubject && list?.clName !== clName) return;
@@ -362,33 +398,51 @@ const ManageCheckListMemo = (props) => {
                 style={{ width: "100%" }}
               >
                 {/* 전체 제출ox 자료 중에.. 현재학생 미제출 개수 원그래프 차트로 보여주기 */}
-                <li
-                  id={"notChecked"}
-                  className={classes["bottom-content-li"]}
-                  style={{ width: "200px" }}
+                <div
+                  className={classes["flex-center"]}
+                  style={{ width: "100%" }}
                 >
-                  <DoughnutChart data={doughnut_datas()} />
-                </li>
-                {/* 학생 제출/미제출 부분 보여주기 */}
-                {onCheckLists?.map((list) => (
                   <li
-                    key={list.id + list.num}
-                    id={list.id + list.num}
+                    id={"notChecked"}
                     className={classes["bottom-content-li"]}
-                    style={{ width: "300px" }}
+                    style={{ width: "200px" }}
                   >
-                    {/* 제출, 개별기록의 id(yyyy-mm-dd) */}
-                    <div className={classes["flex-ml-10"]}>
-                      {list.id.slice(0, 10)} | 미제출
-                    </div>
-                    {/* 제목 */}
-                    <div className={classes["fs-13"]}>{list.title} </div>
+                    <DoughnutChart data={doughnut_datas()} />
                   </li>
+                </div>
+
+                {/* 학생 제출/미제출 부분 보여주기 */}
+                {onCheckLists?.map((list, ind) => (
+                  <div key={list.id + list.num}>
+                    <li
+                      id={list.id + list.num}
+                      className={classes["bottom-content-li"]}
+                      style={
+                        list.submit
+                          ? { width: "300px", backgroundColor: "#ffde90" }
+                          : { width: "300px" }
+                      }
+                    >
+                      {/* 제출, 개별기록의 id(yyyy-mm-dd) */}
+                      <div className={classes["flex-ml-10"]}>
+                        {list.id.slice(0, 10)}&nbsp;{" "}
+                        {list.submit ? "(제출)" : "(미제출)"}
+                      </div>
+                      {/* 제목 */}
+                      <div className={classes["fs-13"]}>{list.title} </div>
+                    </li>
+                    {/* 제출 미제출 구분선 */}
+                    {/* {ind > 0 &&
+                      onCheckLists?.[ind]?.submit !==
+                        onCheckLists?.[ind - 1]?.submit && (
+                        <hr style={{ width: "100vw" }} />
+                      )} */}
+                  </div>
                 ))}
                 {/* 자료 없음 표시 */}
                 {onCheckLists?.length === 0 && (
                   <li className={classes["bottom-content-li"]}>
-                    * 학생의 미제출 정보가 없어요!
+                    * 학생의 제출 관련 정보가 없어요!
                   </li>
                 )}
               </div>

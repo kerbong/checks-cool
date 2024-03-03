@@ -7,13 +7,8 @@ import StudentExcelUpload from "../Student/StudentExcelUpload";
 import Swal from "sweetalert2";
 import StudentInputByOcr from "../Student/StudentInputByOcr";
 import Button from "../Layout/Button";
-import ExampleModal from "./ExampleModal";
 import dayjs from "dayjs";
 
-import teacherOcr from "../../assets/student/teacher-ocr.gif";
-import teacherTyping from "../../assets/student/teacher-typing.gif";
-import teacherExcel from "../../assets/student/teacher-excel.gif";
-import subjectExcel from "../../assets/student/subject-excel.gif";
 import classes from "../Student/TypingStudent.module.css";
 
 const StudentLists = (props) => {
@@ -22,35 +17,13 @@ const StudentLists = (props) => {
   );
   const [wholeClass, setWholeClass] = useState([]);
   const [studentsInfo, setStudentsInfo] = useState([]);
-  const [showExample, setShowExample] = useState(false);
+
   const [nowClassName, setNowClassName] = useState("");
-  const [gifImg, setGifImg] = useState("");
 
   const selectRef = useRef();
 
-  //이미지 설정함수
-  const gifImgHandler = () => {
-    let now_gifImg;
-    //담임이면
-    if (!props.isSubject) {
-      now_gifImg =
-        addStudentBy === "imageFile"
-          ? teacherOcr
-          : addStudentBy === "typing"
-          ? teacherTyping
-          : teacherExcel;
-
-      //전담이면
-    } else {
-      now_gifImg = addStudentBy === "typing" ? teacherTyping : subjectExcel;
-    }
-    setGifImg(now_gifImg);
-  };
-
   //초기 렌더링 및 클릭해서 화면 세팅이 바뀌면 예시 이미지 설정하기
-  useEffect(() => {
-    gifImgHandler();
-  }, [addStudentBy]);
+  useEffect(() => {}, [addStudentBy]);
 
   //학년도 설정함수
   const setYear = () => {
@@ -299,7 +272,7 @@ const StudentLists = (props) => {
     let new_studentsInfo = [...studentsInfo];
     new_studentsInfo.forEach((stu, index) => {
       if (stu.name === student.name) {
-        new_studentsInfo[index]["woman"] = !student.woman;
+        new_studentsInfo[index]["woman"] = !stu.woman;
       }
     });
     setStudentsInfo([...new_studentsInfo]);
@@ -336,39 +309,9 @@ const StudentLists = (props) => {
   return (
     <div>
       <div id="title-div">
-        <button
-          id="title-btn"
-          className="upload"
-          onClick={() => setShowExample(true)}
-        >
+        <button id="title-btn" className="upload">
           <i className="fa-solid fa-user-plus"></i> 학생등록
         </button>
-
-        {showExample && (
-          <ExampleModal
-            onClose={() => setShowExample(false)}
-            imgSrc={gifImg}
-            text={
-              <>
-                <p
-                  style={{
-                    fontSize: "1.3em",
-                    textAlign: "center",
-                    margin: "5px",
-                  }}
-                >
-                  === {addStudentBy === "imageFile" && "학생명부 업로드"}{" "}
-                  {addStudentBy === "typing" && "직접 입력"}{" "}
-                  {addStudentBy === "excelFile" && "엑셀 업로드 "} 예시 ===
-                </p>
-                <p style={{ margin: "15px" }}>
-                  * 페이지의 왼쪽 상단, [보라색 학생등록]을 클릭하시면 다시 보실
-                  수 있어요!
-                </p>
-              </>
-            }
-          />
-        )}
 
         {addStudentBy === "typing" && (
           <>

@@ -195,15 +195,18 @@ const HeaderProfileBtn = (props) => {
             </label>
           </li> */}
           <li
+            title="사용설명서 페이지로 이동합니다."
             className={classes["profile-dropdown-li"]}
             onClick={() => {
-              navigate(`/${"notice"}`);
+              // navigate(`/${"notice"}`);
+              window.open("https://bit.ly/첵스쿨사용설명서", "_blank");
               setShowDropdown(false);
             }}
           >
-            공지사항
+            사용설명서
           </li>
           <li
+            title="이번학년도 전담여부, 닉네임, 상태메세지 등을 바꿀 수 있습니다."
             className={classes["profile-dropdown-li"]}
             onClick={() => {
               navigate(`/${"profile"}`);

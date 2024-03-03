@@ -91,6 +91,7 @@ const ManageConsult = (props) => {
     };
 
     let new_onConsults = [];
+    console.log(onStudent);
     if (onStudent !== "") {
       //담임이면
       if (!nowIsSubject) {
@@ -204,7 +205,8 @@ const ManageConsult = (props) => {
     if (new_clName !== "") {
       setClName(new_clName);
     }
-    if (new_onStudent !== "") {
+    if (new_onStudent !== "" && new_onStudent) {
+      console.log(new_onStudent);
       setOnStudent(new_onStudent);
     }
   }, [state]);
@@ -487,23 +489,22 @@ const ManageConsult = (props) => {
                     )
                       ?.sort((a, b) => (a > b ? 1 : -1))
                       ?.map((month) => (
-                        <>
-                          {/* 월별 버튼 */}
-                          <Button
-                            key={`${month}월`}
-                            id={`${month}월`}
-                            className={
-                              showConsultMonth === month
-                                ? "sortBtn-clicked"
-                                : "sortBtn"
-                            }
-                            name={`${month}월`}
-                            onclick={() => {
-                              setShowConsultOption("");
-                              setShowConsultMonth(month);
-                            }}
-                          />
-                        </>
+                        // {/* 월별 버튼 */}
+
+                        <Button
+                          key={`${month}월`}
+                          id={`${month}월`}
+                          className={
+                            showConsultMonth === month
+                              ? "sortBtn-clicked"
+                              : "sortBtn"
+                          }
+                          name={`${month}월`}
+                          onclick={() => {
+                            setShowConsultOption("");
+                            setShowConsultMonth(month);
+                          }}
+                        />
                       ))}
                   </li>
                 )}

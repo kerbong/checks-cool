@@ -102,6 +102,7 @@ const BaseTodo = (props) => {
           getDateValue={getDateHandler}
           setStart={new Date()}
           getMonthValue={() => {}}
+          getYearValue={() => {}}
           highlight={eventDates.map((evt) => new Date(evt))}
           inline={true}
           fixedHeight={true}

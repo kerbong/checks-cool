@@ -235,7 +235,6 @@ const Auth = (props) => {
     }
 
     sendPasswordResetEmail(authService, email).then(() => {
-      console.log("email sent");
       failLogIn(
         "success",
         "메일전송 완료",

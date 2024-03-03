@@ -62,7 +62,7 @@
 
 .block-highlight {
   position: absolute;
-  width: 250px;
+  width: auto;
   pointer-events: none;
   background-color: #ffffffb0;
   border-radius: 10px;
@@ -79,4 +79,19 @@
   padding: 10px;
   background-color: white;
   text-align: start;
+  word-wrap: break-word;
+  border-radius: 8px;
+}
+
+.clicked {
+  height: auto;
+  font-size: 0.9rem;
+}
+
+.non-clicked {
+  height: 8px; /* 설정된 min height 값 */
+  transition: height 0.3s ease; /* smooth transition */
+  overflow: hidden;
+  font-size: 0.8rem;
+  line-height: 12px; /* height와 동일한 값으로 설정 */
 }

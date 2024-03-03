@@ -5,9 +5,6 @@ import ExampleModal from "./ExampleModal";
 import TitleBtn from "../Memo/TitleBtn";
 import BudgetManage from "../Memo/BudgetManage";
 
-import submitMemo from "../../assets/memo/submitMemo.gif";
-import todayTodo from "../../assets/memo/todayTodo.gif";
-import listMemo from "../../assets/memo/listMemo.gif";
 import FreeMemo from "components/Memo/FreeMemo";
 
 const SHOW_WHAT = ["budgetManage", "todoList", "todayTodo", "freeMemo"];
@@ -38,7 +35,6 @@ const ICONS = {
 const MemoPage = (props) => {
   const { state } = useLocation();
   const [showWhatMemo, setShowWhatMemo] = useState("todayTodo");
-  const [showExample, setShowExample] = useState(false);
 
   let navigate = useNavigate();
   useEffect(() => {
@@ -46,43 +42,14 @@ const MemoPage = (props) => {
     setShowWhatMemo(state);
   }, [state]);
 
-  const exampleHandler = () => {
-    setShowExample(true);
-  };
-
   const memoTitle = (showWhat) => {
     return MENU_NAME[showWhat];
   };
 
   return (
     <>
-      {showExample && (
-        <ExampleModal
-          onClose={() => setShowExample(false)}
-          imgSrc={showWhatMemo === SHOW_WHAT[2] ? todayTodo : "준비중입니다."}
-          text={
-            <>
-              <p
-                style={{
-                  fontSize: "1.3em",
-                  textAlign: "center",
-                  margin: "5px",
-                }}
-              >
-                === {memoTitle(showWhatMemo)?.replace("<br/>", "") || ""} 예시
-                ===
-              </p>
-              <p style={{ margin: "15px" }}>
-                * 화면 왼쪽 상단의 현재 페이지 타이틀을 클릭하시면 다시 보실 수
-                있어요!
-              </p>
-            </>
-          }
-        />
-      )}
-
       <div id="title-div">
-        <button id="title-btn" onClick={exampleHandler}>
+        <button id="title-btn">
           <>
             {ICONS[showWhatMemo]}&nbsp;
             {memoTitle(showWhatMemo)?.replace("<br/>", "") || ""}

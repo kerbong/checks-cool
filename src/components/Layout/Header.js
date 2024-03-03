@@ -55,7 +55,7 @@ const Header = (props) => {
           />
           <HeaderMenu
             icon={"fa-regular fa-compass"}
-            path={"manageStudent"}
+            path={"manageAttendance"}
             menuText={"조회"}
             nowOn={nowOn}
           />

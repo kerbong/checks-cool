@@ -507,6 +507,7 @@ const EventInput = (props) => {
                     getDateValue={getDateHandler}
                     about={"todo"}
                     getMonthValue={getMonthHandler}
+                    getYearValue={getMonthHandler}
                   />
                 )}
               </div>

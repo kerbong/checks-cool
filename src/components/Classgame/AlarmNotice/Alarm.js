@@ -432,6 +432,7 @@ const Alarm = (props) => {
                 about="main"
                 setStart={new Date(todayYyyymmdd)}
                 getMonthValue={getMonthHandler}
+                getYearValue={getMonthHandler}
               />
             </span>
           </span>

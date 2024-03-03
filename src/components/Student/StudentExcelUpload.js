@@ -13,7 +13,13 @@ const StudentExcelUpload = (props) => {
     ? `<span class=${classes.accent}>반별 시트</span>에 <span class=${classes.accent}>번호 성별 이름</span>을 입력한<br/> 엑셀파일을 업로드 해주세요`
     : `<span class=${classes.accent}> 번호, 성별, 이름</span>이 입력된 엑셀파일 추가`;
   const expl_2 = `<span class=${classes.accent}>저장</span> 을 누르시면 반영됩니다.`;
-  const expl_3 = `<span class=${classes["explain"]}>   * 수정이 필요하시면 저장하신 후에<br/> <b> [직접] </b>을 활용해주세요.<br />* 공유문서에 직접 작성하지 않도록 주의해주세요.  <br />* pc 업로드가 편리합니다! 👉 bit.ly/첵스쿨 </span>`;
+  const expl_3 = `<span class=${classes["explain"]}>   * 수정이 필요하시면 저장하신 후에<br/> <b> [직접] </b>을 활용해주세요.<br />* pc 업로드가 편리합니다! 👉 bit.ly/첵스쿨 <br /> <a
+  href="https://kerbong.notion.site/50edba6218114a3e9a52981988c6db04"
+  target="_blank"
+  rel="noreferrer"
+>
+  설명서 보러가기
+</a></span>`;
 
   const excelFileHandler = (e) => {
     let input = e.target;
@@ -165,27 +171,36 @@ const StudentExcelUpload = (props) => {
         <span className={classes["span-title"]}>엑셀파일로 학생업로드</span>
 
         <hr className={classes["hr"]} />
-        <span dangerouslySetInnerHTML={{ __html: expl_1 }}></span>
-        <span dangerouslySetInnerHTML={{ __html: expl_2 }}></span>
-        <button
-          className={
+        <div
+          className={classes.example}
+          style={
             excelUploaded
-              ? `${classes.excelfileUploadBtnUploaded}`
-              : `${classes.excelfileUploadBtn}`
+              ? { display: "none", marginTop: "-10px" }
+              : { display: "flex", marginTop: "-10px" }
           }
         >
-          <a
-            href={
-              !props.isSubject
-                ? "https://docs.google.com/uc?export=download&id=1tdHVIke3tlak2xCvIV_GAj0UcRRSIjjZ"
-                : "https://docs.google.com/uc?export=download&id=1Wgk9DPx-wPl04ZhOsq0yjn0UePJwavD9"
+          <span dangerouslySetInnerHTML={{ __html: expl_1 }}></span>
+          <span dangerouslySetInnerHTML={{ __html: expl_2 }}></span>
+          <button
+            className={
+              excelUploaded
+                ? `${classes.excelfileUploadBtnUploaded}`
+                : `${classes.excelfileUploadBtn}`
             }
-            className={classes["a-link"]}
           >
-            양식파일 다운 <i className="fa-solid fa-download"></i>
-          </a>
-        </button>
-        <hr className={classes["hr"]} />
+            <a
+              href={
+                !props.isSubject
+                  ? "https://docs.google.com/uc?export=download&id=1tdHVIke3tlak2xCvIV_GAj0UcRRSIjjZ"
+                  : "https://docs.google.com/uc?export=download&id=1Wgk9DPx-wPl04ZhOsq0yjn0UePJwavD9"
+              }
+              className={classes["a-link"]}
+            >
+              양식파일 다운 <i className="fa-solid fa-download"></i>
+            </a>
+          </button>
+          <hr className={classes["hr"]} />
+        </div>
         <span dangerouslySetInnerHTML={{ __html: expl_3 }}></span>
         <hr className={classes["hr"]} />
       </div>

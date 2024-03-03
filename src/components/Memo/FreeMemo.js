@@ -315,6 +315,7 @@ const FreeMemo = (props) => {
             }}
           >
             <span className={classes["category-name"]}>
+              현재 카테고리 :{" "}
               {nowCategory.name === "all" ? "전체보기" : nowCategory.name}
             </span>
 
@@ -341,6 +342,7 @@ const FreeMemo = (props) => {
               )}
           </div>
         )}
+        <hr />
 
         {/* 카테고리 수정 할때 보이는 부분 */}
         {nowCategory.name !== "all" && editCategory && (
@@ -360,7 +362,6 @@ const FreeMemo = (props) => {
             ?.filter((memo) => memo.category.includes(nowCategory.name))
             ?.map((item) => {
               let renderedInput;
-              console.log(item);
               // 표형태로 저장된 경우
               if (item.text.data) {
                 renderedInput = (
@@ -385,12 +386,7 @@ const FreeMemo = (props) => {
                   />
                 );
               }
-              return (
-                <div key={"memo" + item.title}>
-                  <hr className={classes["hr"]} />
-                  {renderedInput}
-                </div>
-              );
+              return <div key={"memo" + item.title}>{renderedInput}</div>;
             })}
 
           {freeMemo?.filter((memo) => memo.category.includes(nowCategory.name))

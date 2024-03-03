@@ -11,14 +11,107 @@ import dayjs from "dayjs";
 
 const MeetingSummary = (props) => {
   const [summary, setSummary] = useState([]);
+  //받아온 해당 월 전체자료
+  const [nowSummary, setNowSummary] = useState([]);
+  //실제 보여줄 자료
   const [nowOnSummary, setNowOnSummary] = useState([]);
   const [showSum, setShowSum] = useState("");
   const [newMeetSum, setNewMeetSum] = useState(false);
+  const [word, setWord] = useState("");
+  const [searchWhat, setSearchWhat] = useState("");
 
   let roomInfo = localStorage.getItem("todoPublicRoom");
   if (roomInfo === null) {
     roomInfo = "--";
   }
+
+  /** 검색 부분 기능 */
+  const inputChangeHandler = (e) => {
+    e.preventDefault();
+    setWord(e.target.value);
+  };
+
+  useEffect(() => {
+    let search_w = word?.trim();
+
+    if (search_w?.length === 0) {
+      let new_nowOnSum = [...nowSummary];
+
+      setNowOnSummary(new_nowOnSum);
+    } else {
+      if (searchWhat === "title") {
+        let new_nowOnSum = [...nowSummary];
+        new_nowOnSum = new_nowOnSum.filter((sum) =>
+          sum.title?.includes(search_w)
+        );
+        setNowOnSummary(new_nowOnSum);
+
+        // 내용만 검색
+      } else if (searchWhat === "text") {
+        let new_nowOnSum = [...nowSummary];
+        new_nowOnSum = new_nowOnSum.filter((sum) =>
+          sum.text?.includes(search_w)
+        );
+        setNowOnSummary(new_nowOnSum);
+
+        // 제목+ 내용+결과 검색
+      } else if (searchWhat === "all") {
+        let new_nowOnSum = [...nowSummary];
+        new_nowOnSum = new_nowOnSum.filter(
+          (sum) =>
+            sum.title?.includes(search_w) ||
+            sum.text?.includes(search_w) ||
+            sum.result?.includes(search_w)
+        );
+        setNowOnSummary(new_nowOnSum);
+      }
+    }
+  }, [word, searchWhat]);
+
+  /** 검색할 때 분류 선택 */
+  const selectChangeHandler = (e) => {
+    e.preventDefault();
+    setSearchWhat(e.target.value);
+  };
+
+  /** 검색 함수 */
+  const searchHandler = (e) => {
+    e.preventDefault();
+
+    // 제목만 검색
+    if (searchWhat === "title") {
+      let new_nowOnSum = [...nowSummary];
+      new_nowOnSum = new_nowOnSum.filter((sum) =>
+        sum.title?.includes(word?.trim())
+      );
+      setNowOnSummary(new_nowOnSum);
+
+      // 내용만 검색
+    } else if (searchWhat === "text") {
+      let new_nowOnSum = [...nowSummary];
+      new_nowOnSum = new_nowOnSum.filter((sum) =>
+        sum.text?.includes(word?.trim())
+      );
+      setNowOnSummary(new_nowOnSum);
+
+      // 제목+ 내용+결과 검색
+    } else if (searchWhat === "all") {
+      let new_nowOnSum = [...nowSummary];
+      new_nowOnSum = new_nowOnSum.filter(
+        (sum) =>
+          sum.title?.includes(word?.trim()) ||
+          sum.text?.includes(word?.trim()) ||
+          sum.result?.includes(word?.trim())
+      );
+      setNowOnSummary(new_nowOnSum);
+
+      //전체보기
+    } else if (searchWhat === "") {
+      let new_nowOnSum = [...nowSummary];
+      setWord("");
+      setNowOnSummary(new_nowOnSum);
+    }
+  };
 
   const nowYear = (date) => {
     //해당학년도에 전담여부 확인
@@ -37,21 +130,15 @@ const MeetingSummary = (props) => {
     } else {
       meetingSumRef = doc(dbService, "todo", "MeetSum" + props.userUid);
     }
-
     // 자료가 존재하면
     setSummary([]);
 
     onSnapshot(meetingSumRef, (doc) => {
       if (doc.exists()) {
         let new_summary = [];
-        // 2월~1월까지를 학년도로 보고 자료날짜와 달력 날짜 비교해서 자료 저장
-        doc.data().meetSum_data?.forEach((data) => {
-          let data_year = nowYear(data?.id?.slice(0, 10));
 
-          let current_year = nowYear(props.currentMonth?.slice(0, 10));
-          if (data_year === current_year) {
-            new_summary.push(data);
-          }
+        doc.data().meetSum_data?.forEach((data) => {
+          new_summary.push(data);
         });
         setSummary([...new_summary]);
       } else {
@@ -71,6 +158,7 @@ const MeetingSummary = (props) => {
     let nowMonthData = summary?.filter(
       (sum) => sum.id.slice(0, 7) === props.currentMonth
     );
+    setNowSummary([...nowMonthData]);
     setNowOnSummary([...nowMonthData]);
   }, [props.currentMonth, summary]);
 
@@ -115,7 +203,10 @@ const MeetingSummary = (props) => {
 
   //회의록 삭제함수
   const deleteHandler = async (id, title, url) => {
-    let remainData = summary?.filter((data) => data.id !== id);
+    //id가 같을 수 있어서.. 타이틀까지 같은지 확인해주어야 합니당.
+    let remainData = summary?.filter(
+      (data) => data.id !== id && data.title !== title
+    );
 
     let meetingSumRef;
     if (props.showPublicEvent) {
@@ -206,7 +297,6 @@ const MeetingSummary = (props) => {
         exist_data = data;
       }
     });
-    console.log(edited_data);
 
     let meetingSumRef;
     if (props.showPublicEvent) {
@@ -216,7 +306,6 @@ const MeetingSummary = (props) => {
     }
 
     edited_data.push(new_data);
-    console.log(edited_data);
 
     //모달 닫기
     setShowSum("");
@@ -230,6 +319,15 @@ const MeetingSummary = (props) => {
     }
     // 전체 서머리 업데이트
     setSummary(edited_data);
+  };
+
+  const currentYM = () => {
+    if (props.currentMonth) {
+      let year = dayjs(props.currentMonth).format("YYYY");
+      let month = dayjs(props.currentMonth).format("M");
+
+      return "* " + year + "년 " + month + "월 입력자료";
+    }
   };
 
   return (
@@ -255,6 +353,7 @@ const MeetingSummary = (props) => {
             addMeetSumHandler={addMeetSumHandler}
             showSumClose={() => setNewMeetSum(false)}
             userUid={props.userUid}
+            nowSummary={nowSummary}
           />
         </Modal>
       )}
@@ -262,7 +361,9 @@ const MeetingSummary = (props) => {
       {/* 회의록 리스트 부분 */}
       <div className={classes["title-div"]}>
         <h1 className={`${classes["m-10"]} ${classes["title"]}`}>
-          {props.showPublicEvent ? "공용 " : "개인 "}회의록 <br />/ 연수자료
+          {props.showPublicEvent ? "공용 " : "개인 "}회의록 / 연수자료
+          <br />
+          <span className={classes["title-span"]}>{currentYM()}</span>
         </h1>
         {/* 추가버튼 */}
         <button
@@ -287,10 +388,43 @@ const MeetingSummary = (props) => {
           </button>
         )}
       </div>
-      <div>
+
+      {/* 검색부분 */}
+      <div className={classes["sumItems-div"]} style={{ alignItems: "center" }}>
+        <div>
+          <select
+            onChange={selectChangeHandler}
+            className={classes["select"]}
+            value={searchWhat}
+          >
+            <option value="title" defaultChecked>
+              제목
+            </option>
+            <option value="text">내용</option>
+            <option value="all">제목+내용+결과</option>
+          </select>
+          <input
+            type="text"
+            placeholder=""
+            className={classes["search-div"]}
+            value={word}
+            onChange={inputChangeHandler}
+          />
+        </div>
+        <span className={classes["title-span"]}>
+          * 입력하면 실시간 검색 가능
+        </span>
+      </div>
+
+      {/* 회의록 연수자료 보여줄 부분 */}
+      <div className={classes["sumItems-div"]}>
+        {nowOnSummary?.length === 0 && (
+          <li className={classes["li"]}>* 자료가 없어요!</li>
+        )}
+
         {nowOnSummary?.map((data) => (
           <li
-            key={data.id}
+            key={data.id + data.title}
             className={classes["li"]}
             onClick={() => {
               setShowSum(data.id);
@@ -298,6 +432,7 @@ const MeetingSummary = (props) => {
           >
             <div>
               {data.id}
+
               <h2>{data.title}</h2>
             </div>
             <div className={classes["content"]}>👉 {data.result}</div>

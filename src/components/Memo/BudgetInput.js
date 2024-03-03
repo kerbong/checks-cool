@@ -201,6 +201,7 @@ const BudgetInput = (props) => {
               about={props.about}
               setStart={props.about === "edit" && new Date(budget.date)}
               getMonthValue={getMonthHandler}
+              getYearValue={getMonthHandler}
             />
           </div>
           {/* 품목명 적는 부분 */}

@@ -21,6 +21,13 @@ const CheckInput = (props) => {
 
   const [submitStudents, setSubmitStudents] = useState([]);
 
+  const nowYear = (date) => {
+    let data_id = date?.length > 0 ? date : new Date();
+    return dayjs(data_id).format("MM-DD") <= "02-15"
+      ? String(+dayjs(data_id).format("YYYY") - 1)
+      : dayjs(data_id).format("YYYY");
+  };
+
   useEffect(() => {
     if (props.exceptGone && props.goneStudents && props.unSubmitStudents) {
       let goneStds = !props.isSubject
@@ -28,28 +35,28 @@ const CheckInput = (props) => {
         : props.goneStudents?.filter((std) => std.clName === props.clName);
 
       let new_unSubmitStudents = props.unSubmitStudents?.filter((stu) => {
-        return !goneStds.some(
+        return !goneStds?.some(
           (g_stu) => +g_stu.num === +stu.num && g_stu.name === stu.name
         );
       });
 
       let new_students = props.students?.filter((stu) => {
-        return !goneStds.some(
+        return !goneStds?.some(
           (g_stu) => +g_stu.num === +stu.num && g_stu.name === stu.name
         );
       });
 
       // 중복되는 학생들 있을 수 있어서.. 제거해줌!
       setUnSubmitStudents(
-        uniqueArray(new_unSubmitStudents.sort((a, b) => +a.num - +b.num))
+        uniqueArray(new_unSubmitStudents?.sort((a, b) => +a.num - +b.num))
       );
-      setStudents(new_students.sort((a, b) => +a.num - +b.num));
+      setStudents(new_students?.sort((a, b) => +a.num - +b.num));
     } else {
       // 중복되는 학생들 있을 수 있어서.. 제거해줌!
       setUnSubmitStudents(
-        uniqueArray(props.unSubmitStudents.sort((a, b) => +a.num - +b.num))
+        uniqueArray(props.unSubmitStudents?.sort((a, b) => +a.num - +b.num))
       );
-      setStudents(props.students.sort((a, b) => +a.num - +b.num));
+      setStudents(props.students?.sort((a, b) => +a.num - +b.num));
     }
   }, [props.unSubmitStudents, props.students]);
 
@@ -58,7 +65,7 @@ const CheckInput = (props) => {
       ?.filter(
         (stu1) => !unSubmitStudents?.some((stu2) => +stu1.num === +stu2.num)
       )
-      .sort((a, b) => +a.num - +b.num);
+      ?.sort((a, b) => +a.num - +b.num);
 
     new_students = uniqueArray(new_students);
     setSubmitStudents(new_students);
@@ -80,8 +87,8 @@ const CheckInput = (props) => {
 
   /** 중복학생 제외 함수 */
   const uniqueArray = (students) => {
-    let new_students = students.reduce((accumulator, current) => {
-      const duplicate = accumulator.find(
+    let new_students = students?.reduce((accumulator, current) => {
+      const duplicate = accumulator?.find(
         (item) => item.name === current.name && +item.num === +current.num
       );
       if (!duplicate) {
@@ -158,6 +165,24 @@ const CheckInput = (props) => {
       //완전 새거면.. 최신..현재 상태의 값으로 만든 시간 넣어주기
     } else {
       item_id = nowOn_id;
+      //혹시나... 새 자료인데 현재 날짜의 학년도와, 데이터의 학년도가 다르면 저장불가
+      if (nowYear() !== nowYear(nowOn_id)) {
+        Swal.fire({
+          icon: "error",
+          title: "저장 불가",
+          text: "현재날짜 기준의 학년도와 다른 학년도의 데이터를 새롭게 저장할 수 없습니다! * 수정은 가능함.  (예 : 현재 2023학년도 인데 2022학년도 자료 추가 불가)",
+          confirmButtonText: "확인",
+          confirmButtonColor: "#85bd82",
+          showDenyButton: false,
+        }).then((result) => {
+          /* Read more about isConfirmed, isDenied below */
+          if (result.isConfirmed) {
+            return;
+          }
+        });
+
+        return;
+      }
     }
 
     //혹시나.. id가 null같은게 들어가 있으면 현재 시간으로 찍어줌..!
@@ -341,6 +366,7 @@ const CheckInput = (props) => {
                     about="main"
                     setStart={new Date(todayYyyymmdd)}
                     getMonthValue={getMonthHandler}
+                    getYearValue={getMonthHandler}
                   />
                 </span>
               </div>
@@ -379,6 +405,7 @@ const CheckInput = (props) => {
                     about="main"
                     setStart={new Date(todayYyyymmdd)}
                     getMonthValue={getMonthHandler}
+                    getYearValue={getMonthHandler}
                   />
                 </span>
               </div>
