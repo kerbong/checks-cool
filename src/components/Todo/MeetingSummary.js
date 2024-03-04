@@ -167,9 +167,9 @@ const MeetingSummary = (props) => {
     Swal.fire({
       icon: "success",
       title: "저장 성공",
-      text: `${props.showPublicEvent ? "공용 " : "개인 "}회의록에 [${
-        data.title
-      }] 성공적으로 작성되었습니다.`,
+      text: `${props.showPublicEvent ? "공용 " : "개인 "}회의록에 ${
+        [data?.title] || ""
+      } 성공적으로 작성되었습니다.`,
       confirmButtonText: "확인",
       confirmButtonColor: "#85bd82",
       showDenyButton: false,
@@ -314,9 +314,15 @@ const MeetingSummary = (props) => {
     await updateDoc(meetingSumRef, { meetSum_data: edited_data });
 
     //사진 파일이 전과 달라졌으면 기존에 저장했던 파일 삭제
-    if (new_data.file !== exist_data.file) {
+    if (exist_data.file !== "" && new_data.file !== exist_data.file) {
       await deleteObject(ref(storageService, exist_data.file));
     }
+
+    Swal.fire(
+      "수정완료!",
+      "기다려주셔서 감사합니다! 자료가 수정되어 저장되었습니다.",
+      "success"
+    );
     // 전체 서머리 업데이트
     setSummary(edited_data);
   };

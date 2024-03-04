@@ -234,6 +234,7 @@ const ConsultLists = (props) => {
         +consult.id.slice(0, 4),
         +consult.id.slice(5, 7),
         +consult.id.slice(8, 10),
+        consult.id.slice(10, 15),
         consult.option.slice(1),
         consult?.note,
         consult?.attachedFileUrl,
@@ -251,6 +252,7 @@ const ConsultLists = (props) => {
       "년",
       "월",
       "일",
+      "시각",
       "상담옵션",
       "메모내용",
       "첨부파일",
@@ -271,6 +273,7 @@ const ConsultLists = (props) => {
       { wpx: 40 },
       { wpx: 25 },
       { wpx: 25 },
+      { wpx: 50 },
       { wpx: 60 },
       { wpx: 500 },
       { wpx: 120 },
@@ -494,7 +497,8 @@ const ConsultLists = (props) => {
                         <i className="fa-regular fa-id-badge"></i>
                       </span>
                       <p className={classes.consultDate}>
-                        {yearMonthDay(consult.id.slice(0, 10))}
+                        {yearMonthDay(consult.id.slice(0, 10))}{" "}
+                        {consult.id.slice(10, 15)}
                       </p>
                       <span className={classes.nameSpan} id={"1" + consult.id}>
                         {`${consult.name} | ${consult.option.slice(1)}`}

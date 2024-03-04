@@ -444,7 +444,9 @@ const EventItem = (props) => {
               }`}
               className={classes["note-area"]}
               onInput={(e) => {
-                handleOnInput(e, 40);
+                props.about.slice(0, 4) === "todo"
+                  ? handleOnInput(e, 100)
+                  : handleOnInput(e, 80);
               }}
             />
           </form>

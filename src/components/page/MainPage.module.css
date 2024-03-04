@@ -247,3 +247,16 @@
   border-radius: 5px; /* 각 요일의 모서리를 둥글게 만듭니다. */
   text-align: center; /* 텍스트를 중앙에 배치합니다. */
 }
+
+.holidayData {
+  width: 94%;
+  font-size: 0.5em;
+  background-color: #dd3300d9;
+  font-weight: bold;
+  color: azure;
+  border-radius: 10px;
+  border-width: 0;
+  padding: 3px;
+  margin: 2px;
+  white-space: pre-line;
+}

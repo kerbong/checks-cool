@@ -14,7 +14,12 @@ const FileArea = (props) => {
     <div className={classes.fileArea}>
       {/* {attachedFile && showImgOrLink()} */}
       {attachedFile && !imgError ? (
-        <img src={attachedFile} alt="filePreview" onError={handleError} />
+        <img
+          src={attachedFile}
+          alt="filePreview"
+          onError={handleError}
+          className={classes["img"]}
+        />
       ) : (
         attachedFile && (
           <a

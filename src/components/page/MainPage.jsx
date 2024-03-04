@@ -19,6 +19,7 @@ import MainShortCut from "components/Main/MainShortCut";
 import ShowClassChange from "components/Main/ShowClassChange";
 import weekOfYear from "dayjs/plugin/weekOfYear"; // 주차 계산 지원
 import isoWeek from "dayjs/plugin/isoWeek"; // ISO 주차 계산 지원
+import holidays2023 from "../../holidays2023";
 
 dayjs.extend(weekOfYear);
 dayjs.extend(isoWeek);
@@ -197,6 +198,8 @@ const MainPage = (props) => {
   const [weekClassTable, setWeekClassTable] = useState([]);
   const [weekClassFromSchedule, setWeekClassFromSchedule] = useState([]);
   const [showWeekTable, setShowWeekTable] = useState(false);
+  const [currentMonth, setCurrentMonth] = useState(dayjs().format("YYYY-MM"));
+  const [showCal, setShowCal] = useState(false);
 
   /** 메인 노티스 창 닫고, 로컬스토리지에 오늘 날짜 넣어두기, */
   const handleCheckboxChange = (todayOrWeek) => {
@@ -1163,13 +1166,14 @@ const MainPage = (props) => {
     const new_consult_datas = [];
 
     nowYearConsult?.forEach((consult) => {
-      // 번호 이름 년 월 일 옵션 노트 첨부파일 순으로
+      // 번호 이름 년 월 일 시각 옵션 노트 첨부파일 순으로
       let data = [
         +consult.num,
         consult.name,
         +consult.id.slice(0, 4),
         +removeLeadingZeros(consult.id.slice(5, 7)),
         +removeLeadingZeros(consult.id.slice(8, 10)),
+        consult.id.slice(10, 15),
         consult.option.slice(1),
         consult?.note,
         consult?.attachedFileUrl,
@@ -1187,6 +1191,7 @@ const MainPage = (props) => {
       "년",
       "월",
       "일",
+      "시각",
       "상담옵션",
       "메모내용",
       "첨부파일",
@@ -1205,6 +1210,7 @@ const MainPage = (props) => {
       { wpx: 40 },
       { wpx: 25 },
       { wpx: 25 },
+      { wpx: 50 },
       { wpx: 60 },
       { wpx: 500 },
       { wpx: 120 },
@@ -2017,6 +2023,33 @@ const MainPage = (props) => {
     );
   };
 
+  //휴일 달력에 그려주기!
+  useEffect(() => {
+    if (!currentMonth) return;
+    holidays2023?.forEach((holiday) => {
+      if (holiday[0] === currentMonth) {
+        let holiday_queryName = holiday[1].split("*");
+        let holidayTag = document.querySelectorAll(holiday_queryName[0])[0];
+        if (!holidayTag) return;
+        // console.log(holidayTag.classList.contains("eventAdded"));
+        if (holidayTag.classList.contains("eventAdded")) return;
+
+        const btn = document.createElement("button");
+        btn.className = `${classes.holidayData} eventBtn`;
+        btn.innerText = holiday_queryName[1];
+        holidayTag?.appendChild(btn);
+        holidayTag.style.borderRadius = "5px";
+
+        holidayTag.classList.add("eventAdded");
+      }
+    });
+  }, [currentMonth, showCal]);
+
+  /** 달력에서 받은 month로 currentMonth변경하기 */
+  const getMonthHandler = (month) => {
+    setCurrentMonth(dayjs(month).format("YYYY-MM"));
+  };
+
   // 실직적으로 화면 그리기... 휴 어렵다.
 
   return (
@@ -2200,6 +2233,7 @@ const MainPage = (props) => {
                 : ""
             }
             id="todayYYYYMMDD"
+            onClick={() => setShowCal((prev) => !prev)}
           >
             {/* {titleDate} */}
             {/* 오늘 날짜 보여주는 부분 날짜 클릭하면 달력도 나옴 */}
@@ -2208,8 +2242,8 @@ const MainPage = (props) => {
                 getDateValue={calDateHandler}
                 about="main"
                 setStart={new Date(todayYyyymmdd)}
-                getMonthValue={() => {}}
-                getYearValue={() => {}}
+                getMonthValue={getMonthHandler}
+                getYearValue={getMonthHandler}
               />
             </span>
           </span>

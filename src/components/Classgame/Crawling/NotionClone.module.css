@@ -85,13 +85,22 @@
 
 .clicked {
   height: auto;
-  font-size: 0.9rem;
+  font-size: 16px;
+  padding: 4px;
+}
+
+.clicked div {
+  font-size: 16px;
 }
 
 .non-clicked {
-  height: 8px; /* 설정된 min height 값 */
+  height: 15px; /* 설정된 min height 값 */
   transition: height 0.3s ease; /* smooth transition */
   overflow: hidden;
-  font-size: 0.8rem;
-  line-height: 12px; /* height와 동일한 값으로 설정 */
+  font-size: 13px;
+  padding: 4px;
+}
+
+.non-clicked div {
+  font-size: 13px;
 }
