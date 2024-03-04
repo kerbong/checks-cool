@@ -175,17 +175,17 @@ function FreeMemoTableInput(props) {
       new_tableOption.push(...row);
       row.forEach((option, col_index) => {
         if (option !== "string") {
-          if (tableData[row_index][col_index] === "") {
+          if (tableData?.[row_index]?.[col_index] === "") {
             dateOrTimeNoValue.push(
               `${row_index + 1}번줄 ${col_index + 1}번째 칸`
             );
-          } else if (typeof tableData[row_index][col_index] !== "object") {
+          } else if (typeof tableData?.[row_index]?.[col_index] !== "object") {
             dateOrTimeNoValue.push(
               `${row_index + 1}번줄 ${col_index + 1}번째 칸`
             );
           }
         } else {
-          if (typeof tableData[row_index][col_index] === "object") {
+          if (typeof tableData?.[row_index]?.[col_index] === "object") {
             dateOrTimeNoValue.push(
               `${row_index + 1}번줄 ${col_index + 1}번째 칸`
             );
@@ -395,6 +395,7 @@ function FreeMemoTableInput(props) {
       onClick={() => {
         setShowEditDeleteBtn((prev) => !prev);
       }}
+      style={{ maxWidth: "90%" }}
     >
       {/* 제목부분 */}
       <div className={classes["title-div"]}>
@@ -508,6 +509,37 @@ function Cell({
     onOptionChange(value, rowIndex, colIndex);
   };
 
+  /** note가 있으면.. 보여주는데, a링크할 게 있으면 a태그 넣어주기 */
+  const noteHandler = (note) => {
+    if (!note) return;
+
+    let replacedText, replacePattern1, replacePattern2, replacePattern3;
+
+    //URLs starting with http://, https://, or ftp://
+    replacePattern1 =
+      /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gim;
+    replacedText = note.replace(
+      replacePattern1,
+      '<a href="$1" target="_blank">$1</a>'
+    );
+
+    //URLs starting with "www." (without // before it, or it'd re-link the ones done above).
+    replacePattern2 = /(^|[^\/])(www\.[\S]+(\b|$))/gim;
+    replacedText = replacedText.replace(
+      replacePattern2,
+      '$1<a href="http://$2" target="_blank">$2</a>'
+    );
+
+    //Change email addresses to mailto:: links.
+    replacePattern3 = /(\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,6})/gim;
+    replacedText = replacedText.replace(
+      replacePattern3,
+      '<a href="mailto:$1">$1</a>'
+    );
+
+    return <span dangerouslySetInnerHTML={{ __html: replacedText }} />;
+  };
+
   return (
     <td className={classes["td"]}>
       {edited && (
@@ -590,13 +622,15 @@ function Cell({
         )
       ) : (
         <div>
-          {option === "dateTime"
-            ? dayjs(value).format("YY년 M월 D일(ddd) A h:mm")
-            : option === "date"
-            ? dayjs(value).format("YY년 M월 D일(ddd)")
-            : option === "time"
-            ? dayjs(value).format("A h:mm")
-            : value}
+          {option === "dateTime" ? (
+            dayjs(value).format("YY년 M월 D일(ddd) A h:mm")
+          ) : option === "date" ? (
+            dayjs(value).format("YY년 M월 D일(ddd)")
+          ) : option === "time" ? (
+            dayjs(value).format("A h:mm")
+          ) : (
+            <span className={classes["text-span"]}>{noteHandler(value)}</span>
+          )}
         </div>
       )}
     </td>

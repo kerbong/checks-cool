@@ -51,7 +51,7 @@ const FreeMemoCategory = ({
       })}
 
       {exist_category.length === 0 &&
-        "아직 카테고리가 없어요! 먼저 왼쪽 상단의 + 버튼으로 카테고리를 추가해주세요!"}
+        "아직 태그가 없어요! 먼저 왼쪽 상단의 + 버튼으로 태그를 추가해주세요!"}
     </>
   ) : (
     <>
@@ -76,7 +76,7 @@ const FreeMemoCategory = ({
           );
         })}
       {item?.category?.length === 1 && (
-        <span style={{ color: "gray" }}>* 카테고리가 존재하지 않아요!</span>
+        <span style={{ color: "gray" }}>* 태그가 존재하지 않아요!</span>
       )}
     </>
   );

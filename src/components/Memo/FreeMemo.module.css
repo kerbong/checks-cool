@@ -32,7 +32,7 @@
 }
 
 .title-input {
-  width: 70vw;
+  width: 70%;
   font-size: 1rem;
   padding: 10px;
   height: 20px;
@@ -76,33 +76,35 @@
   align-items: center;
   width: 98vw;
   max-width: 550px;
-  margin: 20px;
+  margin: 5px;
   background-color: #d3d3d35e;
   padding: 20px;
   border-radius: 20px;
 }
 
 .text-input {
-  width: 70vw;
+  width: 80%;
   font-size: 0.9rem;
   padding: 10px;
   height: 48px;
   overflow-y: hidden;
   resize: none;
   border-radius: 10px;
-  margin: 15px;
+  margin: 10px;
 }
 
 .category-btns {
   display: flex;
   flex-wrap: wrap;
-  margin: 5px 15px;
+  margin: 5px;
+  width: 100%;
+  align-items: center;
 }
 
 .title-div {
+  width: 100%;
   display: flex;
   align-items: center;
-  margin: 20px 10px;
 }
 .text-span {
   word-break: break-all;
@@ -112,7 +114,8 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  padding: 10px;
+  padding: 5px;
+  align-items: flex-start;
 }
 
 .h2,
@@ -132,7 +135,7 @@
 
 .category-name {
   font-size: 1.5rem;
-  grid-column: 2/4;
+  grid-column: 2/3;
 }
 
 .categoryEdit-div {
@@ -151,10 +154,10 @@
 .grid-category {
   display: grid;
   margin: 15px 5px;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: 1fr 4fr 1fr;
   grid-gap: 5px;
   align-items: center;
-  height: 50px;
+  height: 70px;
 }
 
 .h1 {

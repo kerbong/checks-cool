@@ -237,6 +237,8 @@ const FreeMemoInput = (props) => {
       <div className={classes["category-btns"]}>
         {edited ? (
           <>
+            <span style={{ marginRight: "5px" }}>태그</span>
+
             {/* 존재하는 카테고리를 다 보여주고, 그중에 클릭 한 것만 색깔을 나타냄.. 안하면 */}
             {exist_category?.map((categ) => {
               let isInclude = category?.includes(categ.name);
@@ -261,7 +263,7 @@ const FreeMemoInput = (props) => {
             })}
 
             {exist_category.length === 0 &&
-              "아직 카테고리가 없어요! 먼저 왼쪽 상단의 + 버튼으로 카테고리를 추가해주세요!"}
+              "아직 태그가 없어요! 먼저 왼쪽 상단의 + 버튼으로 태그를 추가해주세요!"}
           </>
         ) : (
           <>
@@ -286,9 +288,7 @@ const FreeMemoInput = (props) => {
                 );
               })}
             {item.category.length === 1 && (
-              <span style={{ color: "gray" }}>
-                * 카테고리가 존재하지 않아요!
-              </span>
+              <span style={{ color: "gray" }}>* 태그가 존재하지 않아요!</span>
             )}
           </>
         )}

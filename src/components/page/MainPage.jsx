@@ -1662,7 +1662,7 @@ const MainPage = (props) => {
       new_freeMemo_datas.push(data);
     });
 
-    new_freeMemo_datas.unshift(["순", "분류(카테고리)", "제목", "메모 내용"]);
+    new_freeMemo_datas.unshift(["순", "분류(태그)", "제목", "메모 내용"]);
 
     const freeMemo_datas = utils.aoa_to_sheet(new_freeMemo_datas);
     //셀의 넓이 지정

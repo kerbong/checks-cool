@@ -93,7 +93,7 @@ const CategoryInput = (props) => {
     if (isExist) {
       Swal.fire(
         "이름 중복",
-        `기존 자료에 동일한 이름의 카테고리가 존재합니다. 이름을 수정해주세요.`,
+        `기존 자료에 동일한 이름의 태그가 존재합니다. 이름을 수정해주세요.`,
         "warning"
       );
       return;
@@ -105,7 +105,7 @@ const CategoryInput = (props) => {
   };
 
   return (
-    <div className={classes["categoryEdit-div"]}>
+    <div className={classes["freeMemo-li"]}>
       <div style={{ width: "100%" }}>
         {!isEdited && (
           <button
@@ -117,9 +117,9 @@ const CategoryInput = (props) => {
             <i className="fa-solid fa-xmark"></i>
           </button>
         )}
-        {!isEdited && <h2 className={classes["h2"]}>카테고리 추가</h2>}
+        {!isEdited && <h2 className={classes["h2"]}>태그 추가</h2>}
 
-        <h3>{!isEdited ? "카테고리 이름" : "카테고리 수정"}</h3>
+        <h3>{!isEdited ? "태그 이름" : "태그 수정"}</h3>
         <div className={classes["h2"]}>
           <input
             id="title-input"
@@ -133,11 +133,18 @@ const CategoryInput = (props) => {
           />
         </div>
 
-        {/* 카테고리 배경색 컬러 */}
-        <h3>카테고리 색상 선택</h3>
-        <h4> * 흰색 배경은 피해주세요!</h4>
+        {/* 태그 배경색 컬러 */}
+        <h3>태그 색상 선택</h3>
+        <div style={{ margin: "-10px 0 10px 15px", fontSize: "16px" }}>
+          {" "}
+          * 흰색 배경은 피해주세요!
+        </div>
         {/* 예시보여주는 div */}
-        <div id="area1" className={classes["color-area"]}>
+        <div
+          id="area1"
+          className={classes["color-area"]}
+          style={{ width: "98%" }}
+        >
           {categoryName}
         </div>
         <div className={classes["color-inputs"]}>
@@ -153,7 +160,7 @@ const CategoryInput = (props) => {
             />
           </div>
 
-          {/* 카테고리 글자색 컬러 */}
+          {/* 태그 글자색 컬러 */}
           <div>
             <span className={classes["color-span"]}>글자색</span>
             <input
