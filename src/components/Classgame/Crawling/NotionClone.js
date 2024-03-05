@@ -12,6 +12,7 @@ const NotionClone = (props) => {
   const [showBlockHighlight, setShowBlockHighlight] = useState(false);
   const [blockRect, setBlockRect] = useState(null);
   const [timeoutId, setTimeoutId] = useState(null); // setTimeout 함수의 ID를 저장할 state 추가
+  const [timeoutSaveId, setTimeoutSaveId] = useState(null); // 저장할 때 타임아웃 실행
   const [isClicked, setIsClicked] = useState(false); // 클릭 여부를 판단하는 상태
 
   useEffect(() => {
@@ -19,6 +20,15 @@ const NotionClone = (props) => {
 
     contentEditableRef.current.innerHTML = `${props.defaultValue || ""}`;
   }, [props.defaultValue]);
+
+  const checkInput = () => {
+    if (timeoutSaveId) clearTimeout(timeoutSaveId);
+
+    const id = setTimeout(() => {
+      props.changeHandler();
+    }, 9500);
+    setTimeoutSaveId(id);
+  };
 
   const handleUnderline = () => {
     document.execCommand("underline", false, null);
@@ -77,8 +87,9 @@ const NotionClone = (props) => {
 
   const resetTimer = () => {
     // 기존의 타이머를 제거
-    props.changeHandler();
+
     if (timeoutId) clearTimeout(timeoutId);
+    checkInput();
 
     // 5초 후에 div를 숨기는 타이머 설정
     const id = setTimeout(() => setShowBlockHighlight(false), 5000);

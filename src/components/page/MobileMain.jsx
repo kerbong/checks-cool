@@ -721,8 +721,8 @@ const MobileMain = (props) => {
   const compress = async (image) => {
     try {
       const options = {
-        maxSizeMb: 1.2,
-        maxWidthOrHeight: 1000,
+        maxSizeMb: 2,
+        maxWidthOrHeight: 1920,
       };
       return await imageCompression(image, options);
     } catch (e) {

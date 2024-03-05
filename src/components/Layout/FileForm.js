@@ -25,8 +25,8 @@ const FileForm = (props) => {
       } else {
         // 이미지 파일인 경우에만 압축 수행
         const options = {
-          maxSizeMb: 1,
-          maxWidthOrHeight: 1000,
+          maxSizeMb: 2,
+          maxWidthOrHeight: 1920,
         };
         return await imageCompression(file, options);
       }
