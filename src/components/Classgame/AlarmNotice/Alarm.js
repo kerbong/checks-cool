@@ -8,7 +8,7 @@ import { dbService } from "../../../fbase";
 import { onSnapshot, doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import { utils, writeFile } from "xlsx";
 import holidays2023 from "holidays2023";
-import userEvent from "@testing-library/user-event";
+
 import AssistanceAi from "../AssistanceAi/AssistanceAi";
 
 const getDateHandler = (date, titleOrQuery) => {
@@ -124,31 +124,6 @@ const Alarm = (props) => {
 
     setTodayYyyymmdd(dayjs(date).format("YYYY-MM-DD"));
     setTitleDate(dayjs(date).format(`YYYY년 MM월 DD일(${weekDays[weekd]})`));
-  };
-
-  //줄을 넘어가면 swal로 알려주고 내용 삭제..
-  const maxRowAlert = (error) => {
-    let text;
-    if (error === "enter") {
-      text =
-        "입력 가능한 줄을 초과했어요! 글자크기를 줄이시거나 내용을 줄여주세요.";
-    } else if (error === "length") {
-      text =
-        "입력가능한 글자수를 초과했어요! 글자크기를 줄이시거나 내용을 줄여주세요.";
-    }
-    Swal.fire({
-      icon: "error",
-      title: "입력 불가",
-      text: text,
-      confirmButtonText: "확인",
-      confirmButtonColor: "#85bd82",
-      timer: 5000,
-    }).then(() => {
-      let textValue = document.getElementById("board-input");
-      textValue.value = textValue.value.slice(0, -2);
-
-      textValue.innerText = textValue.value;
-    });
   };
 
   //전체내용 삭제함수
@@ -388,18 +363,6 @@ const Alarm = (props) => {
 
   return (
     <div>
-      {/* 잼잼 첫 화면으로 넘어가는 x 버튼 div */}
-      <div>
-        <button
-          className={classes["exit-btn"]}
-          onClick={() => {
-            props.alarmClose();
-          }}
-        >
-          <i className="fa-solid fa-xmark"></i>
-        </button>
-      </div>
-
       {/* 알림장 전체 div */}
       <div className={classes["alarm-all"]}>
         {/* 날짜 화면 보여주기 */}
@@ -469,9 +432,6 @@ const Alarm = (props) => {
               }
               alarm={true}
               fontSize={fontSize}
-              maxRowAlert={(error) => {
-                maxRowAlert(error);
-              }}
             />
           </div>
           {/* 칠판 설정 버튼 모음 */}

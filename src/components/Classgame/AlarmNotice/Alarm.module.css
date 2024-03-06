@@ -1,6 +1,6 @@
 .exit-btn {
   position: absolute;
-  top: 225px;
+  top: 180px;
   right: 3%;
   padding: 10px;
   width: 50px;
@@ -16,12 +16,12 @@
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  width: 95%;
+  width: 100%;
 }
 
 .board {
   margin: 20px 0;
-  width: 98%;
+  width: 100%;
 }
 
 .holidayData {
@@ -58,12 +58,13 @@
   display: flex;
   align-items: center;
   height: 60px;
+  justify-content: center;
 }
 
 .setting {
   font-size: 0.8rem;
   position: absolute;
-  right: 30px;
+  right: 35px;
   display: flex;
   flex-direction: column;
   width: 65px;

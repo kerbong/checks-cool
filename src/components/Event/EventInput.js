@@ -27,7 +27,7 @@ const EventInput = (props) => {
   const noteRef = useRef(null);
 
   useEffect(() => {
-    if (atdOption !== "1현장체험" && atdOption !== "3가정학습") {
+    if (atdOption !== "1교외체험" && atdOption !== "3가정학습") {
       setReportSubmit(false);
       setRequestSubmit(false);
     }
@@ -216,7 +216,7 @@ const EventInput = (props) => {
 
       //출결에는 서류 제출부분 추가해서 보냄.
       if (props.about === "attendance") {
-        if (atdOption === "1현장체험" || atdOption === "3가정학습") {
+        if (atdOption === "1교외체험" || atdOption === "3가정학습") {
           new_data["request"] = requestSubmit;
           new_data["report"] = reportSubmit;
         } else {
@@ -286,7 +286,7 @@ const EventInput = (props) => {
               <>
                 {/* 학생서류 제출했는지 체크하는 버튼 */}
                 {/* 분류에 따라.. 보이는 게 바뀜. */}
-                {atdOption !== "1현장체험" && atdOption !== "3가정학습" ? (
+                {atdOption !== "1교외체험" && atdOption !== "3가정학습" ? (
                   <>
                     <Button
                       className={

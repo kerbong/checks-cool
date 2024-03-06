@@ -14,26 +14,6 @@ const Input = React.forwardRef((props, ref) => {
     setValue(props.defaultValue);
   }, [props.defaultValue]);
 
-  const maxRowsLength = () => {
-    let limitRow;
-    if (props.fontSize === "40px") {
-      limitRow = "10-900";
-    } else if (props.fontSize === "50px") {
-      limitRow = "9-310";
-    } else if (props.fontSize === "60px") {
-      limitRow = "8-190";
-    } else if (props.fontSize === "70px") {
-      limitRow = "7-150";
-    } else if (props.fontSize === "80px") {
-      limitRow = "6-120";
-    }
-    if (/iPhone|iPad|iPod|Android/i.test(window.navigator.userAgent)) {
-      limitRow = "25-400";
-    }
-
-    return limitRow;
-  };
-
   const changeHandler = (e) => {
     setValue(noteRef.current.value);
     if (props.getValue) {
@@ -62,52 +42,12 @@ const Input = React.forwardRef((props, ref) => {
     noteRef.current.style.height = props.startheight;
   }, [props.startheight]);
 
-  //알림장용 로직..
-  const rowAlert = () => {
-    let limitRow = maxRowsLength()?.split("-")?.[0];
-    let limitLength = maxRowsLength()?.split("-")?.[1];
-    let rows = noteRef.current.value.split("\n");
-    let row_length = Math.ceil(
-      (noteRef.current.clientWidth - 50) / (+props.fontSize.slice(0, 2) + 2)
-    );
-
-    //수정된 전체 줄수
-    let fixed_rows = rows.length;
-
-    //줄수 검증
-    rows.forEach((text) => {
-      let text_row = Math.floor(text.length / row_length);
-      if (text_row > 1) {
-        fixed_rows += text_row;
-      }
-    });
-    //윈도우 세로에 들어갈 줄 엔터 과다
-    if (+fixed_rows > +limitRow) {
-      props.maxRowAlert("enter");
-    } else if (noteRef.current.value.length > +limitLength) {
-      props.maxRowAlert("length");
-    }
-  };
-
-  useEffect(() => {
-    // console.log(props.fontSize);
-    if (props.fontSize !== "" && props.fontSize !== undefined) {
-      rowAlert();
-    }
-  }, [props.fontSize]);
-
   const handleResizeHeight = (e) => {
     if (noteRef === null || noteRef.current === null) {
       return;
     }
 
-    if (props.alarm) {
-      //스크롤을 가장 아래로 내리기..
-      window.scrollTo(0, noteRef.current.scrollHeight / 2);
-      rowAlert();
-
-      return;
-    }
+    if (props.alarm) return;
     noteRef.current.style.height = "10px";
     noteRef.current.style.height = noteRef.current.scrollHeight - 13 + "px";
   };

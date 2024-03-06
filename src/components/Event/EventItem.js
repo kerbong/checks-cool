@@ -94,7 +94,15 @@ const EventItem = (props) => {
   };
 
   const selectChangeHandler = (e) => {
-    setSelectValue(e.target.value);
+    if (props.about.slice(0, 4) !== "todo") {
+      Swal.fire(
+        "옵션 변경불가!",
+        "이미 입력한 자료의 출결 옵션은 변경할 수 없습니다. 자료를 새롭게 생성해주세요!",
+        "warning"
+      );
+    } else {
+      setSelectValue(e.target.value);
+    }
   };
 
   useEffect(() => {

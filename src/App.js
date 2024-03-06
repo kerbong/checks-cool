@@ -25,6 +25,7 @@ const SimpleRandom = lazy(() =>
   import("./components/Classgame/SimpleRandom/SimpleRandom")
 );
 const GroupPage = lazy(() => import("./components/page/GroupPage"));
+const Alarm = lazy(() => import("./components/Classgame/AlarmNotice/Alarm.js"));
 
 const ManageStudentInfo = lazy(() =>
   import("./components/page/ManageStudentInfo")
@@ -68,7 +69,7 @@ function App() {
   const [isStudent, setIsStudent] = useState(false);
   const [padItInfo, setPadItInfo] = useState({});
   const [isMobile, setIsMobile] = useState(false);
-  const [navigateGroupPage, setNavigateGroupPage] = useState(false);
+  const [navigatePage, setNavigatePage] = useState("");
 
   let navigate = useNavigate();
 
@@ -122,8 +123,10 @@ function App() {
     } else if (userUid) {
       getStudents(userUid);
 
-      if (navigateGroupPage) {
+      if (navigatePage === "groupPage") {
         navigate("/groupPage");
+      } else if (navigatePage === "alarm") {
+        navigate("/alarm");
       }
 
       //로그인해서 7~9시면 아침미션 화면 먼저 보여주기
@@ -273,7 +276,9 @@ function App() {
       });
       setIsStudent(true);
     } else if (address.includes("groupPage")) {
-      setNavigateGroupPage(true);
+      setNavigatePage("groupPage");
+    } else if (address.includes("alarm")) {
+      setNavigatePage("alarm");
     }
   }, []);
 
@@ -290,7 +295,7 @@ function App() {
     <div>
       <div className={menuOnHead ? "App" : "App-bottom"}>
         {/* 모둠화면이 아닐때만 보여주기 */}
-        {!navigateGroupPage && (
+        {navigatePage === "" && (
           <Header
             isLoggedIn={isLoggedIn}
             user={isLoggedIn && user}
@@ -380,6 +385,7 @@ function App() {
                       email={user.email}
                       nickName={profile?.nickName || ""}
                       isSubject={profile?.isSubject || []}
+                      menuOnHead={menuOnHead}
                     />
                   }
                 />
@@ -394,6 +400,8 @@ function App() {
                     />
                   }
                 />
+
+                <Route path="alarm" element={<Alarm userUid={userUid} />} />
 
                 <Route
                   path="weteacher"

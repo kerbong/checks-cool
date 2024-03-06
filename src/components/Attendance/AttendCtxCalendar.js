@@ -33,18 +33,6 @@ const AttendCtxCalendar = (props) => {
 
   const selectRef = useRef();
 
-  //기존 화면의 이벤트들 지우기
-  const removeScreenEvents = () => {
-    //기존에 있던 화면에 그려진 이벤트들 지워주기
-    document.querySelectorAll(".eventBtn").forEach((btn) => {
-      btn.remove();
-    });
-    //이벤트가 있던 날짜의 배경색도 초기화
-    document
-      .querySelectorAll(".react-datepicker__day[style]")
-      .forEach((tag) => (tag.style.backgroundColor = ""));
-  };
-
   //firestore에서 해당 이벤트 자료 받아오기
   const getAttendsFromDb = async () => {
     //db에서 attend DB가져오고 작성자가 현재 유저와 동일한지 확인하고 events에 추가하기
@@ -208,7 +196,7 @@ const AttendCtxCalendar = (props) => {
         // 기존 코드, eventByDays 자료에 지금 날짜와 같은 자료가 있는지 확인해서 새로운 배열에 넣기
         // console.log(yyyymmdd.split("-")[2]);
         let new_eventOnDay = events?.filter(
-          (event) => event?.id?.slice(5, 10) === yyyymmdd?.slice(5, 10)
+          (event) => event?.id?.slice(0, 10) === yyyymmdd?.slice(0, 10)
         );
         //만약 오늘 날짜에 해당하는 게 있으면
         if (new_eventOnDay.length > 0) {
@@ -290,6 +278,7 @@ const AttendCtxCalendar = (props) => {
 
       events?.forEach(function (data) {
         //새로 업데이트한 로직(년 월 일 데이터에 따로 저장)
+
         const day = "0" + data?.id?.slice(8, 10);
 
         // // 2022-08-03

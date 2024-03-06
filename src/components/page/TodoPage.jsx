@@ -232,7 +232,7 @@ const TodoPage = (props) => {
               // events는 [{할일},{할일}] events 자료에 지금 날짜와 같은 자료가 있는지 확인해서 새로운 배열에 넣기
               let new_eventOnDay = events?.filter(
                 // (event) => event?.id?.slice(8, 10) === yyyymmdd.split("-")[2]
-                (event) => event?.id?.slice(5, 10) === yyyymmdd?.slice(5, 10)
+                (event) => event?.id?.slice(0, 10) === yyyymmdd?.slice(0, 10)
               );
               // 만약 오늘 날짜에 해당하는 게 있으면
               if (new_eventOnDay.length > 0) {

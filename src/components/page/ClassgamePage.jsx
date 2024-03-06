@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Button from "../Layout/Button";
 import classes from "../Classgame/SettingSeat/SettingSeat.module.css";
 import TitleBtn from "components/Memo/TitleBtn";
 
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import SettingSeat from "../Classgame/SettingSeat/SettingSeat";
 import RandomPick from "../Classgame/RandomPick/RandomPick";
-import Alarm from "components/Classgame/AlarmNotice/Alarm";
+
 import PadIt from "components/page/PadIt";
 
 const ClassgamePage = (props) => {
@@ -192,9 +192,15 @@ const ClassgamePage = (props) => {
                 name={"알림장"}
                 className={"settingSeatSelect"}
                 onclick={() => {
-                  setSelectedMenu("alarm");
+                  const specificString = "alarm";
+                  const encodedString = encodeURIComponent(specificString);
+                  let urlHref = window.location.href;
+                  const url = `${
+                    urlHref?.split("/classgame")?.[0]
+                  }/${encodedString}`;
+                  window.open(url, "_blank");
                 }}
-                title="자동저장이 가능한 보기 편한 칠판형태의 알림장"
+                title="새창) 자동저장이 가능한 칠판형태의 알림장"
                 icon={ICONS_LEFT[3]}
               />
 
@@ -260,29 +266,28 @@ const ClassgamePage = (props) => {
                 style={{ backgroundColor: "#9ad237" }}
               />
             </div>
-            <p>타임캡슐 주소 👉 bit.ly/두근두근타임캡슐</p>
+            <p>타임캡슐 주소 👉 https://bit.ly/두근두근타임캡슐</p>
             <p>
               타임캡슐 비밀번호{" "}
               <span style={{ color: "white" }}>from-indi</span> (왼쪽을 마우스로
               드래그 해주세요!){" "}
             </p>
-            <p>타이머 주소 👉 bit.ly/심플타이머</p>
+            <p>타이머 주소 👉 https://bit.ly/심플타이머</p>
           </>
         )}
 
         <div className={classes["container-div"]}>
           {selectedMenu === "settingSeat" && (
-            <SettingSeat students={props.students} userUid={props.userUid} />
+            <SettingSeat
+              students={props.students}
+              userUid={props.userUid}
+              menuOnHead={props.menuOnHead}
+            />
           )}
           {selectedMenu === "randomPick" && (
             <RandomPick students={props.students} userUid={props.userUid} />
           )}
-          {selectedMenu === "alarm" && (
-            <Alarm
-              alarmClose={() => setSelectedMenu("")}
-              userUid={props.userUid}
-            />
-          )}
+
           {selectedMenu === "padIt" && (
             <PadIt
               userUid={props.userUid}

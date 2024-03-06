@@ -1583,7 +1583,11 @@ const SeatTable = (props) => {
         ref={div1Ref}
       >
         {genderEmptySeat && (
-          <button className={classes["secret"]} onClick={secretSaveHandler}>
+          <button
+            className={classes["secret"]}
+            onClick={secretSaveHandler}
+            style={!props.menuOnHead ? { top: "10px" } : {}}
+          >
             비밀버튼
           </button>
         )}

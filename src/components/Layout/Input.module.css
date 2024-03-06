@@ -86,28 +86,13 @@ input {
   color: whitesmoke;
   border-width: 0;
   font-size: 50px;
-  overflow-y: hidden;
-  width: 90%;
-  border-radius: 20px;
+  overflow-y: auto;
+  border-radius: 10px;
   resize: none;
   min-height: 77vh;
   background-color: rgb(0, 51, 0);
-  padding: 25px;
-}
-
-@media screen and (min-width: 800px) {
-  .board-input {
-    width: 95%;
-  }
-}
-
-@media screen and (min-width: 1000px) {
-  .board-input {
-    width: 98%;
-  }
-}
-
-.board-input-half {
+  padding: 25px 120px 25px 25px;
+  width: calc(100% - 160px);
 }
 
 .fs-80px {

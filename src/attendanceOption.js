@@ -1,5 +1,5 @@
 let attendanceOption = [
-  { class: "현장체험", id: "1", value: "1현장체험" },
+  { class: "교외체험", id: "1", value: "1교외체험" },
   { class: "질병결석", id: "2", value: "2질병결석" },
   { class: "가정학습", id: "3", value: "3가정학습" },
   { class: "경조사", id: "4", value: "4경조사" },

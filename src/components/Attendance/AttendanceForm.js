@@ -135,7 +135,7 @@ const AttendanceForm = (props) => {
       };
 
       //서류 제출부분 추가
-      if (option === "1현장체험" || option === "3가정학습") {
+      if (option === "1교외체험" || option === "3가정학습") {
         data["request"] = requestSubmit;
         data["report"] = reportSubmit;
       } else {
@@ -372,7 +372,7 @@ const AttendanceForm = (props) => {
             {/* 학생서류 제출했는지 체크하는 버튼 */}
             {props.about === "attendance" && (
               <>
-                {option === "1현장체험" || option === "3가정학습" ? (
+                {option === "1교외체험" || option === "3가정학습" ? (
                   <>
                     <Button
                       className={

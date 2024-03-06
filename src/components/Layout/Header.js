@@ -36,7 +36,10 @@ const Header = (props) => {
 
   return (
     <>
-      <nav className={classes[props.menuOnHead ? "header" : "header-bottom"]}>
+      <nav
+        className={classes[props.menuOnHead ? "header" : "header-bottom"]}
+        id="header-menu"
+      >
         <h2 className={classes.h2}>
           <img
             src={process.env.PUBLIC_URL + "/logo.png"}

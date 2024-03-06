@@ -259,10 +259,10 @@
 }
 
 .secret {
-  position: fixed;
+  position: absolute;
   top: 65px;
   left: 5px;
-  padding: 18px 37px;
+  padding: 20px 45px;
   background-color: #ffffff00;
   color: #ffffff00;
   border-width: 0;

@@ -45,9 +45,11 @@ const SettingSeat = (props) => {
 
       //전출학생의 전출 날짜와 오늘 날짜를 비교해서.. 전출이 과거인 경우(이미 전학감) 전체 학생 목록에서 빼주기
       const yyyy_mm_dd = dayjs().format("YYYY-MM-DD");
-      const now_goneStds = new_goneStds.filter((std) => yyyy_mm_dd > std.date);
+      const now_goneStds = new_goneStds?.filter((std) => yyyy_mm_dd > std.date);
 
-      setGoneStudents(now_goneStds);
+      if (now_goneStds?.length > 0) {
+        setGoneStudents(now_goneStds);
+      }
     }
   };
 
@@ -298,6 +300,7 @@ const SettingSeat = (props) => {
             wholeStudents={props.students}
             isNew={true}
             goneStudents={goneStudents}
+            menuOnHead={props.menuOnHead}
           />
           {showHowToUse}
         </>
@@ -316,7 +319,11 @@ const SettingSeat = (props) => {
           >
             <i className="fa-solid fa-plus"></i>
           </button>
-          <SeatLists userUid={props.userUid} wholeStudents={props.students} />
+          <SeatLists
+            userUid={props.userUid}
+            wholeStudents={props.students}
+            menuOnHead={props.menuOnHead}
+          />
         </>
       )}
 
@@ -354,6 +361,7 @@ const SettingSeat = (props) => {
             wholeStudents={props.students}
             isNew={true}
             goneStudents={goneStudents}
+            menuOnHead={props.menuOnHead}
           />
           {/* 사용방법 */}
           {showHowToUse}

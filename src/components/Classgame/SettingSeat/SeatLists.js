@@ -118,6 +118,7 @@ const SeatLists = (props) => {
                 }}
                 clName={item.clName}
                 showJustLists={false}
+                menuOnHead={props.menuOnHead}
               />
               <hr />
             </li>
