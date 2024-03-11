@@ -146,10 +146,186 @@ const GroupPage = (props) => {
   const [giftName, setGiftName] = useState("");
   const [giftScore, setGiftScore] = useState(1);
   const [giftClass, setGiftClass] = useState("");
+  const [randomPick, setRandomPick] = useState("");
+  // 뽑힌 학생의 인덱스
+  const [selectedStudent, setSelectedStudent] = useState(null);
+  // 학생 뽑기 시작 상태를 관리하는 state
+  const [isDrawing, setIsDrawing] = useState("");
+  // 발표한 학생들 인덱스 모아두는 배열
+  const [doneStds, setDoneStds] = useState([]);
+  const [nowSelected, setNowSelected] = useState("");
+  //개별 점수 한번에 주는 학생 인덱스 모아두는 배열
+  const [clickedStds, setClickedStds] = useState([]);
 
   const autoSaveGroupDatas = useRef(null);
   const selectRef = useRef();
   const menuRef = useRef();
+  const timerId = useRef(null); // useRef를 사용하여 타이머 ID 저장
+  const delayCount = useRef(0);
+  // 뽑혔던 학생들 저장하는 배열
+  const selectedStds = useRef([]);
+
+  /**모둠뽑기 부분 로직! */
+  const groupPickHandler = (groupOrPerson) => {
+    // 모둠뽑기인데 모둠 설정 없으면
+    if (groupOrPerson === "group" && groupInfo?.length === 0) {
+      Swal.fire(
+        "모둠없음!",
+        "설정된 모둠이 없어서 모둠 뽑기가 불가능해요! 먼저 화면 우측 상단의 설정 버튼을 눌러서 모둠을 생성해주세요."
+      );
+      return;
+      // 존재하는 뽑기 결과가 있으면
+    } else if (selectedStds?.current?.length > 0) {
+      Swal.fire({
+        title: "뽑기 결과 초기화",
+        html: `기존에 존재하던 뽑기 결과를 초기화 하고 새로 뽑기를 시작할까요?<br/> <b>** 되돌리기 불가능!!</b>`,
+        showDenyButton: true,
+        confirmButtonText: "초기화",
+        confirmButtonColor: "#db100cf2",
+        denyButtonColor: "#85bd82",
+        denyButtonText: `취소`,
+        icon: "warning",
+      }).then((result) => {
+        /* Read more about isConfirmed, isDenied below */
+        if (result.isConfirmed) {
+          selectedStds.current = [];
+          setDoneStds([]);
+          setSelectedStudent(null);
+          clearTimeout(timerId.current);
+
+          setRandomPick(groupOrPerson);
+        }
+      });
+      //새로시작하면...
+    } else {
+      clearTimeout(timerId.current);
+      setRandomPick(groupOrPerson);
+    }
+  };
+
+  const doneStdsHandler = (ind) => {
+    //있던거면 지워주기
+    if (doneStds?.includes(ind)) {
+      setDoneStds((prev) => prev?.filter((stdInd) => stdInd !== ind));
+
+      // 없던거면 추가하기
+    } else {
+      setDoneStds((prev) => [...prev, ind]);
+    }
+  };
+
+  // 학생 뽑기 버튼(한번에 한명만) 클릭 핸들러
+  const handleDrawStudent = (isOneAll) => {
+    // 모둠뽑기인데 모둠 설정 없으면
+    if (randomPick === "group" && groupInfo?.length === 0) {
+      Swal.fire(
+        "모둠없음!",
+        "설정된 모둠이 없어서 모둠 뽑기가 불가능해요! 먼저 화면 우측 상단의 설정 버튼을 눌러서 모둠을 생성해주세요."
+      );
+      return;
+      // 존재하는 뽑기 결과가 있으면
+    }
+    setIsDrawing(isOneAll);
+  };
+
+  function selectStudent(isOneAll) {
+    if (isDrawing === "") return;
+
+    // 빈자리를 제외한  stdLength와 뽑힌 학생의 length가 같으면 실행취소!
+    let stdLength =
+      randomPick === "person"
+        ? nowDatas?.students?.filter((std) => isNaN(+std))?.length
+        : groupInfo?.length;
+
+    if (stdLength <= selectedStds.current?.length) {
+      delayCount.current = 0; // delayCount 리셋
+      clearTimeout(timerId.current);
+      setIsDrawing("");
+      return;
+    }
+
+    let randomIndex =
+      randomPick === "person"
+        ? Math.floor(Math.random() * nowDatas?.students.length)
+        : Math.floor(Math.random() * groupInfo?.length);
+    // 학생자리가 숫자면... 다시뽑기! + 이미 뽑혔던 학생이면... 다시뽑기!
+
+    if (randomPick === "person") {
+      // 다시뽑는 로직.
+      while (
+        !isNaN(+nowDatas?.students?.[randomIndex]) ||
+        selectedStds.current.includes(randomIndex)
+      ) {
+        randomIndex = Math.floor(Math.random() * nowDatas.students.length);
+      }
+    } else {
+      while (selectedStds.current.includes(randomIndex)) {
+        randomIndex = Math.floor(Math.random() * groupInfo?.length);
+      }
+    }
+
+    setSelectedStudent(randomIndex);
+
+    let delay = 200 + delayCount.current * 80; // delayCount의 현재 값을 사용
+    delayCount.current += 1; // delayCount 값을 업데이트
+
+    let stdGroupLength = isOneAll === "one" ? 12 : 5;
+
+    if (delayCount.current >= stdGroupLength) {
+      if (isOneAll === "one") {
+        // 학생 뽑혔음!!
+        delayCount.current = 0; // delayCount 리셋
+        clearTimeout(timerId.current);
+        setIsDrawing("");
+        //뽑힌 학생들 인덱스에 추가
+        selectedStds.current = [...selectedStds.current, randomIndex];
+        setNowSelected(randomPick);
+
+        let stdName;
+        if (randomPick === "person") {
+          stdName = nowDatas?.students?.[randomIndex];
+        } else if (!groupInfo?.[randomIndex]?.groupName?.includes("모둠")) {
+          stdName = groupInfo?.[randomIndex]?.groupName + "모둠";
+        } else {
+          stdName = groupInfo?.[randomIndex]?.groupName;
+        }
+
+        Swal.fire({
+          title: `${stdName} 당첨!!`,
+          html:
+            randomPick === "person"
+              ? `<img src="${
+                  characters?.filter((st) => st?.name === stdName)?.[0]?.url ||
+                  CHARACTERS[0]
+                }" alt="" class="${classes["swal-image"]}"/>`
+              : "🎉✨🎊",
+          showDenyButton: false,
+          confirmButtonText: "확인",
+        });
+
+        //다 뽑기상태면 all
+      } else {
+        //전체 뽑기면.. 뽑힌 학생들 인덱스에 추가하고 다시 초기화해서 시작하기
+        //뽑힌 학생들 인덱스에 추가
+        selectedStds.current = [...selectedStds.current, randomIndex];
+        setNowSelected(randomPick);
+        delayCount.current = 0; // delayCount 리셋
+        clearTimeout(timerId.current);
+        timerId.current = setTimeout(() => selectStudent(isOneAll), delay);
+      }
+    } else {
+      timerId.current = setTimeout(() => selectStudent(isOneAll), delay);
+    }
+  }
+
+  useEffect(() => {
+    if (isDrawing === "") return;
+
+    selectStudent(isDrawing);
+
+    // 컴포넌트 unmount 시에 타이머를 clear한다.
+    return () => clearTimeout(timerId.current);
+  }, [isDrawing]);
 
   const handleMouseEnter = (what, index) => {
     setHoveredIndex(String(what + index));
@@ -522,6 +698,16 @@ const GroupPage = (props) => {
       }
       setUnSubmitStudents(new_unSubmitStudents);
     } else if (menuFunc === "개별" && addOrLoad === "add") {
+      // 현재 아무것도 아닌 상태일때, 학생클릭하면.. 개인점수 한 번에 주기 버튼 생김!
+    } else {
+      // 만약 클릭된 자리가.. 그냥 빈자리 숫자면 작동하지 않도록!!
+      if (!isNaN(+name)) return;
+
+      if (clickedStds?.includes(+stdInd)) {
+        setClickedStds((prev) => prev?.filter((p) => p !== +stdInd));
+      } else {
+        setClickedStds((prev) => [...prev, +stdInd]);
+      }
     }
   };
 
@@ -960,7 +1146,22 @@ const GroupPage = (props) => {
 
   /** 그룹에 꿀땅 혹은 개별점수 누르면 점수 반영되는 함수 */
   const grPointsHandler = (what, std_ind) => {
-    if (what === "honey-plus") {
+    if (what === "heart-minus-stds") {
+      let new_stdPoints = [...stdPoints];
+      clickedStds?.forEach((cl_std_ind) => {
+        let std_point = new_stdPoints[cl_std_ind];
+        if (std_point > 0) {
+          new_stdPoints[cl_std_ind] -= 1;
+        }
+      });
+      setStdPoints(new_stdPoints);
+    } else if (what === "heart-plus-stds") {
+      let new_stdPoints = [...stdPoints];
+      clickedStds?.forEach((cl_std_ind) => {
+        new_stdPoints[cl_std_ind] += 1;
+      });
+      setStdPoints(new_stdPoints);
+    } else if (what === "honey-plus") {
       let new_groupInfo = [...groupInfo];
       new_groupInfo[std_ind].grPoints += 1;
 
@@ -1523,11 +1724,22 @@ const GroupPage = (props) => {
     });
   };
 
-  /** 모든 캐릭터 초기화 */
-  const resetCharacters = () => {
+  /** 모든 캐릭터/뽑힌 학생 초기화 */
+  const resetChOrStds = (chOrStd) => {
     Swal.fire({
-      title: "캐릭터 초기화!",
-      html: `모든 학생의 캐릭터를 초기화 합니다! <br/><b>초기화할까요?</b> `,
+      title:
+        chOrStd === "ch"
+          ? "캐릭터 초기화!"
+          : randomPick === "preson"
+          ? "뽑힌 학생 초기화!"
+          : "뽑힌 모둠 초기화!",
+      html: `${
+        chOrStd === "ch"
+          ? "모든 학생의 캐릭터를"
+          : randomPick === "preson"
+          ? "뽑힌 학생 목록을"
+          : "뽑힌 모둠 목록을"
+      } 초기화 합니다! <br/><b>초기화할까요?</b> `,
       showDenyButton: true,
       confirmButtonText: "초기화",
       confirmButtonColor: "#db100cf2",
@@ -1536,10 +1748,16 @@ const GroupPage = (props) => {
       icon: "warning",
     }).then((result) => {
       if (result.isConfirmed) {
-        let new_characters = [...characters]?.map((stdChrac) => {
-          return { ...stdChrac, url: "" };
-        });
-        setCharacters(new_characters);
+        if (chOrStd === "ch") {
+          let new_characters = [...characters]?.map((stdChrac) => {
+            return { ...stdChrac, url: "" };
+          });
+          setCharacters(new_characters);
+        } else {
+          selectedStds.current = [];
+          setDoneStds([]);
+          setSelectedStudent(null);
+        }
       }
     });
   };
@@ -1586,9 +1804,16 @@ const GroupPage = (props) => {
             variants={MOTION_VAR}
             key={gr_ind}
             className={classes["gr-div"]}
-            style={{
-              backgroundColor: gr?.color || GROUP_BGCOLOR[gr_ind],
-            }}
+            style={
+              menuFunc === "뽑기" &&
+              randomPick === "group" &&
+              (gr_ind === selectedStudent ||
+                selectedStds?.current?.includes(gr_ind))
+                ? { backgroundColor: "yellow" }
+                : {
+                    backgroundColor: gr?.color || GROUP_BGCOLOR[gr_ind],
+                  }
+            }
             onMouseEnter={() => handleMouseEnter("group", gr_ind)}
             onMouseLeave={handleMouseLeave}
           >
@@ -2239,7 +2464,7 @@ const GroupPage = (props) => {
               >
                 <Button
                   name={"캐릭터 초기화"}
-                  onclick={resetCharacters}
+                  onclick={() => resetChOrStds("ch")}
                   className={"groupPage-add"}
                 />
               </div>
@@ -2675,6 +2900,7 @@ const GroupPage = (props) => {
                   onclick={() => {
                     setMenuFunc("출결");
                   }}
+                  style={menuRight ? { width: "92px" } : {}}
                 />
                 <Button
                   name="&nbsp; 제출"
@@ -2688,6 +2914,7 @@ const GroupPage = (props) => {
                   onclick={() => {
                     setMenuFunc("제출");
                   }}
+                  style={menuRight ? { width: "92px" } : {}}
                 />
                 <Button
                   name="&nbsp; 개별"
@@ -2701,6 +2928,7 @@ const GroupPage = (props) => {
                   onclick={() => {
                     setMenuFunc("개별");
                   }}
+                  style={menuRight ? { width: "92px" } : {}}
                 />
                 <Button
                   name="&nbsp; 상담"
@@ -2714,6 +2942,7 @@ const GroupPage = (props) => {
                   onclick={() => {
                     setMenuFunc("상담");
                   }}
+                  style={menuRight ? { width: "92px" } : {}}
                 />
                 <Button
                   name="&nbsp; 보상"
@@ -2722,6 +2951,18 @@ const GroupPage = (props) => {
                   onclick={() => {
                     setMenuFunc("보상");
                   }}
+                  style={menuRight ? { width: "92px" } : {}}
+                />
+                <Button
+                  name="&nbsp; 뽑기"
+                  className={"groupPage-btn"}
+                  icon={
+                    <i className="fa-solid fa-shuffle" aria-hidden="true"></i>
+                  }
+                  onclick={() => {
+                    setMenuFunc("뽑기");
+                  }}
+                  style={menuRight ? { width: "92px" } : {}}
                 />
                 {/*  */}
                 <div className={classes["autoSave-expl"]}>
@@ -2752,7 +2993,7 @@ const GroupPage = (props) => {
                     </>
                   )}
 
-                {/* 제출이나 개별기록의 경우, 저장버튼 만들어주기 */}
+                {/* 보상일 때 보여질 버튼들 */}
                 {menuFunc === "보상" && (
                   <>
                     <Button
@@ -2795,13 +3036,90 @@ const GroupPage = (props) => {
                   </>
                 )}
 
+                {/* 뽑기일때 보여질 버튼들 */}
+                {menuFunc === "뽑기" && (
+                  <>
+                    {/* 아직 모둠/ 개인 선택하지 않은 상태 */}
+                    {randomPick === "" && (
+                      <>
+                        <span className={classes["pickSpan"]}>뽑기</span>
+                        <Button
+                          icon={<i className="fa-solid fa-users-rectangle"></i>}
+                          title="모둠의 순서를 정하는 뽑기"
+                          name="&nbsp;모둠"
+                          style={{ justifyContent: "space-between" }}
+                          className={"groupPage-btn"}
+                          onclick={() => groupPickHandler("group")}
+                        />
+                        <Button
+                          icon={<i className="fa-solid fa-user fa-md"></i>}
+                          title="개인별 순서를 정하는 뽑기"
+                          style={{ justifyContent: "space-between" }}
+                          name="&nbsp;개별"
+                          className={"groupPage-btn"}
+                          onclick={() => groupPickHandler("person")}
+                        />
+                      </>
+                    )}
+
+                    {/* 랜덤뽑기에서 개인 혹은 모둠 뽑기 상태 */}
+                    {randomPick !== "" && (
+                      <>
+                        <span className={classes["pickSpan"]}>
+                          {randomPick === "person" ? "개별 뽑기" : "모둠 뽑기"}
+                        </span>
+                        {/* 한번에 */}
+                        <Button
+                          icon={<i className="fa-solid fa-users-rectangle"></i>}
+                          title="버튼을 누르면 한 번에 모든 순서가 보여요!"
+                          name="한번에"
+                          className={"groupPage-btn"}
+                          style={{
+                            width: "100px",
+                            justifyContent: "space-between",
+                          }}
+                          onclick={() => handleDrawStudent("all")}
+                        />
+                        <Button
+                          icon={<i className="fa-solid fa-user fa-md"></i>}
+                          style={{
+                            width: "100px",
+                            justifyContent: "space-between",
+                          }}
+                          title={
+                            randomPick === "person"
+                              ? "버튼을 누르면 한명씩 뽑혀요!"
+                              : "버튼을 누르면 한 모둠씩 뽑혀요!"
+                          }
+                          name={randomPick === "person" ? "한명씩" : "한모둠"}
+                          className={"groupPage-btn"}
+                          onclick={() => handleDrawStudent("one")}
+                        />
+                      </>
+                    )}
+                  </>
+                )}
+
                 <Button
                   name="&nbsp; 취소"
                   className={"groupPage-btn"}
                   icon={<i className="fa-regular fa-circle-xmark"></i>}
                   onclick={() => {
-                    setMenuFunc("");
-                    setAddOrLoad("");
+                    if (menuFunc !== "뽑기") {
+                      setMenuFunc("");
+                      setAddOrLoad("");
+                    } else if (randomPick === "") {
+                      setMenuFunc("");
+                      setAddOrLoad("");
+                      clearTimeout(timerId.current);
+                      setSelectedStudent(null);
+                    } else {
+                      clearTimeout(timerId.current);
+
+                      setRandomPick("");
+                      setIsDrawing("");
+                      setSelectedStudent(null);
+                    }
                   }}
                 />
               </>
@@ -2902,17 +3220,55 @@ const GroupPage = (props) => {
           className={classes["header-center"]}
           style={{ flexDirection: "column" }}
         >
-          {groupMakingStep === MAKE_STEP[0] && menuFunc === "" && (
-            <div
-              className={classes["header-title"]}
-              style={!menuRight ? { marginTop: "70px" } : {}}
-            >
-              <span className={classes["title-span"]}>
-                {nowDatas?.id?.slice(0, 10)}
-              </span>
-              {nowDatas?.title}
-            </div>
-          )}
+          {groupMakingStep === MAKE_STEP[0] &&
+            menuFunc === "" &&
+            clickedStds?.length === 0 && (
+              <div
+                className={classes["header-title"]}
+                style={!menuRight ? { marginTop: "70px" } : {}}
+              >
+                <span className={classes["title-span"]}>
+                  {nowDatas?.id?.slice(0, 10)}
+                </span>
+                {nowDatas?.title}
+              </div>
+            )}
+
+          {/* 학생을 클릭하면 보일 .. 한번에 점수 올리는 버튼  */}
+          {groupMakingStep === MAKE_STEP[0] &&
+            menuFunc === "" &&
+            clickedStds?.length !== 0 && (
+              <div
+                className={classes["header-clicked-title"]}
+                style={!menuRight ? { marginTop: "70px" } : {}}
+              >
+                <Button
+                  title="클릭했던 학생들 초기화"
+                  name="&nbsp;초기화"
+                  icon={<VscDebugRestart />}
+                  onclick={() => setClickedStds([])}
+                  className={"groupPage-btn"}
+                  style={{ display: "inline" }}
+                />
+                선택학생 한 번에
+                <span
+                  className={classes["plus-all"]}
+                  onClick={() => {
+                    grPointsHandler("heart-plus-stds");
+                  }}
+                >
+                  <i className="fa-solid fa-heart-circle-plus"></i>
+                </span>
+                <span
+                  className={classes["minus-all"]}
+                  onClick={() => {
+                    grPointsHandler("heart-minus-stds");
+                  }}
+                >
+                  <i className="fa-solid fa-heart-circle-minus"></i>
+                </span>
+              </div>
+            )}
 
           {groupMakingStep === MAKE_STEP[0] && menuFunc === "출결" && (
             <>
@@ -2925,6 +3281,60 @@ const GroupPage = (props) => {
               <div>* 자료를 등록할 학생을 클릭해주세요.</div>
             </>
           )}
+
+          {groupMakingStep === MAKE_STEP[0] &&
+            selectedStds?.current?.length > 0 && (
+              <>
+                <div
+                  style={
+                    !menuRight && menuFunc === "뽑기"
+                      ? { marginTop: "70px" }
+                      : {}
+                  }
+                  className={classes["picked-div"]}
+                >
+                  {/* 뽑힌 학생이 존재하면, 초기화 버튼도 보여주기. */}
+
+                  <Button
+                    title="뽑기 초기화"
+                    name="&nbsp;뽑기 초기화"
+                    icon={<VscDebugRestart />}
+                    onclick={() => resetChOrStds("std")}
+                    className={"groupPage-btn"}
+                    style={{ display: "inline" }}
+                  />
+
+                  {selectedStds?.current?.map((stInd, ind) => (
+                    <span
+                      key={ind}
+                      className={classes["pickStd-span"]}
+                      onClick={() => doneStdsHandler(ind)}
+                      style={
+                        doneStds?.includes(ind)
+                          ? { textDecorationLine: "line-through" }
+                          : {}
+                      }
+                    >
+                      <span className={classes["random-order"]}>
+                        {ind + 1}번{" "}
+                      </span>
+                      {nowSelected === "person"
+                        ? nowDatas?.students?.[stInd]
+                        : groupInfo?.[stInd]?.groupName?.includes("모둠")
+                        ? groupInfo?.[stInd].groupName
+                        : groupInfo?.[stInd].groupName + "모둠"}
+                    </span>
+                  ))}
+                  {/* 설명 */}
+                  <span
+                    className={classes["pickStd-span"]}
+                    style={{ fontSize: "14px", backgroundColor: "inherit" }}
+                  >
+                    *클릭하면 취소선
+                  </span>
+                </div>
+              </>
+            )}
 
           {groupMakingStep === MAKE_STEP[0] &&
             (menuFunc === "제출" || menuFunc === "개별") && (
@@ -3376,7 +3786,14 @@ const GroupPage = (props) => {
               }
               id={std}
               style={
-                menuFunc !== "제출"
+                clickedStds?.includes(+ind)
+                  ? { backgroundColor: "yellow" }
+                  : menuFunc === "뽑기" &&
+                    randomPick === "person" &&
+                    (ind === selectedStudent ||
+                      selectedStds.current?.includes(ind))
+                  ? { backgroundColor: "yellow" }
+                  : menuFunc !== "제출"
                   ? groupIndex?.[ind] !== ""
                     ? {
                         backgroundColor:
@@ -3409,13 +3826,21 @@ const GroupPage = (props) => {
                   <>
                     <div
                       className={classes["plus"]}
-                      onClick={() => grPointsHandler("heart-plus", ind)}
+                      onClick={(e) => {
+                        //배경의 클릭이벤트 버블링 막기
+                        e.stopPropagation();
+                        grPointsHandler("heart-plus", ind);
+                      }}
                     >
                       <i className="fa-solid fa-heart-circle-plus"></i>
                     </div>
                     <div
                       className={classes["minus"]}
-                      onClick={() => grPointsHandler("heart-minus", ind)}
+                      onClick={(e) => {
+                        //배경의 클릭이벤트 버블링 막기
+                        e.stopPropagation();
+                        grPointsHandler("heart-minus", ind);
+                      }}
                     >
                       <i className="fa-solid fa-heart-circle-minus"></i>
                     </div>

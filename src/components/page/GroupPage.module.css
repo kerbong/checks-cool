@@ -10,6 +10,38 @@
   background-color: #e1e1e1;
 }
 
+.pickSpan {
+  font-weight: bold;
+  margin: 5px 15px;
+}
+
+.pickStd-span {
+  margin: 2px 5px;
+  word-break: keep-all;
+  font-size: 22px;
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 15px;
+  background-color: whitesmoke;
+}
+
+.picked-div {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.swal-image {
+  height: auto;
+  max-height: 300px;
+  width: auto;
+}
+
+.random-order {
+  font-size: 16px;
+  color: dimgrey;
+}
+
 .headBtns-div {
   height: auto;
   min-height: 16vh;
@@ -263,7 +295,9 @@
 }
 
 .plus,
-.minus {
+.minus,
+.plus-all,
+.minus-all {
   filter: drop-shadow(3px 2px 1px rgba(46, 0, 0, 1));
   font-size: 20px;
   padding: 5px;
@@ -330,10 +364,20 @@
   left: 3%;
 }
 
+.minus-all {
+  color: rgb(58, 103, 174);
+  position: inherit;
+}
+
 .plus {
   color: rgb(241, 88, 0);
   top: -10%;
   left: 3%;
+}
+
+.plus-all {
+  color: rgb(241, 88, 0);
+  position: inherit;
 }
 
 .header-center {
@@ -343,11 +387,20 @@
   justify-content: center;
 }
 
-.header-title {
+.header-title,
+.header-clicked-title {
   font-size: 25px;
   font-weight: bold;
   margin: 10px 0;
 }
+
+.header-clicked-title {
+  display: flex;
+  align-items: center;
+  width: 400px;
+  justify-content: space-around;
+}
+
 .groupName-input {
   height: 35px;
   border-radius: 10px;

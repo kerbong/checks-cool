@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import ExampleModal from "./ExampleModal";
 
-import mainImg from "../../assets/notice/20240304.gif";
+import mainImg from "../../assets/notice/20240311.gif";
 
 import dayjs from "dayjs";
 import AttendCalendar from "components/Attendance/AttendCalendar";
@@ -20,6 +20,7 @@ import ShowClassChange from "components/Main/ShowClassChange";
 import weekOfYear from "dayjs/plugin/weekOfYear"; // 주차 계산 지원
 import isoWeek from "dayjs/plugin/isoWeek"; // ISO 주차 계산 지원
 import holidays2023 from "../../holidays2023";
+import "dayjs/locale/ko";
 
 dayjs.extend(weekOfYear);
 dayjs.extend(isoWeek);
@@ -49,7 +50,7 @@ const yearEnd_text = `이번 학년도 고생 많으셨습니다! 선생님들�
 ** 첵스쿨 사용에 만족하셨다면 <br/> <b>첵스쿨 활용팁, 후기를 👉</b> <u>[교사랑] - [추천해요]에 공유</u>해주세요!
  `;
 
-const update_title = `주간시간표 / 모둠화면 업데이트 🎇`;
+const update_title = `모둠화면 랜덤뽑기 / 전담출결 수정 / 오류수정 🎇`;
 
 const update_text = ` 
 (상세 설명 https://bit.ly/첵스쿨사용설명서)
@@ -58,26 +59,26 @@ const update_text = `
 <br/><br/>
 
 
-<b>1. [메인화면]-[주간시간표]</b>
+<b>1. [제자랑]-[모둠화면]</b>
 <br/> 
-메인화면 가장 아래에 주간시간표가 추가되었어요! <br/> 
-수동 저장만 가능하니, 꼭! 저장버튼 눌러주세요!!
+모둠화면에... 랜덤뽑기가 추가되었어요!! <br/> 
+모둠화면 내에서.. 학생 개별 / 모둠의 순서 뽑기가 가능합니다! 뽑힌 학생 / 모둠의 이름을 클릭하면 발표 유무에 따른 취소선도 만들 수 있어요!
 <br/> <br/> 
 
-<b>2. [제자랑]-[모둠화면]🧮</b>
+<b>2. 전담교사 출결 수정</b>
 <br/> 
-모둠화면에 "캐릭터" 기능이 추가되었어요!!<br/>
-모둠점수/개별점수 보상 항목을 정해두고,<br/>
-보상 점수를 사용하여 캐릭터 변경이 가능해요!
+전담교사의 출결이 업데이트 되었어요! <br/>
+메인화면과의 연동, 출결화면 내에서 전체 학급 출결 확인 등이 가능합니다! <br/>
+[조회]-[출결]에서도 현재 학년도의 출결을 확인 가능합니다.
 <br/><br/>
 
-업데이트 작업량도 많고, 쉴틈이 없어서 사용설명서 작성에 시간이 많이걸리네요😖 죄송합니다. 안정되면ㅡ하나씩 올려보겠습니다!!(https://bit.ly/첵스쿨사용설명서)
+자세한 설명서는... 여기로!! <br/>https://bit.ly/첵스쿨사용설명서
 <br/>
 <br/>
 
  반짝이 muk*********@naver.com <br/>
 * 반짝이님! 이메일이 가득찼데요ㅠ <br/>
-평화님!! 이메일을 찾을 수 없거나, 받을 수 없데요ㅠ <br/> 두 분, kerbong@gmail.com으로 연락주세요!! 커피쿠폰 받아가세요!
+<br/> kerbong@gmail.com으로 연락주세요!! 커피쿠폰 받아가세요!
 <br/><br/>
 
 
@@ -218,7 +219,7 @@ const MainPage = (props) => {
   useEffect(() => {
     //오늘그만보기 클릭 안되어 있고, 아직 공지 중이면
     if (
-      localStorage.getItem("showNotice") <= "20240311" &&
+      localStorage.getItem("showNotice") <= "20240318" &&
       localStorage.getItem("todayNotice") < dayjs().format("YYYY-MM-DD")
     ) {
       setShowNotice(true);
@@ -383,14 +384,25 @@ const MainPage = (props) => {
     setAttendEvents([]);
     //올해 학년도 범위 설정
     let new_nowYearAttends = [];
+    let new_attends = [];
+    let newAtdDatas = [];
 
     let attendRef = doc(dbService, "attend", props.userUid);
     // onSnapshot(attendRef, (doc) => {
     let attendSnap = await getDoc(attendRef);
-    let new_attends = [];
+
+    attendSnap?.data()?.attend_data?.forEach((atd) => {
+      if (!atd.id) {
+        Object.values(atd)?.[0]?.forEach((clAtd) => {
+          newAtdDatas.push({ ...clAtd, clName: Object.keys(atd)?.[0] });
+        });
+      } else {
+        newAtdDatas.push(atd);
+      }
+    });
 
     // doc?.data()?.attend_data?.forEach((data) => {
-    attendSnap?.data()?.attend_data?.forEach((data) => {
+    newAtdDatas?.forEach((data) => {
       //모든 데이터 저장용 자료로 만들기, 보고있는 날짜 기준으로 올해 자료만 뽑아주기
       if (isWithinSchoolYear(data?.id?.slice(0, 10))) {
         new_nowYearAttends.push(data);
@@ -1099,9 +1111,12 @@ const MainPage = (props) => {
     let book = utils.book_new();
     // ==========출결저장=========
     const new_attends_datas = [];
+
+    console.log(nowYearAttends);
     nowYearAttends?.forEach((attend) => {
       // 번호 이름 년 월 일 옵션 노트 순으로
       let data = [
+        attend.clName || "",
         +attend.num,
         attend.name,
         +attend.id.slice(0, 4),
@@ -1117,14 +1132,12 @@ const MainPage = (props) => {
         attend.option.slice(1),
         attend?.note,
       ];
-      if (isSubject) {
-        data.unshift(attend.cl);
-      }
 
       new_attends_datas.push(data);
     });
 
     let attend_title = [
+      "반",
       "번호",
       "이름",
       "년",
@@ -1136,9 +1149,7 @@ const MainPage = (props) => {
       "출결옵션",
       "메모내용",
     ];
-    if (isSubject) {
-      attend_title.unshift("반");
-    }
+
     new_attends_datas.unshift(attend_title);
 
     const attends_datas = utils.aoa_to_sheet(new_attends_datas);
@@ -1743,11 +1754,13 @@ const MainPage = (props) => {
 
     let fileName;
     if (!isSubject) {
-      fileName = `${nowYear()}학년도 학급 기록(by첵스쿨)(${dayjs().format(
-        "YYYY-MM-DD"
-      )}저장).xlsx`;
+      fileName = `${nowYear(
+        todayYyyymmdd
+      )}학년도 학급 기록(by첵스쿨)(${dayjs().format("YYYY-MM-DD")}저장).xlsx`;
     } else {
-      fileName = `${nowYear()}학년도 전담(전체학급) 기록(by첵스쿨)(${dayjs().format(
+      fileName = `${nowYear(
+        todayYyyymmdd
+      )}학년도 전담(전체학급) 기록(by첵스쿨)(${dayjs().format(
         "YYYY-MM-DD"
       )}저장).xlsx`;
     }
@@ -2438,20 +2451,37 @@ const MainPage = (props) => {
                     className={
                       event.id.slice(0, 10) === todayYyyymmdd
                         ? classes["mr-underline"]
-                        : ""
+                        : classes["evtSpan"]
                     }
                   >
-                    {event.public ? "공용) " : "개인) "}
+                    {dayjs(event.id.slice(0, 10)).format("M월 D일(ddd)")} -{" "}
                     {event.eventName}
-                    {event.setNum && ` ${event.setNum}회차`}(
-                    {event.option.slice(1)}) /{" "}
-                    {dayjs(event.id.slice(0, 10)).format("M월 D일(ddd)")} /{" "}
+                    {event.setNum && ` (${event.setNum}회차)`}
+                    {/* /{" "}
+                    {event.note ? `${event.note}` : ""} */}
+                    {/* <span
+                      className={
+                        event.public ? classes["public"] : classes["person"]
+                      }
+                    >
+                      {event.public ? "공용" : "개인"}
+                    </span> */}
+                    <span
+                      className={
+                        event.option.slice(0, 1) === "1"
+                          ? classes["outsiderEvt"]
+                          : event.option.slice(0, 1) === "2"
+                          ? classes["schoolEvt"]
+                          : classes["teacherEvt"]
+                      }
+                    >
+                      {event.option.slice(1, 3)}{" "}
+                    </span>
                     {/* / D-
                     {dayjs(event.id.slice(0, 10)).diff(
                       todayYyyymmdd,
                       "day"
                     )}  */}
-                    {event.note ? ` ${event.note}` : ""}
                   </span>
                   <span> </span>
                 </li>
@@ -2483,10 +2513,9 @@ const MainPage = (props) => {
                   }
                   className={classes["main-li"]}
                 >
-                  {isSubject && (
-                    <span className={classes["mr-underline"]}>{event.cl}</span>
-                  )}
-                  {event.num}번 - {event.name} / {event.option.slice(1)} /{" "}
+                  {/* 반 번호 이름 / 출결 정보 */}
+                  {event.clName + " " || ""}
+                  {event.num}번 {event.name} / {event.option.slice(1)} /{" "}
                   {event.note || ""}
                 </li>
               ))

@@ -339,7 +339,7 @@ const EventInput = (props) => {
                       Swal.fire({
                         icon: "error",
                         title: "선택 불가",
-                        text: "메뉴의 곰돌이를 눌러서 먼저 학생명단을 입력해주세요.",
+                        text: "메뉴의 곰돌이를 눌러서 먼저 학생명단을 입력해주세요. (전담 선생님은 학급을 선택해주세요!)",
                         confirmButtonText: "확인",
                         confirmButtonColor: "#85bd82",
                         timer: 5000,

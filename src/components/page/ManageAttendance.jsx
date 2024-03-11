@@ -63,30 +63,46 @@ const ManageAttendance = (props) => {
     //id가 이번학년도 인 자료만 저장해둠.
     onSnapshot(attendRef, (doc) => {
       if (attendSnap.exists()) {
-        let new_attend = [];
+        let newAtdDatas = [];
 
-        //담임이면
-        if (!nowIsSubject) {
-          new_attend = doc
-            .data()
-            ?.attend_data?.filter(
-              (data) => nowYear(data.id.slice(0, 10)) === nowYear()
-            );
-
-          //전담이면
-        } else {
-          //풀어서 데이터 넣어주기
-          doc.data()?.attend_data?.forEach((clData) => {
-            Object.values(clData)?.[0]?.forEach((attend) => {
-              // 학급명 추가한 후에 하나씩 넣기
-              attend.clName = Object.keys(clData)?.[0];
-              new_attend.push(attend);
+        doc.data()?.attend_data?.forEach((atd) => {
+          if (!atd.id) {
+            Object.values(atd)?.[0]?.forEach((clAtd) => {
+              newAtdDatas.push({ ...clAtd, clName: Object.keys(atd)?.[0] });
             });
-          });
-        }
+          } else {
+            newAtdDatas.push(atd);
+          }
+        });
+
+        newAtdDatas = newAtdDatas?.filter(
+          (data) => nowYear(data.id.slice(0, 10)) === nowYear()
+        );
+
+        // //담임이면
+        // if (!nowIsSubject) {
+        //   new_attend = doc
+        //     .data()
+        //     ?.attend_data?.filter(
+        //       (data) => nowYear(data.id.slice(0, 10)) === nowYear()
+        //     );
+
+        //   //전담이면
+        // } else {
+        //   //풀어서 데이터 넣어주기
+        //   doc.data()?.attend_data?.forEach((clData) => {
+        //     Object.values(clData)?.[0]?.forEach((attend) => {
+        //       // 학급명 추가한 후에 하나씩 넣기
+        //       attend.clName = Object.keys(clData)?.[0];
+        //       new_attend.push(attend);
+        //     });
+        //   });
+        // }
 
         setAttends([
-          ...new_attend.sort((a, b) => a.id.slice(0, 10) > b.id.slice(0, 10)),
+          ...newAtdDatas.sort((a, b) =>
+            a.id.slice(0, 10) > b.id.slice(0, 10) ? 1 : -1
+          ),
         ]);
       }
     });
@@ -449,43 +465,6 @@ const ManageAttendance = (props) => {
       } catch (error) {
         console.log(error);
       }
-
-      //  ===============오류.. 삭제안됨;;ㅠㅠ ======
-      // let attendRef = doc(dbService, "attend", props.userUid);
-      // if (nowIsSubject) {
-      //   // 먼저.. clname이 같은거만 추려내기
-      //   new_attends = new_attends?.filter((atd) => atd.clName === clName);
-      //   console.log(new_attends);
-
-      //   //현재 학급자료만 제거하고 추가해주기
-      //   let new_clAttends = [];
-      //   onSnapshot(attendRef, (doc) => {
-      //     let dbDatas = doc.data()?.attend_data;
-      //     new_clAttends = dbDatas?.filter((cl) => {
-      //       let data_clName = Object.keys(cl)?.[0];
-      //       let new_cl;
-      //       if (data_clName !== clName) {
-      //         new_cl = cl;
-      //         //현재학급명 찾고
-      //       } else {
-      //         console.log(new_attends);
-      //         new_cl = {
-      //           [clName]: [...new_attends],
-      //         };
-      //       }
-      //       console.log(new_cl);
-      //       return new_cl;
-      //     });
-
-      //     const fixed_data = { attend_data: new_clAttends };
-      //     console.log(fixed_data);
-      //     setUploadDatas(fixed_data);
-      //   });
-      // } else {
-      //   const fixed_data = { attend_data: new_attends };
-      //   console.log(fixed_data);
-      //   setUploadDatas(fixed_data);
-      // }
 
       //담임이면 바로 firestore에 업로드 가능해서, 전담만 추가 조절
       const fixed_data = { attend_data: new_attends };

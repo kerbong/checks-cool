@@ -79,16 +79,15 @@ select {
 }
 
 .class-select {
-  width: 130px;
-  height: 60px;
-  font-size: 1.3rem;
+  width: 85px;
+  height: 45px;
+  font-size: 15px;
   margin: 10px;
 }
 
 .classSelect-div {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  font-size: 1.2rem;
+  display: flex;
+  font-size: 16px;
   justify-content: center;
   align-items: center;
 }

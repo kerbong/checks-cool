@@ -6,12 +6,21 @@ import EventInput from "./EventInput";
 import classes from "./EventLists.module.css";
 import Button from "../Layout/Button";
 
+import dayjs from "dayjs";
+
 const EventLists = (props) => {
   const [eventOnDay, setEventOnDay] = useState(props.eventOnDay);
   const [addEvent, setAddEvent] = useState(false);
 
   // let eventOnDay = props.eventOnDay;
   let fixIsShown = props.fixIsShown;
+
+  const nowYear = (date) => {
+    let data_id = date?.length > 0 ? date : new Date();
+    return dayjs(data_id).format("MM-DD") <= "02-15"
+      ? String(+dayjs(data_id).format("YYYY") - 1)
+      : dayjs(data_id).format("YYYY");
+  };
 
   //달력에서 자료 삭제 함수
   const removeCheckSwal = (data) => {
@@ -184,6 +193,10 @@ const EventLists = (props) => {
       note: noteValue,
     };
 
+    if (item.clName) {
+      fixed_data.clName = item.clName;
+    }
+
     if (item?.paper !== undefined) {
       fixed_data.paper = item.paper;
     }
@@ -226,6 +239,22 @@ const EventLists = (props) => {
     props?.setFixIsShown("0");
   }, [props?.addClicked]);
 
+  const yymmddToYyyyMmDd = (eventDayOrigin) => {
+    let startSplit = 1;
+
+    let _year = eventDayOrigin.split(" ")[startSplit].slice(0, 4);
+    let _month = eventDayOrigin
+      .split(" ")
+      [startSplit + 1].slice(0, -1)
+      .padStart(2, "0");
+    let _day = eventDayOrigin
+      .split(" ")
+      [startSplit + 2].slice(0, -1)
+      .padStart(2, "0");
+
+    return _year + "-" + _month + "-" + _day;
+  };
+
   return (
     <div className="eventOnDayList">
       <p
@@ -242,7 +271,7 @@ const EventLists = (props) => {
           -4
         )} (${eventOnDay[0].eventDate.slice(-3, -2)})`}
       </h1>
-      {/* //addEvent false 상황이면 추가하기 버튼 */}
+      {/* //addEvent false 상황이고 출결인데 현재 학년도에 해당하면 추가하기 버튼 */}
       {!addEvent && (
         <div className={classes["add-event-div"]}>
           <Button
@@ -250,6 +279,17 @@ const EventLists = (props) => {
             id={"add-checkItemBtn"}
             className={"add-event-button"}
             onclick={() => {
+              if (
+                props.about === "attendance" &&
+                nowYear(yymmddToYyyyMmDd(eventOnDay[0].eventDate)) !== nowYear()
+              ) {
+                Swal.fire(
+                  "자료 추가 불가",
+                  "현재 학년도의 출결 사항만 입력이 가능해요! 다른 학년도의 출결 사항은 수정/삭제만 가능합니다.",
+                  "warning"
+                );
+                return;
+              }
               setAddEvent(true);
               props.setFixIsShown("0");
             }}

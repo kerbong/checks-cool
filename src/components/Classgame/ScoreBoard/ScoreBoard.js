@@ -199,7 +199,7 @@ const ScoreBoard = (props) => {
     if (!finished) {
       Swal.fire({
         title: "현재 순위!",
-        html: `<div class=${classes["grid-container"]}>
+        html: `<div class="${classes["grid-container"]}">
         ${sortedDatas
           ?.map(
             (dt, index) => `
@@ -223,7 +223,7 @@ const ScoreBoard = (props) => {
     } else {
       Swal.fire({
         title: "최종 순위!",
-        html: `<div class=${classes["grid-container"]}>
+        html: `<div class="${classes["grid-container"]}">
             ${sortedDatas
               ?.map(
                 (dt, index) => `

@@ -73,6 +73,25 @@ function App() {
 
   let navigate = useNavigate();
 
+  useEffect(() => {
+    //  예시  /padIt/선생님게시글제목/비번
+    let address = decodeURI(location.pathname);
+
+    //학생들이 padIt이 포함된 qr코드로 접속하는 경우
+    if (address.includes("padIt")) {
+      let addressSplit = address?.split("/");
+      setPadItInfo({
+        roomName: addressSplit[2],
+        roomPw: addressSplit[3],
+      });
+      setIsStudent(true);
+    } else if (address.includes("groupPage")) {
+      setNavigatePage("groupPage");
+    } else if (address.includes("alarm")) {
+      setNavigatePage("alarm");
+    }
+  }, []);
+
   const getProfile = async (uid) => {
     let userDocRef = doc(dbService, "user", uid);
 
@@ -105,37 +124,6 @@ function App() {
       subscribe();
     };
   }, []);
-
-  //로그인해서 프로필이 없으면, 프로필 화면으로 먼저 보내기
-  useEffect(() => {
-    if (init && isLoggedIn && Object.keys(profile).length === 0) {
-      Swal.fire({
-        icon: "info",
-        title: "반갑습니다!",
-        text: "프로필을 설정하신 후에 사용하실 수 있어요. 프로필 페이지로 이동합니다.",
-        confirmButtonText: "확인",
-        confirmButtonColor: "#85bd82",
-        showDenyButton: false,
-      }).then((result) => {
-        navigate(`/profile`);
-      });
-      return;
-    } else if (userUid) {
-      getStudents(userUid);
-
-      if (navigatePage === "groupPage") {
-        navigate("/groupPage");
-      } else if (navigatePage === "alarm") {
-        navigate("/alarm");
-      }
-
-      //로그인해서 7~9시면 아침미션 화면 먼저 보여주기
-      const nowHour = +new Date().toTimeString().slice(0, 2);
-      if (nowHour >= 7 && nowHour <= 8) {
-        navigate(`/weteacher`, { state: "morning" });
-      }
-    }
-  }, [profile]);
 
   const sortNum = (students) => {
     let sorted_students;
@@ -263,24 +251,40 @@ function App() {
 
   const location = useLocation();
 
+  //로그인해서 프로필이 없으면, 프로필 화면으로 먼저 보내기
   useEffect(() => {
-    //  예시  /padIt/선생님게시글제목/비번
-    let address = decodeURI(location.pathname);
-
-    //학생들이 padIt이 포함된 qr코드로 접속하는 경우
-    if (address.includes("padIt")) {
-      let addressSplit = address?.split("/");
-      setPadItInfo({
-        roomName: addressSplit[2],
-        roomPw: addressSplit[3],
+    if (init && isLoggedIn && Object.keys(profile).length === 0) {
+      Swal.fire({
+        icon: "info",
+        title: "반갑습니다!",
+        text: "프로필을 설정하신 후에 사용하실 수 있어요. 프로필 페이지로 이동합니다.",
+        confirmButtonText: "확인",
+        confirmButtonColor: "#85bd82",
+        showDenyButton: false,
+      }).then((result) => {
+        navigate(`/profile`);
       });
-      setIsStudent(true);
-    } else if (address.includes("groupPage")) {
-      setNavigatePage("groupPage");
-    } else if (address.includes("alarm")) {
-      setNavigatePage("alarm");
+      return;
+    } else if (userUid) {
+      getStudents(userUid);
+
+      // navigatePage의 조건을 먼저 확인
+      if (navigatePage === "groupPage") {
+        navigate("/groupPage");
+        return; // 이동 후 나머지 코드 실행 방지
+      } else if (navigatePage === "alarm") {
+        navigate("/alarm");
+        return; // 이동 후 나머지 코드 실행 방지
+      }
+
+      // 아침 7~8시 조건을 마지막에 확인
+      const nowHour = +new Date().toTimeString().slice(0, 2);
+      if (nowHour >= 7 && nowHour <= 8) {
+        // if (true) {
+        navigate(`/weteacher`, { state: "morning" });
+      }
     }
-  }, []);
+  }, [profile, navigatePage]);
 
   //모바일 상황이면.. 먼저 mobileMain보여주기
   useEffect(() => {

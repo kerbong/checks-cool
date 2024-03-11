@@ -30,8 +30,17 @@ const AttendCtxCalendar = (props) => {
   const [events, setEvents] = useState([]);
   const [eventOnDay, setEventOnDay] = useState([]);
   const [nowClStudents, setNowClStudents] = useState([]);
+  const [isSubject, setIsSubject] = useState(false);
 
   const selectRef = useRef();
+  const selectYear = useRef();
+
+  const nowYear = (date) => {
+    let data_id = date?.length > 0 ? date : new Date();
+    return dayjs(data_id).format("MM-DD") <= "02-15"
+      ? String(+dayjs(data_id).format("YYYY") - 1)
+      : dayjs(data_id).format("YYYY");
+  };
 
   //firestore에서 해당 이벤트 자료 받아오기
   const getAttendsFromDb = async () => {
@@ -47,24 +56,28 @@ const AttendCtxCalendar = (props) => {
       setEvents([]);
       setWholeEvents([]);
 
-      //올해 전담이면
-      if (props.isSubject) {
-        if (doc.exists()) {
-          let wholeE = doc?.data()?.attend_data;
-          setWholeEvents([...wholeE]);
-        }
-        // if (nowClassName === "") {
-        //   setNowClassName(Object.keys(props.students[0])[0]);
-        // }
-        // console.log(nowClassName);
-      } else {
-        const new_attends = [];
-        doc?.data()?.attend_data?.forEach((data) => {
-          // if (data.id.slice(0, 7) === currentMonth.slice(0, 7)) {
-          new_attends.push(data);
-          // }
+      if (doc.exists()) {
+        let wholeE = doc?.data()?.attend_data;
+
+        let newAtdDatas = [];
+        wholeE?.forEach((atd) => {
+          if (!atd.id) {
+            Object.values(atd)?.[0]?.forEach((clAtd) => {
+              newAtdDatas.push({ ...clAtd, clName: Object.keys(atd)?.[0] });
+            });
+          } else {
+            newAtdDatas.push(atd);
+          }
         });
-        setEvents([...new_attends]);
+        setWholeEvents(newAtdDatas);
+        setEvents(newAtdDatas);
+      }
+
+      // if (nowClassName === "") {
+      //   setNowClassName(Object.keys(props.students[0])[0]);
+      // }
+      // console.log(nowClassName);
+      if (!props.isSubject) {
         setEventsDone(true);
       }
     });
@@ -73,40 +86,32 @@ const AttendCtxCalendar = (props) => {
   //학급 선택시 실행되는 함수
   const selectClassHandler = () => {
     let className = selectRef.current.value;
-    // console.log(className);
+
     setNowClassName(className);
   };
 
   //선택된 학급이 바뀌면 event만 찾아서 등록하고 학생도 바꿔주기
   const selectEvents = () => {
-    //wholeEvents에서 해당하는 학급 찾아서 events에 저장
-    [...wholeEvents].forEach((cl) => {
-      if (Object.keys(cl)[0] === nowClassName) {
-        // removeScreenEvents();
-        setEvents(Object.values(cl)[0]);
-      }
-    });
-
     //만약 해당 반에 아직 데이터가 없으면 events빈배열로 설정 및 리무브 스크린 이벤트함수 실행
-    const existSelectClData = [...wholeEvents]?.filter(
-      (cl) => Object.keys(cl)[0] === nowClassName
+    let existSelectClData = [...wholeEvents]?.filter(
+      (cl) => cl.clName === nowClassName
     );
-    if (existSelectClData.length === 0) {
-      // removeScreenEvents();
-
-      setEvents([]);
-    }
-
-    props.students?.forEach((cl) => {
-      if (Object.keys(cl)[0] === nowClassName) {
-        setNowClStudents(Object.values(cl)[0]);
-      }
-    });
 
     // --학급-- 을 누르면 학생을 초기화
     if (nowClassName === "") {
       setNowClStudents([]);
+      existSelectClData = [...wholeEvents];
+    } else {
+      props.students?.forEach((cl) => {
+        if (Object.keys(cl)[0] === nowClassName) {
+          setNowClStudents(Object.values(cl)[0]);
+        }
+      });
     }
+
+    // removeScreenEvents();
+
+    setEvents(existSelectClData);
   };
 
   //db에서 자료 받아오기 useEffect
@@ -152,11 +157,13 @@ const AttendCtxCalendar = (props) => {
 
   const calEventDayToYMD = (eventTag) => {
     //이벤트 태그의 날짜 yyyy-mm-dd로 바꾸기
+
     let eventDayOrigin = eventTag.getAttribute("aria-label");
     let startSplit = 1;
     if (eventDayOrigin.includes("Not available")) {
       startSplit = 2;
     }
+
     let _year = eventDayOrigin.split(" ")[startSplit].slice(0, 4);
     let _month = eventDayOrigin
       .split(" ")
@@ -210,13 +217,15 @@ const AttendCtxCalendar = (props) => {
             JSON.parse(event)
           );
 
-          setEventOnDay(() => fixed_eventOnDay);
+          // setEventOnDay(() => fixed_eventOnDay);
+          setEventOnDay(fixed_eventOnDay);
           //만약 오늘 날짜에 해당하는 자료가 없으면
         } else {
-          setEventOnDay(() => [{ eventDate: day_date }]);
+          // setEventOnDay(() => [{ eventDate: day_date }]);
+          setEventOnDay([{ eventDate: day_date }]);
         }
       } else {
-        setEventOnDay(() => [{ eventDate: day_date }]);
+        setEventOnDay([{ eventDate: day_date }]);
       }
 
       setDayEventIsShown(true);
@@ -305,6 +314,12 @@ const AttendCtxCalendar = (props) => {
             btn.className = `${classes.eventData} eventBtn`;
             btn.innerText = data.name;
             btn.id = data.id;
+
+            //학급 미선택 시.. 학급명 보여주기
+            if (nowClassName === "" && data?.clName) {
+              btn.innerText = data.clName + " " + btn.innerText;
+            }
+
             //출결옵션용 span태그 만들어서 내용넣고 1200px 넘어가면 보이도록 css classes 설정
             let optionSpan = document.createElement("span");
             optionSpan.className = `${classes.showOptionCal}`;
@@ -387,7 +402,9 @@ const AttendCtxCalendar = (props) => {
   const fixEvents = async (data, eventDate, fixOrDel) => {
     const attendTodoRef = doc(dbService, "attend", props.userUid);
     // events 자료 가져와서 수정하기
-    let before_events = JSON.parse(JSON.stringify(events));
+    let before_events = JSON.parse(
+      JSON.stringify(!props.isSubject ? events : wholeEvents)
+    );
     let new_events = before_events?.map((evt) => {
       delete evt.eventDate;
       return { ...evt };
@@ -416,25 +433,12 @@ const AttendCtxCalendar = (props) => {
           // new_events.push(data);
           // console.log(new_events);
           let new_data = [...new_events];
-          if (!props.isSubject) {
-            const fixed_data = { attend_data: new_data };
 
-            await setDoc(attendTodoRef, fixed_data);
-          } else {
-            let new_wholeEvents = [];
-            new_wholeEvents = [
-              ...wholeEvents?.map((cl) => {
-                if (Object.keys(cl)[0] === nowClassName) {
-                  //반이름이 같으면 수정한 데이터 넣고
-                  return { [nowClassName]: new_data };
-                } else {
-                  return cl;
-                }
-              }),
-            ];
-            setWholeEvents(new_wholeEvents);
-            await updateDoc(attendTodoRef, { attend_data: new_wholeEvents });
-          }
+          const fixed_data = { attend_data: new_data };
+
+          await setDoc(attendTodoRef, fixed_data);
+
+          setWholeEvents(new_events);
 
           // console.log("이벤트바이데이즈에서 일치하는 자료 찾아서 수정함!");
         } else if (fixOrDel === "del") {
@@ -451,18 +455,9 @@ const AttendCtxCalendar = (props) => {
           new_events.splice(event_index, 1);
           const new_data = { attend_data: new_events };
 
-          if (!props.isSubject) {
-            await setDoc(attendTodoRef, new_data);
-          } else {
-            let new_wholeEvents = [...wholeEvents]?.filter(
-              (cl) => Object.keys(cl)[0] !== nowClassName
-            );
-            if (new_events.length !== 0) {
-              new_wholeEvents.push({ [nowClassName]: new_events });
-            }
-            setWholeEvents(new_wholeEvents);
-            await setDoc(attendTodoRef, { attend_data: new_wholeEvents });
-          }
+          await setDoc(attendTodoRef, new_data);
+
+          setWholeEvents(new_events);
 
           //혹시 storage에 저장된 해당날짜의 데이터 있으면 그것도 삭제하기
           try {
@@ -487,59 +482,47 @@ const AttendCtxCalendar = (props) => {
         //자료들이 있었는데 새로운 자료인 경우
       } else {
         //firestore에 추가!
-        new_events.push(data);
+        if (props.isSubject) {
+          new_events.push({ ...data, clName: nowClassName });
+        } else {
+          new_events.push(data);
+        }
+
         let new_data = JSON.parse(JSON.stringify(new_events));
         let fixed_data;
-        if (!props.isSubject) {
-          fixed_data = { attend_data: new_data };
 
-          //events에도 추가!
-          // console.log(data);
-        } else {
-          //현재 반을 제외한 전체 반 자료에 현재반 자료를 더하기
-          let new_wholeEvents = [...wholeEvents]?.filter(
-            (cl) => Object.keys(cl)[0] !== nowClassName
-          );
-          new_wholeEvents.push({ [nowClassName]: new_data });
-          fixed_data = { attend_data: new_wholeEvents };
-          // console.log();
-          setWholeEvents(new_wholeEvents);
-        }
+        fixed_data = { attend_data: new_data };
+
         await setDoc(attendTodoRef, fixed_data);
+        setWholeEvents(new_data);
       }
 
       // 이벤트 자료가 아예 없는 경우
     } else {
       new_events = [];
-      new_events.push(data);
+      if (props.isSubject) {
+        new_events.push({ ...data, clName: nowClassName });
+      } else {
+        new_events.push(data);
+      }
+
       // console.log("events에 처음 입력된 자료");
       // console.log(data);
       //firestore에 추가!
       let new_data;
-      if (!props.isSubject) {
-        new_data = { attend_data: [...new_events] };
-      } else {
-        // 다른반의 자료는 있는 경우
-        if (wholeEvents?.length > 0) {
-          let new_wholeEvents = [...wholeEvents];
 
-          new_wholeEvents.push({ [nowClassName]: [...new_events] });
-          new_data = { attend_data: new_wholeEvents };
-          setWholeEvents(new_wholeEvents);
-          // console.log(new_wholeEvents);
-          //아예 자료가 없는 경우
-        } else {
-          new_data = {
-            attend_data: [{ [nowClassName]: [...new_events] }],
-          };
-          setWholeEvents([{ [nowClassName]: [...new_events] }]);
-        }
-      }
+      new_data = { attend_data: [...new_events] };
+
       await setDoc(attendTodoRef, new_data);
+      setWholeEvents(new_events);
     }
-    setEvents([...new_events]);
+
     if (props.isSubject) {
       selectClassHandler();
+      // console.log(nowClassName);
+      // setEvents(new_events?.filter((evt) => evt.clName === nowClassName));
+    } else {
+      setEvents([...new_events]);
     }
     // getAttendsFromDb();
 
@@ -570,6 +553,28 @@ const AttendCtxCalendar = (props) => {
     day.click();
   }, [eventsDone]);
 
+  const searchYearHandler = (value) => {
+    const year_group = value;
+
+    //선택학 학년도에 전담이었는지 확인하기
+    let isSubject;
+    if (props.isSubject) {
+      isSubject = props.isSubject?.filter(
+        (yearData) => Object.keys(yearData)[0] === year_group
+      )?.[0]?.[year_group];
+    }
+
+    setIsSubject(isSubject);
+  };
+
+  // let list = [...checkLists]?.filter(
+  //   (data) => data.yearGroup === year_group
+  // );
+  // //담임만 바로 보여줄 자료 세팅
+  // if (!isSubject) {
+  //   setNowOnCheckLists(sortList(list));
+  // }
+
   return (
     <>
       {dayEventIsShown && (
@@ -595,19 +600,33 @@ const AttendCtxCalendar = (props) => {
         </Modal>
       )}
 
-      {/* 전담교사만 보이는 학급 셀렉트 */}
+      {/* 학년도 선택 함수 */}
+      {/* <select
+                className={classes["classSelect-div"]}
+                ref={selectYear}
+                name="searchYear-selcet"
+                // defaultValue={""}
+                onChange={(e) => searchYearHandler(e.target.value)}
+              >
+                <option value="">--학년도--</option>
+                {dataYears?.map((year) => (
+                  <option value={year} key={year}>
+                    {year}학년도
+                  </option>
+                ))}
+              </select> */}
 
+      {/* 해당 학년도에 전담교사였던 경우 보이는 학급 셀렉트 */}
       {props.isSubject && (
         <>
           <div className={classes["classSelect-div"]}>
-            <h2 className={classes["classSelect-title"]}>출결 달력</h2>
             <select
               ref={selectRef}
               onChange={selectClassHandler}
               className={classes["class-select"]}
               value={nowClassName}
             >
-              <option value="">--학급--</option>
+              <option value="">--전체--</option>
               {props.students?.map((cl) => (
                 <option key={Object.keys(cl)} value={Object.keys(cl)}>
                   {Object.keys(cl)}
