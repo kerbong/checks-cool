@@ -40,6 +40,9 @@ const JustLists = (props) => {
 
         new_seats.push(new_data);
       });
+      //최신 자료부터 보여주기..!!
+
+      console.log(sortList(new_seats));
 
       setYearSeatLists([...new_seats]);
     }
@@ -47,13 +50,13 @@ const JustLists = (props) => {
 
   useEffect(() => {
     getSeatsFromDb();
-  }, []);
+  }, [props.userUid]);
 
   const sortList = (list) => {
     const sorted_lists = list.sort(function (a, b) {
       let a_date = `${a.saveDate.slice(0, 10)}`;
       let b_date = `${b.saveDate.slice(0, 10)}`;
-      return new Date(a_date) - new Date(b_date);
+      return new Date(a_date) < new Date(b_date) ? 1 : -1;
     });
     return sorted_lists;
   };

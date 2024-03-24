@@ -10,6 +10,7 @@ import {
   arrayUnion,
   getDoc,
 } from "firebase/firestore";
+import { FaReply } from "react-icons/fa6";
 
 const Item = (props) => {
   const [like, setLike] = useState(false);
@@ -114,25 +115,6 @@ const Item = (props) => {
       )}
 
       <div className={classes.editDeleteArea}>
-        {/* 내가 쓴 글이면 수정, 삭제 가능함 */}
-        <div>
-          {/* {mission.writtenId === props.userUid && (
-            <>
-              <Button
-                id={"edit" + mission.nickName}
-                className="missionEditBtn"
-                onclick={() => {}}
-                icon={<i className="fa-solid fa-pencil"></i>}
-              />
-              <Button
-                id={"delete" + mission.nickName}
-                className="missionEditBtn"
-                onclick={() => {}}
-                icon={<i className="fa-solid fa-trash-can"></i>}
-              />
-            </>
-          )} */}
-        </div>
         {/* 좋아요와 댓글수 */}
         <div className={classes.likeReplyDiv}>
           <LikeBtn
@@ -143,7 +125,7 @@ const Item = (props) => {
           {props.mission?.like?.length}
           <div className={classes.replyDiv}>
             <span className={classes.replyIcon}>
-              <i className="fa-solid fa-reply"></i>
+              <FaReply />
             </span>
             <span className={classes.replySpan}>{mission?.reply?.length}</span>
           </div>

@@ -8,6 +8,7 @@ import dayjs from "dayjs";
 import { ref, uploadString, getDownloadURL } from "firebase/storage";
 import { v4 } from "uuid";
 import { storageService } from "../../fbase";
+import { FaRegCircleXmark } from "react-icons/fa6";
 
 const MeetingSumItem = (props) => {
   const [isNew, setIsNew] = useState(props.item ? false : true);
@@ -220,7 +221,7 @@ const MeetingSumItem = (props) => {
             className={classes["close-span"]}
             onClick={() => props.showSumClose()}
           >
-            <i className="fa-regular fa-circle-xmark"></i>
+            <FaRegCircleXmark />
           </span>
         </div>
         <div>

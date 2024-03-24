@@ -15,6 +15,7 @@
     "bootstrap": "^5.1.3",
     "browser-image-compression": "^2.0.0",
     "buffer": "^6.0.3",
+    "caniuse-lite": "^1.0.30001599",
     "cannon-es": "^0.20.0",
     "chart.js": "^4.2.1",
     "cheerio": "^1.0.0-rc.12",

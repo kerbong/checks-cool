@@ -8,6 +8,20 @@ import SettingSeat from "../Classgame/SettingSeat/SettingSeat";
 import RandomPick from "../Classgame/RandomPick/RandomPick";
 
 import PadIt from "components/page/PadIt";
+import {
+  FaCapsules,
+  FaChair,
+  FaChalkboard,
+  FaCopy,
+  FaDice,
+  FaGamepad,
+  FaHourglassStart,
+  FaMedal,
+  FaRegCopy,
+  FaShuffle,
+  FaStopwatch,
+  FaUsersRectangle,
+} from "react-icons/fa6";
 
 const ClassgamePage = (props) => {
   const [selectedMenu, setSelectedMenu] = useState("");
@@ -19,84 +33,42 @@ const ClassgamePage = (props) => {
   let navigate = useNavigate();
 
   const ICONS = [
-    <i
-      className="fa-sharp fa-solid fa-chair"
-      style={{ fontSize: "1em", color: "#000000bd" }}
-    ></i>,
-    <i
-      className="fa-solid fa-shuffle"
-      style={{ fontSize: "1em", color: "#000000bd" }}
-    ></i>,
-    <i
-      className="fa-solid fa-chalkboard"
-      style={{ fontSize: "1em", color: "#000000bd" }}
-    ></i>,
-    <i
-      className="fa-regular fa-copy"
-      style={{ fontSize: "1em", color: "#000000bd" }}
-    ></i>,
+    <FaChair color="#000000bd" />,
+    <FaShuffle color="#000000bd" />,
+    <FaChalkboard color="#000000bd" />,
+    <FaRegCopy color="#000000bd" />,
   ];
 
   const ICONS_LEFT = [
     <div className={classes["iconLeft"]}>
-      <i
-        className="fa-sharp fa-solid fa-chair"
-        style={{ fontSize: "1em", color: "#f2ffd8" }}
-      ></i>
+      <FaChair color="#f2ffd8" />
     </div>,
     <div className={classes["iconLeft"]}>
-      <i
-        className="fa-solid fa-shuffle"
-        style={{ fontSize: "1em", color: "#f2ffd8" }}
-      ></i>
+      <FaShuffle color="#f2ffd8" />
     </div>,
     <div className={classes["iconLeft"]}>
-      <i
-        className="fa-solid fa-stopwatch"
-        style={{ fontSize: "1em", color: "#f2ffd8" }}
-      ></i>
+      <FaStopwatch color="#f2ffd8" />
     </div>,
     <div className={classes["iconLeft"]}>
-      <i
-        className="fa-solid fa-chalkboard"
-        style={{ fontSize: "1em", color: "#f2ffd8" }}
-      ></i>
+      <FaChalkboard color="#f2ffd8" />
     </div>,
     <div className={classes["iconLeft"]}>
-      <i
-        className="fa-solid fa-capsules"
-        style={{ fontSize: "1em", color: "#f2ffd8" }}
-      ></i>
+      <FaCapsules color="#f2ffd8" />
     </div>,
     <div className={classes["iconLeft"]}>
-      <i
-        className="fa-solid fa-copy"
-        style={{ fontSize: "1em", color: "#f2ffd8" }}
-      ></i>
+      <FaCopy color="#f2ffd8" />
     </div>,
     <div className={classes["iconLeft"]}>
-      <i
-        className="fa-solid fa-hourglass-start"
-        style={{ fontSize: "1em", color: "#f2ffd8" }}
-      ></i>
+      <FaHourglassStart color="#f2ffd8" />
     </div>,
     <div className={classes["iconLeft"]}>
-      <i
-        className="fa-solid fa-medal"
-        style={{ fontSize: "1em", color: "#f2ffd8" }}
-      ></i>
+      <FaMedal color="#f2ffd8" />
     </div>,
     <div className={classes["iconLeft"]}>
-      <i
-        className="fa-solid fa-dice"
-        style={{ fontSize: "1em", color: "#f2ffd8" }}
-      ></i>
+      <FaDice color="#f2ffd8" />
     </div>,
     <div className={classes["iconLeft"]}>
-      <i
-        className="fa-solid fa-users-rectangle"
-        style={{ fontSize: "1em", color: "#f2ffd8" }}
-      ></i>
+      <FaUsersRectangle color="#f2ffd8" />
     </div>,
   ];
 
@@ -112,11 +84,7 @@ const ClassgamePage = (props) => {
             {selectedMenu === "padIt" && <>{ICONS[3]} 패드잇</>}
             {selectedMenu === "" && (
               <>
-                <i
-                  className="fa-solid fa-gamepad"
-                  style={{ fontSize: "1em" }}
-                ></i>{" "}
-                제자랑
+                <FaGamepad /> 제자랑
               </>
             )}
           </button>

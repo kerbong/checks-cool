@@ -8,6 +8,7 @@ import Swal from "sweetalert2";
 
 //요일을 한글로 보여주기설정
 import "dayjs/locale/ko";
+import { FaRegCircleXmark } from "react-icons/fa6";
 dayjs.locale("ko");
 
 const BaseTodo = (props) => {
@@ -74,7 +75,7 @@ const BaseTodo = (props) => {
       <h2 className={classes["flex-margin-15-center"]}>
         반복일정 등록하기{" "}
         <span className={classes["close-x"]} onClick={props.closeHandler}>
-          <i className="fa-regular fa-circle-xmark"></i>
+          <FaRegCircleXmark />
         </span>
       </h2>
       {/* 공용) 개인) 선택 탭, 행사명 인풋, x 마크(닫기)  */}

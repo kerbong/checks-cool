@@ -5,6 +5,7 @@ import AttendCalendar from "../Attendance/AttendCalendar";
 import dayjs from "dayjs";
 import AttendanceForm from "./AttendanceForm";
 import holidays2023 from "holidays2023";
+import { FaRegCircleXmark } from "react-icons/fa6";
 
 const Attendance = (props) => {
   const [attendDate, setAttendDate] = useState(new Date());
@@ -69,7 +70,7 @@ const Attendance = (props) => {
       <div className={classes["student"]}>
         <span> {props.who} </span>
         <span className={classes.closeBtn} onClick={props.onClose}>
-          <i className="fa-regular fa-circle-xmark"></i>
+          <FaRegCircleXmark />
         </span>
       </div>
       <div

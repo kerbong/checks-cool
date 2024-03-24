@@ -10,6 +10,7 @@ import { dbService } from "../../fbase";
 import { getDoc, doc, onSnapshot, setDoc, updateDoc } from "firebase/firestore";
 import Modal from "components/Layout/Modal";
 import dayjs from "dayjs";
+import { FaChevronDown, FaChevronUp } from "react-icons/fa6";
 
 const PadIt = (props) => {
   const [isTeacher, setIsTeacher] = useState(false);
@@ -298,13 +299,7 @@ const PadIt = (props) => {
       <h2 onClick={() => setExplainOn((prev) => !prev)}>
         {" "}
         😮 사용 방법 및 주의사항{" "}
-        <span>
-          {explainOn ? (
-            <i className="fa-solid fa-chevron-up"></i>
-          ) : (
-            <i className="fa-solid fa-chevron-down"></i>
-          )}{" "}
-        </span>
+        <span>{explainOn ? <FaChevronUp /> : <FaChevronDown />} </span>
       </h2>
       <div className={explainOn ? classes.explainDiv : classes.explainDivHide}>
         {isTeacher && (

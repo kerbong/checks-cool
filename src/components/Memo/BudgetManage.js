@@ -9,6 +9,14 @@ import BudgetList from "./BudgetList";
 import dayjs from "dayjs";
 import FadeInOut from "components/Layout/FadeInOut";
 import BudgetExcelLists from "./BudgetExcelLists";
+import {
+  FaChevronDown,
+  FaChevronUp,
+  FaPlus,
+  FaRegFloppyDisk,
+  FaRotate,
+  FaXmark,
+} from "react-icons/fa6";
 
 const BudgetManage = (props) => {
   const [budgets, setBudgets] = useState([]);
@@ -58,7 +66,7 @@ const BudgetManage = (props) => {
 
   useEffect(() => {
     getBudgetsFromDb();
-  }, []);
+  }, [props.userUid]);
 
   //처음 보여줄 학년도 설정(올해 자료있으면 보여줌)
   useEffect(() => {
@@ -108,7 +116,7 @@ const BudgetManage = (props) => {
   };
 
   //firestore에 예산 품목 저장 / 수정하기
-  const saveBudgetHandler = async (item) => {
+  const saveBudgetHandler = async (item, item_ind) => {
     let budgetRef = doc(dbService, "budgets", props.userUid);
 
     //nowOnBudget의 자료를 업데이트 해야함.
@@ -127,8 +135,14 @@ const BudgetManage = (props) => {
     );
 
     //그냥, 수정 없이 무조건 복사됩니당!
+    if (!isNaN(+item_ind)) {
+      new_onBudget.useLists[item_ind] = item;
+      // console.table(new_onBudget.useLists);
+    } else {
+      new_onBudget.useLists.push(item);
+      // console.table(new_onBudget.useLists);
+    }
 
-    new_onBudget.useLists.push(item);
     new_budgets[budget_index] = new_onBudget;
     setBudgets([...new_budgets]);
     setNowOnBudget(new_onBudget);
@@ -314,13 +328,9 @@ const BudgetManage = (props) => {
             }
           }}
         >
-          {!budgetListEdit && showInput && (
-            <i className="fa-solid fa-xmark"></i>
-          )}
-          {!budgetListEdit && !showInput && (
-            <i className="fa-solid fa-plus"></i>
-          )}
-          {budgetListEdit && <i className="fa-solid fa-xmark"></i>}
+          {!budgetListEdit && showInput && <FaXmark />}
+          {!budgetListEdit && !showInput && <FaPlus />}
+          {budgetListEdit && <FaXmark />}
         </button>
       </div>
       {/* 새로운 예산 입력 */}
@@ -342,8 +352,8 @@ const BudgetManage = (props) => {
       {showInput && budgetSelectRef.current.value !== "" && (
         <FadeInOut elementId={"newBudgetList-div"}>
           <BudgetInput
-            saveBudgetHandler={(item) => {
-              saveBudgetHandler(item);
+            saveBudgetHandler={(item, ind) => {
+              saveBudgetHandler(item, ind);
               // setShowInput(false);
             }}
           />
@@ -414,7 +424,7 @@ const BudgetManage = (props) => {
             onClick={() => setShowBudgetExcelWay((prev) => !prev)}
             className={classes["budgetExcelCardChange-btn"]}
           >
-            <i className="fa-solid fa-rotate"></i>
+            <FaRotate />
             {showBudgetExcelWay
               ? " 카드 스타일로 보기(수정,삭제 가능)"
               : " 표 스타일로 보기"}
@@ -430,12 +440,7 @@ const BudgetManage = (props) => {
         style={{ color: "darkgray" }}
       >
         <h2>
-          🪄 사용 설명서{" "}
-          {showExplain ? (
-            <i className="fa-solid fa-chevron-up"></i>
-          ) : (
-            <i className="fa-solid fa-chevron-down"></i>
-          )}
+          🪄 사용 설명서 {showExplain ? <FaChevronUp /> : <FaChevronDown />}
         </h2>
       </div>
 
@@ -454,7 +459,7 @@ const BudgetManage = (props) => {
           <p>1. 예산명을 선택하지 않고 + 클릭</p>
           <p>2. 예산명, 기한, 금액 등을 입력</p>
           <p>
-            3. <i className="fa-regular fa-floppy-disk"></i> 버튼 클릭해서 저장
+            3. <FaRegFloppyDisk /> 버튼 클릭해서 저장
           </p>
 
           <h3>
@@ -464,7 +469,7 @@ const BudgetManage = (props) => {
           <p>1. 년도와 예산명 선택 후 + 클릭</p>
           <p>2. 품목명, 사이트 금액 등 입력</p>
           <p>
-            3. <i className="fa-regular fa-floppy-disk"></i> 버튼 클릭해서 저장
+            3. <FaRegFloppyDisk /> 버튼 클릭해서 저장
           </p>
 
           <h3>

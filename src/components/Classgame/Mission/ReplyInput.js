@@ -1,6 +1,8 @@
 import React, { useRef, useState } from "react";
 import classes from "./Mission.module.css";
 import Button from "../../../components/Layout/Button";
+import { FaArrowAltCircleRight } from "react-icons/fa";
+import { FaPenToSquare, FaRegCircleXmark, FaTrash } from "react-icons/fa6";
 
 const ReplyInput = (props) => {
   const [isEditting, setIsEditting] = useState(false);
@@ -30,7 +32,7 @@ const ReplyInput = (props) => {
           />
 
           <Button
-            icon={<i className="fa-solid fa-circle-arrow-right"></i>}
+            icon={<FaArrowAltCircleRight />}
             onclick={() => {
               let value = replyRef.current.value;
               if (value.trim() === "") {
@@ -62,7 +64,7 @@ const ReplyInput = (props) => {
                     onclick={() => {
                       setIsEditting(true);
                     }}
-                    icon={<i className="fa-solid fa-pen-to-square"></i>}
+                    icon={<FaPenToSquare />}
                   />
                   <Button
                     className="missionEditBtn"
@@ -70,7 +72,7 @@ const ReplyInput = (props) => {
                       //삭제버튼 기능
                       props.replyAddHandler("none", "delete", props.reply);
                     }}
-                    icon={<i className="fa-solid fa-trash"></i>}
+                    icon={<FaTrash />}
                   />
                 </div>
               )}
@@ -111,7 +113,7 @@ const ReplyInput = (props) => {
                         props.replyAddHandler(value, "update", props.reply);
                         setIsEditting(false);
                       }}
-                      icon={<i className="fa-solid fa-circle-arrow-right"></i>}
+                      icon={<FaArrowAltCircleRight />}
                     />
                     <Button
                       className="missionEditBtn"
@@ -120,7 +122,7 @@ const ReplyInput = (props) => {
                         //취소버튼 기능
                         setIsEditting(false);
                       }}
-                      icon={<i className="fa-regular fa-circle-xmark"></i>}
+                      icon={<FaRegCircleXmark />}
                     />
                   </div>
                 )}

@@ -2,6 +2,7 @@ import React from "react";
 import Modal from "../Layout/Modal";
 import TodoPublicInput from "./TodoPublicInput";
 import classes from "./TodoPublicInput.module.css";
+import { FaRegCircleXmark } from "react-icons/fa6";
 
 const TodoPublicSetting = (props) => {
   return (
@@ -13,7 +14,7 @@ const TodoPublicSetting = (props) => {
               className={classes.closeBtn}
               onClick={props.showPublicSetting}
             >
-              <i className="fa-regular fa-circle-xmark"></i>
+              <FaRegCircleXmark />
             </span>
             <h2 className={classes["header-area"]}>현재 접속된 공용정보</h2>
             <p className={classes["existed-area"]}>

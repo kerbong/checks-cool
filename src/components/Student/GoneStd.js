@@ -8,6 +8,7 @@ import { dbService } from "../../fbase";
 import { onSnapshot, setDoc, doc, getDoc } from "firebase/firestore";
 import dayjs from "dayjs";
 import Swal from "sweetalert2";
+import { FaRegCircleXmark } from "react-icons/fa6";
 
 const GoneStd = ({ student, closeModal, userUid, isSubject, nowClassName }) => {
   const [tempStd, setTempStd] = useState(student);
@@ -43,7 +44,7 @@ const GoneStd = ({ student, closeModal, userUid, isSubject, nowClassName }) => {
 
   useEffect(() => {
     getDatasFromDb();
-  }, []);
+  }, [userUid]);
 
   const updateGoneStdDb = async (datas) => {
     let goneStdRef = doc(dbService, "goneStd", userUid);
@@ -140,14 +141,14 @@ const GoneStd = ({ student, closeModal, userUid, isSubject, nowClassName }) => {
     <div className={classes["flex-col-cen"]}>
       {/* 취소 버튼  */}
       <span className={classes["absol-ringt-top"]} onClick={closeModal}>
-        <i className="fa-regular fa-circle-xmark"></i>
+        <FaRegCircleXmark />
       </span>
 
       {/* 글자크기 설정하기 */}
       <h2 style={{ fontSize: "1.7rem" }}> 전출학생 관리</h2>
       <p>
-        * 전출 학생만을 위한 관리페이지 입니다. * 전입 학생을 추가는 학생 등록을
-        이용해주세요.
+        * 전출 학생만을 위한 관리페이지 입니다.
+        <br /> * 전입 학생을 추가는 학생 등록을 이용해주세요.
       </p>
 
       {/* 전체 전학생 */}

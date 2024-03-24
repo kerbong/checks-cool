@@ -50,7 +50,7 @@ const SeatLists = (props) => {
 
   useEffect(() => {
     getSeatsFromDb();
-  }, [changeData]);
+  }, [changeData, props.userUid]);
 
   useEffect(() => {
     setYearGroupHandler("");

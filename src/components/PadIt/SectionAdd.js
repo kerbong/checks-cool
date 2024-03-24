@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import classes from "./PadIt.module.css";
+import { FaRegCircleXmark } from "react-icons/fa6";
 
 const SectionAdd = ({
   onClose,
@@ -24,7 +25,7 @@ const SectionAdd = ({
           onClose();
         }}
       >
-        <i className="fa-regular fa-circle-xmark"></i>
+        <FaRegCircleXmark />
       </span>
 
       <form

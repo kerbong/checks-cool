@@ -4,6 +4,7 @@ import Swal from "sweetalert2";
 import dayjs from "dayjs";
 import { utils, writeFile } from "xlsx";
 import CompareListMemoTable from "./CompareListMemoTable";
+import { FaDownload } from "react-icons/fa6";
 
 const SearchCheckListMemo = (props) => {
   const [allCheckListMemo, setAllCheckListMemo] = useState([]);
@@ -214,7 +215,8 @@ const SearchCheckListMemo = (props) => {
             onClick={tableToExcelHandler}
             className={classes["search-btns"]}
           >
-            <i className="fa-solid fa-download"></i> 현재자료 엑셀저장
+            <FaDownload />
+            현재자료 엑셀저장
           </button>
           <CompareListMemoTable
             about={props.about}

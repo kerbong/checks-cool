@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import classes from "./LikeBtn.module.css";
+import { FaHeart, FaRegHeart } from "react-icons/fa6";
 
 const LikeBtn = (props) => {
   const [canClick, setCanClick] = useState(true);
@@ -26,11 +27,7 @@ const LikeBtn = (props) => {
         }
       }}
     >
-      {like ? (
-        <i className="fa-solid fa-heart"></i>
-      ) : (
-        <i className="fa-regular fa-heart"></i>
-      )}
+      {like ? <FaHeart /> : <FaRegHeart />}
     </button>
   );
 };

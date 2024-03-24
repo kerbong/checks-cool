@@ -6,6 +6,12 @@ import TitleBtn from "../Memo/TitleBtn";
 import BudgetManage from "../Memo/BudgetManage";
 
 import FreeMemo from "components/Memo/FreeMemo";
+import {
+  FaClipboardList,
+  FaMoneyCheckDollar,
+  FaRegCalendarCheck,
+  FaRegFolderOpen,
+} from "react-icons/fa6";
 
 const SHOW_WHAT = ["budgetManage", "todoList", "todayTodo", "freeMemo"];
 const MENU_NAME = {
@@ -15,21 +21,10 @@ const MENU_NAME = {
   freeMemo: "메모<br/>폴더",
 };
 const ICONS = {
-  budgetManage: (
-    <i
-      className="fa-solid fa-money-check-dollar"
-      style={{ fontSize: "1em" }}
-    ></i>
-  ),
-  todoList: (
-    <i className="fa-regular fa-calendar-check" style={{ fontSize: "1em" }}></i>
-  ),
-  todayTodo: (
-    <i className="fa-solid fa-clipboard-list" style={{ fontSize: "1em" }}></i>
-  ),
-  freeMemo: (
-    <i className="fa-regular fa-folder-open" style={{ fontSize: "1em" }}></i>
-  ),
+  budgetManage: <FaMoneyCheckDollar />,
+  todoList: <FaRegCalendarCheck />,
+  todayTodo: <FaClipboardList />,
+  freeMemo: <FaRegFolderOpen />,
 };
 
 const MemoPage = (props) => {
@@ -45,6 +40,12 @@ const MemoPage = (props) => {
   const memoTitle = (showWhat) => {
     return MENU_NAME[showWhat];
   };
+
+  useEffect(() => {
+    if (props.isClub === "" || props.isClub === "main") return;
+    //동아리 버전 사용에서는.. 초기화면으로 보내기!
+    navigate("/");
+  }, [props.isClub]);
 
   return (
     <>

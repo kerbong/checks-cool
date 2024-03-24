@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import classes from "./AudioRecord.module.css";
 import dayjs from "dayjs";
 import Swal from "sweetalert2";
+import { FaMicrophone, FaRecordVinyl, FaRegCircleStop } from "react-icons/fa6";
 
 const mimeType = "audio/mp4";
 
@@ -159,7 +160,8 @@ const AudioRecord = (props) => {
               type="button"
               className={classes["downRecordFile"]}
             >
-              <i className="fa-solid fa-microphone"></i> 마이크 권한
+              <FaMicrophone />
+              마이크 권한
             </button>
           ) : null}
           {permission && recordingStatus === "inactive" ? (
@@ -168,8 +170,7 @@ const AudioRecord = (props) => {
               type="button"
               className={classes["fileUploadBtn"]}
             >
-              <i className="fa-solid fa-record-vinyl"></i>{" "}
-              {audio ? "다시녹음" : "녹음"}
+              <FaRecordVinyl /> {audio ? "다시녹음" : "녹음"}
             </button>
           ) : null}
           {recordingStatus === "recording" ? (
@@ -178,7 +179,8 @@ const AudioRecord = (props) => {
               type="button"
               className={classes["fileUploadBtn"]}
             >
-              <i className="fa-regular fa-circle-stop"></i> 중지
+              <FaRegCircleStop />
+              중지
             </button>
           ) : null}
         </div>

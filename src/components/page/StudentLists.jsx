@@ -10,6 +10,13 @@ import Button from "../Layout/Button";
 import dayjs from "dayjs";
 
 import classes from "../Student/TypingStudent.module.css";
+import {
+  FaCircleArrowUp,
+  FaFileArrowUp,
+  FaRegFileImage,
+  FaRegFloppyDisk,
+  FaUserPlus,
+} from "react-icons/fa6";
 
 const StudentLists = (props) => {
   const [addStudentBy, setAddStudentBy] = useState(
@@ -186,7 +193,7 @@ const StudentLists = (props) => {
       Swal.fire({
         icon: "question",
         title: "저장할까요?",
-        html: `번호나 이름이 중복되지 않았는지 확인 후 저장 버튼 <i class="fa-regular fa-floppy-disk"></i> 을 눌러주세요!`,
+        html: `번호나 이름이 중복되지 않았는지 확인 후 '저장 버튼'을 눌러주세요!`,
         showDenyButton: true,
         confirmButtonText: "저장",
         confirmButtonColor: "#db100cf2",
@@ -310,7 +317,7 @@ const StudentLists = (props) => {
     <div>
       <div id="title-div">
         <button id="title-btn" className="upload">
-          <i className="fa-solid fa-user-plus"></i> 학생등록
+          <FaUserPlus /> 학생등록
         </button>
 
         {addStudentBy === "typing" && (
@@ -321,7 +328,7 @@ const StudentLists = (props) => {
               name={
                 <>
                   <span className="excel-upload-text">엑셀</span>{" "}
-                  <i className="fa-solid fa-file-arrow-up"></i>
+                  <FaFileArrowUp />
                 </>
               }
               onclick={() => setAddStudentBy("excelFile")}
@@ -335,7 +342,7 @@ const StudentLists = (props) => {
                 name={
                   <>
                     <span className="excel-upload-text">명렬표</span>{" "}
-                    <i className="fa-regular fa-file-image"></i>
+                    <FaRegFileImage />
                   </>
                 }
                 onclick={() => setAddStudentBy("imageFile")}
@@ -352,7 +359,7 @@ const StudentLists = (props) => {
               name={
                 <>
                   <span className="excel-upload-text">직접</span>{" "}
-                  <i className="fa-solid fa-circle-arrow-up"></i>
+                  <FaCircleArrowUp />
                 </>
               }
               onclick={() => setAddStudentBy("typing")}
@@ -365,7 +372,7 @@ const StudentLists = (props) => {
                 name={
                   <>
                     <span className="excel-upload-text">명렬표</span>{" "}
-                    <i className="fa-regular fa-file-image"></i>
+                    <FaRegFileImage />
                   </>
                 }
                 onclick={() => setAddStudentBy("imageFile")}
@@ -382,7 +389,7 @@ const StudentLists = (props) => {
               name={
                 <>
                   <span className="excel-upload-text">직접</span>{" "}
-                  <i className="fa-solid fa-circle-arrow-up"></i>
+                  <FaCircleArrowUp />
                 </>
               }
               onclick={() => setAddStudentBy("typing")}
@@ -394,7 +401,7 @@ const StudentLists = (props) => {
               name={
                 <>
                   <span className="excel-upload-text">엑셀</span>{" "}
-                  <i className="fa-solid fa-file-arrow-up"></i>
+                  <FaFileArrowUp />
                 </>
               }
               onclick={() => setAddStudentBy("excelFile")}
@@ -427,7 +434,7 @@ const StudentLists = (props) => {
             name={
               <>
                 {wholeClass.length > 0 && "클릭! "}
-                <i className="fa-regular fa-floppy-disk"></i>
+                <FaRegFloppyDisk />
               </>
             }
             onclick={submitStudentUploader}

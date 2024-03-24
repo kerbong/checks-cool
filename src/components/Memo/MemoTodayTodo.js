@@ -88,7 +88,7 @@ const MemoTodayTodo = (props) => {
 
   useEffect(() => {
     getMemoFromDb();
-  }, []);
+  }, [props.userUid]);
 
   //중요 순으로 정렬하기
   const sortEmg = (todo_list) => {

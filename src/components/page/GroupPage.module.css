@@ -397,7 +397,7 @@
 .header-clicked-title {
   display: flex;
   align-items: center;
-  width: 400px;
+  width: 600px;
   justify-content: space-around;
 }
 

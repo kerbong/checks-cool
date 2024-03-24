@@ -10,6 +10,7 @@ import { utils, writeFile } from "xlsx";
 import holidays2023 from "holidays2023";
 
 import AssistanceAi from "../AssistanceAi/AssistanceAi";
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa6";
 
 const getDateHandler = (date, titleOrQuery) => {
   let year = date.getFullYear();
@@ -68,7 +69,7 @@ const Alarm = (props) => {
 
   useEffect(() => {
     getAlarmFromDb();
-  }, [todayYyyymmdd]);
+  }, [todayYyyymmdd, props.userUid]);
 
   useEffect(() => {
     if (alarmLists.length > 0) {
@@ -371,12 +372,8 @@ const Alarm = (props) => {
           onClick={() => setShowCal((prev) => !prev)}
         >
           {/* 왼쪽 버튼 어제로..  */}
-          <span
-            className={classes["cal-moveDay"]}
-            title="이전 날짜"
-            onClick={() => dayChangerHandler("before")}
-          >
-            <i className="fa-solid fa-chevron-left fa-lg"></i>
+          <span title="이전 날짜" onClick={() => dayChangerHandler("before")}>
+            <FaChevronLeft className={classes["cal-moveDay"]} />
           </span>
           {/* 오늘 날짜 보여주는 부분 날짜 클릭하면 달력도 나옴 */}
           <span
@@ -400,12 +397,8 @@ const Alarm = (props) => {
             </span>
           </span>
           {/* 오른쪽 버튼 내일로..  */}
-          <span
-            className={classes["cal-moveDay"]}
-            title="다음 날짜"
-            onClick={() => dayChangerHandler("next")}
-          >
-            <i className="fa-solid fa-chevron-right fa-lg"></i>
+          <span title="다음 날짜" onClick={() => dayChangerHandler("next")}>
+            <FaChevronRight className={classes["cal-moveDay"]} />
           </span>
         </div>
 

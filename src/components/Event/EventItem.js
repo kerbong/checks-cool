@@ -3,6 +3,14 @@ import Swal from "sweetalert2";
 import classes from "./EventItem.module.css";
 import Button from "../Layout/Button";
 import AttendCalendar from "../Attendance/AttendCalendar";
+import {
+  FaCircleArrowRight,
+  FaCircleCheck,
+  FaPencil,
+  FaRegFloppyDisk,
+  FaRegTrashCan,
+  FaXmark,
+} from "react-icons/fa6";
 
 const EventItem = (props) => {
   let item = props.item;
@@ -179,7 +187,7 @@ const EventItem = (props) => {
                       className={"paperSub-btn-s-clicked"}
                       icon={
                         <span>
-                          <i className="fa-solid fa-circle-check"></i>
+                          <FaCircleCheck />
                         </span>
                       }
                     />
@@ -222,7 +230,7 @@ const EventItem = (props) => {
                         name={"서류"}
                         icon={
                           <span>
-                            <i className="fa-solid fa-circle-check"></i>
+                            <FaCircleCheck />
                           </span>
                         }
                       />
@@ -286,7 +294,7 @@ const EventItem = (props) => {
               }}
             >
               <div className={`${classes["datePick-area"]}`}>
-                <i className="fa-solid fa-circle-arrow-right"></i>
+                <FaCircleArrowRight />
                 <AttendCalendar
                   getDateValue={getDateHandler}
                   setStart={new Date(changeDateFormat(keyId))}
@@ -319,11 +327,11 @@ const EventItem = (props) => {
               name={
                 props.fixIsShown !== shownId ? (
                   <span>
-                    <i className="fa-solid fa-pencil"></i>
+                    <FaPencil />
                   </span>
                 ) : (
                   <span>
-                    <i className="fa-regular fa-floppy-disk"></i>
+                    <FaRegFloppyDisk />
                   </span>
                 )
               }
@@ -347,11 +355,11 @@ const EventItem = (props) => {
               name={
                 props.fixIsShown !== shownId ? (
                   <span>
-                    <i className="fa-regular fa-trash-can"></i>
+                    <FaRegTrashCan />
                   </span>
                 ) : (
                   <span>
-                    <i className="fa-solid fa-xmark"></i>
+                    <FaXmark />
                   </span>
                 )
               }

@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 // import Marked from "marked";
 import classes from "./NotionClone.module.css"; // 노션 스타일을 정의한 CSS 파일을 import 합니다.
+import { FaBold, FaLink, FaStrikethrough, FaUnderline } from "react-icons/fa6";
 
 //글자색목록 7개
 const COLORS = ["#ff0000", "#009aff", "#6b20ff"];
@@ -150,20 +151,20 @@ const NotionClone = (props) => {
       <div className="style-buttons" style={{ pointerEvents: "none" }}>
         {/* 굵게 버튼 */}
         <button onClick={handleBold} className={classes["font-style-btn"]}>
-          <i className="fa-solid fa-bold"></i>
+          <FaBold />
         </button>
 
         {/* 밑줄 버튼 */}
         <button onClick={handleUnderline} className={classes["font-style-btn"]}>
-          <i className="fa-solid fa-underline"></i>
+          <FaUnderline />
         </button>
         {/* 취소선 버튼 */}
         <button onClick={handleThrough} className={classes["font-style-btn"]}>
-          <i className="fa-solid fa-strikethrough"></i>
+          <FaStrikethrough />
         </button>
         {/* a태그 버튼 */}
         <button onClick={handleItalic} className={classes["font-style-btn"]}>
-          <i className="fa-solid fa-link"></i>
+          <FaLink />
         </button>
 
         {/* 색깔 버튼들 */}

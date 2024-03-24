@@ -11,6 +11,7 @@ import { dbService } from "../../fbase";
 import { onSnapshot, setDoc, doc, getDoc } from "firebase/firestore";
 import AudioRecord from "components/Consult/AudioRecord";
 import dayjs from "dayjs";
+import { FaArrowsRotate } from "react-icons/fa6";
 
 const AttendanceForm = (props) => {
   const [attachedFile, setAttachedFile] = useState("");
@@ -32,21 +33,24 @@ const AttendanceForm = (props) => {
     // console.log(queryWhere);
 
     onSnapshot(attendRef, (doc) => {
-      setAttendEvents([]);
-      const new_attends = [];
-      doc?.data()?.attend_data?.forEach((data) => {
-        // if (data.id.slice(0, 7) === currentMonth.slice(0, 7)) {
-        new_attends.push(data);
-        // }
-      });
-      setAttendEvents([...new_attends]);
+      if (doc.exists()) {
+        const new_attends = [];
+        doc?.data()?.attend_data?.forEach((data) => {
+          // if (data.id.slice(0, 7) === currentMonth.slice(0, 7)) {
+          new_attends.push(data);
+          // }
+        });
+        setAttendEvents([...new_attends]);
+      } else {
+        setAttendEvents([]);
+      }
     });
     // console.log(queryWhere);
   };
 
   useEffect(() => {
     getAttendEventsFromDb();
-  }, []);
+  }, [props.userUid]);
 
   const getToday = (date) => {
     let year = date.getFullYear();
@@ -214,7 +218,7 @@ const AttendanceForm = (props) => {
   const handleOnInput = (e) => {
     let maxlength;
     if (props.about === "consulting") {
-      maxlength = 1500;
+      maxlength = 4000;
     } else if (props.about === "attendance") {
       maxlength = 30;
     }
@@ -273,8 +277,11 @@ const AttendanceForm = (props) => {
     if (!events || events?.length === 0 || props.students?.length === 0) return;
 
     // 출결에서만 나오는..거..!! 현재학생 정보만 거르고
+
     let now_studentEvents = events?.filter(
-      (evt) => evt.name === props.who.split(" ")[1]
+      (evt) =>
+        evt?.name === props.who?.substring(props.who?.indexOf(" ") + 1) &&
+        evt?.num === props.who?.split(" ")?.[0]
     );
     let new_optionsSet = [];
     now_studentEvents?.forEach((evt) => {
@@ -470,7 +477,7 @@ const AttendanceForm = (props) => {
                   onClick={() => setIsImgFile((prev) => !prev)}
                   style={{ fontSize: "1em" }}
                 >
-                  <i className="fa-solid fa-rotate"></i>{" "}
+                  <FaArrowsRotate />{" "}
                   {isImgFile ? "오디오 녹음하기" : "사진 올리기"}
                 </button>
               </>

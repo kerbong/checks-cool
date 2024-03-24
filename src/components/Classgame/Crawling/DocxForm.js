@@ -15,6 +15,8 @@ import classes from "./HwpControl.module.css";
 import Modal from "components/Layout/Modal";
 // import FormVarType from "./FormVarType";
 import { send } from "emailjs-com";
+import { FaDownload } from "react-icons/fa6";
+import { MdOutlineCloudUpload } from "react-icons/md";
 
 const FOR_WHAT = ["atAdd", "atReport", "absence"];
 
@@ -541,7 +543,7 @@ const DocxForm = (props) => {
                     className={classes["fileUpLabel"]}
                     title={"현재 파일 다운"}
                   >
-                    다운로드 <i className="fa-solid fa-download"></i>
+                    다운로드 <FaDownload />
                   </button>
                 )}
 
@@ -550,7 +552,7 @@ const DocxForm = (props) => {
                   className={classes["fileUpLabel"]}
                   title={"새 파일 업로드"}
                 >
-                  업로드 <i className="fa-solid fa-upload"></i>
+                  업로드 <MdOutlineCloudUpload />
                   <input
                     type="file"
                     style={{ display: "none" }}

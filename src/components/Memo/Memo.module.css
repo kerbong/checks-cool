@@ -68,6 +68,7 @@
   line-height: 1.5;
   cursor: pointer;
   margin: 7px;
+  align-items: center;
 }
 
 .listMemo-date {
@@ -270,7 +271,7 @@
 }
 
 .budget-add {
-  top: 176px;
+  top: 181px;
 }
 
 .budget-del {
@@ -391,11 +392,11 @@
 }
 
 .budgetList-edit,
-.budgetList-delete {
-  top: -35px;
-
+.budgetList-delete,
+.budgetList-copy {
+  bottom: 0px;
   position: relative;
-  left: 33%;
+  left: 18%;
   font-size: 1rem;
   padding: 10px;
   color: #0008054f;
@@ -406,8 +407,13 @@
   background-color: #ffffffd9;
 }
 
+.budgetList-edit {
+  left: 14%;
+  margin-left: 5px;
+}
+
 .budgetList-delete {
-  left: 35%;
+  left: 20%;
   margin-left: 5px;
 }
 

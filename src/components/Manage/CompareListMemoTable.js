@@ -11,6 +11,7 @@ import {
   Legend,
 } from "chart.js/auto";
 import { Line } from "react-chartjs-2";
+import { FaChevronDown, FaChevronUp } from "react-icons/fa6";
 
 ChartJS.register(
   CategoryScale,
@@ -415,13 +416,7 @@ const CompareListMemoTable = (props) => {
         <h2 onClick={() => setExplainOn((prev) => !prev)}>
           {" "}
           😮 사용 방법 및 주의사항{" "}
-          <span>
-            {explainOn ? (
-              <i className="fa-solid fa-chevron-up"></i>
-            ) : (
-              <i className="fa-solid fa-chevron-down"></i>
-            )}{" "}
-          </span>
+          <span>{explainOn ? <FaChevronUp /> : <FaChevronDown />} </span>
         </h2>
         {explainOn && explainP()}
       </div>

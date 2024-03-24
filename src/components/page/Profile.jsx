@@ -7,6 +7,7 @@ import Swal from "sweetalert2";
 import dayjs from "dayjs";
 
 import { sendPasswordResetEmail } from "firebase/auth";
+import { FaUser } from "react-icons/fa6";
 
 const Profile = (props) => {
   const [userInfo, setUserInfo] = useState({});
@@ -347,8 +348,8 @@ const Profile = (props) => {
       </div>
 
       <p className={classes["explain-p"]} style={{ marginBottom: "50px" }}>
-        * 메뉴의 <i className="fa-solid fa-user"></i> - "프로필 수정" 을 통해
-        현재 페이지로 이동이 가능합니다.{" "}
+        * 메뉴의 <FaUser /> - "프로필 수정" 을 통해 현재 페이지로 이동이
+        가능합니다.{" "}
       </p>
     </div>
   );

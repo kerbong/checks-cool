@@ -5,6 +5,7 @@ import Button from "../Layout/Button";
 import classes from "./TodoLists.module.css";
 import EventItem from "../Event/EventItem";
 import EventInput from "../Event/EventInput";
+import { FaRegCircleXmark } from "react-icons/fa6";
 
 const TodoLists = (props) => {
   const [eventOnDay, setEventOnDay] = useState(props.eventOnDay);
@@ -198,7 +199,7 @@ const TodoLists = (props) => {
           props.dayEventHideHandler();
         }}
       >
-        <i className="fa-regular fa-circle-xmark"></i>
+        <FaRegCircleXmark />
       </p>
       <h1 className={eventOnDay[0].eventDate}>
         {`${eventOnDay[0].eventDate.slice(

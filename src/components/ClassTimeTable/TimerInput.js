@@ -4,6 +4,7 @@ import classes from "./SimpleTimer.module.css";
 import dayjs from "dayjs";
 import { doc, getDoc } from "firebase/firestore";
 import { dbService } from "fbase";
+import { FaChevronDown, FaChevronUp } from "react-icons/fa6";
 
 const EXAMPLES = [
   "화장실 다녀오기",
@@ -105,7 +106,7 @@ const TimerInput = (props) => {
     // if (props.classTitle.includes("1교시") || !props.classTitle.includes("교시") || props.classTitle === "") {
     getCheckListsFromDb();
     // }
-  }, []);
+  }, [props.userUid]);
 
   return (
     <div>
@@ -161,12 +162,7 @@ const TimerInput = (props) => {
               style={{ color: "gray" }}
               onClick={() => setShowMemo((prev) => !prev)}
             >
-              * 메모 내용 확인{" "}
-              {showMemo ? (
-                <i className="fa-solid fa-chevron-up"></i>
-              ) : (
-                <i className="fa-solid fa-chevron-down"></i>
-              )}
+              * 메모 내용 확인 {showMemo ? <FaChevronUp /> : <FaChevronDown />}
             </div>
           )}
           {/* 메모가 있으면.. 메모보여주기 */}

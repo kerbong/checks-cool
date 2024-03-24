@@ -14,6 +14,8 @@ import classes from "./Auth.module.css";
 import AuthTerms from "./AuthTerms";
 import Swal from "sweetalert2";
 import Loading from "./Loading";
+import { FaChevronDown, FaChevronUp } from "react-icons/fa6";
+import { FcGoogle } from "react-icons/fc";
 
 const Auth = (props) => {
   const [email, setEmail] = useState("");
@@ -312,11 +314,7 @@ const Auth = (props) => {
                       setShowAgency((prev) => !prev);
                     }}
                   >
-                    {!showAgency ? (
-                      <i className="fa-solid fa-chevron-down"></i>
-                    ) : (
-                      <i className="fa-solid fa-chevron-up"></i>
-                    )}
+                    {!showAgency ? <FaChevronDown /> : <FaChevronUp />}
                   </span>
                 </div>
                 <p className={classes["terms-checkbox-area"]}>
@@ -358,8 +356,7 @@ const Auth = (props) => {
               disabled={newAccount && !agreeTerms && true}
               className={classes["logInOut-SignUp"]}
             >
-              <i className="fa-brands fa-google"></i>{" "}
-              {newAccount ? "Google로 가입" : "Google 로그인"}
+              <FcGoogle /> {newAccount ? "Google로 가입" : "Google 로그인"}
             </button>
 
             {!newAccount && (

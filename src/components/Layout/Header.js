@@ -3,6 +3,13 @@ import HeaderMenu from "./HeaderMenu";
 import { useEffect, useState } from "react";
 import HeaderProfileBtn from "./HeaderProfileBtn";
 import { useNavigate } from "react-router-dom";
+import {
+  FaCookieBite,
+  FaGamepad,
+  FaRegAddressBook,
+  FaRegCompass,
+  FaRegNoteSticky,
+} from "react-icons/fa6";
 
 const Header = (props) => {
   const [nowOn, setNowOn] = useState("");
@@ -24,9 +31,10 @@ const Header = (props) => {
     } else if (
       where === "manageAttendance" ||
       where === "manageConsult" ||
-      where === "manageCheckListMemo"
+      where === "manageCheckListMemo" ||
+      where === "manageStudent"
     ) {
-      setNowOn("manageStudent");
+      setNowOn("manageAttendance");
     } else if (where === "todo") {
       setNowOn("memo");
     } else {
@@ -51,35 +59,40 @@ const Header = (props) => {
         </h2>
         <ul className={classes["menu-lists"]} id="menu-lists">
           <HeaderMenu
-            icon={"fa-regular fa-address-book"}
+            icon={<FaRegAddressBook />}
             path={"attendance"}
             menuText={"생기부"}
+            isClub={"main"}
             nowOn={nowOn}
           />
           <HeaderMenu
-            icon={"fa-regular fa-compass"}
+            icon={<FaRegCompass />}
             path={"manageAttendance"}
             menuText={"조회"}
+            isClub={"main"}
             nowOn={nowOn}
           />
           <HeaderMenu
-            icon={"fa-regular fa-note-sticky"}
+            icon={<FaRegNoteSticky />}
             path={"memo"}
             menuText={"메모"}
+            isClub={props.isClub}
             nowOn={nowOn}
           />
 
           <HeaderMenu
-            icon={"fa-solid fa-cookie-bite"}
+            icon={<FaCookieBite />}
             path={"weteacher"}
             menuText={"교사랑"}
+            isClub={props.isClub}
             nowOn={nowOn}
           />
           <HeaderMenu
-            icon={"fa-solid fa-gamepad"}
+            icon={<FaGamepad />}
             path={"classgame"}
             from={""}
             menuText={"제자랑"}
+            isClub={"main"}
             nowOn={nowOn}
           />
         </ul>
@@ -90,6 +103,9 @@ const Header = (props) => {
             logOutHandler={logOutHandler}
             setMenuHandler={setMenuHandler}
             menuOnHead={props.menuOnHead}
+            isClub={props.isClub}
+            clubLists={props.clubLists}
+            isClubIndex={(ind) => props.isClubIndex(ind)}
           />
         </ul>
       </nav>

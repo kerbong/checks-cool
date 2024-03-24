@@ -11,8 +11,31 @@ import dayjs from "dayjs";
 import ClassTableBasic from "./ClassTableBasic";
 
 import { PiDogFill } from "react-icons/pi";
-import { FaExchangeAlt } from "react-icons/fa";
-import { FaCrown } from "react-icons/fa6";
+import { FaExchangeAlt, FaRegPlusSquare } from "react-icons/fa";
+import {
+  FaChair,
+  FaChevronLeft,
+  FaChevronRight,
+  FaClipboardCheck,
+  FaCrown,
+  FaGear,
+  FaGift,
+  FaHeart,
+  FaHeartCircleMinus,
+  FaHeartCirclePlus,
+  FaHouse,
+  FaPlus,
+  FaRegCalendarDays,
+  FaRegCircleXmark,
+  FaRegComments,
+  FaRegFloppyDisk,
+  FaRegFolderOpen,
+  FaRegSquareCheck,
+  FaShuffle,
+  FaUser,
+  FaUsersRectangle,
+  FaXmark,
+} from "react-icons/fa6";
 import { FaRegEdit } from "react-icons/fa";
 import { ImMakeGroup } from "react-icons/im";
 import { IoPersonSharp } from "react-icons/io5";
@@ -473,6 +496,9 @@ const GroupPage = (props) => {
 
   // 무언가 요소가 변하면, 2초 후에 저장하는 함수.
   useEffect(() => {
+    console.log(stdPoints);
+    console.log(groupIndex);
+
     if (!nowDatas?.id || groupDatas?.length === 0) return;
 
     // 이전에 예약된 저장 작업이 있다면 취소
@@ -617,6 +643,8 @@ const GroupPage = (props) => {
               }
               new_groupIndex.push(new_gi);
             });
+
+            console.log(new_groupIndex);
 
             setGroupIndex(new_groupIndex);
 
@@ -776,7 +804,7 @@ const GroupPage = (props) => {
   //모둠화면 데이터 받아오기
   useEffect(() => {
     getGroupModeDatas();
-  }, []);
+  }, [props.userUid]);
 
   useEffect(() => {
     if (groupMakingStep === MAKE_STEP[3]) {
@@ -848,7 +876,7 @@ const GroupPage = (props) => {
     if (!showSeatsList) return;
 
     getSeatsFromDb();
-  }, [showSeatsList]);
+  }, [showSeatsList, props.userUid]);
 
   /** 저장된 자리 데이터 없으면 보여줄 swal */
   const showNoSeatLists = () => {
@@ -965,7 +993,7 @@ const GroupPage = (props) => {
     if (groupInfo?.length === 0) {
       Swal.fire({
         title: "모둠설정 없이 저장",
-        html: `모둠설정 없이 저장하여 사용하시겠어요? (모둠 보상 기능 사용불가! 저장하신 후에 화면 우측 상단의 <i class="fa-solid fa-gear"></i> 버튼으로 설정 가능)`,
+        html: `모둠설정 없이 저장하여 사용하시겠어요? (모둠 보상 기능 사용불가! 저장하신 후에 화면 우측 상단의 기어 버튼으로 설정 가능)`,
         showDenyButton: true,
         confirmButtonText: "저장",
         confirmButtonColor: "#db100cf2",
@@ -1149,10 +1177,10 @@ const GroupPage = (props) => {
     if (what === "heart-minus-stds") {
       let new_stdPoints = [...stdPoints];
       clickedStds?.forEach((cl_std_ind) => {
-        let std_point = new_stdPoints[cl_std_ind];
-        if (std_point > 0) {
-          new_stdPoints[cl_std_ind] -= 1;
-        }
+        // let std_point = new_stdPoints[cl_std_ind];
+        // if (std_point > 0) {
+        new_stdPoints[cl_std_ind] -= 1;
+        // }
       });
       setStdPoints(new_stdPoints);
     } else if (what === "heart-plus-stds") {
@@ -1169,32 +1197,23 @@ const GroupPage = (props) => {
     } else if (what === "honey-minus") {
       let new_groupInfo = [...groupInfo];
 
-      if (new_groupInfo[std_ind].grPoints > 0) {
-        new_groupInfo[std_ind].grPoints -= 1;
-        setGroupInfo(new_groupInfo);
-      }
+      // if (new_groupInfo[std_ind].grPoints > 0) {
+      new_groupInfo[std_ind].grPoints -= 1;
+      setGroupInfo(new_groupInfo);
+      // }
     } else if (what === "heart-plus") {
       let new_stdPoints = [...stdPoints];
       new_stdPoints[std_ind] += 1;
       setStdPoints(new_stdPoints);
     } else if (what === "heart-minus") {
       let new_stdPoints = [...stdPoints];
-      let std_point = new_stdPoints[std_ind];
-      if (std_point > 0) {
-        new_stdPoints[std_ind] -= 1;
-        setStdPoints(new_stdPoints);
-      }
+      // let std_point = new_stdPoints[std_ind];
+      // if (std_point > 0) {
+      new_stdPoints[std_ind] -= 1;
+      setStdPoints(new_stdPoints);
+      // }
     }
   };
-
-  /** 그룹설정 변경되는거 관리하기 */
-  //   const saveGroupSettingHandler = () => {
-  //     if (settingWhat === "자리변경") {
-  //       //   setGroupMakingStep(MAKE_STEP[2]);
-  //     } else if (settingWhat === "모둠수정") {
-  //       //   setGroupMakingStep(MAKE_STEP[3]);
-  //     }
-  //   };
 
   /** 학생 개인 점수의 등수 1~5등까지 보여주기 */
   const stdRank1to5 = (st_ind, isGroup) => {
@@ -1372,7 +1391,7 @@ const GroupPage = (props) => {
     } else if (menuFunc === "개별") {
       getCheckListsDataHandler("listMemo");
     }
-  }, [menuFunc]);
+  }, [menuFunc, props.userUid]);
 
   /** 만약 제출 혹은 개별기록의 기존 자료를 선택하면, unSubmitStudents를 세팅해줌. */
   useEffect(() => {
@@ -1614,6 +1633,16 @@ const GroupPage = (props) => {
       return;
     }
 
+    // 마이너스는 불가능함..
+    if (1 > +giftScore) {
+      Swal.fire(
+        "저장 실패!",
+        "보상 점수(보상을 구입할 때 필요한 점수)는 +만 가능합니다.",
+        "warning"
+      );
+      return;
+    }
+
     let new_gift = {
       class: giftClass,
       name: giftName?.trim(),
@@ -1848,6 +1877,18 @@ const GroupPage = (props) => {
     );
   };
 
+  const clickAllStds = () => {
+    let stds = [];
+    nowDatas?.students?.forEach((st, st_ind) => {
+      if (!isNaN(+st)) return;
+      stds.push(st_ind);
+    });
+    //현재 모두 클릭중이면... 로직 멈춤.
+    if (stds?.length === clickedStds?.length) return;
+    //아니면 모두 선택해줌.
+    setClickedStds(stds);
+  };
+
   //  전체 html그리는 return 부분
   return (
     <div className={classes["div"]}>
@@ -1877,9 +1918,8 @@ const GroupPage = (props) => {
               setGiftItem("");
               resetGift();
             }}
-            className={classes.xmark}
           >
-            <i className="fa-regular fa-circle-xmark"></i>
+            <FaRegCircleXmark className={classes.xmark} />
           </span>
           {/* 타이틀 부분 */}
           <div className={classes["flex-cen"]}>
@@ -2052,15 +2092,11 @@ const GroupPage = (props) => {
                             }}
                           />
                         ) : (
-                          <i
-                            className="fa-solid fa-heart fa-sm"
-                            style={{
-                              color: "#d90f30",
-                              filter:
-                                "drop-shadow(2px 1px 1px rgba(46, 0, 0, 1))",
-                              marginLeft: "3px",
-                            }}
-                          ></i>
+                          <FaHeart
+                            color="#d90f30"
+                            filter="drop-shadow(2px 1px 1px rgba(46, 0, 0, 1))"
+                            marginLeft="3px"
+                          />
                         )}
                       </span>
                     )}{" "}
@@ -2086,9 +2122,8 @@ const GroupPage = (props) => {
               setGiftItem("");
               resetGift();
             }}
-            className={classes.xmark}
           >
-            <i className="fa-regular fa-circle-xmark"></i>
+            <FaRegCircleXmark className={classes.xmark} />
           </span>
           {/* 타이틀 부분 */}
           <div className={classes["flex-cen"]}>
@@ -2204,18 +2239,15 @@ const GroupPage = (props) => {
                       className={classes["seat-ul"]}
                       style={{ fontSize: "15px" }}
                     >
-                      {Array(gift.score)?.fill(
-                        <span className={classes["gift-icon"]}>
-                          <GiHoneypot
-                            size={25}
-                            color="#ffe300"
-                            style={{
-                              filter:
-                                "drop-shadow(2px 1px 1px rgba(46, 0, 0, 1))",
-                            }}
+                      {Array.from({ length: gift.score }, (_, index) => (
+                        <span key={index} className={classes["gift-icon"]}>
+                          <FaHeart
+                            color="#d90f30"
+                            filter="drop-shadow(2px 1px 1px rgba(46, 0, 0, 1))"
+                            marginLeft="3px"
                           />
                         </span>
-                      )}{" "}
+                      ))}{" "}
                       ({gift.score})
                     </div>
                   </li>
@@ -2239,9 +2271,8 @@ const GroupPage = (props) => {
               setGiftItem("");
               resetGift();
             }}
-            className={classes.xmark}
           >
-            <i className="fa-regular fa-circle-xmark"></i>
+            <FaRegCircleXmark className={classes.xmark} />
           </span>
           {/* 타이틀 부분 */}
           <div className={classes["flex-cen"]}>
@@ -2349,22 +2380,23 @@ const GroupPage = (props) => {
                       maxWidth: "145px",
                     }}
                   >
-                    <div className={classes["seat-title"]}>{gift.name}</div>
+                    <div
+                      className={classes["seat-title"]}
+                      key={"giftName" + ind}
+                    >
+                      {gift.name}
+                    </div>
                     <div
                       className={classes["seat-ul"]}
                       style={{ fontSize: "15px" }}
                     >
                       {Array(gift.score)?.fill(
                         <span className={classes["gift-icon"]}>
-                          <i
-                            className="fa-solid fa-heart fa-sm"
-                            style={{
-                              color: "#d90f30",
-                              filter:
-                                "drop-shadow(2px 1px 1px rgba(46, 0, 0, 1))",
-                              marginLeft: "3px",
-                            }}
-                          ></i>
+                          <FaHeart
+                            color="#d90f30"
+                            filter="drop-shadow(2px 1px 1px rgba(46, 0, 0, 1))"
+                            marginLeft="3px"
+                          />
                         </span>
                       )}{" "}
                       ({gift.score})
@@ -2390,9 +2422,8 @@ const GroupPage = (props) => {
               setGiftItem("");
               resetGift();
             }}
-            className={classes.xmark}
           >
-            <i className="fa-regular fa-circle-xmark"></i>
+            <FaRegCircleXmark className={classes.xmark} />
           </span>
           {/* 타이틀 부분 */}
           <div className={classes["flex-cen"]}>
@@ -2522,11 +2553,8 @@ const GroupPage = (props) => {
       {/* 자리표 이쓰면 목록 보여주기 */}
       {showSeatsList && seatLists?.length !== 0 && (
         <Modal onClose={() => setShowSeatsList(false)}>
-          <span
-            onClick={() => setShowSeatsList(false)}
-            className={classes.xmark}
-          >
-            <i className="fa-regular fa-circle-xmark"></i>
+          <span onClick={() => setShowSeatsList(false)}>
+            <FaRegCircleXmark className={classes.xmark} />
           </span>
           {/* 타이틀 부분 */}
           <div className={classes["flex-cen"]}>
@@ -2569,11 +2597,8 @@ const GroupPage = (props) => {
       {showGroupList && groupDatas?.length !== 0 && (
         <>
           <Modal onClose={() => setShowGroupList(false)}>
-            <span
-              onClick={() => setShowGroupList(false)}
-              className={classes.xmark}
-            >
-              <i className="fa-regular fa-circle-xmark"></i>
+            <span onClick={() => setShowGroupList(false)}>
+              <FaRegCircleXmark className={classes.xmark} />
             </span>
             {/* 타이틀 부분 */}
             <div className={classes["flex-cen"]}>
@@ -2617,11 +2642,8 @@ const GroupPage = (props) => {
       {showRowCol && (
         <>
           <Modal onClose={() => setShowRowCol(false)} addStyle={"shortcut"}>
-            <span
-              onClick={() => setShowRowCol(false)}
-              className={classes.xmark}
-            >
-              <i className="fa-regular fa-circle-xmark"></i>
+            <span onClick={() => setShowRowCol(false)}>
+              <FaRegCircleXmark className={classes.xmark} />
             </span>
             {/* 타이틀 부분 */}
             <div className={classes["flex-cen"]}>
@@ -2722,11 +2744,8 @@ const GroupPage = (props) => {
             onClose={() => setShowTitleInputModal(false)}
             addStyle={"shortcut"}
           >
-            <span
-              onClick={() => setShowTitleInputModal(false)}
-              className={classes.xmark}
-            >
-              <i className="fa-regular fa-circle-xmark"></i>
+            <span onClick={() => setShowTitleInputModal(false)}>
+              <FaRegCircleXmark className={classes.xmark} />
             </span>
             {/* 타이틀 부분 */}
             <div className={classes["flex-cen"]}>
@@ -2830,8 +2849,8 @@ const GroupPage = (props) => {
       {/* 제출 혹은 개별기록 불러오기면.. 모달로 선택하는 부분, */}
       {(menuFunc === "제출" || menuFunc === "개별") && addOrLoad === "load" && (
         <Modal onClose={() => setAddOrLoad("")}>
-          <span onClick={() => setAddOrLoad("")} className={classes.xmark}>
-            <i className="fa-regular fa-circle-xmark"></i>
+          <span onClick={() => setAddOrLoad("")}>
+            <FaRegCircleXmark className={classes.xmark} />
           </span>
           {/* 타이틀 부분 */}
           <div className={classes["flex-cen"]}>
@@ -2891,13 +2910,9 @@ const GroupPage = (props) => {
                 <Button
                   name="&nbsp; 출결"
                   className={"groupPage-btn"}
-                  icon={
-                    <i
-                      className="fa-regular fa-calendar-days"
-                      aria-hidden="true"
-                    ></i>
-                  }
+                  icon={<FaRegCalendarDays />}
                   onclick={() => {
+                    setClickedStds([]);
                     setMenuFunc("출결");
                   }}
                   style={menuRight ? { width: "92px" } : {}}
@@ -2905,13 +2920,9 @@ const GroupPage = (props) => {
                 <Button
                   name="&nbsp; 제출"
                   className={"groupPage-btn"}
-                  icon={
-                    <i
-                      className="fa-regular fa-square-check"
-                      aria-hidden="true"
-                    ></i>
-                  }
+                  icon={<FaRegSquareCheck />}
                   onclick={() => {
+                    setClickedStds([]);
                     setMenuFunc("제출");
                   }}
                   style={menuRight ? { width: "92px" } : {}}
@@ -2919,13 +2930,9 @@ const GroupPage = (props) => {
                 <Button
                   name="&nbsp; 개별"
                   className={"groupPage-btn"}
-                  icon={
-                    <i
-                      className="fa-solid fa-clipboard-check"
-                      aria-hidden="true"
-                    ></i>
-                  }
+                  icon={<FaClipboardCheck />}
                   onclick={() => {
+                    setClickedStds([]);
                     setMenuFunc("개별");
                   }}
                   style={menuRight ? { width: "92px" } : {}}
@@ -2933,13 +2940,9 @@ const GroupPage = (props) => {
                 <Button
                   name="&nbsp; 상담"
                   className={"groupPage-btn"}
-                  icon={
-                    <i
-                      className="fa-regular fa-comments"
-                      aria-hidden="true"
-                    ></i>
-                  }
+                  icon={<FaRegComments />}
                   onclick={() => {
+                    setClickedStds([]);
                     setMenuFunc("상담");
                   }}
                   style={menuRight ? { width: "92px" } : {}}
@@ -2947,8 +2950,9 @@ const GroupPage = (props) => {
                 <Button
                   name="&nbsp; 보상"
                   className={"groupPage-btn"}
-                  icon={<i className="fa-solid fa-gift" aria-hidden="true"></i>}
+                  icon={<FaGift />}
                   onclick={() => {
+                    setClickedStds([]);
                     setMenuFunc("보상");
                   }}
                   style={menuRight ? { width: "92px" } : {}}
@@ -2956,10 +2960,9 @@ const GroupPage = (props) => {
                 <Button
                   name="&nbsp; 뽑기"
                   className={"groupPage-btn"}
-                  icon={
-                    <i className="fa-solid fa-shuffle" aria-hidden="true"></i>
-                  }
+                  icon={<FaShuffle />}
                   onclick={() => {
+                    setClickedStds([]);
                     setMenuFunc("뽑기");
                   }}
                   style={menuRight ? { width: "92px" } : {}}
@@ -2986,7 +2989,7 @@ const GroupPage = (props) => {
                       <Button
                         name="&nbsp; 열기"
                         title="자료 가져오기"
-                        icon={<i className="fa-regular fa-folder-open"></i>}
+                        icon={<FaRegFolderOpen />}
                         className={"groupPage-btn"}
                         onclick={() => setAddOrLoad("load")}
                       />
@@ -2997,7 +3000,7 @@ const GroupPage = (props) => {
                 {menuFunc === "보상" && (
                   <>
                     <Button
-                      icon={<i className="fa-solid fa-users-rectangle"></i>}
+                      icon={<FaUsersRectangle />}
                       title="모둠보상 주기"
                       name="&nbsp;보상"
                       className={"groupPage-btn"}
@@ -3011,20 +3014,23 @@ const GroupPage = (props) => {
                         }
                         setGiftItem("group");
                       }}
+                      style={menuRight ? { width: "95px" } : {}}
                     />
                     <Button
-                      icon={<i className="fa-solid fa-user fa-md"></i>}
+                      icon={<FaUser />}
                       name="&nbsp;보상"
                       title="개별보상 주기"
                       className={"groupPage-btn"}
                       onclick={() => setGiftItem("person")}
+                      style={menuRight ? { width: "95px" } : {}}
                     />
                     <Button
                       name="&nbsp;관리"
-                      icon={<i className="fa-solid fa-gift"></i>}
+                      icon={<FaGift />}
                       title="(개인/모둠) 보상 관리하기"
                       className={"groupPage-btn"}
                       onclick={() => setGiftItem("setting")}
+                      style={menuRight ? { width: "95px" } : {}}
                     />
                     <Button
                       name="&nbsp;캐릭터"
@@ -3032,6 +3038,7 @@ const GroupPage = (props) => {
                       title="캐릭터 변경하기"
                       className={"groupPage-btn"}
                       onclick={() => setGiftItem("characterChange")}
+                      style={menuRight ? { width: "95px" } : {}}
                     />
                   </>
                 )}
@@ -3044,7 +3051,7 @@ const GroupPage = (props) => {
                       <>
                         <span className={classes["pickSpan"]}>뽑기</span>
                         <Button
-                          icon={<i className="fa-solid fa-users-rectangle"></i>}
+                          icon={<FaUsersRectangle />}
                           title="모둠의 순서를 정하는 뽑기"
                           name="&nbsp;모둠"
                           style={{ justifyContent: "space-between" }}
@@ -3052,7 +3059,7 @@ const GroupPage = (props) => {
                           onclick={() => groupPickHandler("group")}
                         />
                         <Button
-                          icon={<i className="fa-solid fa-user fa-md"></i>}
+                          icon={<FaUser />}
                           title="개인별 순서를 정하는 뽑기"
                           style={{ justifyContent: "space-between" }}
                           name="&nbsp;개별"
@@ -3070,7 +3077,7 @@ const GroupPage = (props) => {
                         </span>
                         {/* 한번에 */}
                         <Button
-                          icon={<i className="fa-solid fa-users-rectangle"></i>}
+                          icon={<FaUsersRectangle />}
                           title="버튼을 누르면 한 번에 모든 순서가 보여요!"
                           name="한번에"
                           className={"groupPage-btn"}
@@ -3081,7 +3088,7 @@ const GroupPage = (props) => {
                           onclick={() => handleDrawStudent("all")}
                         />
                         <Button
-                          icon={<i className="fa-solid fa-user fa-md"></i>}
+                          icon={<FaUser />}
                           style={{
                             width: "100px",
                             justifyContent: "space-between",
@@ -3103,7 +3110,7 @@ const GroupPage = (props) => {
                 <Button
                   name="&nbsp; 취소"
                   className={"groupPage-btn"}
-                  icon={<i className="fa-regular fa-circle-xmark"></i>}
+                  icon={<FaRegCircleXmark />}
                   onclick={() => {
                     if (menuFunc !== "뽑기") {
                       setMenuFunc("");
@@ -3121,6 +3128,7 @@ const GroupPage = (props) => {
                       setSelectedStudent(null);
                     }
                   }}
+                  style={menuRight ? { width: "95px" } : {}}
                 />
               </>
             )}
@@ -3143,9 +3151,10 @@ const GroupPage = (props) => {
 
               <Button
                 title="새로만들기"
-                icon={<i className="fa-regular fa-plus"></i>}
+                icon={<FaPlus />}
                 onclick={() => {
                   setSettingWhat("");
+                  setClickedStds([]);
                   setNewFrom("allNew");
                 }}
                 className={"groupPage-btn"}
@@ -3153,9 +3162,10 @@ const GroupPage = (props) => {
               {/* 목록보기 */}
               <Button
                 title="기존목록"
-                icon={<i className="fa-regular fa-folder-open"></i>}
+                icon={<FaRegFolderOpen />}
                 onclick={() => {
                   setNewFrom("");
+                  setClickedStds([]);
                   setSettingWhat("");
                   setShowGroupList(true);
                 }}
@@ -3183,7 +3193,8 @@ const GroupPage = (props) => {
                 title="자리뽑기 데이터 가져오기"
                 icon={
                   <>
-                    from &nbsp;<i className="fa-sharp fa-solid fa-chair"></i>
+                    from &nbsp;
+                    <FaChair />
                   </>
                 }
                 onclick={() => {
@@ -3195,7 +3206,7 @@ const GroupPage = (props) => {
               {/* 취소 */}
               <Button
                 title="취소"
-                icon={<i className="fa-solid fa-xmark"></i>}
+                icon={<FaXmark />}
                 onclick={() => setNewFrom("")}
                 className={"groupPage-btn-cancle"}
               />
@@ -3207,7 +3218,7 @@ const GroupPage = (props) => {
               {/* 취소 */}
               <Button
                 title="취소"
-                icon={<i className="fa-solid fa-xmark"></i>}
+                icon={<FaXmark />}
                 onclick={() => setNewFrom("")}
                 className={"groupPage-btn-cancle"}
               />
@@ -3243,12 +3254,20 @@ const GroupPage = (props) => {
                 style={!menuRight ? { marginTop: "70px" } : {}}
               >
                 <Button
+                  title="모든학생 선택하기"
+                  name="&nbsp;모두선택"
+                  icon={<FaRegSquareCheck />}
+                  onclick={() => clickAllStds()}
+                  className={"groupPage-btn"}
+                  style={{ width: "110px" }}
+                />
+                <Button
                   title="클릭했던 학생들 초기화"
                   name="&nbsp;초기화"
                   icon={<VscDebugRestart />}
                   onclick={() => setClickedStds([])}
                   className={"groupPage-btn"}
-                  style={{ display: "inline" }}
+                  style={{ width: "100px" }}
                 />
                 선택학생 한 번에
                 <span
@@ -3257,7 +3276,7 @@ const GroupPage = (props) => {
                     grPointsHandler("heart-plus-stds");
                   }}
                 >
-                  <i className="fa-solid fa-heart-circle-plus"></i>
+                  <FaHeartCirclePlus />
                 </span>
                 <span
                   className={classes["minus-all"]}
@@ -3265,7 +3284,7 @@ const GroupPage = (props) => {
                     grPointsHandler("heart-minus-stds");
                   }}
                 >
-                  <i className="fa-solid fa-heart-circle-minus"></i>
+                  <FaHeartCircleMinus />
                 </span>
               </div>
             )}
@@ -3369,14 +3388,14 @@ const GroupPage = (props) => {
                     />
                     <Button
                       name={window.innerWidth < 1100 ? "" : <>&nbsp; 저장</>}
-                      icon={<i className="fa-regular fa-floppy-disk"></i>}
+                      icon={<FaRegFloppyDisk />}
                       className={"groupPage-btn"}
                       onclick={saveCheckList}
                     />
                     <Button
                       name={window.innerWidth < 1100 ? "" : <>&nbsp; 취소</>}
                       className={"groupPage-btn"}
-                      icon={<i className="fa-regular fa-circle-xmark"></i>}
+                      icon={<FaRegCircleXmark />}
                       onclick={() => {
                         checkListCancleHandler();
                       }}
@@ -3460,13 +3479,11 @@ const GroupPage = (props) => {
               >
                 <div className={classes["header-title"]}>모둠 배정하기</div>
                 <div>
-                  * 모둠클릭 => 학생클릭 👉🏼{" "}
-                  <i className="fa-regular fa-floppy-disk"></i> 클릭
+                  * 모둠클릭 => 학생클릭 👉🏼 <FaRegFloppyDisk /> 클릭
                 </div>
                 {groupInfo?.length === 0 && (
                   <div>
-                    * 모둠없이 사용하시려면{" "}
-                    <i className="fa-regular fa-floppy-disk"></i> 클릭
+                    * 모둠없이 사용하시려면 <FaRegFloppyDisk /> 클릭
                   </div>
                 )}
               </motion.div>
@@ -3491,7 +3508,7 @@ const GroupPage = (props) => {
                 >
                   <Button
                     title="이전"
-                    icon={<i className="fa-solid fa-chevron-left"></i>}
+                    icon={<FaChevronLeft />}
                     onclick={() => {
                       let now;
                       MAKE_STEP?.forEach((step, ind) => {
@@ -3520,9 +3537,9 @@ const GroupPage = (props) => {
                   title={groupMakingStep !== MAKE_STEP[4] ? "다음" : "저장"}
                   icon={
                     groupMakingStep !== MAKE_STEP[4] ? (
-                      <i className="fa-solid fa-chevron-right"></i>
+                      <FaChevronRight />
                     ) : (
-                      <i className="fa-regular fa-floppy-disk"></i>
+                      <FaRegFloppyDisk />
                     )
                   }
                   onclick={() => {
@@ -3568,7 +3585,7 @@ const GroupPage = (props) => {
                 >
                   <Button
                     title="새창) 첵스쿨 열기"
-                    icon={<i className="fa-solid fa-house"></i>}
+                    icon={<FaHouse />}
                     onclick={() =>
                       window.open(
                         window.location.href?.split("groupPage")?.[0],
@@ -3579,8 +3596,11 @@ const GroupPage = (props) => {
                   />
                   <Button
                     title="설정보기"
-                    icon={<i className="fa-solid fa-gear"></i>}
-                    onclick={() => setSettingWhat("on")}
+                    icon={<FaGear />}
+                    onclick={() => {
+                      setClickedStds([]);
+                      setSettingWhat("on");
+                    }}
                     className={"groupPage-btn"}
                   />
                 </motion.div>
@@ -3640,7 +3660,7 @@ const GroupPage = (props) => {
                   />
                   <Button
                     title="취소"
-                    icon={<i className="fa-solid fa-xmark"></i>}
+                    icon={<FaXmark />}
                     onclick={() => setSettingWhat("")}
                     className={"groupPage-btn-cancle"}
                   />
@@ -3658,7 +3678,7 @@ const GroupPage = (props) => {
                 >
                   <Button
                     name="&nbsp; 취소"
-                    icon={<i className="fa-regular fa-circle-xmark"></i>}
+                    icon={<FaRegCircleXmark />}
                     title="취소"
                     onclick={() => {
                       setSettingWhat("");
@@ -3714,8 +3734,8 @@ const GroupPage = (props) => {
             >
               {groupInfo?.length === 0 ? (
                 <div>
-                  * 모둠설정 없이 사용하시려면 오른쪽{" "}
-                  <i className="fa-solid fa-chevron-right"></i> 버튼 클릭
+                  * 모둠설정 없이 사용하시려면 오른쪽 <FaChevronRight /> 버튼
+                  클릭
                 </div>
               ) : (
                 <div className={classes["group-edit"]}>
@@ -3832,7 +3852,7 @@ const GroupPage = (props) => {
                         grPointsHandler("heart-plus", ind);
                       }}
                     >
-                      <i className="fa-solid fa-heart-circle-plus"></i>
+                      <FaHeartCirclePlus />
                     </div>
                     <div
                       className={classes["minus"]}
@@ -3842,7 +3862,7 @@ const GroupPage = (props) => {
                         grPointsHandler("heart-minus", ind);
                       }}
                     >
-                      <i className="fa-solid fa-heart-circle-minus"></i>
+                      <FaHeartCircleMinus />
                     </div>
                   </>
                 )}
@@ -3861,14 +3881,12 @@ const GroupPage = (props) => {
                   {/* 개인점수와 하트, 문자일 때만 보임 */}
                   {isNaN(std) && (
                     <div className={classes["std-point"]}>
-                      <i
-                        className="fa-solid fa-heart fa-sm"
-                        style={{
-                          color: "#d90f30",
-                          filter: "drop-shadow(2px 1px 1px rgba(46, 0, 0, 1))",
-                          marginRight: "5px",
-                        }}
-                      ></i>
+                      <FaHeart
+                        color="#d90f30"
+                        filter="drop-shadow(2px 1px 1px rgba(46, 0, 0, 1))"
+                        size={10}
+                      />
+                      &nbsp;&nbsp;
                       {stdPoints[ind]}
                     </div>
                   )}
@@ -3882,6 +3900,9 @@ const GroupPage = (props) => {
                   menuFunc === "개별" && addOrLoad === "add"
                     ? classes["listStyle-item"]
                     : classes["std-name"]
+                }
+                style={
+                  menuFunc === "개별" && !isNaN(std) ? { display: "none" } : {}
                 }
               >
                 {isNaN(std) && (
@@ -3897,12 +3918,12 @@ const GroupPage = (props) => {
                     {/* {CHARACTERS[ind + randNum]} */}
                   </img>
                 )}
-                {/* 학생이름 */}
+                {/* 학생이름, 개별기록에서 숫자면 안보여줌 */}
                 <span>{std}</span>
               </div>
 
               {/* 개별기록 입력일때만 보이는, textarea 태그 */}
-              {menuFunc === "개별" && addOrLoad === "add" && (
+              {menuFunc === "개별" && addOrLoad === "add" && isNaN(std) && (
                 <Input
                   id={"textarea" + std}
                   myKey={"textarea" + std}

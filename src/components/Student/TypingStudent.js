@@ -5,6 +5,13 @@ import StudentLiWithDelete from "./StudentLiWithDelete";
 import Swal from "sweetalert2";
 import GoneStd from "./GoneStd";
 import Modal from "components/Layout/Modal";
+import {
+  FaPencil,
+  FaPlus,
+  FaRegFloppyDisk,
+  FaTrashCan,
+  FaVenusMars,
+} from "react-icons/fa6";
 
 const TypingStudent = (props) => {
   const [tempAutoNum, setTempAutoNum] = useState(1);
@@ -104,6 +111,8 @@ const TypingStudent = (props) => {
     setTempStudent({ ...student });
   };
 
+  // console.log(props.studentsInfo);
+
   return (
     <>
       {/* 전학생 설정..! 모달 보여주기 */}
@@ -150,8 +159,8 @@ const TypingStudent = (props) => {
                 className="student-add"
                 name={
                   <>
-                    <i className="fa-solid fa-plus"></i>/
-                    <i className="fa-solid fa-pencil"></i>
+                    <FaPlus />
+                    /<FaPencil />
                   </>
                 }
                 onclick={submitHandler}
@@ -165,7 +174,7 @@ const TypingStudent = (props) => {
               className="student-save"
               name={
                 <>
-                  <i className="fa-regular fa-floppy-disk"></i>
+                  <FaRegFloppyDisk />
                 </>
               }
               onclick={uploadStudentHandler}
@@ -175,8 +184,10 @@ const TypingStudent = (props) => {
 
         <p className={classes.studentBgColorInfo}>
           (성별 변경 👉 1.학생이름 클릭 &nbsp; 2.&nbsp;
-          <i className="fa-solid fa-venus-mars"></i>&nbsp;클릭&nbsp; 3.&nbsp;
-          <i className="fa-regular fa-floppy-disk"></i> &nbsp;클릭&nbsp;)
+          <FaVenusMars />
+          &nbsp;클릭&nbsp; 3.&nbsp;
+          <FaRegFloppyDisk />
+          &nbsp;클릭&nbsp;)
         </p>
         {/* 선택된 학생이 있으면.. 성별바꾸기 버튼 만들어주기 */}
         {tempStudent?.name && (
@@ -186,8 +197,7 @@ const TypingStudent = (props) => {
               style={{ width: "120px" }}
               name={
                 <>
-                  성별변경
-                  <i className="fa-solid fa-venus-mars"></i>
+                  성별변경 <FaVenusMars />
                 </>
               }
               onclick={() => props.studentGenderChange(tempStudent)}
@@ -248,8 +258,7 @@ const TypingStudent = (props) => {
               className="student-save"
               name={
                 <>
-                  전체
-                  <i className="fa-solid fa-trash-can"></i>
+                  전체 <FaTrashCan />
                 </>
               }
               onclick={deleteAllHandler}

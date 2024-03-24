@@ -3,6 +3,7 @@ import classes from "./SettingSeat.module.css";
 import Input from "../../Layout/Input";
 import Swal from "sweetalert2";
 import Button from "../../Layout/Button";
+import { FaRegCircleXmark } from "react-icons/fa6";
 
 const RowColumn = (props) => {
   const [showRowColumn, setShowRowColumn] = useState(false);
@@ -84,7 +85,7 @@ const RowColumn = (props) => {
           props.addNewCancel();
         }}
       >
-        <i className="fa-solid fa-xmark"></i>
+        <FaRegCircleXmark />
       </button>
 
       {/* 전담일 경우 학급 선택 */}

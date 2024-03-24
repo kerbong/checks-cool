@@ -4,6 +4,7 @@ import Swal from "sweetalert2";
 import endingAudio from "../../assets/audio/endingSound.mp3";
 
 import classes from "./SimpleTimer.module.css";
+import { FaCircleRight } from "react-icons/fa6";
 
 const SimpleTimer = (props) => {
   const progressBarRef = useRef(null);
@@ -463,7 +464,7 @@ const SimpleTimer = (props) => {
       {!props.justTimer && (
         <div className={classes["minute-btns"]}>
           <div title="다음교시">
-            <i className={`fa-solid fa-circle-right ${classes["icon"]}`}></i>
+            <FaCircleRight className={classes["icon"]} />
           </div>
 
           {/* <button className={classes["minute-btn"]} onClick={() => setMinute(1)}>

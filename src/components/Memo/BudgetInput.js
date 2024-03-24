@@ -4,6 +4,7 @@ import classes from "./Memo.module.css";
 import AttendCalendar from "../Attendance/AttendCalendar";
 import dayjs from "dayjs";
 import holidays2023 from "holidays2023";
+import { FaRegFloppyDisk, FaXmark } from "react-icons/fa6";
 
 const BudgetInput = (props) => {
   const [attendDate, setAttendDate] = useState(new Date());
@@ -89,14 +90,14 @@ const BudgetInput = (props) => {
       timer: 3000,
     }).then(() => {
       //입력창 모두 빈칸으로 만들어주기
-      titleRef.current.value = "";
-      noteRef.current.value = "";
-      eachRef.current.value = "";
-      countRef.current.value = "1";
-      amountRef.current.value = "";
-      siteRef.current.value = "";
+      if (titleRef?.current) titleRef.current.value = "";
+      if (noteRef?.current) noteRef.current.value = "";
+      if (eachRef?.current) eachRef.current.value = "";
+      if (countRef?.current) countRef.current.value = "1";
+      if (amountRef?.current) amountRef.current.value = "";
+      if (siteRef?.current) siteRef.current.value = "";
       //다시 품목명에 포커스 !
-      titleRef.current.focus();
+      if (titleRef?.current) titleRef.current.focus();
     });
 
     //묻고 저장!
@@ -177,12 +178,12 @@ const BudgetInput = (props) => {
   return (
     <div className={classes["flex-center"]}>
       {/* 자료 추가인 경우에만 저장버튼 보여주기 */}
-      {props.about !== "edit" && (
+      {props.about !== "edit" && props.about !== "copy" && (
         <button
           className={classes["budgetList-save"]}
           onClick={saveBudgetHandler}
         >
-          <i className="fa-regular fa-floppy-disk"></i>
+          <FaRegFloppyDisk />
         </button>
       )}
       <li
@@ -199,15 +200,18 @@ const BudgetInput = (props) => {
               filterNone={true}
               getDateValue={getDateHandler}
               about={props.about}
-              setStart={props.about === "edit" && new Date(budget.date)}
+              setStart={
+                (props.about === "edit" || props.about === "copy") &&
+                new Date(budget.date)
+              }
               getMonthValue={getMonthHandler}
               getYearValue={getMonthHandler}
             />
           </div>
           {/* 품목명 적는 부분 */}
           <input
-            type="text"
             ref={titleRef}
+            type="text"
             placeholder="품목명"
             className={classes["newBudget-title"]}
             autoFocus
@@ -265,23 +269,25 @@ const BudgetInput = (props) => {
             />
           </div>
 
-          {/* 자료 수정인 경우 저장/취소버튼 보여주기 */}
-          {props.about === "edit" && (
+          {/* 자료 복사 수정인 경우 저장/취소버튼 보여주기 */}
+          {(props.about === "edit" || props.about === "copy") && (
             <div className={classes["budgetEdit-btns"]}>
-              * 저장버튼을 누르시면 자료가 복사됩니다. &nbsp;&nbsp;&nbsp;
+              * 저장버튼을 누르시면 자료가{" "}
+              {props.about === "edit" ? "수정" : "복사"}됩니다.
+              &nbsp;&nbsp;&nbsp;
               {/* 저장버튼 */}
               <button
                 className={classes["budgetEdit-save"]}
                 onClick={saveBudgetHandler}
               >
-                <i className="fa-regular fa-floppy-disk"></i>
+                <FaRegFloppyDisk />
               </button>
               {/* 취소버튼 */}
               <button
                 className={classes["budgetEdit-cancle"]}
                 onClick={() => props.cancleHandler()}
               >
-                <i className="fa-solid fa-xmark"></i>
+                <FaXmark />
               </button>
             </div>
           )}

@@ -37,8 +37,8 @@ const ShowClassChange = (props) => {
   const classExchangeHandler = async (how) => {
     let fromClass = selectedClass?.[0];
     let toClass = selectedClass?.[1];
-    console.log(fromClass);
-    console.log(toClass);
+    // console.log(fromClass);
+    // console.log(toClass);
 
     let classTableRef = doc(dbService, "classTable", props.userUid);
 
@@ -123,7 +123,7 @@ const ShowClassChange = (props) => {
       <div className={classes["flex-cen"]}>
         <div className={classes["title"]}>시간표 (복붙 / 교환) 하기</div>
         <div className={classes["title-sub"]} style={{ marginBottom: "-20px" }}>
-          <br />* 날짜 선택 => 수업 선택 => 기능 선택 <br />
+          <br />* 날짜 선택 ={">"} 수업 선택 ={">"} 기능 선택 <br />
         </div>
       </div>
 

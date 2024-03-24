@@ -9,7 +9,7 @@ import Swal from "sweetalert2";
 import ScoreGradeInput from "./ScoreGradeInput";
 import { useNavigate } from "react-router-dom";
 
-import { FaRankingStar } from "react-icons/fa6";
+import { FaPlus, FaRankingStar, FaRegUser, FaUser } from "react-icons/fa6";
 import { BsPersonFillCheck } from "react-icons/bs";
 import { BsPersonCheck } from "react-icons/bs";
 
@@ -69,7 +69,7 @@ const CheckLists = (props) => {
 
   useEffect(() => {
     getGoneStdFromDb();
-  }, []);
+  }, [props.userUid]);
 
   //브라우저에 저장된 평가기록단계가 있으면 불러오고 없으면 기본 4단계로 세팅함.
   useEffect(() => {
@@ -185,7 +185,7 @@ const CheckLists = (props) => {
 
   useEffect(() => {
     getDatasFromDb();
-  }, [props.about]);
+  }, [props.about, props.userUid]);
 
   //처음 보여줄 학년도 설정(올해 자료있으면 보여줌)
   useEffect(() => {
@@ -420,12 +420,13 @@ const CheckLists = (props) => {
       datas = listMemoSnap?.data()?.listMemo_data;
     }
 
-    //같은 이름의 체크리스트 있는지 확인하고, 저장 묻기 (id까지 같으면.. 기존자료 수정임)
+    //같은 이름의 체크리스트 있는지 확인하고, 저장 묻기 (id까지 같으면.. 기존자료 수정임) 학년도도 같고!
     let regex = / /gi;
     let same_checkTitle = datas?.filter(
       (list) =>
         list.title.replace(regex, "") === new_item.title.replace(regex, "") &&
-        list.id !== new_item.id
+        list.id !== new_item.id &&
+        nowYear(list.id.slice(0, 10)) === nowYear(new_item.id.slice(0, 10))
     );
 
     //기존에 있던 자료
@@ -538,10 +539,11 @@ const CheckLists = (props) => {
     }
   }, [nowClassName]);
 
-  const nowYear = () => {
-    return dayjs().format("MM-DD") <= "02-15"
-      ? String(+dayjs().format("YYYY") - 1)
-      : dayjs().format("YYYY");
+  const nowYear = (date) => {
+    let data_id = date?.length > 0 ? date : new Date();
+    return dayjs(data_id).format("MM-DD") <= "02-15"
+      ? String(+dayjs(data_id).format("YYYY") - 1)
+      : dayjs(data_id).format("YYYY");
   };
 
   const nowJanFeb = () => {
@@ -755,7 +757,7 @@ const CheckLists = (props) => {
             {!isSubject && checkListsYear?.current?.value === nowYear() && (
               <div className={classes["h3"]}>
                 <Button
-                  icon={<i className="fa-solid fa-plus"></i>}
+                  icon={<FaPlus />}
                   id={"add-checkItemBtn"}
                   className={"check-memo-button"}
                   onclick={() => {
@@ -809,7 +811,7 @@ const CheckLists = (props) => {
             {isSubject && nowClassName !== "" && nowClassName !== "whole" && (
               <div className={classes["h3"]}>
                 <Button
-                  icon={<i className="fa-solid fa-plus"></i>}
+                  icon={<FaPlus />}
                   id={"add-checkItemBtn"}
                   className={"check-memo-button"}
                   onclick={() => {
@@ -842,13 +844,7 @@ const CheckLists = (props) => {
 
                 {/* 전학생제외 */}
                 <Button
-                  icon={
-                    exceptGone ? (
-                      <i className="fa-solid fa-user"></i>
-                    ) : (
-                      <i className="fa-regular fa-user"></i>
-                    )
-                  }
+                  icon={exceptGone ? <FaUser /> : <FaRegUser />}
                   id={"add-checkItemBtn"}
                   className={"check-memo-button"}
                   onclick={() => {
@@ -1027,7 +1023,7 @@ const CheckLists = (props) => {
               {!isSubject && listMemoYear?.current?.value === nowYear() && (
                 <div className={classes["h3"]}>
                   <Button
-                    icon={<i className="fa-solid fa-plus"></i>}
+                    icon={<FaPlus />}
                     id={"add-listMemoBtn"}
                     className={"check-memo-button"}
                     onclick={() => {
@@ -1073,7 +1069,7 @@ const CheckLists = (props) => {
             {isSubject && nowClassName !== "" && nowClassName !== "whole" && (
               <div className={classes["h3"]}>
                 <Button
-                  icon={<i className="fa-solid fa-plus"></i>}
+                  icon={<FaPlus />}
                   id={"add-listMemoBtn"}
                   className={"check-memo-button"}
                   onclick={() => {
@@ -1129,12 +1125,6 @@ const CheckLists = (props) => {
             />
 
             {/* 엑셀저장버튼 */}
-            {/* <Button
-              icon={<i className="fa-regular fa-floppy-disk"></i>}
-              id={"save-listMemoBtn"}
-              className={"check-memo-button"}
-              onclick={saveExcelHandler}
-            /> */}
           </div>
           <div className={classes["flex-wrap"]}>
             {/* 명렬표에서 입력한 자료들도 보여주기 */}
@@ -1241,8 +1231,8 @@ const CheckLists = (props) => {
               "* 2월 16일부터 새로운 학년도로 인식되고 자료 입력이 가능합니다!"}
           </p>
           <p>
-            * 입력한 자료가 안 보이면 메뉴를 다시 클릭해주시거나 다시
-            로그인해주세요!
+            * 입력한 자료가 안 보이시면 학년도를 다시 선택하거나 다른 메뉴로
+            이동했다가 다시 와주세요.
           </p>
           <p>
             * 문제가 지속되시면 kerbong@gmail.com으로 알려주세요. 최대한 빠르게

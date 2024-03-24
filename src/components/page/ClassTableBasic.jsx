@@ -7,6 +7,7 @@ import TimeTable from "../Main/TimeTable";
 import { dbService } from "../../fbase";
 import { doc, updateDoc, setDoc, getDoc } from "firebase/firestore";
 import dayjs from "dayjs";
+import { FaTable } from "react-icons/fa6";
 const STARTBASE = [
   "2022-01-13 08:20",
   "2022-01-13 09:00",
@@ -95,7 +96,7 @@ const ClassTableBasic = (props) => {
 
     getClassTable();
     // console.log(new_classBasic);
-  }, []);
+  }, [props.userUid]);
 
   const saveClassBasicHandler = async () => {
     let 월 = [];
@@ -416,7 +417,7 @@ const ClassTableBasic = (props) => {
       <div id="title-div">
         {/* 화면 좌상단 타이틀 */}
         <button id="title-btn" onClick={() => setShowExample(true)}>
-          <i className="fa-solid fa-table"></i> 기초시간표
+          <FaTable /> 기초시간표
         </button>
         <Button
           name={"저장"}

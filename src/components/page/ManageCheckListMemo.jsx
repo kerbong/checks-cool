@@ -10,6 +10,7 @@ import { utils, writeFile } from "xlsx";
 import DoughnutChart from "../Manage/DoughnutChart";
 import SearchCheckListMemo from "components/Manage/SearchCheckListMemo";
 import Swal from "sweetalert2";
+import { FaDownload } from "react-icons/fa6";
 
 const ManageCheckListMemo = (props) => {
   const [students, setStudents] = useState([]);
@@ -146,7 +147,7 @@ const ManageCheckListMemo = (props) => {
   useEffect(() => {
     if (students?.length === 0) return;
     getDatasFromDb();
-  }, [students]);
+  }, [students, props.userUid]);
 
   useEffect(() => {
     if (onStudent !== "") {
@@ -333,7 +334,7 @@ const ManageCheckListMemo = (props) => {
           {/* 엑셀저장버튼 */}
           <Button
             name={<span> 저장</span>}
-            icon={<i className="fa-solid fa-download"></i>}
+            icon={<FaDownload />}
             title={"보이는 데이터를 모두 저장하기"}
             onclick={saveExcelHandler}
             className={"excelSave-button"}

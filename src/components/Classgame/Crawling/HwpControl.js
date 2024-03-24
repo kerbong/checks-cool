@@ -13,6 +13,7 @@ import { QRCodeSVG } from "qrcode.react";
 
 import SettingAttendCheck from "./SettingAttendCheck";
 import classes from "./HwpControl.module.css";
+import { FaDownload } from "react-icons/fa6";
 
 const FOR_WHAT = ["atAdd", "atReport", "absence"];
 
@@ -372,8 +373,7 @@ const HwpControl = (props) => {
               title="QR코드 다운로드"
             >
               {" "}
-              🙂 (학부모용) 현장체험학습 가입 Qr코드{" "}
-              <i className="fa-solid fa-download"></i>
+              🙂 (학부모용) 현장체험학습 가입 Qr코드 <FaDownload />
             </a>
           </p>
 

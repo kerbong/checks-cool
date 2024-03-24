@@ -5,6 +5,8 @@ import Swal from "sweetalert2";
 
 import StudentBtn from "components/Student/StudentBtn";
 import RandomPickPlay from "./RandomPickPlay";
+import { FaArrowDown19, FaEject, FaShuffle } from "react-icons/fa6";
+import { TiArrowSortedDown } from "react-icons/ti";
 
 const RandomPick = (props) => {
   const [init, setInit] = useState("");
@@ -253,7 +255,7 @@ const RandomPick = (props) => {
   /** 학생 선택할 때 편하게 도울 버튼들. 전체 선택, 전체 취소, 남학생모두, 여학생모두 */
   const showPickGroupBtns = () => {
     let groups = ["전체 ", "남학생 ", "여학생 ", "전체취소 "];
-    // let groups_btns = [<i className="fa-solid fa-down-long"></i>, "남학생 전체", "여학생 전체", "전체취소"];
+
     return (
       <>
         {groups?.map((gr, ind) => (
@@ -268,8 +270,8 @@ const RandomPick = (props) => {
             onClick={() => pickedStdBtnsHandler(ind)}
           >
             {gr}
-            {ind < 3 && <i className="fa-solid fa-play fa-rotate-90"></i>}
-            {ind === 3 && <i className="fa-solid fa-eject"></i>}
+            {ind < 3 && <TiArrowSortedDown />}
+            {ind === 3 && <FaEject />}
           </button>
         ))}
       </>
@@ -333,11 +335,7 @@ const RandomPick = (props) => {
             className={classes["way-div"]}
           >
             <span className={classes["way-name"]}>
-              <i
-                className="fa-solid fa-shuffle"
-                style={{ marginRight: "10px" }}
-              ></i>
-              {"품목 뽑기"}
+              <FaShuffle /> {" 품목 뽑기"}
             </span>
             <p>
               * 학생목록과 품목을 설정하고 뽑아요! <br /> (1인 1역, 일반적인
@@ -352,11 +350,8 @@ const RandomPick = (props) => {
             className={classes["way-div"]}
           >
             <span className={classes["way-name"]}>
-              <i
-                className="fa-solid fa-arrow-down-1-9"
-                style={{ marginRight: "10px" }}
-              ></i>
-              {"순서 뽑기"}
+              <FaArrowDown19 />
+              {" 순서 뽑기"}
             </span>
             <p>
               * 학생목록을 설정하고 순서를 정해요!

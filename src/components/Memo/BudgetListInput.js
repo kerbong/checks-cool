@@ -4,6 +4,7 @@ import classes from "./Memo.module.css";
 import AttendCalendar from "../Attendance/AttendCalendar";
 import dayjs from "dayjs";
 import holidays2023 from "holidays2023";
+import { FaRegFloppyDisk } from "react-icons/fa6";
 
 const BudgetListInput = (props) => {
   const [attendDate, setAttendDate] = useState(
@@ -139,7 +140,7 @@ const BudgetListInput = (props) => {
   return (
     <>
       <button className={classes["budget-save"]} onClick={saveBudgetHandler}>
-        <i className="fa-regular fa-floppy-disk"></i>
+        <FaRegFloppyDisk />
       </button>
       <br />
 

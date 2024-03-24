@@ -4,6 +4,7 @@ import BudgetInput from "./BudgetInput";
 import Swal from "sweetalert2";
 import BudgetListInput from "./BudgetListInput";
 import FadeInOut from "components/Layout/FadeInOut";
+import { FaPencil, FaRegCopy, FaRotate, FaTrashCan } from "react-icons/fa6";
 
 const BudgetList = (props) => {
   const [budget, setBudget] = useState({});
@@ -11,6 +12,7 @@ const BudgetList = (props) => {
   const [showEdit, setShowEdit] = useState("");
   const [showEditBtns, setShowEditBtns] = useState("");
   const [isBudgetEditing, setIsBudgetEditing] = useState(false);
+  const [itemEdit, setItemEdit] = useState(false);
 
   useEffect(() => {
     setBudget(props.budget);
@@ -102,7 +104,7 @@ const BudgetList = (props) => {
                               props.showBudgetEditHandler();
                             }}
                           >
-                            <i className="fa-solid fa-pencil"></i>
+                            <FaPencil />
                           </button>
 
                           {/* 삭제버튼 */}
@@ -112,7 +114,7 @@ const BudgetList = (props) => {
                               props.deleteBugetHandler();
                             }}
                           >
-                            <i className="fa-solid fa-trash-can"></i>
+                            <FaTrashCan />
                           </button>
                         </>
                       )}
@@ -148,6 +150,7 @@ const BudgetList = (props) => {
                   edit={true}
                   title={budget.budget_name}
                   date={budget.until}
+                  note={budget.note}
                   amount={budget.totalAmount}
                   saveBudgetHandler={(new_budget) => {
                     props.editBudgetHandler(new_budget);
@@ -160,12 +163,12 @@ const BudgetList = (props) => {
               onClick={() => props.setShowBudgetExcelWay((prev) => !prev)}
               className={classes["budgetExcelCardChange-btn"]}
             >
-              <i className="fa-solid fa-rotate"></i>표 스타일로 보기
+              <FaRotate /> 표 스타일로 보기
             </button>
 
             {/* 예산 사용목록 */}
             <ul className={classes["budgetList-ul"]}>
-              {budget?.useLists?.map((list) =>
+              {budget?.useLists?.map((list, ind) =>
                 //현재 수정중인 예산이 아니면 기본 태그로 보여주고
                 showEdit !== list.date + list.title ? (
                   <li
@@ -191,13 +194,24 @@ const BudgetList = (props) => {
                         {/* 수정버튼 */}
                         {showEditBtns === list.date + list.title && (
                           <div className={classes["budgetListEdit-div"]}>
+                            {/* 수정버튼 */}
                             <button
                               className={classes["budgetList-edit"]}
+                              onClick={() => {
+                                setShowEdit(list.date + list.title);
+                                setItemEdit(true);
+                              }}
+                            >
+                              <FaPencil />
+                            </button>
+                            {/*  복제버튼 */}
+                            <button
+                              className={classes["budgetList-copy"]}
                               onClick={() =>
                                 setShowEdit(list.date + list.title)
                               }
                             >
-                              <i className="fa-regular fa-copy"></i>
+                              <FaRegCopy />
                             </button>
                             {/* 삭제버튼 */}
                             <button
@@ -206,7 +220,7 @@ const BudgetList = (props) => {
                                 deleteHandler(list);
                               }}
                             >
-                              <i className="fa-solid fa-trash-can"></i>
+                              <FaTrashCan />
                             </button>
                           </div>
                         )}
@@ -244,13 +258,17 @@ const BudgetList = (props) => {
                   </li>
                 ) : (
                   <BudgetInput
-                    about={"edit"}
+                    about={itemEdit ? "edit" : "copy"}
                     budget={list}
                     key={"edit" + list.title}
                     cancleHandler={() => setShowEdit("")}
                     saveBudgetHandler={(item) => {
-                      props.saveBudgetHandler(item);
+                      itemEdit
+                        ? props.saveBudgetHandler(item, ind)
+                        : props.saveBudgetHandler(item);
+
                       setShowEdit("");
+                      setItemEdit(false);
                     }}
                   />
                 )

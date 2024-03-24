@@ -1,6 +1,13 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import PropTypes from "prop-types";
 import Swal from "sweetalert2";
+import {
+  FaCircleExclamation,
+  FaPencil,
+  FaRegFloppyDisk,
+  FaRegTrashCan,
+  FaXmark,
+} from "react-icons/fa6";
 
 const MemoTodayTodoItem = ({ todoItem, todoList, setTodoList, mykey }) => {
   const [edited, setEdited] = useState(false);
@@ -154,7 +161,7 @@ const MemoTodayTodoItem = ({ todoItem, todoList, setTodoList, mykey }) => {
           }
         }}
       >
-        <i className="fa-solid fa-circle-exclamation"></i>
+        <FaCircleExclamation />
       </span>
 
       {
@@ -193,7 +200,7 @@ const MemoTodayTodoItem = ({ todoItem, todoList, setTodoList, mykey }) => {
                 className="todoapp__item-edit-btn"
                 onClick={onClickSubmitButton}
               >
-                <i className="fa-regular fa-floppy-disk"></i>
+                <FaRegFloppyDisk />
               </button>
               {/* 취소 버튼 */}
               <button
@@ -206,7 +213,7 @@ const MemoTodayTodoItem = ({ todoItem, todoList, setTodoList, mykey }) => {
                   setEdited(false);
                 }}
               >
-                <i className="fa-solid fa-xmark"></i>
+                <FaXmark />
               </button>
             </>
           ) : (
@@ -217,7 +224,7 @@ const MemoTodayTodoItem = ({ todoItem, todoList, setTodoList, mykey }) => {
                 className="todoapp__item-edit-btn"
                 onClick={onClickEditButton}
               >
-                <i className="fa-solid fa-pencil"></i>
+                <FaPencil />
               </button>
               {/* 삭제 버튼 */}
               <button
@@ -225,7 +232,7 @@ const MemoTodayTodoItem = ({ todoItem, todoList, setTodoList, mykey }) => {
                 className="todoapp__item-delete-btn"
                 onClick={onClickDeleteButton}
               >
-                <i className="fa-regular fa-trash-can"></i>
+                <FaRegTrashCan />
               </button>
             </>
           )
@@ -237,7 +244,7 @@ const MemoTodayTodoItem = ({ todoItem, todoList, setTodoList, mykey }) => {
               className="todoapp__item-delete-btn"
               onClick={onClickDeleteButton}
             >
-              <i className="fa-regular fa-trash-can"></i>
+              <FaRegTrashCan />
             </button>
           </>
         )

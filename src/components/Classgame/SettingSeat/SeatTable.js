@@ -3,13 +3,14 @@ import classes from "./SettingSeat.module.css";
 import Swal from "sweetalert2";
 import Button from "../../Layout/Button";
 import { dbService } from "../../../fbase";
-import { setDoc, doc, onSnapshot } from "firebase/firestore";
+import { setDoc, doc, onSnapshot, updateDoc } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import dayjs from "dayjs";
 import JustLists from "./JustLists";
 import PrintItems from "./PrintItems";
 import { useReactToPrint } from "react-to-print";
 import html2canvas from "html2canvas";
+import { FaArrowLeft, FaArrowRight, FaRegCircleXmark } from "react-icons/fa6";
 
 const saveErrorSwal = (text) => {
   Swal.fire({
@@ -75,7 +76,7 @@ const SeatTable = (props) => {
   const [hideBtns, setHideBtns] = useState(false);
   const [existLists, setExistLists] = useState(false);
 
-  // console.log(props.students);
+  // console.log(props.rowColumn);
   const toggleRef = useRef();
   const printRef = useRef();
   let navigate = useNavigate();
@@ -243,8 +244,8 @@ const SeatTable = (props) => {
             classes["print-content"]
           }`}
           id={`${
-            props.title?.length > 0
-              ? `table-${props.title}-${item}`
+            props.saveDate?.length > 0
+              ? `table-${props.saveDate}-${item}`
               : `table-${item}`
           }`}
           onClick={(e) => itemAddStudentHandler(e)}
@@ -262,10 +263,10 @@ const SeatTable = (props) => {
       ))
     );
     document
-      .getElementById(props.title || "newSeats")
+      .getElementById(props.saveDate || "newSeats")
       .style.setProperty("--columns", tableColumn);
     document
-      .getElementById(props.title || "newSeats")
+      .getElementById(props.saveDate || "newSeats")
       .style.setProperty("--rows", tableRow);
   }, [genderEmptySeat, props.seatStudents]);
 
@@ -319,18 +320,28 @@ const SeatTable = (props) => {
     onSnapshot(seatsRef, (doc) => {
       const all_seats = [];
 
-      doc?.data()?.seats_data?.forEach((data) => {
+      doc?.data()?.seats_data?.forEach((data, ind) => {
         //저장할 때 사용할 전체 자료 저장
-        all_seats.push(data);
+        //만약... saveDate에 2024-03-01제목 형태로 저장되어 있다면... 2024-03-0114:13:22제목 형태로 바꿔줌...
+        let new_data = data;
+        if (!data?.saveDate?.includes(":")) {
+          new_data.saveDate =
+            data.saveDate?.slice(0, 10) +
+            dayjs().add(ind, "m").format("HH:mm:ss") +
+            data.saveDate?.slice(10);
+        }
+
+        all_seats.push(new_data);
       });
       //데이터 저장에 쓸 전체 자리표
       setAllSeats([...all_seats]);
+      saveUpdateDoc(all_seats);
     });
   };
 
   useEffect(() => {
     getSeatsFromDb();
-  }, []);
+  }, [props.userUid]);
 
   //학년도 설정함수
   const setYear = (date) => {
@@ -338,6 +349,11 @@ const SeatTable = (props) => {
     return dayjs(data_id).format("MM-DD") <= "02-15"
       ? String(+dayjs(data_id).format("YYYY") - 1)
       : dayjs(data_id).format("YYYY");
+  };
+
+  const saveUpdateDoc = async (seats) => {
+    const existRef = doc(dbService, "seats", props.userUid);
+    await updateDoc(existRef, { seats_data: seats });
   };
 
   useEffect(() => {
@@ -973,7 +989,7 @@ const SeatTable = (props) => {
     let selectedSeats = 0;
     document
       .getElementById(
-        props.title?.length > 0 ? `items-${props.title}-div` : "items-div"
+        props.saveDate?.length > 0 ? `items-${props.saveDate}-div` : "items-div"
       )
       .childNodes.forEach((item) => {
         if (isNaN(+item.innerText)) {
@@ -994,13 +1010,23 @@ const SeatTable = (props) => {
     // console.log(items_students);
     // console.log(props.rowColumn);
     const title = document.getElementById(
-      !props.title ? "title-input" : `title-input${props.title}`
+      !props.saveDate ? "title-input" : `title-input${props.saveDate}`
     );
     if (title.value.trim().length === 0) {
       saveErrorSwal("제목을 입력해주세요.");
 
       return;
     }
+
+    //기존 중 현재학년도 자료에 같은 제목이 있으면 저장불가!!!!
+    // if (seatLists?.filter((seat) => seat?.title === props.title)?.length > 0) {
+    //   Swal.fire(
+    //     "제목 중복!",
+    //     "이미 존재하는 제목입니다! 다른 제목으로 수정하시길 권장합니다!",
+    //     "warning"
+    //   );
+
+    // }
 
     //하루에 최대 5개까지만 저장 가능함.
     let saved_today = 0;
@@ -1038,11 +1064,13 @@ const SeatTable = (props) => {
       students: items_students,
       title: title.value,
       rowColumn: props.rowColumn,
-      saveDate: today_yyyymmdd + title.value,
+      saveDate: today_yyyymmdd + dayjs().format("HH:mm:ss") + title.value,
     };
 
     // 전담인경우 학급명을 추가해서 저장.
-    if (props.nowClassName) {
+    if (props.clName) {
+      data["clName"] = props.clName;
+    } else if (props.nowClassName) {
       data["clName"] = props.nowClassName;
     }
 
@@ -1368,7 +1396,7 @@ const SeatTable = (props) => {
     let items_students = [];
 
     document
-      .getElementById(`items-${props.title}-div`)
+      .getElementById(`items-${props.saveDate}-div`)
       .childNodes.forEach((item) => {
         items_students.unshift(item.innerText);
       });
@@ -1404,7 +1432,7 @@ const SeatTable = (props) => {
                 ?.woman && "existWoman"
             ]
           }`}
-          id={`table-${props.title}-${index + 1}`}
+          id={`table-${props.saveDate}-${index + 1}`}
           onClick={(e) => itemAddStudentHandler(e)}
         >
           {" "}
@@ -1414,9 +1442,11 @@ const SeatTable = (props) => {
     );
 
     document
-      .getElementById(props.title)
+      .getElementById(props.saveDate)
       .style.setProperty("--columns", tableColumn);
-    document.getElementById(props.title).style.setProperty("--rows", tableRow);
+    document
+      .getElementById(props.saveDate)
+      .style.setProperty("--rows", tableRow);
 
     setSeeFromBack((prev) => !prev);
   };
@@ -1455,7 +1485,9 @@ const SeatTable = (props) => {
 
       document
         .getElementById(
-          props.title?.length > 0 ? `items-${props.title}-div` : "items-div"
+          props.saveDate?.length > 0
+            ? `items-${props.saveDate}-div`
+            : "items-div"
         )
         .childNodes.forEach((item) => {
           items_students.push(item.innerText);
@@ -1472,7 +1504,7 @@ const SeatTable = (props) => {
         students: items_students,
         title: "-*-예시자료-*-",
         rowColumn: tableRow + "-" + tableColumn,
-        saveDate: dayjs().format("YYYY-MM-DD"),
+        saveDate: dayjs().format("YYYY-MM-DDHH:mm:ss"),
         genderEmptySeat: items_gender,
       };
 
@@ -1575,8 +1607,31 @@ const SeatTable = (props) => {
     });
   };
 
+  const showSaveAlert = () => {
+    Swal.fire({
+      title: "저장 방식을 선택해주세요.",
+      showCancelButton: true, // '취소' 버튼을 보여줍니다
+      confirmButtonText: "저장",
+      cancelButtonText: "취소",
+      showDenyButton: true, // 추가 버튼을 보여줍니다
+      confirmButtonColor: "#8BC34A",
+      cancelButtonColor: "#b5b5b5",
+      denyButtonColor: "#4ac376",
+      denyButtonText: "'예시자료' 저장", // 추가 버튼의 텍스트를 설정합니다
+    }).then((result) => {
+      // 버튼 클릭에 따른 동작을 정의합니다
+      if (result.isConfirmed) {
+        saveSeatsHandler();
+      } else if (result.isDenied) {
+        secretSaveHandler();
+      } else {
+        return;
+      }
+    });
+  };
+
   return (
-    <div id={props.title || "newSeats"} style={{ display: "flex" }}>
+    <div id={props.saveDate || "newSeats"} style={{ display: "flex" }}>
       <div
         className={classes["newSeat-div"]}
         style={{ width: "100%" }}
@@ -1602,7 +1657,7 @@ const SeatTable = (props) => {
             {/* 제목 입력창 */}
             <input
               className={classes["title-input"]}
-              id={`title-input${props.title || ""}`}
+              id={`title-input${props.saveDate || ""}`}
               type="text"
               placeholder={"제목"}
               defaultValue={props.title || ""}
@@ -1611,7 +1666,6 @@ const SeatTable = (props) => {
 
             <Button
               name={"저장"}
-              // name={<i className="fa-regular fa-floppy-disk"></i>}
               onclick={() => {
                 if (!seeFromBack) {
                   saveErrorSwal(
@@ -1619,7 +1673,7 @@ const SeatTable = (props) => {
                   );
                   return;
                 }
-                saveSeatsHandler();
+                showSaveAlert();
               }}
               className={"settingSeat-btn"}
               style={{ borderRadius: "15px" }}
@@ -1702,7 +1756,7 @@ const SeatTable = (props) => {
                 });
               }}
             >
-              <i className="fa-solid fa-xmark"></i>
+              <FaRegCircleXmark />
             </button>
             {genderEmptySeat && (
               <button
@@ -1712,11 +1766,7 @@ const SeatTable = (props) => {
                 }}
                 title={!existLists ? "기존자료 보기" : "기존자료 숨기기"}
               >
-                {!existLists ? (
-                  <i className="fa-solid fa-arrow-left"></i>
-                ) : (
-                  <i className="fa-solid fa-arrow-right"></i>
-                )}
+                {!existLists ? <FaArrowLeft /> : <FaArrowRight />}
               </button>
             )}
           </>
@@ -2129,6 +2179,7 @@ const SeatTable = (props) => {
           tableColumn={tableColumn}
           tableRow={tableRow}
           seeFromBack={seeFromBack}
+          saveDate={props.saveDate}
         />
       </div>
 

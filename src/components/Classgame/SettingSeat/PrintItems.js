@@ -4,7 +4,7 @@ import classes from "./SettingSeat.module.css";
 const PrintItems = React.forwardRef((props, ref) => {
   useEffect(() => {
     let allDiv = document.getElementById(
-      props.title?.length > 0 ? `items-${props.title}-div` : "items-div"
+      props.saveDate?.length > 0 ? `items-${props.saveDate}-div` : "items-div"
     );
 
     allDiv.style.setProperty("--columns", props.tableColumn);
@@ -26,7 +26,9 @@ const PrintItems = React.forwardRef((props, ref) => {
       <div
         className={classes[`items-container`]}
         id={`${
-          props.title?.length > 0 ? `items-${props.title}-div` : "items-div"
+          props.saveDate?.length > 0
+            ? `items-${props.saveDate}-div`
+            : "items-div"
         }`}
       >
         {props.items}

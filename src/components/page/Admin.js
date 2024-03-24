@@ -4,6 +4,7 @@ import Swal from "sweetalert2";
 import Docxtemplater from "docxtemplater";
 import PizZip from "pizzip";
 import FormVarType from "components/Classgame/Crawling/FormVarType";
+import { FaUpload } from "react-icons/fa6";
 
 const Admin = (props) => {
   const [isAdmin, setIsAdmin] = useState(true);
@@ -78,7 +79,7 @@ const Admin = (props) => {
         <>
           <div>
             <label title={"새 파일 업로드"}>
-              atAdd업로드 <i className="fa-solid fa-upload"></i>
+              atAdd업로드 <FaUpload />
               <input
                 type="file"
                 style={{ display: "none" }}
@@ -90,7 +91,7 @@ const Admin = (props) => {
 
           <div>
             <label title={"새 파일 업로드"}>
-              atReport업로드 <i className="fa-solid fa-upload"></i>
+              atReport업로드 <FaUpload />
               <input
                 type="file"
                 style={{ display: "none" }}
@@ -102,7 +103,7 @@ const Admin = (props) => {
 
           <div>
             <label title={"새 파일 업로드"}>
-              absence업로드 <i className="fa-solid fa-upload"></i>
+              absence업로드 <FaUpload />
               <input
                 type="file"
                 style={{ display: "none" }}

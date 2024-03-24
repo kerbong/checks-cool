@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import classes from "./ListMemoInput.module.css";
 
 import Swal from "sweetalert2";
+import { FaRegCircleXmark } from "react-icons/fa6";
 
 const ScoreGradeInput = (props) => {
   const [inputCount, setInputCount] = useState(4);
@@ -61,7 +62,7 @@ const ScoreGradeInput = (props) => {
         onClick={props.closeHandler}
         style={{ width: "4%" }}
       >
-        <i className="fa-regular fa-circle-xmark"></i>
+        <FaRegCircleXmark />
       </span>
       <div className={classes["grade-section"]}>
         <h2>{props.title} 설정하기</h2>

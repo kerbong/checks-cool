@@ -7,6 +7,7 @@ import classes from "./EventLists.module.css";
 import Button from "../Layout/Button";
 
 import dayjs from "dayjs";
+import { FaRegCircleXmark } from "react-icons/fa6";
 
 const EventLists = (props) => {
   const [eventOnDay, setEventOnDay] = useState(props.eventOnDay);
@@ -263,7 +264,7 @@ const EventLists = (props) => {
           props.dayEventHideHandler();
         }}
       >
-        <i className="fa-regular fa-circle-xmark"></i>
+        <FaRegCircleXmark />
       </p>
       <h1 className={eventOnDay[0].eventDate}>
         {`${eventOnDay[0].eventDate.slice(

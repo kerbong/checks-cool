@@ -18,6 +18,7 @@ import AttendCalendar from "components/Attendance/AttendCalendar";
 import { getDownloadURL, ref, uploadString } from "firebase/storage";
 import { v4 } from "uuid";
 import Input from "components/Layout/Input";
+import { FaMicrophone, FaMicrophoneSlash } from "react-icons/fa6";
 
 dayjs.extend(weekOfYear);
 dayjs.extend(weekday);
@@ -1065,9 +1066,9 @@ const MobileMain = (props) => {
         name={isListening && voiceWhat === name ? "중지" : name}
         icon={
           isListening && voiceWhat === name ? (
-            <i className="fa-solid fa-microphone-slash"></i>
+            <FaMicrophoneSlash />
           ) : (
-            <i className="fa-solid fa-microphone"></i>
+            <FaMicrophone />
           )
         }
         title={name}

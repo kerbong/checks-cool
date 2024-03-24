@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Modal from "../Layout/Modal";
 import classes from "./ExampleModal.module.css";
+import { FaRegCircleXmark } from "react-icons/fa6";
 
 const ExampleModal = (props) => {
   const [isChecked, setIsChecked] = useState("");
@@ -13,8 +14,8 @@ const ExampleModal = (props) => {
 
   return (
     <Modal onClose={props.onClose} addStyle={props.addStyle}>
-      <span onClick={props.onClose} className={classes.xmark}>
-        <i className="fa-regular fa-circle-xmark"></i>
+      <span onClick={props.onClose}>
+        <FaRegCircleXmark className={classes.xmark} />
       </span>
       <div>{props.title}</div>
       <hr style={{ margin: "20px 15px" }} />

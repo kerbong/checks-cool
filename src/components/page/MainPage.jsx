@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import ExampleModal from "./ExampleModal";
 
-import mainImg from "../../assets/notice/20240311.gif";
+import mainImg from "../../assets/notice/20240324.gif";
 
 import dayjs from "dayjs";
 import AttendCalendar from "components/Attendance/AttendCalendar";
@@ -21,6 +21,23 @@ import weekOfYear from "dayjs/plugin/weekOfYear"; // 주차 계산 지원
 import isoWeek from "dayjs/plugin/isoWeek"; // ISO 주차 계산 지원
 import holidays2023 from "../../holidays2023";
 import "dayjs/locale/ko";
+import {
+  FaChevronDown,
+  FaChevronLeft,
+  FaChevronRight,
+  FaChevronUp,
+  FaCircleExclamation,
+  FaDownLeftAndUpRightToCenter,
+  FaDownload,
+  FaFloppyDisk,
+  FaGear,
+  FaMagnifyingGlassMinus,
+  FaMagnifyingGlassPlus,
+  FaRegCircleXmark,
+  FaReply,
+  FaUpRightAndDownLeftFromCenter,
+  FaUserPlus,
+} from "react-icons/fa6";
 
 dayjs.extend(weekOfYear);
 dayjs.extend(isoWeek);
@@ -53,33 +70,33 @@ const yearEnd_text = `이번 학년도 고생 많으셨습니다! 선생님들�
 const update_title = `모둠화면 랜덤뽑기 / 전담출결 수정 / 오류수정 🎇`;
 
 const update_text = ` 
-(상세 설명 https://bit.ly/첵스쿨사용설명서)
+(상세 설명 <a href="https://bit.ly/첵스쿨사용설명서" target="_blank" rel="noopener noreferrer" alt="">https://bit.ly/첵스쿨사용설명서</a>)
 <br/> <br/> 
 <b>=== 업데이트 안내🎉 ===</b>
 <br/><br/>
 
 
-<b>1. [제자랑]-[모둠화면]</b>
+<b>1. [프로필]-[동아리 관리]</b>
 <br/> 
-모둠화면에... 랜덤뽑기가 추가되었어요!! <br/> 
-모둠화면 내에서.. 학생 개별 / 모둠의 순서 뽑기가 가능합니다! 뽑힌 학생 / 모둠의 이름을 클릭하면 발표 유무에 따른 취소선도 만들 수 있어요!
+이제 슬슬 스포츠클럽, 학생자율동아리 등 다양한 동아리 관리를 할 시기가 왔죠..??<br/>
+첵스쿨에서 모두 관리하세요!<br/><br/>
+메뉴바의 '프로필' - '동아리 관리'를 클릭해서 동아리를 <u>6개 까지</u> 운영 할 수 있어요!<br/>
+동아리 관리 화면에서는 '메인화면' '생기부' '조회' '제자랑' 탭
+활용이 가능해요!<br/>
+*동아리 데이터 저장도 가능! 
 <br/> <br/> 
 
-<b>2. 전담교사 출결 수정</b>
+<b>3. 오류 수정 및 업데이트 중</b>
 <br/> 
-전담교사의 출결이 업데이트 되었어요! <br/>
-메인화면과의 연동, 출결화면 내에서 전체 학급 출결 확인 등이 가능합니다! <br/>
-[조회]-[출결]에서도 현재 학년도의 출결을 확인 가능합니다.
+[제자랑] - [모둠화면] 내의 점수 오류가 수정되었어요.<br/>
+[모둠화면] 내에서 보상 기록을 남기는 방법을 고민하고 있어요.
+
 <br/><br/>
 
-자세한 설명서는... 여기로!! <br/>https://bit.ly/첵스쿨사용설명서
+자세한 설명서는... 여기로!! <br/><a href="https://bit.ly/첵스쿨사용설명서" target="_blank" rel="noopener noreferrer" alt="">첵스쿨사용설명서</a>
 <br/>
 <br/>
 
- 반짝이 muk*********@naver.com <br/>
-* 반짝이님! 이메일이 가득찼데요ㅠ <br/>
-<br/> kerbong@gmail.com으로 연락주세요!! 커피쿠폰 받아가세요!
-<br/><br/>
 
 
 <b>새학년도, 즐겁고 행복한 일들만 가득하시길!!!🔥🔥</b><br/><br/> 
@@ -219,7 +236,7 @@ const MainPage = (props) => {
   useEffect(() => {
     //오늘그만보기 클릭 안되어 있고, 아직 공지 중이면
     if (
-      localStorage.getItem("showNotice") <= "20240318" &&
+      localStorage.getItem("showNotice") <= "20240402" &&
       localStorage.getItem("todayNotice") < dayjs().format("YYYY-MM-DD")
     ) {
       setShowNotice(true);
@@ -508,7 +525,7 @@ const MainPage = (props) => {
           // console.log(today_evt);
           classLists?.forEach((cl, index) => {
             // 만약 교시를 분별하는 @가 포함되어 있으면.. setNum도 있으면 함께 넣어주기 (저장된 교시명과 일정에 note에 저장한 교시명이 일치하는지 확인하기!!!!)
-            if (cl === today_evt.note?.split("@")?.[0]) {
+            if (today_evt.note?.split("@")?.[0]?.includes(cl)) {
               let text = `${today_evt.eventName}@${today_evt.note}${
                 today_evt?.setNum
                   ? `(${today_evt.setNum}/${
@@ -630,7 +647,7 @@ const MainPage = (props) => {
     let new_nowYearClassTable = [];
 
     //입력한 개별날짜 시간표들
-    // setClassTable([]);
+    setClassTable([]);
     // 시작 시간 모음
 
     let new_todayClassTable = {
@@ -647,6 +664,8 @@ const MainPage = (props) => {
     //이번주 데이터 목록
     let new_weekClassTable = [];
 
+    // console.log(now_doc?.data());
+
     if (now_doc.exists()) {
       //오늘 요일설정
       let today_weekday = new Date(todayYyyymmdd).getDay();
@@ -655,11 +674,11 @@ const MainPage = (props) => {
         class_basic = now_doc.data()?.[WEEKDAYS[today_weekday]];
       }
       let basicAll = {
-        월: now_doc.data()?.["월"],
-        화: now_doc.data()?.["화"],
-        수: now_doc.data()?.["수"],
-        목: now_doc.data()?.["목"],
-        금: now_doc.data()?.["금"],
+        월: now_doc.data()?.["월"] || [],
+        화: now_doc.data()?.["화"] || [],
+        수: now_doc.data()?.["수"] || [],
+        목: now_doc.data()?.["목"] || [],
+        금: now_doc.data()?.["금"] || [],
       };
       setClassBasicAll(basicAll);
       setClassBasic(class_basic);
@@ -745,8 +764,10 @@ const MainPage = (props) => {
       weekdays?.forEach((dayYmd) => {
         new_weekClassTable.push({ ...new_todayClassTable, id: dayYmd });
       });
-      console.table(new_weekClassTable);
+      // console.table(new_weekClassTable);
       setWeekClassTable(new_weekClassTable);
+      setClassBasicAll({});
+      setClassBasic([]);
     }
   };
 
@@ -774,12 +795,45 @@ const MainPage = (props) => {
     getAttendsFromDb(isSubject);
     getCheckListsFromDb();
     getListMemoFromDb();
-    getScheduleFromDb(weekdays);
+    if (props.isClub === "" || props.isClub === "main") {
+      getScheduleFromDb(weekdays);
+      getTodoListsFromDb();
+    } else {
+      setSchedule([]);
+      setToDoLists([]);
+      setNowYearTodoLists([]);
+    }
+    // console.log(props.userUid);
   }, [todayYyyymmdd, props.isSubject]);
 
-  useEffect(() => {
-    getTodoListsFromDb();
-  }, []);
+  // useEffect(() => {
+  //   const startOfWeek = dayjs(todayYyyymmdd).startOf("isoWeek");
+
+  //   // 이번주 날짜들 모으기
+  //   const weekdays = Array.from({ length: 5 }, (v, i) =>
+  //     startOfWeek.add(i, "day").format("YYYY-MM-DD")
+  //   );
+
+  //   getClassTableFromDb(weekdays);
+  //   getAttendsFromDb(isSubject);
+  //   getCheckListsFromDb();
+  //   getListMemoFromDb();
+
+  //   // 현재 클럭 선택중이 아니면
+  //   if (isNaN(+props.isClub)) {
+  //     getTodoListsFromDb();
+  //     // console.log(props.userUid);
+  //     // console.log("g");
+  //     getScheduleFromDb(weekdays);
+  //   } else {
+  //     setSchedule([]);
+  //     setToDoLists([]);
+  //     setNowYearTodoLists([]);
+  //     // console.log("g");
+  //     // console.log(props.isClub);
+  //     // console.log(props.userUid);
+  //   }
+  // }, [props.userUid]);
 
   //시간표 저장 함수
   const saveClassMemoHandler = async (auto) => {
@@ -1091,9 +1145,16 @@ const MainPage = (props) => {
     );
     // if (isSubject) return;
     getAlarmFromDb();
-    getBudgetsFromDb();
+    if (props.isClub === "" || props.isClub === "main") {
+      getBudgetsFromDb();
+      getFreeMemoFromDb();
+    } else {
+      setNowYearBudgets([]);
+      setNowYearFreeMemo([]);
+    }
+
     getConsultFromDb();
-    getFreeMemoFromDb();
+
     getSeatsFromDb();
     // 마지막 학생정보 받아오면서 데이터 다 받아왔다는 상태도 세팅
     getStudentsInfoFromDb();
@@ -1426,50 +1487,52 @@ const MainPage = (props) => {
     /////////전담용 여기까지 완료////////////
 
     // ==========일정 (스케쥴) 저장=========
-    const new_schedule_datas = [];
-    nowYearSchedule
-      ?.sort((a, b) => (a.id.slice(0, 10) > b.id.slice(0, 10) ? 1 : -1))
-      ?.forEach((schd, index) => {
-        let data = [
-          +index + 1,
-          +schd.id.slice(0, 4),
-          +removeLeadingZeros(schd.id.slice(5, 7)),
-          +removeLeadingZeros(schd.id.slice(8, 10)),
-          schd.option.slice(1),
-          schd.eventName,
-          schd.set ? schd.set + "(" + schd?.setNum + ")" : "",
-          schd.note,
-        ];
+    if (props.isClub === "" || props.isClub === "main") {
+      const new_schedule_datas = [];
+      nowYearSchedule
+        ?.sort((a, b) => (a.id.slice(0, 10) > b.id.slice(0, 10) ? 1 : -1))
+        ?.forEach((schd, index) => {
+          let data = [
+            +index + 1,
+            +schd.id.slice(0, 4),
+            +removeLeadingZeros(schd.id.slice(5, 7)),
+            +removeLeadingZeros(schd.id.slice(8, 10)),
+            schd.option.slice(1),
+            schd.eventName,
+            schd.set ? schd.set + "(" + schd?.setNum + ")" : "",
+            schd.note,
+          ];
 
-        new_schedule_datas.push(data);
-      });
+          new_schedule_datas.push(data);
+        });
 
-    new_schedule_datas.unshift([
-      "순",
-      "년",
-      "월",
-      "일",
-      "분류",
-      "행사명",
-      "반복일정(회차)",
-      "메모 내용",
-    ]);
+      new_schedule_datas.unshift([
+        "순",
+        "년",
+        "월",
+        "일",
+        "분류",
+        "행사명",
+        "반복일정(회차)",
+        "메모 내용",
+      ]);
 
-    const schedule_datas = utils.aoa_to_sheet(new_schedule_datas);
-    //셀의 넓이 지정
-    schedule_datas["!cols"] = [
-      { wpx: 30 },
-      { wpx: 50 },
-      { wpx: 40 },
-      { wpx: 40 },
-      { wpx: 80 },
-      { wpx: 130 },
-      { wpx: 120 },
-      { wpx: 250 },
-    ];
+      const schedule_datas = utils.aoa_to_sheet(new_schedule_datas);
+      //셀의 넓이 지정
+      schedule_datas["!cols"] = [
+        { wpx: 30 },
+        { wpx: 50 },
+        { wpx: 40 },
+        { wpx: 40 },
+        { wpx: 80 },
+        { wpx: 130 },
+        { wpx: 120 },
+        { wpx: 250 },
+      ];
 
-    //시트에 작성한 데이터 넣기
-    utils.book_append_sheet(book, schedule_datas, "일정");
+      //시트에 작성한 데이터 넣기
+      utils.book_append_sheet(book, schedule_datas, "일정");
+    }
 
     // ============시간표는..
     //   id : ,  classMemo : [{classNum  memo  subject }]
@@ -1540,108 +1603,110 @@ const MainPage = (props) => {
     utils.book_append_sheet(book, class_table_datas, "시간표");
 
     // ========== 예산 내용 저장=========
-    const new_budgets_datas = [];
-    nowYearBudgets?.forEach((budget, index) => {
-      let data = [
-        +index + 1,
-        budget.budget_name,
-        budget.until,
-        "",
-        "",
-        +budget.totalAmount,
-        "",
-        budget.note,
-      ];
+    if (props.isClub === "" || props.isClub === "main") {
+      const new_budgets_datas = [];
+      nowYearBudgets?.forEach((budget, index) => {
+        let data = [
+          +index + 1,
+          budget.budget_name,
+          budget.until,
+          "",
+          "",
+          +budget.totalAmount,
+          "",
+          budget.note,
+        ];
 
-      new_budgets_datas.push([
-        "예산순",
-        "예산명",
-        "사용기한",
-        "",
-        "",
-        "예산총액",
-        "",
-        "메모",
-      ]);
-      new_budgets_datas.push(data);
-
-      //예산과 품목 구분을 위한 한 줄 넣어주기
-      new_budgets_datas.push([]);
-      new_budgets_datas.push([
-        "품목순",
-        "품목명",
-        "사용날짜",
-        "개별금액",
-        "개수",
-        "총금액",
-        "사이트",
-        "메모",
-      ]);
-      budget?.useLists?.forEach((list, list_index) => {
         new_budgets_datas.push([
-          +list_index + 1,
-          list.title,
-          list.date.slice(0, 10),
-          +list.each,
-          +list.count,
-          +list.amount,
-          list.site,
-          list.note,
+          "예산순",
+          "예산명",
+          "사용기한",
+          "",
+          "",
+          "예산총액",
+          "",
+          "메모",
         ]);
+        new_budgets_datas.push(data);
+
+        //예산과 품목 구분을 위한 한 줄 넣어주기
+        new_budgets_datas.push([]);
+        new_budgets_datas.push([
+          "품목순",
+          "품목명",
+          "사용날짜",
+          "개별금액",
+          "개수",
+          "총금액",
+          "사이트",
+          "메모",
+        ]);
+        budget?.useLists?.forEach((list, list_index) => {
+          new_budgets_datas.push([
+            +list_index + 1,
+            list.title,
+            list.date.slice(0, 10),
+            +list.each,
+            +list.count,
+            +list.amount,
+            list.site,
+            list.note,
+          ]);
+        });
+
+        //예산 구분을 위한 세 줄 넣어주기
+        new_budgets_datas.push([]);
+        new_budgets_datas.push([]);
+        new_budgets_datas.push([
+          "######################################################  구 분 선  ######################################################################",
+        ]);
+        new_budgets_datas.push([]);
+        new_budgets_datas.push([]);
       });
 
-      //예산 구분을 위한 세 줄 넣어주기
-      new_budgets_datas.push([]);
-      new_budgets_datas.push([]);
-      new_budgets_datas.push([
-        "######################################################  구 분 선  ######################################################################",
-      ]);
-      new_budgets_datas.push([]);
-      new_budgets_datas.push([]);
-    });
-
-    const budgets_datas = utils.aoa_to_sheet(new_budgets_datas);
-    //셀의 넓이 지정
-    budgets_datas["!cols"] = [
-      { wpx: 50 }, //순
-      { wpx: 140 }, //품목명
-      { wpx: 80 }, //사용날짜
-      { wpx: 80 }, //개별금액
-      { wpx: 50 }, //개수
-      { wpx: 90 }, //총금액
-      { wpx: 130 }, //사이트
-      { wpx: 300 }, //메모
-    ];
-
-    //시트에 작성한 데이터 넣기
-    utils.book_append_sheet(book, budgets_datas, "예산");
-
-    // ==========메모(오늘 할일) 저장=========
-    const new_memo_datas = [];
-    nowYearTodoLists?.forEach((todoList, index) => {
-      let data = [
-        +index + 1,
-        todoList.emg === true ? "중요" : "",
-        todoList.checked === true ? "완료" : "진행중",
-        todoList.text,
+      const budgets_datas = utils.aoa_to_sheet(new_budgets_datas);
+      //셀의 넓이 지정
+      budgets_datas["!cols"] = [
+        { wpx: 50 }, //순
+        { wpx: 140 }, //품목명
+        { wpx: 80 }, //사용날짜
+        { wpx: 80 }, //개별금액
+        { wpx: 50 }, //개수
+        { wpx: 90 }, //총금액
+        { wpx: 130 }, //사이트
+        { wpx: 300 }, //메모
       ];
 
-      new_memo_datas.push(data);
-    });
+      //시트에 작성한 데이터 넣기
+      utils.book_append_sheet(book, budgets_datas, "예산");
 
-    new_memo_datas.unshift(["순", "중요표시", "완료", "할 일 내용"]);
+      // ==========메모(오늘 할일) 저장=========
+      const new_memo_datas = [];
+      nowYearTodoLists?.forEach((todoList, index) => {
+        let data = [
+          +index + 1,
+          todoList.emg === true ? "중요" : "",
+          todoList.checked === true ? "완료" : "진행중",
+          todoList.text,
+        ];
 
-    const todoList_datas = utils.aoa_to_sheet(new_memo_datas);
-    //셀의 넓이 지정
-    todoList_datas["!cols"] = [
-      { wpx: 30 },
-      { wpx: 50 },
-      { wpx: 50 },
-      { wpx: 750 },
-    ];
+        new_memo_datas.push(data);
+      });
 
-    //시트에 작성한 데이터 넣기
-    utils.book_append_sheet(book, todoList_datas, "오늘 할일");
+      new_memo_datas.unshift(["순", "중요표시", "완료", "할 일 내용"]);
+
+      const todoList_datas = utils.aoa_to_sheet(new_memo_datas);
+      //셀의 넓이 지정
+      todoList_datas["!cols"] = [
+        { wpx: 30 },
+        { wpx: 50 },
+        { wpx: 50 },
+        { wpx: 750 },
+      ];
+
+      //시트에 작성한 데이터 넣기
+      utils.book_append_sheet(book, todoList_datas, "오늘 할일");
+    } // 동아리 아닌 경우 실행! 메모 할일
 
     // ==========알림장 내용 저장=========
     const new_alarm_datas = [];
@@ -1661,32 +1726,33 @@ const MainPage = (props) => {
     utils.book_append_sheet(book, alarm_datas, "알림장");
 
     // ========== 자유 메모 (메모폴더) 내용 저장=========
-    const new_freeMemo_datas = [];
-    nowYearFreeMemo?.forEach((freeMemo, index) => {
-      let data = [
-        +index + 1,
-        freeMemo.category.join(", "),
-        freeMemo.title,
-        freeMemo.text,
+    if (props.isClub === "" || props.isClub === "main") {
+      const new_freeMemo_datas = [];
+      nowYearFreeMemo?.forEach((freeMemo, index) => {
+        let data = [
+          +index + 1,
+          freeMemo.category.join(", "),
+          freeMemo.title,
+          freeMemo.text,
+        ];
+
+        new_freeMemo_datas.push(data);
+      });
+
+      new_freeMemo_datas.unshift(["순", "분류(태그)", "제목", "메모 내용"]);
+
+      const freeMemo_datas = utils.aoa_to_sheet(new_freeMemo_datas);
+      //셀의 넓이 지정
+      freeMemo_datas["!cols"] = [
+        { wpx: 30 },
+        { wpx: 150 },
+        { wpx: 120 },
+        { wpx: 400 },
       ];
 
-      new_freeMemo_datas.push(data);
-    });
-
-    new_freeMemo_datas.unshift(["순", "분류(태그)", "제목", "메모 내용"]);
-
-    const freeMemo_datas = utils.aoa_to_sheet(new_freeMemo_datas);
-    //셀의 넓이 지정
-    freeMemo_datas["!cols"] = [
-      { wpx: 30 },
-      { wpx: 150 },
-      { wpx: 120 },
-      { wpx: 400 },
-    ];
-
-    //시트에 작성한 데이터 넣기
-    utils.book_append_sheet(book, freeMemo_datas, "메모폴더");
-
+      //시트에 작성한 데이터 넣기
+      utils.book_append_sheet(book, freeMemo_datas, "메모폴더");
+    }
     // ==========학생정보 저장=========
 
     const new_studentsInfo_datas = [];
@@ -1753,16 +1819,22 @@ const MainPage = (props) => {
     utils.book_append_sheet(book, studentsInfo_datas, "학생정보");
 
     let fileName;
-    if (!isSubject) {
-      fileName = `${nowYear(
-        todayYyyymmdd
-      )}학년도 학급 기록(by첵스쿨)(${dayjs().format("YYYY-MM-DD")}저장).xlsx`;
+    if (props.isClub === "" || props.isClub === "main") {
+      if (!isSubject) {
+        fileName = `${nowYear(
+          todayYyyymmdd
+        )}학년도 학급 기록(by첵스쿨)(${dayjs().format("YYYY-MM-DD")}저장).xlsx`;
+      } else {
+        fileName = `${nowYear(
+          todayYyyymmdd
+        )}학년도 전담(전체학급) 기록(by첵스쿨)(${dayjs().format(
+          "YYYY-MM-DD"
+        )}저장).xlsx`;
+      }
     } else {
-      fileName = `${nowYear(
-        todayYyyymmdd
-      )}학년도 전담(전체학급) 기록(by첵스쿨)(${dayjs().format(
-        "YYYY-MM-DD"
-      )}저장).xlsx`;
+      fileName = `${nowYear(todayYyyymmdd)}학년도 ${
+        props.clubLists?.[props.isClub]?.name
+      } 동아리 기록(by첵스쿨)(${dayjs().format("YYYY-MM-DD")}저장).xlsx`;
     }
     // 최종 파일 만들기
     writeFile(book, fileName);
@@ -2072,11 +2144,8 @@ const MainPage = (props) => {
         <>
           {/* 창을 닫으면.. 다시 바꿀 시간표 from 에서 지우기 */}
           <Modal onClose={() => setSelectedClass([])}>
-            <span
-              onClick={() => setSelectedClass([])}
-              className={classes.xmark}
-            >
-              <i className="fa-regular fa-circle-xmark"></i>
+            <span onClick={() => setSelectedClass([])}>
+              <FaRegCircleXmark className={classes.xmark} />
             </span>
 
             <ShowClassChange
@@ -2231,13 +2300,11 @@ const MainPage = (props) => {
             className={classes["events-dateMove"]}
             onClick={() => moveDateHandler("yesterday")}
           >
-            <i
-              className={
-                !isLgWidth
-                  ? "fa-solid fa-chevron-left fa-lg"
-                  : "fa-solid fa-chevron-left fa-2xl"
-              }
-            ></i>
+            {!isLgWidth ? (
+              <FaChevronLeft size={25} />
+            ) : (
+              <FaChevronLeft size={35} />
+            )}
           </span>
           <span
             className={
@@ -2264,13 +2331,11 @@ const MainPage = (props) => {
             className={classes["events-dateMove"]}
             onClick={() => moveDateHandler("tomorrow")}
           >
-            <i
-              className={
-                !isLgWidth
-                  ? "fa-solid fa-chevron-right fa-lg"
-                  : "fa-solid fa-chevron-right fa-2xl"
-              }
-            ></i>
+            {!isLgWidth ? (
+              <FaChevronRight size={25} />
+            ) : (
+              <FaChevronRight size={35} />
+            )}
           </span>
         </div>
 
@@ -2283,7 +2348,7 @@ const MainPage = (props) => {
               setTitleDate(getDateHandler(new Date(), "title"));
             }}
             className="main-studentPage"
-            icon={<i className="fa-solid fa-reply"></i>}
+            icon={<FaReply />}
           />
           <Button
             name={" 학생명부"}
@@ -2293,7 +2358,7 @@ const MainPage = (props) => {
                 ? `main-studentPage`
                 : `main-noStudentPage`
             }
-            icon={<i className="fa-solid fa-user-plus"></i>}
+            icon={<FaUserPlus />}
           />
           {isLgWidth && (
             <>
@@ -2303,9 +2368,9 @@ const MainPage = (props) => {
                 className={`main-studentPage`}
                 icon={
                   gridFr3or4 === "3fr" ? (
-                    <i className="fa-solid fa-up-right-and-down-left-from-center"></i>
+                    <FaUpRightAndDownLeftFromCenter />
                   ) : (
-                    <i className="fa-solid fa-down-left-and-up-right-to-center"></i>
+                    <FaDownLeftAndUpRightToCenter />
                   )
                 }
               />
@@ -2314,7 +2379,7 @@ const MainPage = (props) => {
                   name={" 단축키"}
                   onclick={() => setMakeShortCut(true)}
                   className={`main-studentPage`}
-                  icon={<i className="fa-solid fa-gear"></i>}
+                  icon={<FaGear />}
                 />
               )}
             </>
@@ -2324,12 +2389,12 @@ const MainPage = (props) => {
               <Button
                 onclick={() => fontSizeHandler(true)}
                 className={`main-studentPage`}
-                icon={<i className="fa-solid fa-magnifying-glass-plus"></i>}
+                icon={<FaMagnifyingGlassPlus />}
               />
               <Button
                 onclick={() => fontSizeHandler(false)}
                 className={`main-studentPage`}
-                icon={<i className="fa-solid fa-magnifying-glass-minus"></i>}
+                icon={<FaMagnifyingGlassMinus />}
               />
             </>
           )}
@@ -2360,11 +2425,7 @@ const MainPage = (props) => {
               🕘 시간표
               <span className={classes["event-title-dropdown"]}>
                 {" "}
-                {hideClassTable ? (
-                  <i className="fa-solid fa-chevron-down"></i>
-                ) : (
-                  <i className="fa-solid fa-chevron-up"></i>
-                )}{" "}
+                {hideClassTable ? <FaChevronDown /> : <FaChevronUp />}{" "}
               </span>
             </div>
             <hr className={classes["main-hr"]} />
@@ -2413,81 +2474,85 @@ const MainPage = (props) => {
           </div>
 
           {/* 할일 목록 */}
-          <div
-            className={classes["event-div"]}
-            onClick={() => navigate(`/memo`)}
-          >
-            <div className={classes["event-title"]}>📝 할 일</div>
-            <hr className={classes["main-hr"]} />
-            {toDoLists.length === 0 ? (
-              <li className={classes["main-li"]}>할 일 없음</li>
-            ) : (
-              sortEmg(toDoLists)?.map((event) => (
-                <li key={event.id} className={classes["main-li"]}>
-                  {event?.emg && (
-                    <span className={"todoapp__mainpage-emergency"}>
-                      <i className="fa-solid fa-circle-exclamation"></i>
-                    </span>
-                  )}
-                  <span>{event.text}</span>
-                </li>
-              ))
-            )}
-          </div>
+          {(props.isClub === "" || props.isClub === "main") && (
+            <div
+              className={classes["event-div"]}
+              onClick={() => navigate(`/memo`)}
+            >
+              <div className={classes["event-title"]}>📝 할 일</div>
+              <hr className={classes["main-hr"]} />
+              {toDoLists.length === 0 ? (
+                <li className={classes["main-li"]}>할 일 없음</li>
+              ) : (
+                sortEmg(toDoLists)?.map((event) => (
+                  <li key={event.id} className={classes["main-li"]}>
+                    {event?.emg && (
+                      <span className={"todoapp__mainpage-emergency"}>
+                        <FaCircleExclamation />
+                      </span>
+                    )}
+                    <span>{event.text}</span>
+                  </li>
+                ))
+              )}
+            </div>
+          )}
 
           {/* 공용 개별일정 */}
-          <div
-            className={classes["event-div"]}
-            onClick={() => navigate(`/todo`)}
-          >
-            <div className={classes["event-title"]}>📆 일정</div>
-            <hr className={classes["main-hr"]} />
-            {schedule.length === 0 ? (
-              <li className={classes["main-li"]}>* 다가오는 7일 일정 없음</li>
-            ) : (
-              schedule?.map((event) => (
-                <li key={event.id} className={classes["main-li"]}>
-                  <span
-                    className={
-                      event.id.slice(0, 10) === todayYyyymmdd
-                        ? classes["mr-underline"]
-                        : classes["evtSpan"]
-                    }
-                  >
-                    {dayjs(event.id.slice(0, 10)).format("M월 D일(ddd)")} -{" "}
-                    {event.eventName}
-                    {event.setNum && ` (${event.setNum}회차)`}
-                    {/* /{" "}
+          {(props.isClub === "" || props.isClub === "main") && (
+            <div
+              className={classes["event-div"]}
+              onClick={() => navigate(`/todo`)}
+            >
+              <div className={classes["event-title"]}>📆 일정</div>
+              <hr className={classes["main-hr"]} />
+              {schedule.length === 0 ? (
+                <li className={classes["main-li"]}>* 다가오는 7일 일정 없음</li>
+              ) : (
+                schedule?.map((event) => (
+                  <li key={event.id} className={classes["main-li"]}>
+                    <span
+                      className={
+                        event.id.slice(0, 10) === todayYyyymmdd
+                          ? classes["mr-underline"]
+                          : classes["evtSpan"]
+                      }
+                    >
+                      {dayjs(event.id.slice(0, 10)).format("M월 D일(ddd)")} -{" "}
+                      {event.eventName}
+                      {event.setNum && ` (${event.setNum}회차)`}
+                      {/* /{" "}
                     {event.note ? `${event.note}` : ""} */}
-                    {/* <span
+                      {/* <span
                       className={
                         event.public ? classes["public"] : classes["person"]
                       }
                     >
                       {event.public ? "공용" : "개인"}
                     </span> */}
-                    <span
-                      className={
-                        event.option.slice(0, 1) === "1"
-                          ? classes["outsiderEvt"]
-                          : event.option.slice(0, 1) === "2"
-                          ? classes["schoolEvt"]
-                          : classes["teacherEvt"]
-                      }
-                    >
-                      {event.option.slice(1, 3)}{" "}
-                    </span>
-                    {/* / D-
+                      <span
+                        className={
+                          event.option.slice(0, 1) === "1"
+                            ? classes["outsiderEvt"]
+                            : event.option.slice(0, 1) === "2"
+                            ? classes["schoolEvt"]
+                            : classes["teacherEvt"]
+                        }
+                      >
+                        {event.option.slice(1, 3)}{" "}
+                      </span>
+                      {/* / D-
                     {dayjs(event.id.slice(0, 10)).diff(
                       todayYyyymmdd,
                       "day"
                     )}  */}
-                  </span>
-                  <span> </span>
-                </li>
-              ))
-            )}
-          </div>
+                    </span>
+                    <span> </span>
+                  </li>
+                ))
+              )}
+            </div>
+          )}
 
           {/* 출결목록 */}
           <div
@@ -2504,21 +2569,23 @@ const MainPage = (props) => {
             {props.students.length !== 0 && attendEvents.length === 0 ? (
               <li className={classes["main-li"]}>모두 출석!</li>
             ) : (
-              attendEvents?.map((event) => (
-                <li
-                  key={
-                    !isSubject
-                      ? event.id + event.num
-                      : event.cl + event.id + event.num
-                  }
-                  className={classes["main-li"]}
-                >
-                  {/* 반 번호 이름 / 출결 정보 */}
-                  {event.clName + " " || ""}
-                  {event.num}번 {event.name} / {event.option.slice(1)} /{" "}
-                  {event.note || ""}
-                </li>
-              ))
+              attendEvents?.map((event) => {
+                return (
+                  <li
+                    key={
+                      !isSubject
+                        ? event.id + event.num
+                        : event.cl + event.id + event.num
+                    }
+                    className={classes["main-li"]}
+                  >
+                    {/* 반 번호 이름 / 출결 정보 */}
+                    {event?.clName ? event.clName + " " : ""}
+                    {event.num}번 {event.name} / {event.option.slice(1)} /{" "}
+                    {event.note || ""}
+                  </li>
+                );
+              })
             )}
           </div>
 
@@ -2723,7 +2790,7 @@ const MainPage = (props) => {
                       <Button
                         name=" 다운"
                         style={{ minWidth: "85px" }}
-                        icon={<i className="fa-solid fa-download"></i>}
+                        icon={<FaDownload />}
                         className={"show-basicClass-button"}
                         onclick={getAllDataHandler}
                         title="학년도(현재날짜 기준)의 모든 데이터가 저장됩니다."
@@ -2740,7 +2807,7 @@ const MainPage = (props) => {
                         padding: "15px",
                         wordBreak: "keep-all",
                       }}
-                      icon={<i className="fa-regular fa-floppy-disk"></i>}
+                      icon={<FaFloppyDisk />}
                       className={"show-basicClass-button"}
                       onclick={allDataExcelSaveHandler}
                     />

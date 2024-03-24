@@ -8,6 +8,7 @@ import dayjs from "dayjs";
 import Swal from "sweetalert2";
 import { dbService } from "../../../fbase";
 import { setDoc, doc, onSnapshot, getDoc } from "firebase/firestore";
+import { FaChevronDown, FaChevronUp, FaPlus } from "react-icons/fa6";
 
 const SettingSeat = (props) => {
   const [init, setInit] = useState(true);
@@ -55,7 +56,7 @@ const SettingSeat = (props) => {
 
   useEffect(() => {
     getGoneStdFromDb();
-  }, []);
+  }, [props.userUid]);
 
   // useEffect(() => {
   //   getGoneStdFromDb();
@@ -136,7 +137,7 @@ const SettingSeat = (props) => {
   //예시자료 있는지 받아와서 저장하기
   useEffect(() => {
     getSecretSeat();
-  }, [addNew]);
+  }, [addNew, props.userUid]);
 
   //사용방법
   const showHowToUse = (
@@ -144,13 +145,7 @@ const SettingSeat = (props) => {
       <h2 onClick={() => setExplainOn((prev) => !prev)}>
         {" "}
         😮 사용 방법 및 주의사항{" "}
-        <span>
-          {explainOn ? (
-            <i className="fa-solid fa-chevron-up"></i>
-          ) : (
-            <i className="fa-solid fa-chevron-down"></i>
-          )}{" "}
-        </span>
+        <span>{explainOn ? <FaChevronUp /> : <FaChevronDown />} </span>
       </h2>
       <div className={explainOn ? classes.explainDiv : classes.explainDivHide}>
         <p className={classes[`gameMenu`]}>
@@ -317,7 +312,7 @@ const SettingSeat = (props) => {
               setShowTable(false);
             }}
           >
-            <i className="fa-solid fa-plus"></i>
+            <FaPlus />
           </button>
           <SeatLists
             userUid={props.userUid}

@@ -2,6 +2,7 @@ import React from "react";
 import Button from "../Layout/Button";
 import classes from "./StudentLiWithDelete.module.css";
 import Swal from "sweetalert2";
+import { FaMinus } from "react-icons/fa6";
 
 const StudentLiWithDelete = (props) => {
   //학생 삭제버튼 누르면 실행되는 함수
@@ -60,7 +61,7 @@ const StudentLiWithDelete = (props) => {
       {!props.noEdit && (
         <Button
           className="student-remove"
-          name={<i className="fa-solid fa-minus"></i>}
+          name={<FaMinus />}
           onclick={() => {
             deleteConfirmHandler(props.student);
           }}

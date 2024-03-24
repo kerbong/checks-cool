@@ -1,6 +1,7 @@
 import React from "react";
 import classes from "./Simsim.module.css";
 import LikeBtn from "./LikeBtn";
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa6";
 
 const SimsimContent = (props) => {
   return (
@@ -8,12 +9,8 @@ const SimsimContent = (props) => {
       {" "}
       {/* 이미지가 없는 글만 있는 자료의 경우 이미지 대신 insteadText(최대 100자)를 메인에 넣어줌 */}
       <div className={classes["image-div"]}>
-        <div
-          className={classes["image-prev"]}
-          onClick={() => props.prev()}
-          title="이전"
-        >
-          <i className="fa-solid fa-chevron-left fa-lg"></i>
+        <div onClick={() => props.prev()} title="이전">
+          <FaChevronLeft className={classes["image-prev"]} />
         </div>
 
         {props.nowOnRecommend && props.nowOnRecommend?.image === "" && (
@@ -37,12 +34,8 @@ const SimsimContent = (props) => {
           </>
         )}
 
-        <div
-          className={classes["image-next"]}
-          onClick={() => props.next()}
-          title="다음"
-        >
-          <i className="fa-solid fa-chevron-right  fa-lg"></i>
+        <div onClick={() => props.next()} title="다음">
+          <FaChevronRight className={classes["image-next"]} />
         </div>
       </div>
       <div className={classes["user-like-div"]}>

@@ -4,6 +4,7 @@ import classes from "./StudentLiWithDelete.module.css";
 import Swal from "sweetalert2";
 import Button from "../Layout/Button";
 import excelExample from "../../assets/student/excel_gender_example.jpg";
+import { FaDownload, FaRegFileExcel, FaRegFloppyDisk } from "react-icons/fa6";
 
 const StudentExcelUpload = (props) => {
   const [excelUploaded, setExcelUploaded] = useState(false);
@@ -135,7 +136,7 @@ const StudentExcelUpload = (props) => {
               : `${classes.excelfileUploadBtn}`
           }
         >
-          엑셀파일 업로드 <i className="fa-regular fa-file-excel"></i>
+          엑셀파일 업로드 <FaRegFileExcel />
         </label>
         <input
           type="file"
@@ -154,7 +155,7 @@ const StudentExcelUpload = (props) => {
             name={
               <>
                 {excelUploaded && "클릭! "}
-                <i className="fa-regular fa-floppy-disk"></i>
+                <FaRegFloppyDisk />
               </>
             }
             onclick={props.uploadStudentsInfo}
@@ -196,7 +197,7 @@ const StudentExcelUpload = (props) => {
               }
               className={classes["a-link"]}
             >
-              양식파일 다운 <i className="fa-solid fa-download"></i>
+              양식파일 다운 <FaDownload />
             </a>
           </button>
           <hr className={classes["hr"]} />

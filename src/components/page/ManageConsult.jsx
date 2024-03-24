@@ -10,6 +10,7 @@ import { utils, writeFile } from "xlsx";
 import Swal from "sweetalert2";
 import { deleteObject, ref } from "firebase/storage";
 import { storageService } from "../../fbase";
+import { FaDownload } from "react-icons/fa6";
 
 const ManageConsult = (props) => {
   const [onStudent, setOnStudent] = useState("");
@@ -80,7 +81,7 @@ const ManageConsult = (props) => {
 
   useEffect(() => {
     getDatasFromDb();
-  }, []);
+  }, [props.userUid]);
 
   //선택된 학생에 따라 정보를 필터해서 보여줌.
   useEffect(() => {
@@ -403,7 +404,7 @@ const ManageConsult = (props) => {
                       className={classes["search-btns"]}
                       onClick={saveExcelHandler}
                     >
-                      <i className="fa-solid fa-download"></i> 엑셀저장
+                      <FaDownload /> 엑셀저장
                     </button>
                   </div>
 

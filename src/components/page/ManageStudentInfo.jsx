@@ -8,6 +8,7 @@ import classes from "./ManageEach.module.css";
 import Button from "components/Layout/Button";
 import Swal from "sweetalert2";
 import { read, utils } from "xlsx";
+import { FaDownload, FaPhone, FaRegCommentDots } from "react-icons/fa6";
 
 // 정렬 버튼 내용들 모음..
 const INFO_DATA_BTNS = [
@@ -67,7 +68,7 @@ const ManageStudentInfo = (props) => {
   //학생 데이터 받아옴. 전담 담임 상관없이 그냥 배열(올해 자료만 저장.. 덮어쓰기 됨.)
   useEffect(() => {
     getInfoFromDb();
-  }, []);
+  }, [props.userUid]);
 
   //학생 선택되면.. 실행되는 함수
   useEffect(() => {
@@ -422,11 +423,11 @@ const ManageStudentInfo = (props) => {
             className={classes["a-link"]}
             href={`sms:${stud?.studTel}${checkMobile()}body=`}
           >
-            <i className="fa-regular fa-comment-dots"></i>
+            <FaRegCommentDots />
           </a>
           &nbsp;&nbsp;
           <a className={classes["a-link"]} href={`tel:${stud?.studTel}`}>
-            <i className="fa-solid fa-phone"></i>
+            <FaPhone />
           </a>
         </span>
       </span>
@@ -477,11 +478,11 @@ const ManageStudentInfo = (props) => {
               className={classes["a-link"]}
               href={`sms:${stud?.dadTel}${checkMobile()}body=안녕하세요 아버님`}
             >
-              <i className="fa-regular fa-comment-dots"></i>
+              <FaRegCommentDots />
             </a>
             &nbsp;&nbsp;
             <a className={classes["a-link"]} href={`tel:${stud?.dadTel}`}>
-              <i className="fa-solid fa-phone"></i>
+              <FaPhone />
             </a>
           </span>
         </span>
@@ -497,11 +498,11 @@ const ManageStudentInfo = (props) => {
               className={classes["a-link"]}
               href={`sms:${stud?.momTel}${checkMobile()}body=안녕하세요 어머님`}
             >
-              <i className="fa-regular fa-comment-dots"></i>
+              <FaRegCommentDots />
             </a>
             &nbsp;&nbsp;
             <a className={classes["a-link"]} href={`tel:${stud?.momTel}`}>
-              <i className="fa-solid fa-phone"></i>
+              <FaPhone />
             </a>
           </span>
         </span>
@@ -645,14 +646,14 @@ const ManageStudentInfo = (props) => {
                 onStudentInfo?.dadTel
               }${checkMobile()}body=안녕하세요 아버님`}
             >
-              <i className="fa-regular fa-comment-dots"></i>
+              <FaRegCommentDots />
             </a>
             &nbsp;&nbsp;
             <a
               className={classes["a-link"]}
               href={`tel:${onStudentInfo?.dadTel}`}
             >
-              <i className="fa-solid fa-phone"></i>
+              <FaPhone />
             </a>
           </span>
         </span>
@@ -670,14 +671,14 @@ const ManageStudentInfo = (props) => {
                 onStudentInfo?.momTel
               }${checkMobile()}body=안녕하세요 어머님`}
             >
-              <i className="fa-regular fa-comment-dots"></i>
+              <FaRegCommentDots />
             </a>
             &nbsp;&nbsp;
             <a
               className={classes["a-link"]}
               href={`tel:${onStudentInfo?.momTel}`}
             >
-              <i className="fa-solid fa-phone"></i>
+              <FaPhone />
             </a>
           </span>
         </span>
@@ -690,14 +691,14 @@ const ManageStudentInfo = (props) => {
               className={classes["a-link"]}
               href={`sms:${onStudentInfo?.studTel}${checkMobile()}body=`}
             >
-              <i className="fa-regular fa-comment-dots"></i>
+              <FaRegCommentDots />
             </a>
             &nbsp;&nbsp;
             <a
               className={classes["a-link"]}
               href={`tel:${onStudentInfo?.studTel}`}
             >
-              <i className="fa-solid fa-phone"></i>
+              <FaPhone />
             </a>
           </span>
         </span>
@@ -783,7 +784,7 @@ const ManageStudentInfo = (props) => {
                     : "https://docs.google.com/uc?export=download&id=1TlTFGcZO3f6i_tToLyjwxKgVnvcz5TXX"
                 }
               >
-                양식파일 다운<i className="fa-solid fa-download"></i>
+                양식파일 다운 <FaDownload />
               </a>
             }
             className={"down-classItem-button"}

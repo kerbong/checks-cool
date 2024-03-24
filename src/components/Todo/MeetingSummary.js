@@ -8,6 +8,7 @@ import MeetingSumItem from "./MeetingSumItem";
 import Swal from "sweetalert2";
 import { utils, writeFile } from "xlsx";
 import dayjs from "dayjs";
+import { FaPlus } from "react-icons/fa6";
 
 const MeetingSummary = (props) => {
   const [summary, setSummary] = useState([]);
@@ -378,7 +379,7 @@ const MeetingSummary = (props) => {
           }}
           className={`${classes["add-btn"]}`}
         >
-          <i className="fa-solid fa-plus"></i>
+          <FaPlus />
         </button>
 
         {/* 엑셀저장 버튼 */}

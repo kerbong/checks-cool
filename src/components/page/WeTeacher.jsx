@@ -4,10 +4,18 @@ import classes from "../Classgame/SettingSeat/SettingSeat.module.css";
 import Simsim from "../Classgame/Simsim/Simsim";
 import Mission from "../Classgame/Mission/Mission";
 import Doit from "../Classgame/Doit/Doit";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import TitleBtn from "components/Memo/TitleBtn";
 import HwpControl from "components/Classgame/Crawling/HwpControl";
 import dayjs from "dayjs";
+import {
+  FaCookieBite,
+  FaMugSaucer,
+  FaPeopleArrows,
+  FaRobot,
+  FaStar,
+  FaThumbsUp,
+} from "react-icons/fa6";
 
 // import AssistanceAi from "components/Classgame/AssistanceAi/AssistanceAi";
 // import Crawling from "components/Classgame/Crawling/Crawling";
@@ -18,6 +26,7 @@ const WeTeacher = (props) => {
   const { state } = useLocation();
   const [selectedMenu, setSelectedMenu] = useState("");
 
+  let navigate = useNavigate();
   const SHOW_WHAT = ["simsim", "mission", "doThis", "ai"];
 
   const MENU_NAME = [
@@ -28,54 +37,27 @@ const WeTeacher = (props) => {
   ];
 
   const ICONS = [
-    <i
-      className="fa-solid fa-star"
-      style={{ fontSize: "1em", color: "#000000bd" }}
-    ></i>,
-    <i
-      className="fa-solid fa-mug-saucer"
-      style={{ fontSize: "1em", color: "#000000bd" }}
-    ></i>,
-    <i
-      className="fa-solid fa-thumbs-up"
-      style={{ fontSize: "1em", color: "#000000bd" }}
-    ></i>,
-    <i
-      className="fa-solid fa-robot"
-      style={{ fontSize: "1em", color: "#00000033" }}
-    ></i>,
+    <FaStar color="#000000bd" />,
+    <FaMugSaucer color="#000000bd" />,
+    <FaThumbsUp color="#000000bd" />,
+    <FaRobot color="#000000bd" />,
   ];
 
   const ICONS_LEFT = [
     <div className={classes["iconLeft"]}>
-      <i
-        className="fa-solid fa-star"
-        style={{ fontSize: "1em", color: "#f2ffd8" }}
-      ></i>
+      <FaStar color="#f2ffd8" />{" "}
     </div>,
     <div className={classes["iconLeft"]}>
-      <i
-        className="fa-solid fa-mug-saucer"
-        style={{ fontSize: "1em", color: "#f2ffd8" }}
-      ></i>{" "}
+      <FaMugSaucer color="#f2ffd8" />{" "}
     </div>,
     <div className={classes["iconLeft"]}>
-      <i
-        className="fa-solid fa-thumbs-up"
-        style={{ fontSize: "1em", color: "#f2ffd8" }}
-      ></i>{" "}
+      <FaThumbsUp color="#f2ffd8" />{" "}
     </div>,
     <div className={classes["iconLeft"]}>
-      <i
-        className="fa-solid fa-robot"
-        style={{ fontSize: "1em", color: "#f2ffd8" }}
-      ></i>{" "}
+      <FaRobot color="#f2ffd8" />{" "}
     </div>,
     <div className={classes["iconLeft"]}>
-      <i
-        className="fa-solid fa-people-arrows"
-        style={{ fontSize: "1em", color: "#f2ffd8" }}
-      ></i>{" "}
+      <FaPeopleArrows color="#f2ffd8" />{" "}
     </div>,
   ];
 
@@ -94,6 +76,12 @@ const WeTeacher = (props) => {
       : dayjs().format("YYYY");
   };
 
+  useEffect(() => {
+    if (props.isClub === "" || props.isClub === "main") return;
+    //동아리 버전 사용에서는.. 초기화면으로 보내기!
+    navigate("/");
+  }, [props.isClub]);
+
   return (
     <>
       <div>
@@ -102,11 +90,7 @@ const WeTeacher = (props) => {
             {/* onClick={exampleHandler}>/ */}
             {selectedMenu === "" && (
               <>
-                <i
-                  className="fa-solid fa-cookie-bite"
-                  style={{ fontSize: "1em" }}
-                ></i>{" "}
-                교사랑
+                <FaCookieBite /> 교사랑
               </>
             )}
             {selectedMenu === "simsim" && <>{ICONS[0]} 추천해요</>}

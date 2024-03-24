@@ -281,8 +281,8 @@
 }
 
 .day {
-  width: 20%;
-  padding: 20px; /* 각 요일 안의 텍스트와의 간격을 조절합니다. */
+  width: 17%;
+  padding: 1%; /* 각 요일 안의 텍스트와의 간격을 조절합니다. */
   border-radius: 5px; /* 각 요일의 모서리를 둥글게 만듭니다. */
   text-align: center; /* 텍스트를 중앙에 배치합니다. */
 }

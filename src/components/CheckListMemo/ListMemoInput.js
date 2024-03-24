@@ -6,6 +6,7 @@ import Input from "../Layout/Input";
 import AttendCalendar from "components/Attendance/AttendCalendar";
 import dayjs from "dayjs";
 import holidays2023 from "holidays2023";
+import { FaArrowsRotate, FaRegCircleXmark } from "react-icons/fa6";
 
 const ListMemoInput = (props) => {
   const getDateHandler = (date) => {
@@ -507,7 +508,7 @@ const ListMemoInput = (props) => {
                 props.setItemNull();
               }}
             >
-              <i className="fa-regular fa-circle-xmark"></i>
+              <FaRegCircleXmark />
             </p>
             {props.isSubject && (
               <div className={classes["fs-1"]}>
@@ -589,7 +590,7 @@ const ListMemoInput = (props) => {
               onclick={() => setShowNoInput((prev) => !prev)}
               className={"checkList-button"}
               style={{ backgroundColor: "#e5b8b8" }}
-              icon={<i className="fa-solid fa-rotate"></i>}
+              icon={<FaArrowsRotate />}
               name={
                 showNoInput
                   ? ` 미입력 (${hasNoInputStd?.length})`

@@ -4,6 +4,7 @@ import classes from "./StudentLiWithDelete.module.css";
 import Swal from "sweetalert2";
 
 import ocrImgExample from "../../assets/student/ocr-img-example.jpg";
+import { FaRegFileImage } from "react-icons/fa6";
 
 const StudentInputByOcr = (props) => {
   const fileInfoInput = useRef(null);
@@ -219,7 +220,7 @@ const StudentInputByOcr = (props) => {
                 htmlFor="imageFile"
                 className={classes["image-upload-btn"]}
               >
-                <i className="fa-regular fa-file-image"></i> 업로드
+                <FaRegFileImage /> 업로드
               </label>
               <input
                 type="file"

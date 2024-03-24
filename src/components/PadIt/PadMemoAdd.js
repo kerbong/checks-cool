@@ -4,6 +4,7 @@ import Input from "components/Layout/Input";
 import classes from "./PadIt.module.css";
 import Swal from "sweetalert2";
 import FileArea from "components/Layout/FileArea";
+import { FaLock, FaLockOpen, FaRegCircleXmark } from "react-icons/fa6";
 
 //배경색목록 7개
 const BG_COLORS = [
@@ -115,7 +116,7 @@ const PadMemoAdd = ({
             onClose();
           }}
         >
-          <i className="fa-regular fa-circle-xmark"></i>
+          <FaRegCircleXmark />
         </span>
 
         <form
@@ -272,11 +273,7 @@ const PadMemoAdd = ({
                     setLock((prev) => !prev);
                   }}
                 >
-                  {lock ? (
-                    <i className="fa-solid fa-lock"></i>
-                  ) : (
-                    <i className="fa-solid fa-lock-open"></i>
-                  )}
+                  {lock ? <FaLock /> : <FaLockOpen />}
                 </button>
                 {/* 메모추가버튼 */}
                 <input

@@ -4,6 +4,7 @@ import classes from "./SimsimAdd.module.css";
 import Input from "../../Layout/Input";
 import Swal from "sweetalert2";
 import Button from "../../Layout/Button";
+import { FaArrowsRotate } from "react-icons/fa6";
 
 const SimsimAdd = (props) => {
   const [attachedFile, setAttachedFile] = useState("");
@@ -83,7 +84,7 @@ const SimsimAdd = (props) => {
                 setAttachedFile("");
               }}
             >
-              <i className="fa-solid fa-arrows-rotate"></i>
+              <FaArrowsRotate />
               <span className={classes["addImage-span"]}>
                 {addImage ? "글로.." : "이미지로.."}
               </span>

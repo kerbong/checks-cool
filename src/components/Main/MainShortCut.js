@@ -1,5 +1,6 @@
 import classes from "./MainShortCut.module.css";
 import Button from "components/Layout/Button";
+import { FaRegCircleXmark } from "react-icons/fa6";
 
 import Swal from "sweetalert2";
 
@@ -73,8 +74,8 @@ const MainShortCut = (props) => {
   return (
     <div className={classes["div1"]}>
       <div className={classes["div2"]}>
-        <span className={classes.closeBtn} onClick={props.closeModal}>
-          <i className="fa-regular fa-circle-xmark"></i>
+        <span onClick={props.closeModal}>
+          <FaRegCircleXmark className={classes.closeBtn} />
         </span>
         <h2 className={classes["header-area"]}>메인화면 바로가기 단축키</h2>
 

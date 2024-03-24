@@ -1,6 +1,7 @@
 import React, { useRef, useState, useCallback } from "react";
 import PropTypes from "prop-types";
 import Swal from "sweetalert2";
+import { FaCircleExclamation } from "react-icons/fa6";
 const MemoTodayTodoInput = ({ todoList, setTodoList }) => {
   const [text, setText] = useState("");
   const [emergency, setEmergency] = useState(false);
@@ -71,7 +72,7 @@ const MemoTodayTodoInput = ({ todoList, setTodoList }) => {
         }
         onClick={() => setEmergency((prev) => !prev)}
       >
-        중요 <i className="fa-solid fa-circle-exclamation"></i>
+        중요 <FaCircleExclamation />
       </button>
 
       <form onSubmit={onPressSubmitButton} className="todoapp__inputbox">

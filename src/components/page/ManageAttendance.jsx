@@ -15,6 +15,7 @@ import {
   listAll,
   ref,
 } from "firebase/storage";
+import { FaCircleCheck, FaDownload } from "react-icons/fa6";
 
 const ManageAttendance = (props) => {
   const [onStudent, setOnStudent] = useState("");
@@ -110,7 +111,7 @@ const ManageAttendance = (props) => {
 
   useEffect(() => {
     getDatasFromDb();
-  }, []);
+  }, [props.userUid]);
 
   //선택된 학생에 따라 정보를 필터해서 보여줌.
   useEffect(() => {
@@ -836,7 +837,7 @@ const ManageAttendance = (props) => {
                       title={`"${onStudent}" 으로 업로드 된 모든 서류를 다운합니다.`}
                       style={{ marginLeft: "15px", fontSize: "0.7rem" }}
                     >
-                      <i className="fa-solid fa-download"></i>서류
+                      <FaDownload /> 서류
                     </button>
                   </>
                 )}
@@ -967,17 +968,7 @@ const ManageAttendance = (props) => {
                     {attend.id.slice(0, 10)}
                     {/* 서류 제출/미제출 아이콘 */}
                     {attend?.paper !== undefined && (
-                      <i
-                        className="fa-solid fa-circle-check fa-xl"
-                        style={
-                          attend.paper
-                            ? {
-                                color: "#ff5a71",
-                                margin: "0 10px",
-                                cursor: "help",
-                              }
-                            : { color: "#cacaca", margin: "0 10px" }
-                        }
+                      <span
                         title="업로드 된 서류 다운받기"
                         onClick={(e) => {
                           e.stopPropagation();
@@ -985,7 +976,22 @@ const ManageAttendance = (props) => {
 
                           downLoadImg(attend, "서류");
                         }}
-                      ></i>
+                      >
+                        {attend.paper ? (
+                          <FaCircleCheck
+                            size={25}
+                            color={"#ff5a71"}
+                            margin="0 10px"
+                            cursor="help"
+                          />
+                        ) : (
+                          <FaCircleCheck
+                            size={25}
+                            color={"#cacaca"}
+                            margin="0 10px"
+                          />
+                        )}
+                      </span>
                     )}
                     {/* request 신청서  */}
                     {attend?.request !== undefined && (
@@ -1116,7 +1122,7 @@ const ManageAttendance = (props) => {
                     title="출결 데이터 엑셀파일로 저장하기"
                     style={{ fontSize: "0.7rem" }}
                   >
-                    <i className="fa-solid fa-download"></i>엑셀
+                    <FaDownload /> 엑셀
                   </button>
                 </div>
 
@@ -1234,7 +1240,7 @@ const ManageAttendance = (props) => {
                           fontSize: "0.7rem",
                         }}
                       >
-                        <i className="fa-solid fa-download"></i>서류
+                        <FaDownload /> 서류
                       </button>
                     </div>
                     <hr className={classes["margin-15"]} />
@@ -1353,27 +1359,30 @@ const ManageAttendance = (props) => {
                       {attend.name}
                       {/* 서류 제출/미제출 아이콘 */}
                       {attend?.paper !== undefined && (
-                        <>
-                          <i
-                            className="fa-solid fa-circle-check fa-xl"
-                            style={
-                              attend.paper
-                                ? {
-                                    color: "#ff5a71",
-                                    margin: "0 10px",
-                                    cursor: "help",
-                                  }
-                                : { color: "#cacaca", margin: "0 10px" }
-                            }
-                            title="업로드 된 서류 다운받기"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              if (!attend?.paper) return;
+                        <span
+                          title="업로드 된 서류 다운받기"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (!attend?.paper) return;
 
-                              downLoadImg(attend, "서류");
-                            }}
-                          ></i>
-                        </>
+                            downLoadImg(attend, "서류");
+                          }}
+                        >
+                          {attend.paper ? (
+                            <FaCircleCheck
+                              size={25}
+                              color={"#ff5a71"}
+                              margin="0 10px"
+                              cursor="help"
+                            />
+                          ) : (
+                            <FaCircleCheck
+                              size={25}
+                              color={"#cacaca"}
+                              margin="0 10px"
+                            />
+                          )}
+                        </span>
                       )}
                       {/* request 신청서  */}
                       {attend?.request !== undefined && (

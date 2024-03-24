@@ -7,6 +7,7 @@ import Swal from "sweetalert2";
 import AttendCalendar from "components/Attendance/AttendCalendar";
 import dayjs from "dayjs";
 import ConsultRelated from "./ConsultRelated";
+import { FaFloppyDisk, FaIdBadge, FaRectangleXmark } from "react-icons/fa6";
 
 const ConsultEdit = (props) => {
   const consult = props.consult;
@@ -20,8 +21,20 @@ const ConsultEdit = (props) => {
   };
 
   const saveConsult = (consult) => {
-    const inputValue = document.querySelector("#consult_note").value;
+    let inputValue = document.querySelector("#consult_note").value;
     const optionValue = document.querySelector(`#option-select`).value;
+
+    if (inputValue.length > 4000) {
+      inputValue = inputValue.substr(0, 4000);
+      Swal.fire({
+        icon: "error",
+        title: "입력글자 초과",
+        text: "입력한 내용을 4000자 이내로 줄여주세요.",
+        confirmButtonText: "확인",
+        confirmButtonColor: "#85bd82",
+        timer: 5000,
+      });
+    }
 
     let consult_fileUrl;
     //새로 추가된 파일이 없으면 기존 파일
@@ -141,7 +154,7 @@ const ConsultEdit = (props) => {
       )}
       <div className={classes.nameArea}>
         <span className={classes.nameIcon}>
-          <i className="fa-regular fa-id-badge"></i>
+          <FaIdBadge />
         </span>
         <span className={classes["hide-cal"]}>
           <AttendCalendar
@@ -246,13 +259,13 @@ const ConsultEdit = (props) => {
           onclick={() => {
             saveConsult(consult);
           }}
-          icon={<i className="fa-solid fa-floppy-disk"></i>}
+          icon={<FaFloppyDisk />}
         />
         <Button
           id={"cancel" + consult.id}
           className="consultEditBtn"
           onclick={cancelEdit}
-          icon={<i className="fa-solid fa-rectangle-xmark"></i>}
+          icon={<FaRectangleXmark />}
         />
       </div>
       <div className={classes.editFileArea}>

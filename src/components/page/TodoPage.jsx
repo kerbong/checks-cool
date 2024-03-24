@@ -18,6 +18,19 @@ import { dbService } from "../../fbase";
 import { onSnapshot, setDoc, doc, getDoc } from "firebase/firestore";
 
 import dayjs from "dayjs";
+import {
+  FaCalendarCheck,
+  FaChalkboardUser,
+  FaChevronDown,
+  FaChevronUp,
+  FaClipboardCheck,
+  FaGear,
+  FaMoneyCheckDollar,
+  FaRegCalendarCheck,
+  FaRegFolderOpen,
+  FaRegWindowRestore,
+  FaSchoolFlag,
+} from "react-icons/fa6";
 
 const thisMonth = () => {
   let today = new Date();
@@ -610,11 +623,7 @@ const TodoPage = (props) => {
           {/* 화면 좌측 상단 타이틀 나오는 부분 */}
           <button id="title-btn">
             <>
-              <i
-                className="fa-regular fa-calendar-check"
-                style={{ fontSize: "1em" }}
-              ></i>{" "}
-              {showPublicEvent ? "공용일정" : "개인일정"}
+              <FaRegCalendarCheck /> {showPublicEvent ? "공용일정" : "개인일정"}
             </>
           </button>
 
@@ -638,7 +647,7 @@ const TodoPage = (props) => {
                 });
               }}
             >
-              <i className="fa-solid fa-money-check-dollar"></i> 예산
+              <FaMoneyCheckDollar /> 예산
             </span>
             <span
               className={classes["memo-headerBtn"]}
@@ -646,7 +655,7 @@ const TodoPage = (props) => {
                 navigate(`/todo`);
               }}
             >
-              <i className="fa-regular fa-calendar-check"></i> 일정
+              <FaRegCalendarCheck /> 일정
             </span>
             <span
               className={classes["memo-headerBtn"]}
@@ -656,7 +665,7 @@ const TodoPage = (props) => {
                 });
               }}
             >
-              <i className="fa-solid fa-clipboard-check"></i> 할일
+              <FaClipboardCheck /> 할일
             </span>
             <span
               className={classes["memo-headerBtn"]}
@@ -666,7 +675,7 @@ const TodoPage = (props) => {
                 });
               }}
             >
-              <i className="fa-regular fa-folder-open"></i> 메모
+              <FaRegFolderOpen /> 메모
             </span>
           </div>
         </div>
@@ -684,24 +693,22 @@ const TodoPage = (props) => {
         >
           {/* 설정, 공용or개인용 버튼 부분 */}
           <span
-            id="switch-btn"
             onClick={() => setShowPublicSetting(true)}
             style={props.insideLoad ? { fontSize: "0.9rem" } : {}}
           >
-            <i className="fa-solid fa-gear"></i> 설정
+            <FaGear id="switch-btn" /> 설정
           </span>
 
           {/* 한번에 일정 입력하기 부분 */}
           <span
-            id="switch-btn"
             onClick={() => setShowBaseTodo(true)}
             style={props.insideLoad ? { fontSize: "0.9rem" } : {}}
           >
-            <i className="fa-regular fa-window-restore"></i> 반복
+            <FaRegWindowRestore id="switch-btn" />
+            반복
           </span>
 
           <span
-            id="switch-btn"
             onClick={() => {
               setShowPublicEvent((prev) => !prev);
             }}
@@ -709,11 +716,13 @@ const TodoPage = (props) => {
           >
             {showPublicEvent ? (
               <>
-                <i className="fa-solid fa-chalkboard-user"></i> 개인
+                <FaChalkboardUser id="switch-btn" />
+                개인
               </>
             ) : (
               <>
-                <i className="fa-solid fa-school-flag"></i> 공용
+                <FaSchoolFlag id="switch-btn" />
+                공용
               </>
             )}
           </span>
@@ -816,11 +825,7 @@ const TodoPage = (props) => {
       )}
       <p onClick={() => setShowExplain((prev) => !prev)}>
         🤔 문제가 있으신가요?{" "}
-        {showExplain ? (
-          <i className="fa-solid fa-chevron-up"></i>
-        ) : (
-          <i className="fa-solid fa-chevron-down"></i>
-        )}
+        {showExplain ? <FaChevronUp /> : <FaChevronDown />}
       </p>
       {showExplain && (
         <>

@@ -37,6 +37,12 @@ import {
 import dayjs from "dayjs";
 import { v4 } from "uuid";
 import SectionAdd from "./SectionAdd";
+import {
+  FaGrip,
+  FaGripVertical,
+  FaRegSquareCheck,
+  FaReply,
+} from "react-icons/fa6";
 
 const PadItem = ({
   padDatas,
@@ -701,7 +707,8 @@ const PadItem = ({
               onClick={() => setAddCheckItem((prev) => !prev)}
               style={{ fontSize: "1rem" }}
             >
-              <i className="fa-regular fa-square-check"></i>&nbsp; 제출ox 보기
+              <FaRegSquareCheck />
+              &nbsp; 제출ox 보기
             </span>
           </div>
         )}
@@ -715,12 +722,13 @@ const PadItem = ({
           >
             {gridTemplate ? (
               <>
-                <i className="fa-solid fa-grip-vertical"></i>
+                <FaGripVertical />
                 &nbsp; 섹션스타일
               </>
             ) : (
               <>
-                <i className="fa-solid fa-grip"></i>&nbsp; 기본스타일
+                <FaGrip />
+                &nbsp; 기본스타일
               </>
             )}
           </span>
@@ -731,7 +739,7 @@ const PadItem = ({
             onClick={onClose}
             style={{ fontSize: "1rem" }}
           >
-            <i className="fa-solid fa-reply"></i>
+            <FaReply />
             {" 뒤로"}
           </span>
         </div>

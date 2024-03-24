@@ -33,14 +33,14 @@ const AttendCtxCalendar = (props) => {
   const [isSubject, setIsSubject] = useState(false);
 
   const selectRef = useRef();
-  const selectYear = useRef();
+  // const selectYear = useRef();
 
-  const nowYear = (date) => {
-    let data_id = date?.length > 0 ? date : new Date();
-    return dayjs(data_id).format("MM-DD") <= "02-15"
-      ? String(+dayjs(data_id).format("YYYY") - 1)
-      : dayjs(data_id).format("YYYY");
-  };
+  // const nowYear = (date) => {
+  //   let data_id = date?.length > 0 ? date : new Date();
+  //   return dayjs(data_id).format("MM-DD") <= "02-15"
+  //     ? String(+dayjs(data_id).format("YYYY") - 1)
+  //     : dayjs(data_id).format("YYYY");
+  // };
 
   //firestore에서 해당 이벤트 자료 받아오기
   const getAttendsFromDb = async () => {
@@ -52,9 +52,6 @@ const AttendCtxCalendar = (props) => {
     onSnapshot(attendRef, (doc) => {
       // setEvents([]);
       //기존에 있던 events들도 다 지우기
-
-      setEvents([]);
-      setWholeEvents([]);
 
       if (doc.exists()) {
         let wholeE = doc?.data()?.attend_data;
@@ -71,6 +68,9 @@ const AttendCtxCalendar = (props) => {
         });
         setWholeEvents(newAtdDatas);
         setEvents(newAtdDatas);
+      } else {
+        setEvents([]);
+        setWholeEvents([]);
       }
 
       // if (nowClassName === "") {
@@ -128,7 +128,7 @@ const AttendCtxCalendar = (props) => {
   useEffect(() => {
     //db에서 학년 자료 가져오기, showPublicEvent를 의존성으로 넣어두면 알아서 바뀔 때마다 실행됨. 이게 state의 변경상태에 따라 무언가를 실행하도록 하는 베스트인듯
     getAttendsFromDb();
-  }, [props.isSubject]);
+  }, [props.isSubject, props.userUid]);
 
   const getCurrentMonth = () => {
     const currentM = document
@@ -256,9 +256,9 @@ const AttendCtxCalendar = (props) => {
       // console.log(all_day);
       all_day?.forEach((dayTag) => {
         //현재 선택된 날짜들이 아니면 모두 색깔 원래대로..
-        if (!dayTag.getAttribute("aria-selected")) {
-          dayTag.style.backgroundColor = "inherit";
-        }
+
+        dayTag.style.backgroundColor = "inherit";
+
         // while (dayTag.hasChildNodes()) {
         while (dayTag?.children?.length > 0) {
           dayTag?.firstElementChild?.remove();
@@ -328,8 +328,9 @@ const AttendCtxCalendar = (props) => {
 
             //서류 냈는지.. 옵션 있으면 체크버튼 추가가
             if (data?.paper) {
-              let checkedI = document.createElement("i");
-              checkedI.className = "fa-solid fa-circle-check";
+              let checkedI = document.createElement("button");
+              checkedI.className = `${classes.paperOn}`;
+              checkedI.innerText = "서";
               btn.appendChild(checkedI);
             }
 

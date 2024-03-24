@@ -2,6 +2,7 @@ import React, { useRef, useEffect, useState } from "react";
 import classes from "./Mission.module.css";
 import Button from "../../../components/Layout/Button";
 import Swal from "sweetalert2";
+import { FaArrowAltCircleRight } from "react-icons/fa";
 
 const EXAM_TEXTS = [
   "최근 말썽인.. 너를 떠올리며,",
@@ -106,7 +107,7 @@ const MissionInput = (props) => {
 
         <Button
           name=" 작성"
-          icon={<i className="fa-solid fa-circle-arrow-right"></i>}
+          icon={<FaArrowAltCircleRight />}
           onclick={submitHandler}
           className={"replyAddBtn"}
         />

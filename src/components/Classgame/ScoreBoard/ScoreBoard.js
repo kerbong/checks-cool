@@ -8,16 +8,22 @@ import StopWatch from "components/ClassTimeTable/StopWatch";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { dbService } from "fbase";
 import dayjs from "dayjs";
+import {
+  FaCirclePlus,
+  FaCrown,
+  FaHourglassStart,
+  FaMedal,
+  FaRegFolderOpen,
+  FaSquarePollVertical,
+  FaStopwatch,
+} from "react-icons/fa6";
+import { IoArrowRedoSharp } from "react-icons/io5";
 
 const WAYS = [
   {
     name: (
       <>
-        <i
-          className="fa-solid fa-square-poll-vertical"
-          style={{ marginRight: "10px" }}
-        ></i>{" "}
-        점수추가
+        <FaSquarePollVertical /> 점수추가
       </>
     ),
     desc: "* 활동을 하며 점수를 1점씩 추가하는 방식",
@@ -26,11 +32,7 @@ const WAYS = [
   {
     name: (
       <>
-        <i
-          className="fa-solid fa-hourglass-start"
-          style={{ marginRight: "10px" }}
-        ></i>{" "}
-        타이머
+        <FaHourglassStart /> 타이머
       </>
     ),
     desc: "* 정해진 시간 안에 활동을 진행하고 점수를 1점씩 추가하는 방식",
@@ -39,11 +41,7 @@ const WAYS = [
   {
     name: (
       <>
-        <i
-          className="fa-solid fa-stopwatch"
-          style={{ marginRight: "10px" }}
-        ></i>{" "}
-        스톱워치
+        <FaStopwatch /> 스톱워치
       </>
     ),
     desc: "* 활동을 끝내는 데에 걸리는 시간을 측정하는 방식",
@@ -207,9 +205,7 @@ const ScoreBoard = (props) => {
               +index >= 3 ? "margin-left: 28px" : ""
             }">
           ${
-            index < 3
-              ? "<i class='fa-solid fa-crown fa-sm' style={{ color: '#414141', marginRight: '5px' }}></i>"
-              : ""
+            index < 3 ? "<span style={{ marginRight: '5px' }}>🏅</span>" : ""
           }  ${index + 1} 등 <span class=${classes["rank-item"]}>${
               sortedDatas_ex?.[index].name
             }</span> => <span class=${classes["rank-item"]}>${dt.name}</span>
@@ -232,7 +228,7 @@ const ScoreBoard = (props) => {
                 }">
               ${
                 index < 3
-                  ? "<i class='fa-solid fa-crown fa-sm' style={{ color: '#414141', marginRight: '5px' }}></i>"
+                  ? "<span style={{ marginRight: '5px' }}>🏅</span>"
                   : ""
               } ${index + 1} 등 <span class=${
                   classes["rank-item"]
@@ -424,14 +420,13 @@ const ScoreBoard = (props) => {
   useEffect(() => {
     if (init !== "ex") return;
     getScoreBoardData();
-  }, [init]);
+  }, [init, props.userUid]);
 
   return (
     <>
       <div id="title-div">
         <button id="title-btn">
-          <i className="fa-solid fa-medal" style={{ fontSize: "1em" }}></i>{" "}
-          모둠대결!
+          <FaMedal /> 모둠대결!
         </button>
       </div>
 
@@ -441,21 +436,15 @@ const ScoreBoard = (props) => {
           {/* 새로운 자료 */}
           <div onClick={() => setInit("new")} className={classes["way-div"]}>
             <span className={classes["way-name"]}>
-              <i
-                className="fa-solid fa-circle-plus"
-                style={{ marginRight: "10px" }}
-              ></i>
-              {"새로 시작하기"}
+              <FaCirclePlus />
+              {" 새로 시작하기"}
             </span>
           </div>
           {/* 기존 자료 */}
           <div onClick={() => setInit("ex")} className={classes["way-div"]}>
             <span className={classes["way-name"]}>
-              <i
-                className="fa-regular fa-folder-open"
-                style={{ marginRight: "10px" }}
-              ></i>
-              {"기존 자료 이어하기"}
+              <FaRegFolderOpen />
+              {" 기존 자료 이어하기"}
             </span>
           </div>
         </div>
@@ -566,12 +555,7 @@ const ScoreBoard = (props) => {
                         : {}
                     }
                   >
-                    {+nowRank?.[data.name] < 4 && (
-                      <i
-                        className="fa-solid fa-crown fa-sm"
-                        style={{ color: "#414141", marginRight: "5px" }}
-                      ></i>
-                    )}
+                    {+nowRank?.[data.name] < 4 && <FaCrown color={"#414141"} />}
                     {nowRank?.[data.name]}등
                   </button>
                 )}
@@ -665,7 +649,7 @@ const ScoreBoard = (props) => {
             title={"이전화면"}
           >
             {settingDone || init === "ex" ? (
-              <i className="fa-solid fa-share fa-rotate-180"></i>
+              <IoArrowRedoSharp rotate={180} />
             ) : (
               "이전"
             )}

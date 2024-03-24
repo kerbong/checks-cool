@@ -9,6 +9,7 @@ import SimpleTimer from "./SimpleTimer";
 
 import classes from "./SimpleTimer.module.css";
 import TimerInput from "./TimerInput";
+import { FaCrosshairs } from "react-icons/fa6";
 
 const CLASSLISTS = [
   "아침",
@@ -104,7 +105,7 @@ const ClassTimeTable = (props) => {
 
   useEffect(() => {
     getClassTimeTableFromDb();
-  }, []);
+  }, [props.userUid]);
 
   useEffect(() => {
     if (Object.values(todayClassTable)?.length === 0) return;
@@ -180,10 +181,7 @@ const ClassTimeTable = (props) => {
         title="타이머가 잘 보이도록 스크롤바를 이동시킵니다."
         onClick={() => window.scrollTo(0, 220)}
       >
-        <i
-          className="fa-solid fa-crosshairs fa-2xl"
-          style={{ color: "#757575" }}
-        ></i>
+        <FaCrosshairs color={"#757575"} />
       </div>
 
       <div className={classes["div"]}>

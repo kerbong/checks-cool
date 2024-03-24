@@ -4,6 +4,7 @@ import classes from "./RandomPick.module.css";
 import Swal from "sweetalert2";
 import StudentBtn from "components/Student/StudentBtn";
 import html2canvas from "html2canvas";
+import { FaRegImage } from "react-icons/fa6";
 
 const RandomPickPlay = (props) => {
   const [winners, setWinners] = useState([]);
@@ -170,7 +171,7 @@ const RandomPickPlay = (props) => {
                   className={classes["capture"]}
                   onClick={captureHandler}
                 >
-                  <i className="fa-regular fa-images fa-xl"></i>
+                  <FaRegImage />
                 </span>
               </h2>
               <div
@@ -268,7 +269,7 @@ const RandomPickPlay = (props) => {
                     className={classes["capture"]}
                     onClick={captureHandler}
                   >
-                    <i className="fa-regular fa-images fa-xl"></i>
+                    <FaRegImage />
                   </span>
                 </h2>
                 <div

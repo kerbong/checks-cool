@@ -5,6 +5,7 @@ import dayjs from "dayjs";
 import { dbService } from "../../fbase";
 import { getDoc, doc, onSnapshot, setDoc, updateDoc } from "firebase/firestore";
 import Swal from "sweetalert2";
+import { FaRegCircleXmark } from "react-icons/fa6";
 
 const PadAdd = (props) => {
   const [isExist, setIsExist] = useState(null);
@@ -153,7 +154,7 @@ const PadAdd = (props) => {
               props.onClose();
             }}
           >
-            <i className="fa-regular fa-circle-xmark"></i>
+            <FaRegCircleXmark />
           </span>
         )}
         <p className={classes["fs-17rem"]} style={{ textAlign: "center" }}>

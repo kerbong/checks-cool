@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import Swal from "sweetalert2";
 import classes from "./FreeMemo.module.css";
 import Button from "components/Layout/Button";
+import { FaXmark } from "react-icons/fa6";
 
 //자료 최대글자수 제한 함수
 const handleOnInput = (e, maxlength) => {
@@ -114,7 +115,7 @@ const CategoryInput = (props) => {
               props.caInputClose();
             }}
           >
-            <i className="fa-solid fa-xmark"></i>
+            <FaXmark />
           </button>
         )}
         {!isEdited && <h2 className={classes["h2"]}>태그 추가</h2>}

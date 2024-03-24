@@ -9,6 +9,7 @@ import Modal from "components/Layout/Modal";
 import Reply from "./Reply";
 import MissionInput from "./MissionInput";
 import Swal from "sweetalert2";
+import { FaChevronDown, FaChevronUp } from "react-icons/fa6";
 
 const EXPLAINS = [
   "* 하루 한 개의 글만 올릴 수 있어요.",
@@ -193,11 +194,7 @@ const Mission = (props) => {
         <span onClick={() => setExplainOn((prev) => !prev)}>
           * 사용설명서
           <span className={classes.h1Span}>
-            {explainOn ? (
-              <i className="fa-solid fa-chevron-up"></i>
-            ) : (
-              <i className="fa-solid fa-chevron-down"></i>
-            )}{" "}
+            {explainOn ? <FaChevronUp /> : <FaChevronDown />}{" "}
           </span>
         </span>
         <div className={classes["flex-center"]}>

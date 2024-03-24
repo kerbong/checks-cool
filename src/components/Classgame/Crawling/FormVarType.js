@@ -3,6 +3,7 @@ import classes from "./HwpControl.module.css";
 
 import Modal from "components/Layout/Modal";
 import ScoreGradeInput from "components/CheckListMemo/ScoreGradeInput";
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa6";
 
 const TYPE = ["string", "phone", "select", "date", "period", "sign"];
 
@@ -181,7 +182,7 @@ const FormVarType = (props) => {
             className={classes["btn"]}
             style={{ width: "50px", margin: "0 20px " }}
           >
-            <i className="fa-solid fa-chevron-left"></i>
+            <FaChevronLeft />
           </button>
 
           {/* 변수들 보여주기 */}
@@ -214,7 +215,7 @@ const FormVarType = (props) => {
             className={classes["btn"]}
             style={{ width: "50px", margin: "0 20px " }}
           >
-            <i className="fa-solid fa-chevron-right"></i>
+            <FaChevronRight />
           </button>
         </div>
 

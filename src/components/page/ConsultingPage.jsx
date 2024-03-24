@@ -16,6 +16,12 @@ import {
   uploadBytes,
 } from "firebase/storage";
 import { v4 } from "uuid";
+import {
+  FaCalendarDays,
+  FaClipboardCheck,
+  FaRegComments,
+  FaRegSquareCheck,
+} from "react-icons/fa6";
 
 const ConsultingPage = (props) => {
   const [optionIsShown, setOptionShown] = useState(false);
@@ -225,8 +231,7 @@ const ConsultingPage = (props) => {
     <>
       <div id="title-div">
         <button id="title-btn">
-          <i className="fa-regular fa-comments" style={{ fontSize: "1em" }}></i>{" "}
-          상담관리
+          <FaRegComments size={30} /> 상담관리
         </button>
 
         <div
@@ -241,48 +246,45 @@ const ConsultingPage = (props) => {
           }}
         >
           <span
-            id="switch-btn"
             onClick={() => {
               navigate(`/attendance`, {
                 state: { doWhat: "addAttend" },
               });
             }}
           >
-            <i className="fa-regular fa-calendar-days"></i> 출결
+            <FaCalendarDays id="switch-btn" /> 출결
             <br />
             기록
           </span>
 
-          <span id="switch-btn" onClick={showCalHandler}>
-            <>
-              <i className="fa-regular fa-comments"></i> 상담
-              <br />
-              관리
-            </>
+          <span onClick={showCalHandler}>
+            <FaRegComments id="switch-btn" />
+            상담
+            <br />
+            관리
           </span>
           {/* 제출ox */}
           <span
-            id="switch-btn"
             onClick={() => {
               navigate(`/checkListMemo`, {
                 state: { about: "checkLists" },
               });
             }}
           >
-            <i className="fa-regular fa-square-check"></i> 제출
+            <FaRegSquareCheck id="switch-btn" />
+            제출
             <br />
             ox
           </span>
           {/* 개별기록 */}
           <span
-            id="switch-btn"
             onClick={() => {
               navigate(`/checkListMemo`, {
                 state: { about: "listMemo" },
               });
             }}
           >
-            <i className="fa-solid fa-clipboard-check"></i> 개별
+            <FaClipboardCheck id="switch-btn" /> 개별
             <br />
             기록
           </span>

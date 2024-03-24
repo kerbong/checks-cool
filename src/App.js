@@ -44,6 +44,7 @@ const WeTeacher = lazy(() => import("./components/page/WeTeacher"));
 const ConsultingPage = lazy(() => import("./components/page/ConsultingPage"));
 const CheckListMemo = lazy(() => import("./components/page/CheckListMemo"));
 const MemoPage = lazy(() => import("./components/page/MemoPage"));
+const Club = lazy(() => import("./components/page/Club"));
 const TodoPage = lazy(() => import("./components/page/TodoPage"));
 const Profile = lazy(() => import("./components/page/Profile"));
 const Notice = lazy(() => import("./components/page/Notice"));
@@ -70,6 +71,9 @@ function App() {
   const [padItInfo, setPadItInfo] = useState({});
   const [isMobile, setIsMobile] = useState(false);
   const [navigatePage, setNavigatePage] = useState("");
+  const [isClub, setIsClub] = useState("");
+  const [clubLists, setClubLists] = useState([]);
+  const [isSubject, setIsSubject] = useState([]);
 
   let navigate = useNavigate();
 
@@ -127,7 +131,7 @@ function App() {
 
   const sortNum = (students) => {
     let sorted_students;
-    if (!profile.isSubject) {
+    if (!isSubject) {
       sorted_students = students?.sort(function (a, b) {
         let a_num = `${a.num}`;
         let b_num = `${b.num}`;
@@ -155,8 +159,11 @@ function App() {
         setShowMainExample(false);
         //현재학년도 자료만 보내기
         setStudents([...sortNum(doc?.data()?.studentDatas)]);
+        // console.log(doc?.data()?.studentDatas);
       } else {
         setShowMainExample(true);
+        setStudents([]);
+        // console.log("없음");
       }
     });
   };
@@ -167,6 +174,8 @@ function App() {
     setUserUid(null);
     setStudents([]);
     setUser(null);
+    setClubLists([]);
+    setIsClub("");
   };
 
   //메뉴 위 / 아래 이동 기능
@@ -268,6 +277,8 @@ function App() {
     } else if (userUid) {
       getStudents(userUid);
 
+      setIsSubject(profile.isSubject);
+
       // navigatePage의 조건을 먼저 확인
       if (navigatePage === "groupPage") {
         navigate("/groupPage");
@@ -295,6 +306,55 @@ function App() {
     }
   }, []);
 
+  /** 동아리 목록 받아오는 함수 */
+  const getClubDatas = async () => {
+    const clubRef = doc(dbService, "club", userUid);
+    onSnapshot(clubRef, (doc) => {
+      if (doc.exists()) {
+        setClubLists(doc?.data()?.club_lists);
+      }
+    });
+  };
+
+  useEffect(() => {
+    if (!userUid) return;
+
+    // console.log(userUid);
+    // console.log(isClub);
+
+    if (isClub === "") {
+      getClubDatas();
+    }
+  }, [userUid]);
+
+  //현재 클릭한 동아리의 인덱스, 혹은 main. 초기에는 ""
+  const clubHandler = (ind) => {
+    setIsClub(ind);
+  };
+
+  /**club 인덱스가 담임/전담용이 아니면.. 학생데이터 새롭게 받아오고 */
+  useEffect(() => {
+    //처음 로딩될 때는 학생목록 다시 받지 않음
+    if (isClub === "") return;
+
+    // 담임 버전 클릭하면.. 학생목록 다시받기!
+    if (isClub === "main") {
+      setUserUid(user.uid);
+      getStudents(user.uid);
+
+      setIsSubject(profile.isSubject);
+      // 동아리 부서 선택하면, 학생목록 다시 받기!
+    } else {
+      setUserUid(clubLists?.[isClub]?.userUid);
+      setIsMobile(false);
+      getStudents(clubLists?.[isClub]?.userUid);
+      setIsSubject([{ [now_year()]: false }]);
+    }
+  }, [isClub]);
+
+  // useEffect(() => {
+  //   console.log(isSubject);
+  // }, [isSubject]);
   return (
     <div>
       <div className={menuOnHead ? "App" : "App-bottom"}>
@@ -306,6 +366,9 @@ function App() {
             logOutHandler={logOutHandler}
             setMenuHandler={setMenuHandler}
             menuOnHead={menuOnHead}
+            isClub={isClub}
+            clubLists={clubLists}
+            isClubIndex={clubHandler}
           />
         )}
 
@@ -347,14 +410,16 @@ function App() {
                         showMainExample={showMainExample}
                         students={students}
                         setShowMainExample={() => setShowMainExample(false)}
-                        isSubject={profile?.isSubject}
+                        isSubject={isSubject}
+                        isClub={isClub}
+                        clubLists={clubLists}
                       />
                     ) : (
                       <MobileMain
                         userUid={userUid}
                         email={user.email}
                         students={students}
-                        isSubject={profile.isSubject || []}
+                        isSubject={isSubject}
                       />
                     )
                   }
@@ -369,7 +434,9 @@ function App() {
                         showMainExample={showMainExample}
                         students={students}
                         setShowMainExample={() => setShowMainExample(false)}
-                        isSubject={profile?.isSubject}
+                        isSubject={isSubject}
+                        isClub={isClub}
+                        clubLists={clubLists}
                       />
                     }
                   />
@@ -388,7 +455,7 @@ function App() {
                       userUid={userUid}
                       email={user.email}
                       nickName={profile?.nickName || ""}
-                      isSubject={profile?.isSubject || []}
+                      isSubject={isSubject}
                       menuOnHead={menuOnHead}
                     />
                   }
@@ -400,12 +467,17 @@ function App() {
                     <GroupPage
                       students={students}
                       userUid={userUid}
-                      isSubject={profile?.isSubject || []}
+                      isSubject={isSubject}
                     />
                   }
                 />
 
                 <Route path="alarm" element={<Alarm userUid={userUid} />} />
+
+                <Route
+                  path="club"
+                  element={<Club userUid={userUid} clubLists={clubLists} />}
+                />
 
                 <Route
                   path="weteacher"
@@ -415,7 +487,8 @@ function App() {
                       userUid={userUid}
                       email={user.email}
                       nickName={profile?.nickName || ""}
-                      isSubject={profile?.isSubject || []}
+                      isSubject={isSubject}
+                      isClub={isClub}
                     />
                   }
                 />
@@ -431,7 +504,7 @@ function App() {
                     <AttendancePage
                       students={students}
                       userUid={userUid}
-                      isSubject={profile?.isSubject || []}
+                      isSubject={isSubject}
                     />
                   }
                 />
@@ -442,7 +515,7 @@ function App() {
                     <ConsultingPage
                       students={students}
                       userUid={userUid}
-                      isSubject={profile.isSubject || []}
+                      isSubject={isSubject}
                     />
                   }
                 />
@@ -453,7 +526,7 @@ function App() {
                     <ManageStudentInfo
                       students={students}
                       userUid={userUid}
-                      isSubject={profile.isSubject || []}
+                      isSubject={isSubject}
                     />
                   }
                 />
@@ -464,7 +537,7 @@ function App() {
                     <ManageCheckListMemo
                       students={students}
                       userUid={userUid}
-                      isSubject={profile.isSubject || []}
+                      isSubject={isSubject}
                     />
                   }
                 />
@@ -475,7 +548,7 @@ function App() {
                     <ManageConsult
                       students={students}
                       userUid={userUid}
-                      isSubject={profile.isSubject || []}
+                      isSubject={isSubject}
                     />
                   }
                 />
@@ -486,7 +559,7 @@ function App() {
                     <ManageAttendance
                       students={students}
                       userUid={userUid}
-                      isSubject={profile.isSubject || []}
+                      isSubject={isSubject}
                     />
                   }
                 />
@@ -497,7 +570,8 @@ function App() {
                     <MemoPage
                       students={students}
                       userUid={userUid}
-                      isSubject={profile.isSubject || []}
+                      isSubject={isSubject}
+                      isClub={isClub}
                     />
                   }
                 />
@@ -507,7 +581,7 @@ function App() {
                     <CheckListMemo
                       students={students}
                       userUid={userUid}
-                      isSubject={profile.isSubject || []}
+                      isSubject={isSubject}
                     />
                   }
                 />
@@ -522,7 +596,7 @@ function App() {
                       userUid={userUid}
                       students={students}
                       isSubject={
-                        profile?.isSubject?.filter(
+                        isSubject?.filter(
                           (yearData) => Object.keys(yearData)[0] === now_year()
                         )?.[0]?.[now_year()]
                       }

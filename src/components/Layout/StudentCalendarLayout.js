@@ -4,6 +4,13 @@ import AttendCtxCalendar from "../Attendance/AttendCtxCalendar";
 import dayjs from "dayjs";
 import Attendance from "../Attendance/Attendance";
 import Student from "../Student/Student";
+import {
+  FaCalendarDays,
+  FaClipboardCheck,
+  FaRegCalendarDays,
+  FaRegComments,
+  FaRegSquareCheck,
+} from "react-icons/fa6";
 // import ExampleModal from "../page/ExampleModal";
 // import calendar from "../../assets/attend/calendar.gif";
 // import list from "../../assets/attend/list.gif";
@@ -48,9 +55,10 @@ const StudentCalendarLayout = (props) => {
   useEffect(() => {
     let now_year = setYear();
     //현재학년도 자료만 입력가능하고,, 불러오기
-    let now_students = props?.students?.filter(
-      (yearStd) => String(Object.keys(yearStd)[0]) === now_year
-    )?.[0]?.[now_year];
+    let now_students =
+      props?.students?.filter(
+        (yearStd) => String(Object.keys(yearStd)[0]) === now_year
+      )?.[0]?.[now_year] || [];
 
     setNowStudents(now_students);
   }, [props.students]);
@@ -71,11 +79,7 @@ const StudentCalendarLayout = (props) => {
   const titleDivBtns = (
     <div id="title-div">
       <button id="title-btn" onClick={() => setShowExample(true)}>
-        <i
-          className="fa-regular fa-calendar-days"
-          style={{ fontSize: "1em" }}
-        ></i>{" "}
-        출결기록
+        <FaRegCalendarDays /> 출결기록
       </button>
 
       <div
@@ -89,47 +93,46 @@ const StudentCalendarLayout = (props) => {
           fontSize: "0.9rem",
         }}
       >
-        <span id="switch-btn" onClick={showCalHandler}>
-          <i className="fa-regular fa-calendar-days"></i> 출결
+        <span onClick={showCalHandler}>
+          <FaCalendarDays id="switch-btn" /> 출결
           <br />
           기록
         </span>
 
         <span
-          id="switch-btn"
           onClick={() => {
             navigate(`/consulting`, {
               state: { doWhat: "addConsult" },
             });
           }}
         >
-          <i className="fa-regular fa-comments"></i> 상담
+          <FaRegComments id="switch-btn" />
+          상담
           <br />
           관리
         </span>
         {/* 제출ox */}
         <span
-          id="switch-btn"
           onClick={() => {
             navigate(`/checkListMemo`, {
               state: { about: "checkLists" },
             });
           }}
         >
-          <i className="fa-regular fa-square-check"></i> 제출
+          <FaRegSquareCheck id="switch-btn" />
+          제출
           <br />
           ox
         </span>
         {/* 개별기록 */}
         <span
-          id="switch-btn"
           onClick={() => {
             navigate(`/checkListMemo`, {
               state: { about: "listMemo" },
             });
           }}
         >
-          <i className="fa-solid fa-clipboard-check"></i> 개별
+          <FaClipboardCheck id="switch-btn" /> 개별
           <br />
           기록
         </span>

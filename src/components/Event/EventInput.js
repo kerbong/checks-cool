@@ -9,6 +9,7 @@ import AttendCalendar from "components/Attendance/AttendCalendar";
 // import { scheduleJob } from "node-schedule";
 import dayjs from "dayjs";
 import "dayjs/locale/ko";
+import { FaRegCircleXmark, FaRegFloppyDisk } from "react-icons/fa6";
 
 dayjs.locale("ko");
 
@@ -202,7 +203,7 @@ const EventInput = (props) => {
         new_data = {
           eventDate: eventDate,
           num: student.split(" ")[0],
-          name: student.split(" ")[1],
+          name: student.substring(student.indexOf(" ") + 1),
           id: new_data_id,
         };
         //같은 경우(todo에서 기존자료)
@@ -237,8 +238,13 @@ const EventInput = (props) => {
       return;
 
     // 출결에서만 나오는..거..!! 현재학생 정보만 거르고
+    // console.log(
+    //   props.events?.filter((evt) => evt.name === student.split(" ")[1])
+    // );
     let now_studentEvents = props.events?.filter(
-      (evt) => evt.name === student.split(" ")[1]
+      (evt) =>
+        evt?.name === student?.substring(student?.indexOf(" ") + 1) &&
+        +evt?.num === +student?.split(" ")?.[0]
     );
     let new_optionsSet = [];
     now_studentEvents?.forEach((evt) => {
@@ -356,6 +362,9 @@ const EventInput = (props) => {
                   className={showCal ? "paperSub-btn-clicked" : "paperSub-btn"}
                   onclick={() => setShowCal((prev) => !prev)}
                   name={"반복"}
+                  title={
+                    "'반복' 기능으로 입력된 이벤트에 일정을 추가하고 싶은 경우 클릭해주세요!"
+                  }
                 />
 
                 <input
@@ -374,7 +383,7 @@ const EventInput = (props) => {
                 className="small-student"
                 name={
                   <span>
-                    <i className="fa-regular fa-floppy-disk"></i>
+                    <FaRegFloppyDisk />
                   </span>
                 }
                 id={`save-btn${props.id}`}
@@ -387,7 +396,7 @@ const EventInput = (props) => {
                 className="small-student"
                 name={
                   <span>
-                    <i className="fa-solid fa-xmark"></i>
+                    <FaRegCircleXmark />
                   </span>
                 }
                 id={`cancle-btn${props.id}`}
@@ -424,9 +433,9 @@ const EventInput = (props) => {
                 }}
               >
                 {reserveAlarm ? (
-                  <i class="fa-solid fa-bell"></i>
+                  <i class=" fa-bell"></i>
                 ) : (
-                  <i class="fa-regular fa-bell"></i>
+                  <i class="fa reg fa-bell"></i>
                 )}
               </span>
             )} */}
@@ -512,6 +521,16 @@ const EventInput = (props) => {
                 )}
               </div>
             </>
+          )}
+
+          {props.about?.slice(0, 4) === "todo" && (
+            <span
+              className={classes["optionsSet"]}
+              style={{ color: "#878787" }}
+            >
+              * (교시명@활동내용) 입력시 [메인화면]-[시간표]에 활동내용 자동으로
+              불러옴
+            </span>
           )}
 
           {props.about === "attendance" && optionsSet?.length === 0 && (

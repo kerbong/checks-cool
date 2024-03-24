@@ -17,6 +17,12 @@ import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 import SimsimAdd from "./SimsimAdd";
 import SimsimContent from "./SimsimContent";
+import {
+  FaChevronDown,
+  FaChevronUp,
+  FaPlus,
+  FaRegCircleXmark,
+} from "react-icons/fa6";
 
 const Simsim = (props) => {
   const [recommend, setRecommend] = useState([]);
@@ -286,11 +292,7 @@ const Simsim = (props) => {
             setAddNew((prev) => !prev);
           }}
         >
-          {addNew ? (
-            <i className="fa-solid fa-xmark"></i>
-          ) : (
-            <i className="fa-solid fa-plus"></i>
-          )}
+          {addNew ? <FaRegCircleXmark /> : <FaPlus />}
         </button>
       </div>
 
@@ -327,11 +329,7 @@ const Simsim = (props) => {
         >
           📋 추천해요 활용 안내
           <span className={classes["explain-icon"]}>
-            {showExplain ? (
-              <i className="fa-solid fa-chevron-up"></i>
-            ) : (
-              <i className="fa-solid fa-chevron-down"></i>
-            )}{" "}
+            {showExplain ? <FaChevronUp /> : <FaChevronDown />}{" "}
           </span>
         </span>
         <div>

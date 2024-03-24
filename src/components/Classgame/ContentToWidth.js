@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { FaRepeat } from "react-icons/fa6";
 
 const ContentToWidth = () => {
   const [isWidth, setIsWidth] = useState(false);
@@ -31,7 +32,7 @@ const ContentToWidth = () => {
 
   return (
     <button onClick={toWidthHandler}>
-      <i className="fa-solid fa-repeat"></i>
+      <FaRepeat />
     </button>
   );
 };

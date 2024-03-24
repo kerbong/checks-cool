@@ -7,6 +7,7 @@ import AttendCalendar from "components/Attendance/AttendCalendar";
 import Swal from "sweetalert2";
 import dayjs from "dayjs";
 import holidays2023 from "holidays2023";
+import { FaArrowsUpDown, FaRegCircleXmark } from "react-icons/fa6";
 
 const CheckInput = (props) => {
   const [checkTitle, setCheckTitle] = useState(
@@ -430,7 +431,7 @@ const CheckInput = (props) => {
             props.setItemNull();
           }}
         >
-          <i className="fa-regular fa-circle-xmark"></i>
+          <FaRegCircleXmark />
         </span>
       </div>
       <div>
@@ -459,7 +460,7 @@ const CheckInput = (props) => {
           <span>
             {/* 제출 미제출 한번에 교체하는 버튼 */}
             <Button
-              icon={<i className="fa-solid fa-arrows-up-down"></i>}
+              icon={<FaArrowsUpDown />}
               id={"add-checkItemBtn"}
               className={"change-submit-button"}
               onclick={changeSubmitHandler}

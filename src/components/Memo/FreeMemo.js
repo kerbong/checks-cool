@@ -8,6 +8,7 @@ import { dbService } from "../../fbase";
 import { setDoc, onSnapshot, doc, getDoc } from "firebase/firestore";
 import Swal from "sweetalert2";
 import FreeMemoTableInput from "./FreeMemoTableInput";
+import { FaChevronDown, FaChevronUp, FaPlus, FaXmark } from "react-icons/fa6";
 
 const EXPLAINS = [
   "* 태그 추가방법!",
@@ -59,7 +60,7 @@ const FreeMemo = (props) => {
 
   useEffect(() => {
     getFreeMemoDb();
-  }, []);
+  }, [props.userUid]);
 
   useEffect(() => {
     setShowCategoryEditBtn(false);
@@ -229,7 +230,7 @@ const FreeMemo = (props) => {
               <Button
                 icon={
                   <>
-                    태그 <i className="fa-solid fa-plus"></i>
+                    태그 <FaPlus />
                   </>
                 }
                 id={"add-freeMemoBtn"}
@@ -242,7 +243,7 @@ const FreeMemo = (props) => {
               <Button
                 icon={
                   <>
-                    일반메모 <i className="fa-solid fa-plus"></i>
+                    일반메모 <FaPlus />
                   </>
                 }
                 id={"add-freeMemoBtn"}
@@ -260,10 +261,10 @@ const FreeMemo = (props) => {
             icon={
               !addItem ? (
                 <>
-                  표 메모 <i className="fa-solid fa-plus"></i>
+                  표 메모 <FaPlus />
                 </>
               ) : (
-                <i className="fa-solid fa-xmark"></i>
+                <FaXmark />
               )
             }
             id={"add-freeMemoBtn"}
@@ -416,11 +417,7 @@ const FreeMemo = (props) => {
         >
           🪄 사용 설명서{" "}
           <span className={classes.h1Span}>
-            {explainOn ? (
-              <i className="fa-solid fa-chevron-up"></i>
-            ) : (
-              <i className="fa-solid fa-chevron-down"></i>
-            )}{" "}
+            {explainOn ? <FaChevronUp /> : <FaChevronDown />}{" "}
           </span>
         </h2>
 

@@ -8,6 +8,7 @@ import { onSnapshot, doc } from "firebase/firestore";
 import { utils, writeFile } from "xlsx";
 import dayjs from "dayjs";
 import "dayjs/locale/ko";
+import { FaIdBadge, FaPencil, FaTrashCan } from "react-icons/fa6";
 dayjs.locale("ko");
 
 const ConsultLists = (props) => {
@@ -34,29 +35,33 @@ const ConsultLists = (props) => {
     let consultRef = doc(dbService, "consult", props.userUid);
 
     onSnapshot(consultRef, (doc) => {
-      setConsults([]);
-      const new_consults = [];
-      const years = [];
-      doc.data()?.consult_data?.forEach((data) => {
-        let new_data = {};
+      if (doc.exists()) {
+        const new_consults = [];
+        const years = [];
+        doc.data()?.consult_data?.forEach((data) => {
+          let new_data = {};
 
-        let data_year = setYear(data.id.slice(0, 10));
+          let data_year = setYear(data.id.slice(0, 10));
 
-        years.push(data_year);
-        //자료에 년도를 yearGroup으로 추가
-        new_data = { ...data, yearGroup: data_year };
+          years.push(data_year);
+          //자료에 년도를 yearGroup으로 추가
+          new_data = { ...data, yearGroup: data_year };
 
-        new_consults.push(new_data);
-      });
-      //학년도 저장 및 상담기록 저장
-      setDataYears([...new Set(years)]);
-      setConsults([...new_consults]);
+          new_consults.push(new_data);
+        });
+        //학년도 저장 및 상담기록 저장
+        setDataYears([...new Set(years)]);
+        setConsults([...new_consults]);
+      } else {
+        setConsults([]);
+        setDataYears([]);
+      }
     });
   };
 
   useEffect(() => {
     getConsultFromDb();
-  }, []);
+  }, [props.userUid]);
 
   useEffect(() => {
     if (
@@ -494,7 +499,7 @@ const ConsultLists = (props) => {
                   <div key={consult.id + "item"}>
                     <div className={classes.nameArea}>
                       <span className={classes.nameIcon}>
-                        <i className="fa-regular fa-id-badge"></i>
+                        <FaIdBadge />
                       </span>
                       <p className={classes.consultDate}>
                         {yearMonthDay(consult.id.slice(0, 10))}{" "}
@@ -556,7 +561,7 @@ const ConsultLists = (props) => {
 
                           setInitTextareaHeight(initHeight);
                         }}
-                        icon={<i className="fa-solid fa-pencil"></i>}
+                        icon={<FaPencil />}
                       />
                       <Button
                         id={"delete" + consult.id}
@@ -564,7 +569,7 @@ const ConsultLists = (props) => {
                         onclick={() => {
                           deleteConsult(consult);
                         }}
-                        icon={<i className="fa-solid fa-trash-can"></i>}
+                        icon={<FaTrashCan />}
                       />
                     </div>
                   </div>

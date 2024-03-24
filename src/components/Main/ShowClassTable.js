@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import classes from "./ClassItem.module.css";
 import AttendCalendar from "components/Attendance/AttendCalendar";
 
-import Swal from "sweetalert2";
 import dayjs from "dayjs";
 
 //오늘 날짜 yyyy-mm-dd로 만들기
